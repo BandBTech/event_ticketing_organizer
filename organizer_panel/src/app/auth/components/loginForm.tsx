@@ -15,7 +15,7 @@ export default function Login() {
   };
 
   return (
-       <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -82,7 +82,7 @@ export default function Login() {
             />
             <span>Remember Me</span>
           </label>
-          <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+          <Link href="/auth/pages/forgotpassword" className="text-sm text-blue-600 hover:underline">
             Forgot Password?
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default function Login() {
       {/* Footer Link */}
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-blue-600 hover:underline">
+        <Link href="/auth/pages/signup" className="text-blue-600 hover:underline">
           Sign up here.
         </Link>
       </p>
