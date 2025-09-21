@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
 import Link from "next/link";
 
 export default function Login() {
@@ -15,8 +15,7 @@ export default function Login() {
   };
 
   return (
-   // <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">     
-     <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+       <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -54,7 +53,7 @@ export default function Login() {
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -69,7 +68,7 @@ export default function Login() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
           </div>
         </div>
@@ -105,6 +104,5 @@ export default function Login() {
         </Link>
       </p>
     </div>
-   // </main>
   );
 }
