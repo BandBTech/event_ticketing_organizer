@@ -40,6 +40,7 @@ export default function Signup() {
   };
 
   return (
+    
     <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
@@ -181,7 +182,7 @@ export default function Signup() {
       {/* Footer Link */}
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/login" className="text-blue-600 hover:underline">
+        <Link href="/auth/pages/login" className="text-blue-600 hover:underline">
          Sign in as Organizer.
         </Link>
       </p>
