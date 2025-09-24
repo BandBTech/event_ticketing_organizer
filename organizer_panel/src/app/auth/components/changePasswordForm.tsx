@@ -1,30 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Mail, KeyRound, EyeClosed, MoveRight } from "lucide-react";
+import { Eye, KeyRound, EyeClosed} from "lucide-react";
 import Link from "next/link";
 
-type CountryOption = {
-  code: string;
-  dialCode: string;
-};
-
-const countries: CountryOption[] = [
-  { code: "US", dialCode: "+1" },
-  { code: "DK", dialCode: "+45" },
-  { code: "NPL", dialCode: "+977" },
-  { code: "GB", dialCode: "+44" },
-];
-
 export default function Signup() {
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(
-    countries[0]
-  );
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +16,7 @@ export default function Signup() {
       alert("Passwords do not match!");
       return;
     }
-    console.log({
-      email,
-      password,
-      phone: `${selectedCountry.dialCode} ${phone}`,
-    }); // ✅ Replace with API call
+    console.log({password,}); // ✅ Replace with API call
   };
 
   return (
@@ -45,75 +25,12 @@ export default function Signup() {
       {/* Header */}
       <div className="text-left">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Register{" "}
-          <span className="text-blue-600 text-sm font-normal">
-            as Organizer
-          </span>
+          Set a new password
         </h1>
       </div>
 
       {/* Form */}
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {/* Email Field */}
-        <div className="space-y-2">
-          <label
-            htmlFor="email"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
-            Email
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              id="email"
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-        </div>
-        
-        {/* Phone Input */}
-        <div>
-          <label
-            htmlFor="phone"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
-            Contact Number
-          </label>
-          <div className="flex mt-1">
-            <select
-              value={selectedCountry.code}
-              onChange={(e) =>
-                setSelectedCountry(
-                  countries.find((c) => c.code === e.target.value) ||
-                    countries[0]
-                )
-              }
-              className="rounded-l-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.code} {country.dialCode}
-                </option>
-              ))}
-            </select>
-            <input
-              id="phone"
-              type="text"
-              inputMode="numeric"
-              placeholder="Enter phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              className="flex-1 rounded-r-lg border border-l-0 border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-        </div>
-
         {/* Password Field */}
         <div className="space-y-2">
           <label
@@ -175,32 +92,17 @@ export default function Signup() {
           type="submit"
           className="relative w-full flex items-center gap-2 justify-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
         >
-          Get Started
-          <MoveRight className="w-4 h-4" />
+         Update Password
         </button>
       </form>
 
       {/* Footer Link */}
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-        Already have an account?{" "}
         <Link href="/auth/pages/login" className="text-blue-600 hover:underline">
-         Sign in as Organizer.
-        </Link>
-      </p>
-
-      <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
-      
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-        By continuing, you consent to the fact that you have read and understood our {" "}
-        <Link href="/termsandconditions" className="text-blue-600 hover:underline">
-         terms and conditions {" "}
-        </Link>
-        and {" "}
-        <Link href="/policy" className="text-blue-600 hover:underline">
-        privacy policy {" "}
+            Return to login page
         </Link>
       </p>
     </div>
-    // </main>
+
   );
 }
