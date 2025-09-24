@@ -1,5 +1,3 @@
-import Dashboard from "@/app/dashboard/layout";
-
-export default function DashboardPage(){
-    return <Dashboard/>;
+export default function DashboardPage() {
+  return <div></div>;
 }

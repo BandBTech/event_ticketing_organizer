@@ -6,7 +6,7 @@ export default function Topbar() {
       <h2 className="text-lg font-semibold">Good Evening John Doe!</h2>
 
       <div className="flex items-center gap-4">
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md">
+        <button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md">
           <Plus className="h-4 w-4" />
           Create New Event
         </button>
