@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-organizer_panel/public/*
-!organizer_panel/public/.gitkeep
+public/*
+!public/.gitkeep
