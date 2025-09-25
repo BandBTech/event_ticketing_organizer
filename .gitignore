@@ -1,3 +1,7 @@
+/organizer_panel/public/*
+!/organizer_panel/public/
+!/organizer_panel/public/.gitkeep
+
 # ---- Node & Next.js ----
 node_modules/
 .next/
@@ -19,3 +23,8 @@ yarn-error.log*
 # ---- Logs ----
 logs
 *.log
+
+
+
+.env*
+
