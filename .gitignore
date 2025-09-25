@@ -1,3 +1,7 @@
+/public/*
+!/public/
+!/public/.gitkeep
+
 # ---- Node & Next.js ----
 node_modules/
 .next/
@@ -20,8 +24,6 @@ yarn-error.log*
 logs
 *.log
 
-/public/*
-!/public/
-!/public/.gitkeep
+
 
 .env*
