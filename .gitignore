@@ -20,7 +20,8 @@ yarn-error.log*
 logs
 *.log
 
-organizer_panel/public/*
-!organizer_panel/public/.gitkeep
+/public/*
+!/public/
+!/public/.gitkeep
 
 .env*
