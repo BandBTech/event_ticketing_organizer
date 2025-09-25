@@ -19,7 +19,7 @@ const events = [
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
@@ -37,7 +37,7 @@ const events = [
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
@@ -55,7 +55,7 @@ const events = [
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
@@ -68,8 +68,7 @@ export default function Events() {
   return (
     <div className="flex-1 px-6 py-4">
       {/* Page Header */}
-      <h2 className="text-2xl font-semibold mb-4">Events</h2>
-
+      {/* <h2 className="text-2xl font-semibold mb-4">Events</h2> */}
       {/* Search + Filter */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center w-full max-w-md relative">
@@ -146,10 +145,10 @@ export default function Events() {
               {/* Actions */}
             <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
               <div className="flex justify-between items-center mt-3">
-                <button className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm font-medium hover:bg-gray-100">
+                <button className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg ">
                   View Detail <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100">
+                <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg ">
                   <PencilLine className="w-4 h-4" />
                 </button>
               </div>
