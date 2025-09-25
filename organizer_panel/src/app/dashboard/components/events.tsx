@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, MapPin, Search, Filter, ArrowRight, PencilLine, MoveLeft, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, Search, Filter, ArrowRight, PencilLine, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 
 const events = [
