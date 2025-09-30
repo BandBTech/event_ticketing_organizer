@@ -8,6 +8,7 @@ import {
   ChartLine,
   Settings,
   ChevronRight,
+  Ticket,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -23,7 +24,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-56 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-      <div className="p-6 text-blue-600 font-bold text-xl">E-Ticket</div>
+      <div className="flex gap-1 items-center p-6 text-blue-600 font-bold text-xl"><Ticket/> E-Ticket</div>
 
       <nav className="flex-1 space-y-1 px-4 ">
         {navLinks.map(({ href, label, icon: Icon }) => {
@@ -58,7 +59,7 @@ export default function Sidebar() {
         <div className="flex  items-center gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 ">
           <div className="relative w-8 h-8">
             <Image
-              src="/next.svg"
+              src="/john.jpg"
               alt="John Doe"
               fill
               className="rounded-full object-cover"

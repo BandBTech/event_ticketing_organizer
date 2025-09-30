@@ -1,6 +1,5 @@
 
 import Sidebar from "@/components/sidebar";
-import Topbar from "@/components/topbar";
 import DashboardHeader from "@/components/dashboardHeader";
 
 
