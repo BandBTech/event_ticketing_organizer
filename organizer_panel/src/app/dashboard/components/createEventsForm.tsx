@@ -1,8 +1,10 @@
 "use client";
 
-import {  Image as ImageIcon, MapPinned, Plus, Trash2 } from "lucide-react";
+import { Image as ImageIcon, MapPinned, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 export default function CreateEventPage() {
+  const [showPromo, setShowPromo] = useState(false);
   return (
     <div className="p-6 space-y-6">
       {/* Event details */}
@@ -179,43 +181,59 @@ export default function CreateEventPage() {
           <h2 className="text-lg font-semibold text-blue-600">
             Discounts & Promo Codes
           </h2>
-          <div className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 ">
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Promo code</label>
-              <input
-                className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="e.g EARLYBIRD"
-              />
+
+          {showPromo && (
+            <>
+            <div className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 ">
+              <div className="flex flex-col">
+                <label className="text-sm font-medium">Promo code</label>
+                <input
+                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  placeholder="e.g EARLYBIRD"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium">Discount Type</label>
+                <input
+                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  placeholder="Select Types"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium">Amount</label>
+                <input
+                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  placeholder="500"
+                  type="number"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-sm font-medium">Quantity</label>
+                <input
+                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  placeholder="500"
+                  type="number"
+                />
+              </div>
+              <Trash2 
+              onClick={() => setShowPromo(false)}
+              className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 " />
             </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Discount Type</label>
-              <input
-                className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="Select Types"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Amount</label>
-              <input
-                className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="500"
-                type="number"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium">Quantity</label>
-              <input
-                className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="500"
-                type="number"
-              />
-            </div>
-               <Trash2 className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 "/>
-           
-          </div>
-          <button className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50">
-            <Plus className="w-4 h-4" /> Add promo code
-          </button>
+              <button
+              className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4" /> Add promo code
+            </button>
+            </>
+          )}
+          {!showPromo && (
+            <button
+              onClick={() => setShowPromo(true)}
+              className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4" /> Add promo code
+            </button>
+          )}
         </div>
       </div>
 
