@@ -8,8 +8,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <Header />
       {/* Main Auth Content */}
       <main className="flex-1 flex items-center justify-center">{children}</main>
-      {/* Divider */}
-      <div className="w-full border-t border-gray-300 dark:border-gray-700" />
       {/* Auth Footer */}
       <Footer />
     </div>

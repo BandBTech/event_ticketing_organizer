@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
+
+
 const events = [
   {
     id: 1,
@@ -73,7 +75,6 @@ const events = [
 
 export default function Events() {
   const [search, setSearch] = useState("");
-
   return (
     <div className="flex-1 px-6 py-4">
       {/* Page Header */}
@@ -159,7 +160,8 @@ export default function Events() {
               {/* Actions */}
               <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
               <div className="flex justify-between items-center mt-3">
-                <button className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg ">
+                <button
+                 className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg ">
                   View Detail <ArrowRight className="w-4 h-4" />
                 </button>
                 <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg ">

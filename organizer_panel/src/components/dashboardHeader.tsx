@@ -8,7 +8,7 @@ import React from "react";
 const pageHeaders: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/pages/events", title: "Events" },
   { prefix: "/dashboard/pages/createevents", title: "Create new event" },
-  { prefix: "/dashboard", title: "Good Evening John Doe!" }, 
+ { prefix: "/dashboard/pages/eventdetails", title: "Event details" }, 
 ];
 
 export default function DashboardHeader() {
@@ -27,6 +27,7 @@ export default function DashboardHeader() {
   const isDasboard = pathname === "/dashboard";
   const isEvents = pathname.startsWith("/dashboard/pages/events");
   const isCreateEvent = pathname ==="/dashboard/pages/createevents";
+  const isEventDetails = pathname === "/dashboard/pages/eventdetails";
 
   if (isDasboard || isEvents) {
     return (
@@ -49,7 +50,7 @@ export default function DashboardHeader() {
 </>
     );
   }
-  if (isCreateEvent) {
+  if (isCreateEvent || isEventDetails) {
     return (
       <>
         <header className="flex items-center justify-between">

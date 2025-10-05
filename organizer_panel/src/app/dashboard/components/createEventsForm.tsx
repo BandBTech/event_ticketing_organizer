@@ -217,7 +217,7 @@ export default function CreateEventPage() {
               </div>
               <Trash2 
               onClick={() => setShowPromo(false)}
-              className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 " />
+              className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 hover:bg-red-200 " />
             </div>
               <button
               className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
@@ -239,7 +239,7 @@ export default function CreateEventPage() {
 
       {/* Action buttons */}
       <div className="flex justify-end gap-3">
-        <button className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">
+        <button className="px-4 py-2 rounded-lg border text-red-500 border-gray-300 hover:bg-red-200">
           Cancel
         </button>
         <button className="px-4 py-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
