@@ -25,10 +25,10 @@ export default function EventDetailsPage() {
                 <CircleDot className="w-3 h-3" />
                 ON SALE
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 dark:text-white">
                 <Calendar size={14} /> 2025-08-12 09:00 AM
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 dark:text-white">
                 <MapPin size={14} /> Kathmandu, Nepal
               </div>
             </div>
@@ -61,13 +61,15 @@ export default function EventDetailsPage() {
             </div>
             {/* Description */}
             <div className="rounded-xl bg-white p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold">Event description</h3>
+              <h3 className="text-lg font-semibold dark:text-black ">
+                Event description
+              </h3>
               <p className="text-gray-600">
                 A massive celebration of music featuring local and international
                 artists.
               </p>
               <div className="gap-2 flex-wrap">
-                <h3 className="text-lg font-semibold">Tags</h3>
+                <h3 className="text-lg font-semibold dark:text-black">Tags</h3>
 
                 {["Music", "Concert", "Festival"].map((tag) => (
                   <span
@@ -79,25 +81,25 @@ export default function EventDetailsPage() {
                 ))}
               </div>
               {/* Details */}
-              <div className=" grid grid-cols-2 gap-4">
+              <div className=" grid grid-cols-2 gap-4 dark:text-black">
                 <div>
-                  <h3 className="font-semibold ">Venue</h3>
+                  <h3 className="font-semibold">Venue</h3>
                   <p className="font-medium text-gray-500">
                     Dasharath Rangashala
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Location</h3>
+                  <h3 className="font-semibold ">Location</h3>
                   <p className="font-medium text-gray-500">Kathmandu, Nepal</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Event Starts On</h3>
+                  <h3 className="font-semibold ">Event Starts On</h3>
                   <p className="font-medium text-gray-500">
                     25-Sep-2025 9:00 AM
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Event Ends On</h3>
+                  <h3 className="font-semibold ">Event Ends On</h3>
                   <p className="font-medium text-gray-500">
                     25-Sep-2025 11:00 PM
                   </p>
@@ -119,35 +121,78 @@ export default function EventDetailsPage() {
           </div>
 
           {/* Right - Ticket Sales */}
-          <div className="space-y-6">
+          <div className="space-y-6 dark:text-black">
             {/* Ticket Tiers */}
             <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold">Ticket Tiers/Sales</h3>
               {[
-                { name: "General", price: 2000, sold: 800, total: 2000 },
-                { name: "Premium", price: 3500, sold: 350, total: 1500 },
-                { name: "VIP", price: 5000, sold: 800, total: 1000 },
-                { name: "VVIP", price: 15000, sold: 200, total: 500 },
+                {
+                  name: "General",
+                  price: 2000,
+                  sold: 800,
+                  total: 2000,
+                  labelClass: "text-gray-700",
+                  barClass: "bg-gray-500",
+                  cardClass: "bg-gray-50",
+                },
+                {
+                  name: "Premium",
+                  price: 3500,
+                  sold: 350,
+                  total: 1500,
+                  labelClass: "text-amber-700",
+                  barClass: "bg-amber-500",
+                  cardClass: "bg-amber-50",
+                },
+                {
+                  name: "VIP",
+                  price: 5000,
+                  sold: 800,
+                  total: 1000,
+                  labelClass: "text-orange-700",
+                  barClass: "bg-orange-500",
+                  cardClass: "bg-orange-50",
+                },
+                {
+                  name: "VVIP",
+                  price: 15000,
+                  sold: 200,
+                  total: 500,
+                  labelClass: "text-purple-700",
+                  barClass: "bg-purple-500",
+                  cardClass: "bg-purple-50",
+                },
               ].map((tier) => (
-                <div key={tier.name} className="space-y-1 flex justify-between">
-                    <p className="font-medium">{tier.name}</p>
-                       <p className="text-gray-600"></p>
+                <div
+                  key={tier.name}
+                  className={`space-y-2 p-3 rounded-lg shadow-sm ${tier.cardClass}`}
+                >
+                  <div className="flex justify-between text-sm">
+                    <p className={`font-semibold ${tier.labelClass}`}>
+                      {tier.name}
+                    </p>
+                    <p className="text-gray-600"></p>
                     NPR {tier.price}/ticket <br />
-                <div className="flex justify-between text-sm">
-               
-                    <span className="text-sm">
-                      {tier.sold}/{tier.total} sold
-                    </span>
-               
                   </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`${tier.barClass} h-2 rounded-full`}
+                      style={{
+                        width: `${(tier.sold / tier.total) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="text-sm">
+                    {tier.sold}/{tier.total} sold
+                  </span>
                 </div>
               ))}
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-2 border-t-1 p-2">
                 <div>
                   <p className="font-semibold">Total Sales</p>
                   <p className="font-semibold">2150/5000</p>
                 </div>
-                <div className="">
+                <div className="justify-items-end">
                   <p className="font-semibold">Total Revenue</p>
                   <p className="font-semibold">NPR 9,825,000</p>
                 </div>
