@@ -1,8 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, MapPin, Search, Filter, ArrowRight, PencilLine, ArrowLeft } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Search,
+  Filter,
+  ArrowRight,
+  PencilLine,
+  ArrowLeft,
+  CircleDot,
+} from "lucide-react";
 import Image from "next/image";
+
+
 
 const events = [
   {
@@ -19,11 +30,11 @@ const events = [
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
-   {
+  {
     id: 3,
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
@@ -32,16 +43,16 @@ const events = [
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
-   {
+  {
     id: 4,
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
-   {
+  {
     id: 5,
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
@@ -50,12 +61,12 @@ const events = [
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
-   {
+  {
     id: 6,
     title: "Kathmandu Music Festival 2025",
     date: "2025-08-12 09:00 AM",
     location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
+    image: "/nep.jpg",
     status: "SALE ON HOLD",
     tags: ["Music", "Concert", "Festival"],
   },
@@ -64,12 +75,10 @@ const events = [
 
 export default function Events() {
   const [search, setSearch] = useState("");
-
   return (
     <div className="flex-1 px-6 py-4">
       {/* Page Header */}
-      <h2 className="text-2xl font-semibold mb-4">Events</h2>
-
+      {/* <h2 className="text-2xl font-semibold mb-4">Events</h2> */}
       {/* Search + Filter */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center w-full max-w-md relative">
@@ -104,13 +113,18 @@ export default function Events() {
                 className="w-full h-full object-cover"
               />
               <span
-                className={`absolute top-2 left-2 text-xs font-semibold px-3 py-1 rounded-full text-white ${
+                className={`flex items-center gap-1 absolute top-2 left-2 text-xs font-semibold px-3 py-1 rounded-full text-white ${
                   event.status === "ON SALE"
                     ? "bg-gradient-to-r from-green-500 to-emerald-400"
                     : "bg-gradient-to-r from-yellow-500 to-amber-400"
                 }`}
               >
-                {event.status}
+               
+                  {event.status === "ON SALE" && (
+                    <CircleDot className="w-3 h-3" />
+                  )}
+                  {event.status}
+            
               </span>
             </div>
 
@@ -144,12 +158,13 @@ export default function Events() {
               </div>
 
               {/* Actions */}
-            <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
+              <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
               <div className="flex justify-between items-center mt-3">
-                <button className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm font-medium hover:bg-gray-100">
+                <button
+                 className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg ">
                   View Detail <ArrowRight className="w-4 h-4" />
                 </button>
-                <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100">
+                <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg ">
                   <PencilLine className="w-4 h-4" />
                 </button>
               </div>
@@ -161,7 +176,7 @@ export default function Events() {
       {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-8">
         <button className="flex items-center px-3 py-1 border border-gray-300 rounded-full hover:bg-gray-50">
-        <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" />
           Previous
         </button>
         <button className="px-3 py-1 rounded-full border-gray-300 bg-gradient-to-r from-blue-600 to-indigo-500 text-white">
