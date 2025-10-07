@@ -89,7 +89,7 @@ export default function CreateEventPage() {
               </label>
               <input
                 className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                placeholder="Venue name"
+                placeholder="e.g 5000"
               />
             </div>{" "}
             <div className="flex flex-col">
@@ -184,46 +184,45 @@ export default function CreateEventPage() {
 
           {showPromo && (
             <>
-            <div className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 ">
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Promo code</label>
-                <input
-                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="e.g EARLYBIRD"
+              <div className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 ">
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium">Promo code</label>
+                  <input
+                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="e.g EARLYBIRD"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium">Discount Type</label>
+                  <input
+                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="Select Types"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium">Amount</label>
+                  <input
+                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="500"
+                    type="number"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium">Quantity</label>
+                  <input
+                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="500"
+                    type="number"
+                  />
+                </div>
+                <Trash2
+                  onClick={() => setShowPromo(false)}
+                  className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 hover:bg-red-200 "
                 />
               </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Discount Type</label>
-                <input
-                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="Select Types"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Amount</label>
-                <input
-                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="500"
-                  type="number"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Quantity</label>
-                <input
-                  className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  placeholder="500"
-                  type="number"
-                />
-              </div>
-              <Trash2 
-              onClick={() => setShowPromo(false)}
-              className="absolute right-1/20 transform -translate-y-1/2 border rounded text-red-400 w-5 h-5 hover:bg-red-200 " />
-            </div>
-              <button
-              className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
-            >
-              <Plus className="w-4 h-4" /> Add promo code
-            </button>
+              <button className=" flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50">
+                <Plus className="w-4 h-4" /> Add promo code
+              </button>
             </>
           )}
           {!showPromo && (
@@ -238,17 +237,21 @@ export default function CreateEventPage() {
       </div>
 
       {/* Action buttons */}
-      <div className="flex justify-end gap-3">
-        <button className="px-4 py-2 rounded-lg border text-red-500 border-gray-300 hover:bg-red-200">
-          Cancel
-        </button>
-        <button className="px-4 py-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
-          Save as draft
-        </button>
-        <button className="flex items-center px-4 py-2 gap-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
-          <Plus className="w-5 h-5" />
-          Create Event
-        </button>
+      <div className="flex justify-between items-center gap-3">
+        <div>
+          <button className="px-4 py-2 rounded-lg border hover:bg-gray-500 border-gray-300 ">
+            Cancel
+          </button>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-4 py-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
+            Save as draft
+          </button>
+          <button className="flex items-center px-4 py-2 gap-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
+            <Plus className="w-5 h-5" />
+            Create Event
+          </button>
+        </div>
       </div>
     </div>
   );
