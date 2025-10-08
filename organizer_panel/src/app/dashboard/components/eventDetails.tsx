@@ -9,8 +9,23 @@ import {
   PencilLine,
   CircleDot,
 } from "lucide-react";
+import Image from "next/image";
 
-export default function EventDetailsPage() {
+type EventType = {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  location: string;
+  status: string;
+  tickets: number;
+  description: string;
+  image: string;
+  tags: string[];
+  venue: string;
+};
+
+export default function EventDetailsPage({event}:{event: EventType}) {
   return (
     <>
       <div className="p-6 space-y-6">
@@ -18,23 +33,23 @@ export default function EventDetailsPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold">
-              Kathmandu Music Festival 2025
+              {event.name}
             </h2>
             <div className="flex items-center gap-3 text-sm text-gray-600">
               <span className="bg-green-500 flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium">
                 <CircleDot className="w-3 h-3" />
-                ON SALE
+                {event.status}
               </span>
               <div className="flex items-center gap-1 dark:text-white">
-                <Calendar size={14} /> 2025-08-12 09:00 AM
+                <Calendar size={14} /> {event.date} {event.time}
               </div>
               <div className="flex items-center gap-1 dark:text-white">
-                <MapPin size={14} /> Kathmandu, Nepal
+                <MapPin size={14} />{event.location}
               </div>
             </div>
           </div>
 
-          <div className="flex gap-3 mt-4 md:mt-0">
+          <div className="flex gap-3 ">
             <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
               <PauseCircle size={16} /> Pause Sales
             </button>
@@ -52,11 +67,12 @@ export default function EventDetailsPage() {
           {/* Left - Event Info */}
           {/* Banner */}
           <div className="md:col-span-2 space-y-6">
-            <div className="rounded-xl overflow-hidden">
-              <img
-                src="/kat.jpg"
+            <div className="rounded-xl overflow-hidden relative h-1/2">
+              <Image
+                src={event.image}
                 alt="Event Banner"
-                className="w-full h-82 object-cover"
+                fill={true}
+                className="w-full h-full object-cover"
               />
             </div>
             {/* Description */}
@@ -65,16 +81,14 @@ export default function EventDetailsPage() {
                 Event description
               </h3>
               <p className="text-gray-600">
-                A massive celebration of music featuring local and international
-                artists.
+              {event.description}
               </p>
-              <div className="gap-2 flex-wrap">
-                <h3 className="text-lg font-semibold dark:text-black">Tags</h3>
-
-                {["Music", "Concert", "Festival"].map((tag) => (
+              <div className="flex flex-wrap gap-2 ">
+                <h3 className="w-full text-lg font-semibold dark:text-black mb-2">Tags</h3>
+                {event.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm"
+                    className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
                   >
                     {tag}
                   </span>
@@ -85,12 +99,12 @@ export default function EventDetailsPage() {
                 <div>
                   <h3 className="font-semibold">Venue</h3>
                   <p className="font-medium text-gray-500">
-                    Dasharath Rangashala
+                    {event.venue}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Location</h3>
-                  <p className="font-medium text-gray-500">Kathmandu, Nepal</p>
+                  <p className="font-medium text-gray-500">{event.location}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Event Starts On</h3>
@@ -101,7 +115,7 @@ export default function EventDetailsPage() {
                 <div>
                   <h3 className="font-semibold ">Event Ends On</h3>
                   <p className="font-medium text-gray-500">
-                    25-Sep-2025 11:00 PM
+                    {event.date} {event.time}
                   </p>
                 </div>
                 <div>

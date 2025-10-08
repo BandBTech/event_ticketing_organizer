@@ -35,10 +35,11 @@ export default function Sidebar({
         showSidebar ? "w-56" : "w-auto"
       } overflow-hidden min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col`}
     >
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center px-4 py-6">
         {showSidebar && (
-          <div className="flex gap-1 items-center p-6 text-blue-600 font-bold text-xl">
-            <Ticket /> E-Ticket
+          <div className="flex gap-2 items-center text-blue-600 font-bold text-xl">
+            <Ticket className="w-6 h-6" />
+            {showSidebar && <span> E-Ticket</span>}
           </div>
         )}
         <button

@@ -12,74 +12,15 @@ import {
   CircleDot,
 } from "lucide-react";
 import Image from "next/image";
+import { events } from "@/app/data/events";
+import Link from "next/link";
 
-
-
-const events = [
-  {
-    id: 1,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
-    status: "ON SALE",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  {
-    id: 2,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/nep.jpg",
-    status: "SALE ON HOLD",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  {
-    id: 3,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
-    status: "SALE ON HOLD",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  {
-    id: 4,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/nep.jpg",
-    status: "SALE ON HOLD",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  {
-    id: 5,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/kat.jpg",
-    status: "SALE ON HOLD",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  {
-    id: 6,
-    title: "Kathmandu Music Festival 2025",
-    date: "2025-08-12 09:00 AM",
-    location: "Kathmandu, Nepal",
-    image: "/nep.jpg",
-    status: "SALE ON HOLD",
-    tags: ["Music", "Concert", "Festival"],
-  },
-  // Add more events...
-];
 
 export default function Events() {
   const [search, setSearch] = useState("");
   return (
     <div className="flex-1 px-6 py-4">
-      {/* Page Header */}
-      {/* <h2 className="text-2xl font-semibold mb-4">Events</h2> */}
-      {/* Search + Filter */}
+  
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center w-full max-w-md relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -108,7 +49,7 @@ export default function Events() {
             <div className="relative h-40">
               <Image
                 src={event.image}
-                alt={event.title}
+                alt={event.name}
                 fill={true}
                 className="w-full h-full object-cover"
               />
@@ -119,12 +60,10 @@ export default function Events() {
                     : "bg-gradient-to-r from-yellow-500 to-amber-400"
                 }`}
               >
-               
-                  {event.status === "ON SALE" && (
-                    <CircleDot className="w-3 h-3" />
-                  )}
-                  {event.status}
-            
+                {event.status === "ON SALE" && (
+                  <CircleDot className="w-3 h-3" />
+                )}
+                {event.status}
               </span>
             </div>
 
@@ -144,7 +83,7 @@ export default function Events() {
 
               {/* Title */}
               <h3 className="text-lg font-semibold text-gray-900">
-                {event.title}
+                {event.name}
               </h3>
 
               {/* Date & Location */}
@@ -160,10 +99,13 @@ export default function Events() {
               {/* Actions */}
               <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
               <div className="flex justify-between items-center mt-3">
-                <button
-                 className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg ">
-                  View Detail <ArrowRight className="w-4 h-4" />
-                </button>
+             <Link
+                    href={`/dashboard/pages/eventdetails/${event.id}`}
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
+                  >
+                    View Detail <ArrowRight className="w-4 h-4" />
+                  </Link>
+            
                 <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg ">
                   <PencilLine className="w-4 h-4" />
                 </button>
