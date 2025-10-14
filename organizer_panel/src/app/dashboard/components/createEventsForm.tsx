@@ -1,7 +1,8 @@
 "use client";
 
-import { Image as ImageIcon, MapPinned, Plus, Trash2 } from "lucide-react";
+import { Image as ImageIcon,  Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
+import {  MapPinAreaIcon } from "@phosphor-icons/react";
 
 export default function CreateEventPage() {
   const [showPromo, setShowPromo] = useState(false);
@@ -16,27 +17,27 @@ export default function CreateEventPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Banner Image</label>
-              <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-6 text-center text-gray-500 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-4 text-center text-gray-500 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <ImageIcon />
-                <br />
+          
                 Upload banner image or drag & drop
                 <span className="text-xs">
                   PNG/JPG file of 1820x1200px size up to 5MB
                 </span>
-                <br />
+               <br/>
                 <button className="border rounded-lg px-3 py-1 text-sm">
                   Browse File
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="flex flex-col justify-between gap-4">
+            
                 <div>
-                  <label className="text-sm font-medium">Event title</label>
+                  <label className="text-sm  font-medium">Event title</label>
                   <input
                     type="text"
                     placeholder="Enter title"
-                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 mt-3  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
 
@@ -45,21 +46,22 @@ export default function CreateEventPage() {
                   <input
                     type="text"
                     placeholder="e.g. Music, Concert, Festival"
-                    className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 mt-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
               </div>
-              <div className="mt-3">
+           
+            </div>
+               <div className="mt-3">
                 <label className="text-sm font-medium">Event description</label>
                 <textarea
                   placeholder="Tell what makes your event special"
                   className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
               </div>
-            </div>
           </div>
         </div>
-      </div>
+ 
 
       {/* Venue & Schedule */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
@@ -81,7 +83,7 @@ export default function CreateEventPage() {
                 className="w-full px-3 py-2 mt-1  border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="Enter venue location"
               />
-              <MapPinned className="absolute right-3 top-1/2 text-gray-400 w-5 h-5" />
+              <MapPinAreaIcon className="absolute right-3 top-1/2 text-gray-400 w-5 h-5" />
             </div>
             <div className="flex flex-col">
               <label className="text-sm font-medium">

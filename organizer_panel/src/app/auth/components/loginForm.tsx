@@ -3,15 +3,34 @@
 import { useState } from "react";
 import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+   const [error, setError] = useState("");
+  const router = useRouter();
+
+  const users = [
+    {
+      email: "organizer@events.com",
+      password: "password123",
+      role: "organizer"
+    }
+  ]
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password }); // ✅ Replace with API call
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
+    if(user && user.role ==="organizer"){
+      setError("");
+      router.push("/dashboard");
+    }else{
+      setError("Invalid email or password");
+    }
   };
 
   return (

@@ -76,7 +76,7 @@ export default function EventDetailsPage({event}:{event: EventType}) {
               />
             </div>
             {/* Description */}
-            <div className="rounded-xl bg-white p-6 shadow-sm space-y-4">
+            <div className="rounded-xl  p-6 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold dark:text-black ">
                 Event description
               </h3>
