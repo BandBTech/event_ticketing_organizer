@@ -41,7 +41,7 @@ export default function Sidebar({
           {showSidebar ? (
             <CaretDoubleLeftIcon className="border rounded-lg shadow-sm size-5"/>
           ) : (
-            <CaretDoubleRightIcon className="flex border rounded-lg  shadow-sm" />
+            <CaretDoubleRightIcon className="flex border rounded-lg size-5 shadow-sm" />
           )}
         </button>
       </div>

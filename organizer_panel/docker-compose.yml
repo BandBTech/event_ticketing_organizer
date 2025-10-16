@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  organizer_panel:
+
+    build: .
+
+    container_name: organizer_panel-app
+    ports:
+      - "4005:3000"
+    restart: unless-stopped
+
+    environment:
+      - NODE_ENV=production
+
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge
