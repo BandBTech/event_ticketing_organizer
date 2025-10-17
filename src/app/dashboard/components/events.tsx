@@ -39,11 +39,11 @@ export default function Events() {
       </div>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {events.map((event) => (
           <div
             key={event.id}
-            className="bg-white rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden"
+            className="rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden dark:bg-gray-500 "
           >
             {/* Image */}
             <div className="relative h-40">
@@ -74,7 +74,7 @@ export default function Events() {
                 {event.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600"
+                    className="text-xs bg-gray-100 px-2 py-1 rounded-lg dark:bg-gray-600 "
                   >
                     {tag}
                   </span>
@@ -87,26 +87,26 @@ export default function Events() {
               </h3>
 
               {/* Date & Location */}
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-900">
                 <Calendar className="w-4 h-4" />
                 {event.date}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-900">
                 <MapPin className="w-4 h-4" />
                 {event.location}
               </div>
 
               {/* Actions */}
-              <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
+              <div className="my-4 border-t border-gray-300 dark:border-gray-900" />
               <div className="flex justify-between items-center mt-3">
              <Link
                     href={`/dashboard/pages/eventdetails/${event.id}`}
-                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
+                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-900 dark:text-gray-900 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg dark:hover:bg-gray-400"
                   >
                     View Detail <ArrowRight className="w-4 h-4" />
                   </Link>
             
-                <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg ">
+                <button className="p-2 rounded-lg border border-gray-300 dark:border-gray-900 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-400 hover:shadow-lg ">
                   <PencilLine className="w-4 h-4" />
                 </button>
               </div>

@@ -28,7 +28,7 @@ export default function DashboardHeader() {
     );
 
   const headerText = matched?.title ?? "Dashboard";
-  const showCreateButton = headerText === "Events";
+  const showCreateButton = headerText === "Events" || headerText === "Dashboard";
 
   return (
     <>

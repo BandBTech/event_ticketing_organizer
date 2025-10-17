@@ -2,22 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Calendar,
-  ChartLine,
-  Settings,
-  ChevronRight,
-  Ticket,
-  ChevronLeft,
-} from "lucide-react";
 import Image from "next/image";
+import { CalendarStarIcon, CaretDoubleLeftIcon, CaretDoubleRightIcon, CaretRightIcon, ChartLineIcon, GearIcon, SpeedometerIcon, TicketIcon } from "@phosphor-icons/react";
 
 const navLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/pages/events", label: "Events", icon: Calendar },
-  { href: "/dashboard/reports", label: "Reports", icon: ChartLine },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", label: "Dashboard", icon: SpeedometerIcon },
+  { href: "/dashboard/pages/events", label: "Events", icon: CalendarStarIcon },
+  { href: "/dashboard/reports", label: "Reports", icon: ChartLineIcon },
+  { href: "/dashboard/settings", label: "Settings", icon: GearIcon },
 ];
 
 export default function Sidebar({
@@ -38,18 +30,18 @@ export default function Sidebar({
       <div className="flex justify-between items-center px-4 py-6">
         {showSidebar && (
           <div className="flex gap-2 items-center text-blue-600 font-bold text-xl">
-            <Ticket className="w-6 h-6" />
+            <TicketIcon size={25}/>
             {showSidebar && <span> E-Ticket</span>}
           </div>
         )}
         <button
           onClick={() => setShowSidebar(!showSidebar)}
-          className="m-2 text-gray-700 hover:text-gray-700 dark:text-gray-300"
+          className=" text-gray-700 hover:text-gray-700  dark:text-gray-300"
         >
           {showSidebar ? (
-            <ChevronLeft className="w-5 h-5 border rounded-lg  shadow-sm" />
+            <CaretDoubleLeftIcon className="border rounded-lg shadow-sm size-5"/>
           ) : (
-            <ChevronRight className="flex w-5 h-5 border rounded-lg  shadow-sm" />
+            <CaretDoubleRightIcon className="flex border rounded-lg size-5 shadow-sm" />
           )}
         </button>
       </div>
@@ -72,7 +64,7 @@ export default function Sidebar({
                     : "border-l-2 border-transparent hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-800"
                 }`}
               >
-                <Icon className="text-blue-600" />
+                <Icon className="text-blue-600" size={25} />
                 {showSidebar && (
                   <span className="text-gray-700 dark:text-gray-300">
                     {label}
@@ -98,7 +90,7 @@ export default function Sidebar({
             {showSidebar && (
               <>
             <span className="text-sm font-medium">John Doe</span>
-            <ChevronRight className="h-4 w-4 text-gray-500 dark:text-gray-300" />
+            <CaretRightIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
              </>)}
           </div>
         </div>
