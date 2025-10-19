@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,24 +12,54 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const users = [
-    {
-      email: "organizer@events.com",
-      password: "password123",
-      role: "organizer"
-    }
-  ]
+  // const users = [
+  //   {
+  //     email: "organizer@events.com",
+  //     password: "password123",
+  //     role: "organizer"
+  //   }
+  // ]
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const user = users.find(
+  //     (u) => u.email === email && u.password === password
+  //   );
+  //   if(user && user.role ==="organizer"){
+  //     setError("");
+  //     router.push("/dashboard");
+  //   }else{
+  //     setError("Invalid email or password");
+  //   }
+  // };
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (token) router.push("/dashboard");
+  }, [router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if(user && user.role ==="organizer"){
-      setError("");
+    setError("");
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || data.error || "Invalid email or password");
+        return;
+      }
+
+      localStorage.setItem("auth_token", data.token);
       router.push("/dashboard");
-    }else{
-      setError("Invalid email or password");
+    } catch (err) {
+      console.error(err);
+      setError("Server Error");
     }
   };
 
@@ -49,7 +79,10 @@ export default function Login() {
       <form className="space-y-4" onSubmit={handleSubmit}>
         {/* Email Field */}
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Email
           </label>
           <div className="relative">
@@ -68,7 +101,10 @@ export default function Login() {
 
         {/* Password Field */}
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Password
           </label>
           <div className="relative">
@@ -82,6 +118,7 @@ export default function Login() {
               required
               className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -101,7 +138,10 @@ export default function Login() {
             />
             <span>Remember Me</span>
           </label>
-          <Link href="/auth/pages/forgotpassword" className="text-sm text-blue-600 hover:underline">
+          <Link
+            href="/auth/pages/forgotpassword"
+            className="text-sm text-blue-600 hover:underline"
+          >
             Forgot Password?
           </Link>
         </div>
@@ -118,7 +158,10 @@ export default function Login() {
       {/* Footer Link */}
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link href="/auth/pages/signup" className="text-blue-600 hover:underline">
+        <Link
+          href="/auth/pages/signup"
+          className="text-blue-600 hover:underline"
+        >
           Sign up here.
         </Link>
       </p>

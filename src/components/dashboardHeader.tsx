@@ -1,5 +1,6 @@
 "use client";
 
+import { SignOutIcon } from "@phosphor-icons/react";
 import { ChevronDown, Globe, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -9,6 +10,7 @@ const pageHeaders: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/pages/createevents", title: "Create new event" },
   { prefix: "/dashboard/pages/eventdetails", title: "Event details" },
 ];
+
 
 export default function DashboardHeader() {
   const router = useRouter();
@@ -28,8 +30,12 @@ export default function DashboardHeader() {
     );
 
   const headerText = matched?.title ?? "Dashboard";
-  const showCreateButton = headerText === "Events" || headerText === "Dashboard";
-
+  const showCreateButton =
+    headerText === "Events" || headerText === "Dashboard";
+const handleLogout = () => {
+  localStorage.removeItem("auth_token");
+  router.push("/auth/pages/login");
+};
   return (
     <>
       <header className="flex items-center justify-between ">
@@ -45,7 +51,13 @@ export default function DashboardHeader() {
               Create New Event
             </button>
           )}
-
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md"
+          >
+            <SignOutIcon className="h-4 w-4" />
+            Logout
+          </button>
           <LanguageSelector />
         </div>
       </header>
