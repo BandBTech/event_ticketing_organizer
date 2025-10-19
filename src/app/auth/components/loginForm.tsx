@@ -42,7 +42,7 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("https://sandbox.timroticket.com/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

@@ -11,17 +11,21 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [showSidebar, setShowSidebar] = useState(true);
-const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const router = useRouter();
 
-    useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (!token) router.push("/auth/pages/login");
     else setIsAuthenticated(true);
   }, [router]);
 
-    if (isAuthenticated === null) {
-    return <div className="flex items-center justify-center min-h-screen">Checking authentication...</div>;
+  if (isAuthenticated === null) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Checking authentication...
+      </div>
+    );
   }
 
   return (
