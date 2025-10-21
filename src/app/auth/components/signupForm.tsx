@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Eye, Mail, KeyRound, EyeClosed, MoveRight } from "lucide-react";
 import Link from "next/link";
+import { UserIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
 
 type CountryOption = {
   code: string;
@@ -18,6 +20,8 @@ const countries: CountryOption[] = [
 
 export default function Signup() {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -26,21 +30,53 @@ export default function Signup() {
     countries[0]
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    console.log({
-      email,
-      password,
-      phone: `${selectedCountry.dialCode} ${phone}`,
-    }); // ✅ Replace with API call
+    try {
+      const res = await fetch(
+        "https://sandbox.timroticket.com/api/v1/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            phone: `${selectedCountry.dialCode}${phone}`,
+            first_name : firstName,
+            last_name: lastName,
+          }),
+        }
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || data.error || "Registration failed");
+        return;
+      }
+
+      setSuccess("Account created successfully! Please verify your email.");
+      
+      setTimeout(() => {
+        router.push(`/auth/pages/verifyotp?email=${encodeURIComponent(email)}`);
+      }, 1500);
+    } catch (err) {
+      console.error("Error registering:", err);
+      setError("Server error -please try again later.");
+    }
+
   };
 
   return (
-    
     <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
@@ -75,7 +111,49 @@ export default function Signup() {
             />
           </div>
         </div>
-        
+
+    {/* First Name Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="first_name"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            First Name
+          </label>
+          <div className="relative">
+            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              id="first_name"
+              type="text"
+              placeholder="Enter First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+        </div>
+            {/* Last Name Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="last_name"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Last Name
+          </label>
+          <div className="relative">
+            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              id="last_name"
+              type="text"
+              placeholder="Enter last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+        </div>
         {/* Phone Input */}
         <div>
           <label
@@ -169,7 +247,8 @@ export default function Signup() {
             </button>
           </div>
         </div>
-
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        {success && <p className="text-sm text-green-500">{success}</p>}
         {/* Submit Button */}
         <button
           type="submit"
@@ -183,21 +262,28 @@ export default function Signup() {
       {/* Footer Link */}
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{" "}
-        <Link href="/auth/pages/login" className="text-blue-600 hover:underline">
-         Sign in as Organizer.
+        <Link
+          href="/auth/pages/login"
+          className="text-blue-600 hover:underline"
+        >
+          Sign in as Organizer.
         </Link>
       </p>
 
       <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
-      
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-        By continuing, you consent to the fact that you have read and understood our {" "}
-        <Link href="/termsandconditions" className="text-blue-600 hover:underline">
-         terms and conditions {" "}
+
+      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+        By continuing, you consent to the fact that you have read and understood
+        our{" "}
+        <Link
+          href="/termsandconditions"
+          className="text-blue-600 hover:underline"
+        >
+          terms and conditions{" "}
         </Link>
-        and {" "}
+        and{" "}
         <Link href="/policy" className="text-blue-600 hover:underline">
-        privacy policy {" "}
+          privacy policy{" "}
         </Link>
       </p>
     </div>

@@ -12,26 +12,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // const users = [
-  //   {
-  //     email: "organizer@events.com",
-  //     password: "password123",
-  //     role: "organizer"
-  //   }
-  // ]
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const user = users.find(
-  //     (u) => u.email === email && u.password === password
-  //   );
-  //   if(user && user.role ==="organizer"){
-  //     setError("");
-  //     router.push("/dashboard");
-  //   }else{
-  //     setError("Invalid email or password");
-  //   }
-  // };
+  
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) router.push("/dashboard");
@@ -46,6 +27,7 @@ export default function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+      //  credentials: "include",
       });
 
       const data = await res.json();

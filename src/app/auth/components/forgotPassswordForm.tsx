@@ -3,13 +3,46 @@
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email }); // ✅ Replace with API call
+    setError("");
+    setSuccess("");
+        try {
+      const res = await fetch(
+        "https://sandbox.timroticket.com/api/v1/auth/reset-password-request",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || data.error || "Something went wrong");
+      ;
+        return;
+      }
+
+      setSuccess("OTP sent to your email for password reset.");
+      localStorage.setItem("reset_email", email);
+      setTimeout(() => {
+        router.push(`/auth/pages/verifyotp?email=${encodeURIComponent(email)}&type=reset`);
+      }, 1500);
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Server error. Please try again later.");
+    } 
+  
   };
 
   return (
@@ -44,7 +77,8 @@ export default function ForgotPassword() {
             />
           </div>
         </div>
-
+      {error && <p className="text-sm text-red-500">{error}</p>}
+        {success && <p className="text-sm text-green-500">{success}</p>}
         {/* Submit Button */}
         <button
           type="submit"
