@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, KeyRound, EyeClosed} from "lucide-react";
 
 import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const [password, setPassword] = useState("");
@@ -13,11 +13,16 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { isLoading, startLoading, stopLoading } = useLoading();
+    const [email, setEmail] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
+ 
 
-  const email = searchParams.get("email");
-  const resetToken = searchParams.get("token");
+   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setEmail(searchParams.get("email") || "");
+    setResetToken(searchParams.get("token") || "");
+  }, []);
 
   const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault();

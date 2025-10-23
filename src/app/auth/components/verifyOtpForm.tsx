@@ -15,11 +15,12 @@ export default function VerifyOtpContent() {
   const [isClient, setIsClient] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
-  const searchParams = useSearchParams();
+
 
   // Initialize email and type 
   useEffect(() => {
     setIsClient(true);
+  const searchParams = new URLSearchParams(window.location.search);
     const urlEmail = searchParams.get("email");
     const urlType = searchParams.get("type");
     
@@ -28,7 +29,7 @@ export default function VerifyOtpContent() {
     
     setEmail(urlEmail || storedEmail || "");
     setType(urlType || "signup");
-  }, [searchParams]);
+  }, []);
 
   const handleChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
