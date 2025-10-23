@@ -23,25 +23,28 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`transition-all duration-300 ${
-        showSidebar ? "w-56" : "w-auto"
-      } overflow-hidden min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col`}
+      className={`relative transition-all duration-300 ${
+        showSidebar ? "w-56" : "w-20"
+      }  min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col`}
     >
       <div className="flex justify-between items-center px-4 py-6">
-        {showSidebar && (
+        {showSidebar ? (
           <div className="flex gap-2 items-center text-blue-600 font-bold text-xl">
             <TicketIcon size={25}/>
-            {showSidebar && <span> E-Ticket</span>}
+             <span> Timro-Ticket</span>
+          </div>
+        ) : (
+             <div className="flex justify-center w-full">
+            <TicketIcon size={25} className="text-blue-600" />
           </div>
         )}
         <button
           onClick={() => setShowSidebar(!showSidebar)}
-          className=" text-gray-700 hover:text-gray-700  dark:text-gray-300"
-        >
+          className="absolute -right-3 top-6 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm p-1.5 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 hover:shadow-md transition-all">
           {showSidebar ? (
-            <CaretDoubleLeftIcon className="border rounded-lg shadow-sm size-5"/>
+            <CaretDoubleLeftIcon className="size-4"/>
           ) : (
-            <CaretDoubleRightIcon className="flex border rounded-lg size-5 shadow-sm" />
+            <CaretDoubleRightIcon className=" size-4" />
           )}
         </button>
       </div>

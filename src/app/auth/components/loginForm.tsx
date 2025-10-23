@@ -2,17 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    isLoading: isLoggingIn,
+    startLoading: startLogin,
+    stopLoading: stopLogin,
+  } = useLoading();
+  const {
+    isLoading: isSigningUp,
+    startLoading: startSignup,
+    stopLoading: stopSignup,
+  } = useLoading();
   const [error, setError] = useState("");
   const router = useRouter();
 
-  
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) router.push("/dashboard");
@@ -21,14 +30,18 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    startLogin();
 
     try {
-      const res = await fetch("https://sandbox.timroticket.com/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      //  credentials: "include",
-      });
+      const res = await fetch(
+        "https://sandbox.timroticket.com/api/v1/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+          //  credentials: "include",
+        }
+      );
 
       const data = await res.json();
 
@@ -42,7 +55,12 @@ export default function Login() {
     } catch (err) {
       console.error(err);
       setError("Server Error");
+    } finally {
+      stopLogin();
     }
+  };
+  const handleSignupClick = () => {
+    startSignup();
   };
 
   return (
@@ -76,6 +94,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoggingIn}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
@@ -98,6 +117,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoggingIn}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -116,37 +136,43 @@ export default function Login() {
           <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
             <input
               type="checkbox"
+              disabled={isLoggingIn}
               className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
             />
-            <span>Remember Me</span>
+            <span className={isLoggingIn ? "opacity-50" : ""}>Remember Me</span>
           </label>
-          <Link
+          <LinkLoader
             href="/auth/pages/forgotpassword"
-            className="text-sm text-blue-600 hover:underline"
+            isLoading={isSigningUp}
+            onClick={handleSignupClick}
+            loadingText="Processing..."
           >
             Forgot Password?
-          </Link>
+          </LinkLoader>
         </div>
 
         {/* Submit Button */}
         <button
           type="submit"
+          disabled={isLoggingIn}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors"
         >
-          Login
+          {isLoggingIn ? <ButtonLoader loadingText="Logging in..." /> : "Login"}
         </button>
       </form>
 
       {/* Footer Link */}
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-center text-sm text-gray-600 dark:text-gray-400">
         Don&apos;t have an account?{" "}
-        <Link
+        <LinkLoader
           href="/auth/pages/signup"
-          className="text-blue-600 hover:underline"
+          isLoading={isSigningUp}
+          onClick={handleSignupClick}
+          loadingText="Processing..."
         >
           Sign up here.
-        </Link>
-      </p>
+        </LinkLoader>
+      </div>
     </div>
   );
 }

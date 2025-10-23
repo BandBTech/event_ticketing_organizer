@@ -7,7 +7,7 @@ export default function Header() {
       {/* Logo / Brand Name */}
       <div className=" flex gap-1 items-center text-xl font-bold text-blue-600 select-none">
         <Ticket className="w-6 h-6"/>
-        E-Ticket
+        Timro-Ticket
       </div>
 
       {/* Language Selector */}

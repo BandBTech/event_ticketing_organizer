@@ -11,7 +11,6 @@ const pageHeaders: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/pages/eventdetails", title: "Event details" },
 ];
 
-
 export default function DashboardHeader() {
   const router = useRouter();
   const rawPath = usePathname() ?? "/";
@@ -32,14 +31,14 @@ export default function DashboardHeader() {
   const headerText = matched?.title ?? "Dashboard";
   const showCreateButton =
     headerText === "Events" || headerText === "Dashboard";
-const handleLogout = () => {
-  localStorage.removeItem("auth_token");
-  router.push("/auth/pages/login");
-};
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    router.push("/auth/pages/login");
+  };
   return (
     <>
       <header className="flex items-center justify-between ">
-        <h2 className="text-lg px-4 font-semibold">{headerText}</h2>
+        <h2 className="text-lg px-6 font-semibold">{headerText}</h2>
 
         <div className="flex  items-center gap-4 p-4">
           {showCreateButton && (

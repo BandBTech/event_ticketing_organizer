@@ -1,8 +1,8 @@
-// components/verify-otp-content.tsx
+
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function VerifyOtpContent() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
@@ -10,12 +10,25 @@ export default function VerifyOtpContent() {
   const [success, setSuccess] = useState("");
   const [resending, setResending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [email, setEmail] = useState("");
+  const [type, setType] = useState("signup");
+  const [isClient, setIsClient] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const email = searchParams.get("email") || localStorage.getItem("reset_email");
-  const type = searchParams.get("type") || "signup";
+  // Initialize email and type 
+  useEffect(() => {
+    setIsClient(true);
+    const urlEmail = searchParams.get("email");
+    const urlType = searchParams.get("type");
+    
+    // Only access localStorage on client side
+    const storedEmail = localStorage.getItem("reset_email");
+    
+    setEmail(urlEmail || storedEmail || "");
+    setType(urlType || "signup");
+  }, [searchParams]);
 
   const handleChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
@@ -46,14 +59,25 @@ export default function VerifyOtpContent() {
       return;
     }
     
+    if (!email) {
+      setError("Email is required.");
+      return;
+    }
+    
     setSubmitting(true);
     try {
+      const payload ={
+        identifier: email.trim(),
+        otp_code: otpCode,
+        otp_type: type ==="reset" ? "password_reset" : "registration"
+      };
+
       const res = await fetch(
         "https://sandbox.timroticket.com/api/v1/auth/verify-otp",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp: otpCode }),
+          body: JSON.stringify(payload),
         }
       );
       const data = await res.json();
@@ -62,10 +86,15 @@ export default function VerifyOtpContent() {
         return;
       }
       setSuccess("OTP verified successfully!");
+      
+      if (localStorage.getItem("reset_email")) {
+        localStorage.removeItem("reset_email");
+      }
+      
       setTimeout(() => {
         if (type === "reset") {
           router.push(
-            `/auth/pages/resetpassword?email=${encodeURIComponent(email!)}`
+            `/auth/pages/resetpassword?email=${encodeURIComponent(email)}&token=${data.reset_token}`
           );
         } else {
           router.push("/auth/pages/login");
@@ -88,12 +117,16 @@ export default function VerifyOtpContent() {
     setSuccess("");
     setResending(true);
     try {
+      const payload = {
+        identifier: email.trim(),
+        otp_type: type === "reset" ? "password_reset" : "registration"
+      };
       const res = await fetch(
         "https://sandbox.timroticket.com/api/v1/auth/send-otp",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify( payload ),
         }
       );
       const data = await res.json();
@@ -107,6 +140,17 @@ export default function VerifyOtpContent() {
       setResending(false);
     }
   };
+
+  // Show loading state until client-side initialization is complete
+  if (!isClient) {
+    return (
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
