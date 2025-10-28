@@ -1,6 +1,6 @@
 "use client";
 
-import { SignOutIcon } from "@phosphor-icons/react";
+import { BellIcon, SignOutIcon } from "@phosphor-icons/react";
 import { ChevronDown, Globe, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -58,6 +58,9 @@ export default function DashboardHeader() {
             Logout
           </button>
           <LanguageSelector />
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-full shadow-md cursor-pointer">
+            <BellIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+          </div>
         </div>
       </header>
       <div className="w-full border-t border-gray-300 dark:border-gray-700" />

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { CalendarStarIcon, CaretDoubleLeftIcon, CaretDoubleRightIcon, CaretRightIcon, ChartLineIcon, GearIcon, SpeedometerIcon, TicketIcon } from "@phosphor-icons/react";
+import { CalendarStarIcon, CaretDoubleLeftIcon, CaretDoubleRightIcon, CaretRightIcon, ChartLineIcon, GearIcon, SpeedometerIcon, TicketIcon, UsersIcon } from "@phosphor-icons/react";
 
 const navLinks = [
   { href: "/dashboard", label: "Dashboard", icon: SpeedometerIcon },
   { href: "/dashboard/pages/events", label: "Events", icon: CalendarStarIcon },
   { href: "/dashboard/reports", label: "Reports", icon: ChartLineIcon },
+  { href: "/dashboard/users", label: "Users", icon: UsersIcon},
   { href: "/dashboard/settings", label: "Settings", icon: GearIcon },
 ];
 
