@@ -4,11 +4,13 @@ import { BellIcon, SignOutIcon } from "@phosphor-icons/react";
 import { ChevronDown, Globe, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import { useUser } from "@/app/contexts/UserContext";
 
 const pageHeaders: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/pages/events", title: "Events" },
   { prefix: "/dashboard/pages/createevents", title: "Create new event" },
   { prefix: "/dashboard/pages/eventdetails", title: "Event details" },
+   { prefix: "/dashboard/pages/users", title: "Users" },
 ];
 
 export default function DashboardHeader() {
@@ -16,6 +18,7 @@ export default function DashboardHeader() {
   const rawPath = usePathname() ?? "/";
   // Normalize trailing slash: "/dashboard/" -> "/dashboard"
   const pathname = rawPath.replace(/\/+$/, "") || "/";
+  const {openCreateUserModal} =useUser();
 
   // Pick the best match (longest prefix first)
   const matched = pageHeaders
@@ -29,8 +32,24 @@ export default function DashboardHeader() {
     );
 
   const headerText = matched?.title ?? "Dashboard";
+  const isUsersPage = headerText === "Users";
+  const isEventsPage = headerText === "Events" || headerText === "Dashboard";
+
   const showCreateButton =
-    headerText === "Events" || headerText === "Dashboard";
+    isUsersPage  || isEventsPage;
+  const createButtonLabel = isUsersPage ? "Create New User" : "Create New Event";
+ 
+  // const createButtonRoute = isUsersPage
+  //   ? "/dashboard/pages/createusers"
+  //   :"/dashboard/pages/createevents"
+  const handleCreateButton = () => {
+    if (isUsersPage) {
+      openCreateUserModal(); // Open modal for users
+    } else {
+      router.push("/dashboard/pages/createevents"); // Navigate for events
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
     router.push("/auth/pages/login");
@@ -43,12 +62,13 @@ export default function DashboardHeader() {
         <div className="flex  items-center gap-4 p-4">
           {showCreateButton && (
             <button
-              onClick={() => router.push("/dashboard/pages/createevents")}
+              onClick={handleCreateButton}
               className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
             >
               <Plus className="h-4 w-4" />
-              Create New Event
+             {createButtonLabel}
             </button>
+            
           )}
           <button
             onClick={handleLogout}

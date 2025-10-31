@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
 import DashboardHeader from "@/components/dashboardHeader";
 import { useRouter } from "next/navigation";
+import { UserProvider } from "@/app/contexts/UserContext";
 
 export default function DashboardLayout({
   children,
@@ -29,7 +30,9 @@ export default function DashboardLayout({
   }
 
   return (
+    <UserProvider>
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+     
       {/* Sidebar */}
       <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
 
@@ -39,9 +42,11 @@ export default function DashboardLayout({
           showSidebar ? "flex-1" : "w-full"
         }`}
       >
+        
         <DashboardHeader />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
+    </UserProvider>
   );
 }

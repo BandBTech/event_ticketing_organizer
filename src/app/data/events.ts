@@ -39,3 +39,54 @@ export const events = [
     venue:"Effile Tower"
   }
 ];
+
+export const users = [
+  {
+    id: "1",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"Manager",
+    contact:"+45 12345678",
+    status:"Active"
+  },
+   {
+    id: "1",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"Manager",
+    contact:"+45 12345678",
+    status:"Inactive"
+  },
+   {
+    id: "2",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"staff",
+    contact:"+45 12345678",
+    status:"Active"
+  },
+   {
+    id: "3",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"staff",
+    contact:"+45 12345678",
+    status:"active"
+  },
+   {
+    id: "4",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"staff",
+    contact:"+45 12345678",
+    status:"active"
+  },
+   {
+    id: "5",
+    name:" Chong Wei Jie",
+    email: "Chongwei@gmail.com",
+    role:"staff",
+    contact:"+45 12345678",
+    status:"inactive"
+  },
+];

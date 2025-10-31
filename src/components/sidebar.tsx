@@ -9,7 +9,7 @@ const navLinks = [
   { href: "/dashboard", label: "Dashboard", icon: SpeedometerIcon },
   { href: "/dashboard/pages/events", label: "Events", icon: CalendarStarIcon },
   { href: "/dashboard/reports", label: "Reports", icon: ChartLineIcon },
-  { href: "/dashboard/users", label: "Users", icon: UsersIcon},
+  { href: "/dashboard/pages/users", label: "Users", icon: UsersIcon},
   { href: "/dashboard/settings", label: "Settings", icon: GearIcon },
 ];
 
