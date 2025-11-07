@@ -12,9 +12,50 @@ import {
   CircleDot,
 } from "lucide-react";
 import Image from "next/image";
-import { events } from "@/app/data/events";
+import { events as eventsData } from "@/app/data/events";
 import Link from "next/link";
 
+export interface Ticket{
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  gst: number;
+  salesStart: string;
+  salesEnd: string;
+}
+export interface Event {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  venue: string;
+  venueAddress: string;
+  capacity: number;
+  timezone: string;
+  startDate: string;
+  endDate: string;
+  status: "ON SALE" | "UPCOMING" | "SOLD OUT" | string;
+  tickets: Ticket[];
+  tags: string[];
+  description: string;
+  image: string;
+}
+
+const events: Event[] = eventsData as Event[];
+
+export const addEvent = (event: Omit<Event, 'id'>): Event => {
+  const newEvent: Event = {
+    ...event,
+    id: Math.random().toString(36).substr(2, 9),
+  };
+  events.push(newEvent);
+  return newEvent;
+};
+
+export const getEventById = (id: string): Event | undefined => {
+  return events.find(event => event.id === id);
+};
 
 export default function Events() {
   const [search, setSearch] = useState("");
@@ -40,7 +81,7 @@ export default function Events() {
 
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {events.map((event) => (
+           {(events as Event[]).map((event) => (
           <div
             key={event.id}
             className="rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden dark:bg-gray-500 "
@@ -56,8 +97,10 @@ export default function Events() {
               <span
                 className={`flex items-center gap-1 absolute top-2 left-2 text-xs font-semibold px-3 py-1 rounded-full text-white ${
                   event.status === "ON SALE"
-                    ? "bg-gradient-to-r from-green-500 to-emerald-400"
-                    : "bg-gradient-to-r from-yellow-500 to-amber-400"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-400" 
+                  : event.status === "SOLD OUT"
+                  ? "bg-gradient-to-r from-red-500 to-red-400"
+                  : "bg-gradient-to-r from-yellow-500 to-amber-400"
                 }`}
               >
                 {event.status === "ON SALE" && (
@@ -93,7 +136,7 @@ export default function Events() {
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-900">
                 <MapPin className="w-4 h-4" />
-                {event.location}
+                {event.venueAddress}
               </div>
 
               {/* Actions */}

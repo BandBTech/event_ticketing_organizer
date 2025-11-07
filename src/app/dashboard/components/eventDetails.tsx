@@ -10,25 +10,25 @@ import {
   CircleDot,
 } from "lucide-react";
 import Image from "next/image";
+import {Event  } from "./events";
 
-type EventType = {
-  id: string;
-  name: string;
-  date: string;
-  time: string;
-  location: string;
-  status: string;
-  tickets: number;
-  description: string;
-  image: string;
-  tags: string[];
-  venue: string;
-};
+interface EventDetails{
+  event: Event;
+}
 
-export default function EventDetailsPage({event}:{event: EventType}) {
+export default function EventDetailsPage({event}:EventDetails) {
+
+  const totalTicketsSold = event.tickets.reduce((sum, ticket) => 
+    sum + Math.floor(ticket.quantity * 0.4), 0 
+  );
+  const totalCapacity = event.tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+  const totalRevenue = event.tickets.reduce((sum, ticket) => 
+    sum + (Math.floor(ticket.quantity * 0.4) * ticket.price), 0
+  );
   return (
     <>
-      <div className="p-6 space-y-6">
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow p-6 space-y-6">
         {/* Event Title + Actions */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
@@ -36,7 +36,7 @@ export default function EventDetailsPage({event}:{event: EventType}) {
               {event.name}
             </h2>
             <div className="flex items-center gap-3 text-sm text-gray-600">
-              <span className="bg-green-500 flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium">
+                <span className="bg-green-500 flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium">
                 <CircleDot className="w-3 h-3" />
                 {event.status}
               </span>
@@ -44,7 +44,7 @@ export default function EventDetailsPage({event}:{event: EventType}) {
                 <Calendar size={14} /> {event.date} {event.time}
               </div>
               <div className="flex items-center gap-1 dark:text-white">
-                <MapPin size={14} />{event.location}
+                <MapPin size={14} />{event.venueAddress}
               </div>
             </div>
           </div>
@@ -64,13 +64,12 @@ export default function EventDetailsPage({event}:{event: EventType}) {
 
         {/* Main Grid */}
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Left - Event Info */}
           {/* Banner */}
           <div className="md:col-span-2 space-y-6">
-            <div className="rounded-xl overflow-hidden relative h-1/2">
+            <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
               <Image
                 src={event.image}
-                alt="Event Banner"
+                alt={event.name}
                 fill={true}
                 className="w-full h-full object-cover"
               />
@@ -104,18 +103,18 @@ export default function EventDetailsPage({event}:{event: EventType}) {
                 </div>
                 <div>
                   <h3 className="font-semibold ">Location</h3>
-                  <p className="font-medium text-gray-500">{event.location}</p>
+                  <p className="font-medium text-gray-500">{event.venueAddress}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Event Starts On</h3>
                   <p className="font-medium text-gray-500">
-                    25-Sep-2025 9:00 AM
+                   {new Date(event.startDate).toLocaleDateString()} {new Date(event.startDate).toLocaleTimeString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Event Ends On</h3>
                   <p className="font-medium text-gray-500">
-                    {event.date} {event.time}
+               {new Date(event.endDate).toLocaleDateString()} {new Date(event.endDate).toLocaleTimeString()}
                   </p>
                 </div>
                 <div>
@@ -138,77 +137,41 @@ export default function EventDetailsPage({event}:{event: EventType}) {
           <div className="space-y-6 dark:text-black">
             {/* Ticket Tiers */}
             <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold">Ticket Tiers/Sales</h3>
-              {[
-                {
-                  name: "General",
-                  price: 2000,
-                  sold: 800,
-                  total: 2000,
-                  labelClass: "text-gray-700",
-                  barClass: "bg-gray-500",
-                  cardClass: "bg-gray-50",
-                },
-                {
-                  name: "Premium",
-                  price: 3500,
-                  sold: 350,
-                  total: 1500,
-                  labelClass: "text-amber-700",
-                  barClass: "bg-amber-500",
-                  cardClass: "bg-amber-50",
-                },
-                {
-                  name: "VIP",
-                  price: 5000,
-                  sold: 800,
-                  total: 1000,
-                  labelClass: "text-orange-700",
-                  barClass: "bg-orange-500",
-                  cardClass: "bg-orange-50",
-                },
-                {
-                  name: "VVIP",
-                  price: 15000,
-                  sold: 200,
-                  total: 500,
-                  labelClass: "text-purple-700",
-                  barClass: "bg-purple-500",
-                  cardClass: "bg-purple-50",
-                },
-              ].map((tier) => (
-                <div
-                  key={tier.name}
-                  className={`space-y-2 p-3 rounded-lg shadow-sm ${tier.cardClass}`}
-                >
-                  <div className="flex justify-between text-sm">
-                    <p className={`font-semibold ${tier.labelClass}`}>
-                      {tier.name}
-                    </p>
-                    <p className="text-gray-600"></p>
-                    NPR {tier.price}/ticket <br />
+              <h3 className="text-lg font-semibold">Ticket Tiers</h3>
+               {event.tickets.map((ticket, index) => {
+                const colors = [
+                  { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
+                  { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
+                  { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
+                  { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
+                ];
+                const color = colors[index % colors.length];
+                const sold = Math.floor(ticket.quantity * 0.4); 
+
+                return (
+                  <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
+                    <div className="flex justify-between text-sm">
+                      <p className={`font-semibold ${color.labelClass}`}>{ticket.name}</p>
+                      <p className="text-gray-600">NPR {ticket.price}/ticket</p>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`${color.barClass} h-2 rounded-full`} 
+                        style={{ width: `${(sold / ticket.quantity) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm">{sold}/{ticket.quantity} sold</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`${tier.barClass} h-2 rounded-full`}
-                      style={{
-                        width: `${(tier.sold / tier.total) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm">
-                    {tier.sold}/{tier.total} sold
-                  </span>
-                </div>
-              ))}
+                );
+              })}
               <div className="grid grid-cols-2 border-t-1 p-2">
                 <div>
                   <p className="font-semibold">Total Sales</p>
-                  <p className="font-semibold">2150/5000</p>
+                  <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
                 </div>
                 <div className="justify-items-end">
                   <p className="font-semibold">Total Revenue</p>
-                  <p className="font-semibold">NPR 9,825,000</p>
+                  <p className="font-semibold">NPR {totalRevenue.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -242,9 +205,10 @@ export default function EventDetailsPage({event}:{event: EventType}) {
           </div>
         </div>
       </div>
-
+</div>
       {/* Footer */}
       <Footer />
+      
     </>
   );
 }

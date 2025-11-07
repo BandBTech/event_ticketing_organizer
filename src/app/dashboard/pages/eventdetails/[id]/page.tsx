@@ -31,5 +31,6 @@ export default async function EventDetailsPage({ params }: { params: Promise<{ i
     return <div className="p-6 text-red-600">Event not found!</div>;
   }
 
-  return <EventDetails event={event} />;
+  return <EventDetails event={event} />
+
 }
