@@ -4,10 +4,20 @@ import { useEffect, useState } from "react";
 import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormData, loginSchema } from "@/lib/validation";
+import { useForm } from "react-hook-form";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState:{errors, isSubmitting},
+  } =useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
   const [showPassword, setShowPassword] = useState(false);
   const {
     isLoading: isLoggingIn,
@@ -19,16 +29,14 @@ export default function Login() {
     startLoading: startSignup,
     stopLoading: stopSignup,
   } = useLoading();
-  const [error, setError] = useState("");
-  const router = useRouter();
+
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) router.push("/dashboard");
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     setError("");
     startLogin();
 
@@ -38,19 +46,19 @@ export default function Login() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-          //  credentials: "include",
+          body: JSON.stringify(data),
+       
         }
       );
 
-      const data = await res.json();
+      const result = await res.json();
 
       if (!res.ok) {
-        setError(data.message || data.error || "Invalid email or password");
+        setError(result.message || result.error || "Invalid email or password");
         return;
       }
 
-      localStorage.setItem("auth_token", data.token);
+      localStorage.setItem("auth_token", result.token);
       router.push("/dashboard");
     } catch (err) {
       console.error(err);
@@ -76,7 +84,7 @@ export default function Login() {
       </div>
 
       {/* Form */}
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         {/* Email Field */}
         <div className="space-y-2">
           <label
@@ -91,12 +99,13 @@ export default function Login() {
               id="email"
               type="email"
               placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+           {...register("email")}
               required
               disabled={isLoggingIn}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
+             {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+
           </div>
         </div>
 
@@ -114,13 +123,12 @@ export default function Login() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+           {...register("password")}
               required
               disabled={isLoggingIn}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+             
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -129,6 +137,8 @@ export default function Login() {
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
           </div>
+            {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
 
         {/* Remember + Forgot */}

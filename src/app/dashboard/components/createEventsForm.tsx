@@ -6,7 +6,7 @@ import { MapPinAreaIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { EventFormData, eventSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { Resolver, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { addEvent, Event } from "./events";
 import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, BtnUnderline, Editor, EditorProvider, Separator, Toolbar } from "react-simple-wysiwyg";
 
@@ -23,7 +23,7 @@ export default function CreateEventPage() {
     formState: { errors, isSubmitting },
     setValue,
   } = useForm<EventFormData>({
-    resolver: zodResolver(eventSchema),
+    resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
     defaultValues: {
       name: "",
       description: "",
@@ -166,6 +166,9 @@ export default function CreateEventPage() {
                       <img src={imagePreview} alt="preview" className="max-h-32 rounded"/>
                     </div>
                   )}
+                      {errors.image && (
+                    <p className="text-red-500 text-xs mt-1">{errors.image.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -191,6 +194,9 @@ export default function CreateEventPage() {
                     onChange={handleTagsChange}
                     className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
+                      {errors.tags && (
+                    <p className="text-red-500 text-xs mt-1">{errors.tags.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -279,6 +285,9 @@ export default function CreateEventPage() {
                   placeholder="e.g 5000"
                   type="number"
                 />
+                    {errors.capacity && (
+                    <p className="text-red-500 text-xs mt-1">{errors.capacity.message}</p>
+                  )}
               </div>
 
               <div className="flex flex-col">

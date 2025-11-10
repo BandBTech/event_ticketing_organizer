@@ -5,11 +5,12 @@ import { Eye, KeyRound, EyeClosed} from "lucide-react";
 
 import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { ResetPasswordFormData, resetPasswordSchema } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export default function Signup() {
-  const [password, setPassword] = useState("");
+export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { isLoading, startLoading, stopLoading } = useLoading();
@@ -24,15 +25,14 @@ export default function Signup() {
     setResetToken(searchParams.get("token") || "");
   }, []);
 
-  const handleSubmit =async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register, handleSubmit, formState: {errors},
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+  })
+  const onSubmit =async (data: ResetPasswordFormData) => {
     setError("");
     setSuccess("");
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
 
     if(!resetToken || !email){
       setError("Missing Email or Token. Please try the reset process again");
@@ -44,8 +44,8 @@ export default function Signup() {
 
   try{
     const payload = {
-      new_password: password,
-      confirm_password: confirmPassword,
+      new_password: data.password,
+      confirm_password: data.confirmPassword,
       email_token: email,
       reset_token: resetToken
     };
@@ -59,9 +59,9 @@ export default function Signup() {
         body: JSON.stringify(payload),
       }
     );
-    const data = await res.json();
+    const result = await res.json();
     if(!res.ok){
-      setError(data.message || data.error || "Failed to reset Password");
+      setError(result.message || result.error || "Failed to reset Password");
       return;
     }
     setSuccess("Password reset successfully! Redirecting to login...");
@@ -86,7 +86,7 @@ export default function Signup() {
       </div>
 
       {/* Form */}
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         {/* Password Field */}
         <div className="space-y-2">
           <label
@@ -101,9 +101,8 @@ export default function Signup() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+          {...register("password")}
+       
               disabled={isLoading}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
@@ -116,6 +115,8 @@ export default function Signup() {
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
           </div>
+          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+        
         </div>
         <div className="space-y-2">
           <label
@@ -130,9 +131,8 @@ export default function Signup() {
               id="confirmPassword"
               type={showPassword ? "text" : "password"}
               placeholder="********"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+          {...register("confirmPassword")}
+           
               disabled={isLoading}
               className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
@@ -143,6 +143,8 @@ export default function Signup() {
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
+            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
+        
           </div>
         </div>
   {error && <p className="text-red-500 text-sm">{error}</p>}
