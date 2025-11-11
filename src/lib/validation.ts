@@ -105,9 +105,8 @@ export const signupSchema = z.object({
 
   country_code: z
     .string()
-    .trim()
-    .min(1, "Country code is required")
-    .regex(/^\+\d{1,4}$/, "Invalid country code format"),
+    .optional(),
+  
   email: z
     .string()
     .trim()

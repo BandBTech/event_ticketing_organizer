@@ -14,7 +14,7 @@
 //     return <EventDetails event={event}/>;
 // }
 
-import EventDetails from "@/app/dashboard/components/eventDetails";
+import EventDetails from "@/app/organizerDashboard/components/eventDetails";
 import { events } from "@/app/data/events";
 
 export function generateStaticParams() {

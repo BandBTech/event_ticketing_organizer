@@ -35,6 +35,7 @@ const {register, handleSubmit, formState:{errors, isSubmitting},}= useForm<Signu
   resolver: zodResolver(signupSchema),
 });
   const onSubmit = async (data: SignupFormData) => {
+
 setError("");
 setSuccess("");
     try {
@@ -55,6 +56,7 @@ setSuccess("");
         }
       );
       const result = await res.json();
+    
 
       if (!res.ok) {
         setError(result.message || result.error || "Registration failed");
@@ -252,7 +254,7 @@ setSuccess("");
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isSubmitting}
+         
           className="relative w-full flex items-center gap-2 justify-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
         >
           {isSubmitting ? "Submitting..." : "Get Started"}

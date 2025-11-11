@@ -7,6 +7,7 @@ import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormData, loginSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
+import { setCookie } from "cookies-next";
 
 export default function Login() {
   const [error, setError] = useState("");
@@ -33,7 +34,7 @@ export default function Login() {
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-    if (token) router.push("/dashboard");
+    if (token) router.push("/organizerDashboard");
   }, [router]);
 
   const onSubmit = async (data: LoginFormData) => {
@@ -59,7 +60,25 @@ export default function Login() {
       }
 
       localStorage.setItem("auth_token", result.token);
-      router.push("/dashboard");
+      router.push("/organizerDashboard");
+    // setCookie("auth_token", result.token, {
+    //   path: "/",
+    //   secure: true,
+    //   sameSite: "strict",
+    // });
+
+    // setCookie("user_role", result.role, {
+    //   path: "/",
+    //   secure: true,
+    //   sameSite: "strict",
+    // });
+    //     if (result.role === "organizer") {
+    //   router.push("/organizerDashboard");
+    // } else if (result.role === "staff") {
+    //   router.push("/staffDashboard");
+    // } else {
+    //   router.push("/auth/pages/login");
+    // }
     } catch (err) {
       console.error(err);
       setError("Server Error");
