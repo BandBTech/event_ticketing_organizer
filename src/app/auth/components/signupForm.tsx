@@ -49,9 +49,10 @@ setSuccess("");
           body: JSON.stringify({
             email: data.email,
             password: data.password,
-            phone: `${selectedCountry.dialCode}${data.phone}`,
+            phone: data.phone,
             firstName : data.first_name,
             lastName: data.last_name,
+            country_code: selectedCountry.dialCode,
           }),
         }
       );
