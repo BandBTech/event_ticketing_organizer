@@ -50,8 +50,8 @@ setSuccess("");
             email: data.email,
             password: data.password,
             phone: data.phone,
-            firstName : data.first_name,
-            lastName: data.last_name,
+            first_name : data.first_name,
+            last_name: data.last_name,
             country_code: selectedCountry.dialCode,
           }),
         }
