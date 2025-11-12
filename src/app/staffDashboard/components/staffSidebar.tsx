@@ -3,15 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { CalendarStarIcon, CaretDoubleLeftIcon, CaretDoubleRightIcon, CaretRightIcon, ChartLineIcon, GearIcon, IdentificationBadgeIcon, SpeedometerIcon, TicketIcon, UsersIcon } from "@phosphor-icons/react";
+import { CalendarStarIcon, CaretDoubleLeftIcon, CaretDoubleRightIcon, CaretRightIcon, HouseIcon, TicketIcon, UserIcon, } from "@phosphor-icons/react";
 
 const navLinks = [
-  { href: "/organizerDashboard", label: "Dashboard", icon: SpeedometerIcon },
-  { href: "/organizerDashboard/pages/events", label: "Events", icon: CalendarStarIcon },
-  { href: "/organizerDashboard/reports", label: "Reports", icon: ChartLineIcon },
-  { href: "/organizerDashboard/pages/users", label: "Users", icon: UsersIcon},
-  { href: "/organizerDashboard/settings", label: "Settings", icon: GearIcon },
-  { href: "/staffDashboard", label: "Staff", icon: IdentificationBadgeIcon },
+  { href: "/staffDashboard", label: "Home", icon: HouseIcon },
+  { href: "/staffDashboard/pages/events", label: "Events", icon: CalendarStarIcon },
+  { href: "/organizerDashboard", label: "Organizer", icon: UserIcon }
 ];
 
 export default function Sidebar({

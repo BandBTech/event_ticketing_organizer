@@ -11,7 +11,7 @@ export const events = [
     timezone: "NPT (UTC+5:45)",
     startDate: "2025-10-20T19:00:00",
     endDate: "2025-10-21T02:00:00",
-    status: "ON SALE",
+    status: "LIVE",
     tickets: [
       {
         id: "1",

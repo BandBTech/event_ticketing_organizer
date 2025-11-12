@@ -7,10 +7,11 @@ import React from "react";
 import { useUser } from "@/app/contexts/UserContext";
 
 const pageHeaders: { prefix: string; title: string }[] = [
-  { prefix: "/dashboard/pages/events", title: "Events" },
-  { prefix: "/dashboard/pages/createevents", title: "Create new event" },
-  { prefix: "/dashboard/pages/eventdetails", title: "Event details" },
-   { prefix: "/dashboard/pages/users", title: "Users" },
+  { prefix: "/organizerDashboard/pages/events", title: "Events" },
+  { prefix: "/organizerDashboard", title: "Good Evening John Doe!" },
+  { prefix: "/organizerDashboard/pages/createevents", title: "Create new event" },
+  { prefix: "/organizerDashboard/pages/eventdetails", title: "Event details" },
+   { prefix: "/organizerDashboard/pages/users", title: "Users" },
 ];
 
 export default function DashboardHeader() {
@@ -31,9 +32,9 @@ export default function DashboardHeader() {
         pathname.startsWith(p.prefix)
     );
 
-  const headerText = matched?.title ?? "Dashboard";
+  const headerText = matched?.title ?? "organizerDashboard";
   const isUsersPage = headerText === "Users";
-  const isEventsPage = headerText === "Events" || headerText === "Dashboard";
+  const isEventsPage = headerText === "Events" || headerText === "organizerDashboard";
 
   const showCreateButton =
     isUsersPage  || isEventsPage;
@@ -46,7 +47,7 @@ export default function DashboardHeader() {
     if (isUsersPage) {
       openCreateUserModal(); // Open modal for users
     } else {
-      router.push("/dashboard/pages/createevents"); // Navigate for events
+      router.push("/organizerDashboard/pages/createevents"); // Navigate for events
     }
   };
 
