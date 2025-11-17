@@ -131,6 +131,16 @@ export const resetPasswordSchema = z
     message: "Passwords do not match",
   });
 
+export const forgotPasswordSchema= z.object({
+  email: z
+  .string()
+  .trim()
+  .min(1, "Email is required")
+  .toLowerCase()
+  .pipe(z.email("please enter a valid email address")),
+});
+
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;  
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;

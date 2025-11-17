@@ -142,7 +142,7 @@ export default function VerifyOtpContent() {
     }
   };
 
-  // Show loading state until client-side initialization is complete
+ 
   if (!isClient) {
     return (
       <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
