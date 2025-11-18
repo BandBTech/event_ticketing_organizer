@@ -137,9 +137,9 @@ export default function CreateEventPage() {
     <div className="p-6 space-y-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Event details */}
-        <div className="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="mb-6 rounded-xl border border-gray-200 text-gray-700  bg-white  shadow-sm">
           <div className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-blue-600">Event details</h2>
+            <h2 className="text-lg font-semibold text-blue-600">Event Details</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Banner Image</label>
@@ -174,12 +174,12 @@ export default function CreateEventPage() {
 
               <div className="flex flex-col justify-between gap-4">
                 <div>
-                  <label className="text-sm font-medium">Event title</label>
+                  <label className="text-sm font-medium">Event Title</label>
                   <input
                     {...register("name")}
                     type="text"
-                    placeholder="Enter title"
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter Title"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
@@ -192,7 +192,7 @@ export default function CreateEventPage() {
                     type="text"
                     placeholder="e.g. Music, Concert, Festival"
                     onChange={handleTagsChange}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
                       {errors.tags && (
                     <p className="text-red-500 text-xs mt-1">{errors.tags.message}</p>
@@ -202,15 +202,15 @@ export default function CreateEventPage() {
             </div>
 
        <div>
-  <label className="text-sm font-medium">Event description</label>
+  <label className="text-sm font-medium">Event Description</label>
 
-  <div className="mt-1 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+  <div className="mt-1 border border-gray-300  rounded-lg overflow-hidden">
     <EditorProvider>
       <Editor
         value={watch("description") || ""}
         onChange={(e) => setValue("description", e.target.value)}
         placeholder="Tell what makes your event special"
-        className="min-h-[150px] w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+        className="min-h-[150px] w-full bg-white  text-gray-900  focus:outline-none"
       >
         <Toolbar>
           <BtnBold />
@@ -236,15 +236,15 @@ export default function CreateEventPage() {
         </div>
 
         {/* Venue & Schedule */}
-        <div className="rounded-xl mb-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <div className="p-6 space-y-4">
+        <div className="rounded-xl mb-6 border border-gray-200  bg-white  shadow-sm">
+          <div className="p-6 space-y-4 text-gray-700 ">
             <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
             <div className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4">
               <div className="flex flex-col">
-                <label className="text-sm font-medium">Venue name</label>
+                <label className="text-sm font-medium">Venue Name</label>
                 <input
                   {...register("venue")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="Venue name"
                 />
                 {errors.venue && (
@@ -253,11 +253,11 @@ export default function CreateEventPage() {
               </div>
 
               <div className="flex relative flex-col">
-                <label className="text-sm font-medium">Venue address</label>
+                <label className="text-sm font-medium">Venue Address</label>
                 <input
                   {...register("venueAddress")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter venue location"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter venue address"
                 />
                 <MapPinAreaIcon className="absolute right-3 top-1/2 text-gray-400 w-5 h-5" />
                 {errors.venueAddress && (
@@ -281,7 +281,7 @@ export default function CreateEventPage() {
                 <label className="text-sm font-medium">Capacity</label>
                 <input
                   {...register("capacity", { valueAsNumber: true })}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g 5000"
                   type="number"
                 />
@@ -294,9 +294,9 @@ export default function CreateEventPage() {
                 <label className="text-sm font-medium">Timezone</label>
                 <select
                   {...register("timezone")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="" disabled>Select timezone</option>
+                  <option value="" disabled>Select Timezone</option>
                   <option value="America/New_York">Eastern Time (ET)</option>
                   <option value="America/Chicago">Central Time (CT)</option>
                   <option value="America/Denver">Mountain Time (MT)</option>
@@ -308,10 +308,10 @@ export default function CreateEventPage() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-sm font-medium">Start date & time</label>
+                <label className="text-sm font-medium">Start Date & Time</label>
                 <input
                   {...register("startDate")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                   type="datetime-local"
                 />
                 {errors.startDate && (
@@ -320,10 +320,10 @@ export default function CreateEventPage() {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-sm font-medium">End date & time</label>
+                <label className="text-sm font-medium">End Date & Time</label>
                 <input
                   {...register("endDate")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                   type="datetime-local"
                 />
                 {errors.endDate && (
@@ -335,7 +335,7 @@ export default function CreateEventPage() {
         </div>
 
         {/* Ticketing */}
-        <div className="rounded-xl mb-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="rounded-xl mb-6 border border-gray-200 text-gray-700  bg-white  shadow-sm">
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
             
@@ -345,7 +345,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Tier Name</label>
                   <input
                     {...register(`tickets.${index}.name`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="General Admission"
                   />
                   {errors.tickets?.[index]?.name && (
@@ -357,7 +357,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Price</label>
                   <input
                     {...register(`tickets.${index}.price`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g. 100"
                     type="number"
                   />
@@ -370,7 +370,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Quantity</label>
                   <input
                     {...register(`tickets.${index}.quantity`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter number of quantity"
                     type="number"
                   />
@@ -383,7 +383,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">GST(%)</label>
                   <input
                     {...register(`tickets.${index}.gst`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter GST in percentage"
                     type="number"
                   />
@@ -396,7 +396,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Sales start</label>
                   <input
                     {...register(`tickets.${index}.salesStart`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     type="datetime-local"
                   />
                   {errors.tickets?.[index]?.salesStart && (
@@ -408,7 +408,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Sales ends</label>
                   <input
                     {...register(`tickets.${index}.salesEnd`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     type="datetime-local"
                   />
                   {errors.tickets?.[index]?.salesEnd && (
@@ -444,7 +444,7 @@ export default function CreateEventPage() {
         </div>
 
         {/* Discounts & Promo Codes */}
-        <div className="rounded-xl mb-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="rounded-xl mb-6 border border-gray-200 text-gray-700  bg-white  shadow-sm">
           <div className="p-6 space-y-4">
             <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
             
@@ -454,7 +454,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Promo code</label>
                   <input
                     {...register(`promoCodes.${index}.code`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g EARLYBIRD"
                   />
                 </div>
@@ -463,7 +463,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Discount Type</label>
                   <input
                     {...register(`promoCodes.${index}.discountType`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Select Types"
                   />
                 </div>
@@ -472,7 +472,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Amount</label>
                   <input
                     {...register(`promoCodes.${index}.amount`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="500"
                     type="number"
                   />
@@ -482,7 +482,7 @@ export default function CreateEventPage() {
                   <label className="text-sm font-medium">Quantity</label>
                   <input
                     {...register(`promoCodes.${index}.quantity`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="500"
                     type="number"
                   />

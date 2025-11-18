@@ -145,22 +145,22 @@ export default function VerifyOtpContent() {
  
   if (!isClient) {
     return (
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+      <div className="w-full max-w-md bg-white  shadow-lg rounded-2xl p-8 space-y-6">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="text-gray-600 ">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 ">
           Check your email
         </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-600  mt-1">
           We sent a reset link to <br />
           <strong>{email}</strong> <br /> Enter 6 digit code that mentioned in
           the email
@@ -184,7 +184,7 @@ export default function VerifyOtpContent() {
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-12 h-12 text-center text-xl font-bold border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-12 h-12 text-center text-xl font-bold border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-900 "
                 disabled={submitting}
               />
             </div>
@@ -204,7 +204,7 @@ export default function VerifyOtpContent() {
       </form>
 
       {/* Footer Link */}
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-center text-sm text-gray-600 ">
         Haven&apos;t got the email yet?{" "}
         <button
           type="button"

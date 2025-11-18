@@ -77,10 +77,10 @@ export default function ResetPassword() {
 
   return (
     
-    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 ">
           Set a new password
         </h1>
       </div>
@@ -91,7 +91,7 @@ export default function ResetPassword() {
         <div className="space-y-2">
           <label
             htmlFor="password"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Password
           </label>
@@ -104,13 +104,13 @@ export default function ResetPassword() {
           {...register("password")}
        
               disabled={isLoading}
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               disabled={isLoading}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
@@ -121,7 +121,7 @@ export default function ResetPassword() {
         <div className="space-y-2">
           <label
             htmlFor="confirmPassword"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Confirm Password
           </label>
@@ -134,12 +134,12 @@ export default function ResetPassword() {
           {...register("confirmPassword")}
            
               disabled={isLoading}
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
@@ -164,7 +164,7 @@ export default function ResetPassword() {
       </form>
 
       {/* Footer Link */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-center text-sm text-gray-600 ">
         <LinkLoader
           href="/auth/pages/login"
           isLoading={isLoading}

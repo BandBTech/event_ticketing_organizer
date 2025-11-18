@@ -105,12 +105,12 @@ export default function DashboardHomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className={`flex items-center gap-4 p-6 rounded-2xl shadow bg-gradient-to-tr ${stat.gradient} dark:from-gray-800 dark:to-gray-900 transition-all`}
+            className={`flex items-center gap-4 p-6 rounded-2xl shadow bg-gradient-to-tr ${stat.gradient} transition-all`}
           >
             {stat.icon}
             <div>
-              <h2 className="text-2xl font-bold">{stat.value}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h2 className="text-2xl text-gray-700 font-bold">{stat.value}</h2>
+              <p className="text-sm text-gray-700 ">
                 {stat.label}
               </p>
             </div>
@@ -125,24 +125,24 @@ export default function DashboardHomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow p-6"
+          className="md:col-span-2 bg-white  rounded-2xl shadow p-6"
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className=" flex items-center gap-1 font-semibold text-gray-700 dark:text-gray-100">
+            <h3 className=" flex items-center gap-1 font-semibold text-gray-700 ">
               <CalendarStarIcon className=" flex  w-5 h-5" /> Kathmandu Music
               Festival 2025
             </h3>
-            <select className="border border-gray-500 rounded-lg px-3 py-1 text-sm bg-transparent dark:border-gray-700">
+            <select className="border border-gray-500 text-gray-700 rounded-lg px-3 py-1 text-sm bg-transparent ">
               <option>Daily</option>
               <option>Weekly</option>
               <option>Monthly</option>
             </select>
           </div>
 
-          <h4 className="text-lg font-medium mb-2">Ticket Sales</h4>
+          <h4 className="text-lg text-gray-700 font-medium mb-2">Ticket Sales</h4>
           <p className="text-sm text-gray-500 mb-4">Oct 1 – Oct 7</p>
 
-          <div className="h-64">
+          <div className="h-64 text-gray-700">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -166,9 +166,9 @@ export default function DashboardHomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6"
+          className="bg-white rounded-2xl text-gray-700 shadow p-6"
         >
-          <h3 className="font-semibold text-gray-700 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-gray-700  mb-4 flex items-center gap-2">
             <ActivityIcon className="w-5 h-5 text-blue-500" /> Recent Activity
           </h3>
           <div className="space-y-3">
@@ -176,7 +176,7 @@ export default function DashboardHomePage() {
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.02 }}
-                className="felx items-start p-3 border border-gray-200 rounded-xl bg-white dark:bg-gray-900 hover:shadow-md transition"
+                className="felx items-start p-3 border border-gray-200 rounded-xl bg-white  hover:shadow-md transition"
               >
                 <div className="flex items-start gap-3">
                   {/* User Image */}
@@ -193,7 +193,7 @@ export default function DashboardHomePage() {
 
                   {/* User Info */}
                   <div>
-                    <p className="text-sm text-gray-800 dark:text-gray-200">
+                    <p className="text-sm text-gray-800 ">
                       <span className="font-semibold">{a.name}</span> {a.action}
                     </p>
                     {a.event && (

@@ -32,7 +32,7 @@ export default function EventDetailsPage({event}:EventDetails) {
         {/* Event Title + Actions */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold">
+            <h2 className="text-3xl text-gray-700 font-bold">
               {event.name}
             </h2>
             <div className="flex items-center gap-3 text-sm text-gray-600">
@@ -40,23 +40,23 @@ export default function EventDetailsPage({event}:EventDetails) {
                 <CircleDot className="w-3 h-3" />
                 {event.status}
               </span>
-              <div className="flex items-center gap-1 dark:text-white">
+              <div className="flex items-center gap-1 text-gray-700 ">
                 <Calendar size={14} /> {event.date} {event.time}
               </div>
-              <div className="flex items-center gap-1 dark:text-white">
+              <div className="flex items-center gap-1 text-gray-700 ">
                 <MapPin size={14} />{event.venueAddress}
               </div>
             </div>
           </div>
 
           <div className="flex gap-3 ">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
               <PauseCircle size={16} /> Pause Sales
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+            <button className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
               <PencilLine size={16} /> Edit Event
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-200 text-red-500 hover:bg-red-300">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300">
               <XCircle size={16} /> Cancel
             </button>
           </div>
@@ -75,15 +75,15 @@ export default function EventDetailsPage({event}:EventDetails) {
               />
             </div>
             {/* Description */}
-            <div className="rounded-xl  p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold dark:text-black ">
+            <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
+              <h3 className="text-lg font-semibold text-gray-700 ">
                 Event description
               </h3>
               <p className="text-gray-600">
               {event.description}
               </p>
               <div className="flex flex-wrap gap-2 ">
-                <h3 className="w-full text-lg font-semibold dark:text-black mb-2">Tags</h3>
+                <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
                 {event.tags.map((tag) => (
                   <span
                     key={tag}
@@ -94,7 +94,7 @@ export default function EventDetailsPage({event}:EventDetails) {
                 ))}
               </div>
               {/* Details */}
-              <div className=" grid grid-cols-2 gap-4 dark:text-black">
+              <div className=" grid grid-cols-2 gap-4 text-gray-700">
                 <div>
                   <h3 className="font-semibold">Venue</h3>
                   <p className="font-medium text-gray-500">
@@ -134,7 +134,7 @@ export default function EventDetailsPage({event}:EventDetails) {
           </div>
 
           {/* Right - Ticket Sales */}
-          <div className="space-y-6 dark:text-black">
+          <div className="space-y-6 text-gray-700">
             {/* Ticket Tiers */}
             <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold">Ticket Tiers</h3>

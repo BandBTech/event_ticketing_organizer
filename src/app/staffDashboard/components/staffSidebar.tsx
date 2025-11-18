@@ -24,7 +24,7 @@ export default function Sidebar({
     <aside
       className={`relative transition-all duration-300 ${
         showSidebar ? "w-56" : "w-20"
-      }  min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col`}
+      }  min-h-screen bg-white  border-r border-gray-200  flex flex-col`}
     >
       <div className="flex justify-between items-center px-4 py-6">
         {showSidebar ? (
@@ -39,7 +39,7 @@ export default function Sidebar({
         )}
         <button
           onClick={() => setShowSidebar(!showSidebar)}
-          className="absolute -right-3 top-6 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm p-1.5 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 hover:shadow-md transition-all">
+          className="absolute -right-3 top-6 z-50 bg-white  border border-gray-300  rounded-lg shadow-sm p-1.5 text-gray-700 hover:text-gray-900  hover:shadow-md transition-all">
           {showSidebar ? (
             <CaretDoubleLeftIcon className="size-4"/>
           ) : (
@@ -62,13 +62,13 @@ export default function Sidebar({
                 className={`group flex items-center gap-3 px-4 py-2 cursor-pointer transition-all
                 ${
                   isActive
-                    ? "border-l-2 border-blue-500 bg-blue-50 dark:bg-blue-950"
-                    : "border-l-2 border-transparent hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-800"
+                    ? "border-l-2 border-blue-500 bg-blue-50"
+                    : "border-l-2 border-transparent hover:border-blue-600 hover:bg-blue-50 "
                 }`}
               >
                 <Icon className="text-blue-600" size={25} />
                 {showSidebar && (
-                  <span className="text-gray-700 dark:text-gray-300">
+                  <span className="text-gray-700 ">
                     {label}
                   </span>
                 )}
@@ -79,8 +79,8 @@ export default function Sidebar({
       </nav>
 
       
-        <div className="w-full border-t border-gray-300 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-2 cursor-pointer dark:hover:bg-gray-700 p-2">
+        <div className="w-full border-t border-gray-300  p-4">
+          <div className="flex items-center gap-2 cursor-pointer  p-2">
             <div className="relative w-8 h-8">
               <Image
                 src="/john.jpg"
@@ -91,8 +91,8 @@ export default function Sidebar({
             </div>
             {showSidebar && (
               <>
-            <span className="text-sm font-medium">John Doe</span>
-            <CaretRightIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
+            <span className="text-sm text-gray-700 font-medium">John Doe</span>
+            <CaretRightIcon className="h-4 w-4 text-gray-500 " />
              </>)}
           </div>
         </div>

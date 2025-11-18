@@ -83,9 +83,9 @@ export default function Users() {
       </div>
 
       {/* User Table */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
-        <table className="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
-          <thead className="dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+      <div className="overflow-x-auto rounded-xl border border-gray-200  bg-white  shadow-sm">
+        <table className="min-w-full text-sm text-left text-gray-600 ">
+          <thead className=" text-gray-800 ">
             <tr>
               <th className="px-6 py-3 font-semibold">S.N</th>
               <th className="px-6 py-3 font-semibold">Name</th>
@@ -100,7 +100,7 @@ export default function Users() {
             {users.map((user, index) => (
               <tr
                 key={`${user.id}-${index}`}
-                className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                className="border-t border-gray-100  hover:bg-gray-50  transition"
               >
                 <td className="px-6 py-3">{index + 1}</td>
                 <td className="px-6 py-3 font-medium">{user.name}</td>
@@ -111,8 +111,8 @@ export default function Users() {
                   <span
                     className={`px-3 py-1 text-xs font-semibold rounded-full ${
                       user.status.toLowerCase() === "active"
-                        ? "bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100"
-                        : "bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100"
+                        ? "bg-green-100 text-green-700 "
+                        : "bg-red-100 text-red-700 "
                     }`}
                   >
                     {user.status}
@@ -153,7 +153,7 @@ export default function Users() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-8">
+      <div className="flex text-gray-700 justify-center items-center gap-2 mt-8">
         <button className="flex items-center px-3 py-1 border border-gray-300 rounded-full hover:bg-gray-50">
           <ArrowLeftIcon className="w-4 h-4" />
           Previous
@@ -183,7 +183,7 @@ export default function Users() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-white dark:bg-gray-900 rounded-xl p-6 w-full max-w-2xl shadow-lg relative"
+              className="bg-white  rounded-xl p-6 w-full max-w-2xl shadow-lg relative"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
@@ -195,12 +195,12 @@ export default function Users() {
                 <XCircleIcon className="w-6 h-6" />
               </button>
 
-              <h2 className="text-xl font-semibold mb-4">Add User</h2>
+              <h2 className="text-xl text-gray-700 font-semibold mb-4">Add User</h2>
               <form onSubmit={handleAddUser} className="space-y-4">
            
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 text-gray-700 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700  mb-1">
                       Full Name *
                     </label>
                     <input
@@ -210,12 +210,12 @@ export default function Users() {
                       onChange={(e) =>
                         setNewUser({ ...newUser, name: e.target.value })
                       }
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                      className="w-full border border-gray-300  rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none "
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700  mb-1">
                       Email *
                     </label>
                     <input
@@ -225,7 +225,7 @@ export default function Users() {
                       onChange={(e) =>
                         setNewUser({ ...newUser, email: e.target.value })
                       }
-                      className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none "
                       required
                     />
                   </div>
@@ -233,7 +233,7 @@ export default function Users() {
 
            
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700  mb-1">
                     Role
                   </label>
                   <select
@@ -241,7 +241,7 @@ export default function Users() {
                     onChange={(e) =>
                       setNewUser({ ...newUser, role: e.target.value })
                     }
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                    className="w-full border border-gray-300 text-gray-700  rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none "
                   >
                     <option value="">Select Role</option>
                     <option value="manager">Manager</option>
@@ -251,7 +251,7 @@ export default function Users() {
 
                
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700  mb-1">
                     Contact
                   </label>
                   <input
@@ -261,7 +261,7 @@ export default function Users() {
                     onChange={(e) =>
                       setNewUser({ ...newUser, contact: e.target.value })
                     }
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                    className="w-full border border-gray-300 text-gray-700 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none "
                   />
                 </div>
 
@@ -271,7 +271,7 @@ export default function Users() {
                   <button
                     type="button"
                     onClick={closeCreateUserModal}
-                    className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                    className="bg-gray-300  text-gray-700  px-6 py-2 rounded-lg hover:bg-gray-400  transition-colors"
                   >
                     Cancel
                   </button>

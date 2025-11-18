@@ -31,7 +31,7 @@ export default function DashboardLayout({
 
   return (
     <UserProvider>
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-screen  ">
      
       {/* Sidebar */}
       <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />

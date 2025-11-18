@@ -50,10 +50,10 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white  shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 ">
           Forgot Password 
         </h1>
       </div>
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
         <div className="relative w-full">
           <label 
             htmlFor="email"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Email
           </label>
@@ -75,11 +75,11 @@ export default function ForgotPassword() {
               type="email"
               placeholder="Enter registered email address"
               {...register("email")}
-            className={`w-full pl-10 pr-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 
+            className={`w-full pl-10 pr-4 py-2 border rounded-lg bg-white text-gray-900  
                 ${
                   errors.email
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 dark:border-gray-600 focus:ring-blue-500"
+                    : "border-gray-300  focus:ring-blue-500"
                 }`}/>
                 
           </div>
@@ -101,7 +101,7 @@ export default function ForgotPassword() {
       </form>
 
       {/* Footer Link */}
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-center text-sm text-gray-600 ">
         <Link href="/auth/pages/login" className="text-blue-600 hover:underline">
          Return to login page
         </Link>

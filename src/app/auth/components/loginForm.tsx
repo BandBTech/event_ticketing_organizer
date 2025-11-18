@@ -7,7 +7,7 @@ import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormData, loginSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
-import { setCookie } from "cookies-next";
+
 
 export default function Login() {
   const [error, setError] = useState("");
@@ -91,10 +91,10 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white  shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 ">
           Login{" "}
           <span className="text-blue-600 text-sm font-normal">
             as Organizer
@@ -108,7 +108,7 @@ export default function Login() {
         <div className="space-y-2">
           <label
             htmlFor="email"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Email
           </label>
@@ -120,18 +120,17 @@ export default function Login() {
               placeholder="Enter email address"
            {...register("email")}
               disabled={isLoggingIn}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
-             {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-
           </div>
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
         </div>
 
         {/* Password Field */}
         <div className="space-y-2">
           <label
             htmlFor="password"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Password
           </label>
@@ -143,13 +142,13 @@ export default function Login() {
               placeholder="********"
            {...register("password")}
               disabled={isLoggingIn}
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
              
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
@@ -160,11 +159,11 @@ export default function Login() {
 
         {/* Remember + Forgot */}
         <div className="flex items-center justify-between">
-          <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+          <label className="flex items-center space-x-2 text-sm text-gray-600 ">
             <input
               type="checkbox"
               disabled={isLoggingIn}
-              className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              className="rounded border-gray-300  text-blue-600 focus:ring-blue-500"
             />
             <span className={isLoggingIn ? "opacity-50" : ""}>Remember Me</span>
           </label>
@@ -189,7 +188,7 @@ export default function Login() {
       </form>
 
       {/* Footer Link */}
-      <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <div className="text-center text-sm text-gray-600 ">
         Don&apos;t have an account?{" "}
         <LinkLoader
           href="/auth/pages/signup"

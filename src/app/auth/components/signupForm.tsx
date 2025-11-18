@@ -77,10 +77,10 @@ setSuccess("");
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 space-y-6">
+    <div className="w-full max-w-md bg-white  shadow-lg rounded-2xl p-8 space-y-6">
       {/* Header */}
       <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-900 ">
           Register{" "}
           <span className="text-blue-600 text-sm font-normal">
             as Organizer
@@ -94,7 +94,7 @@ setSuccess("");
         <div className="space-y-2">
           <label
             htmlFor="email"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700"
           >
             Email
           </label>
@@ -105,17 +105,18 @@ setSuccess("");
               type="email"
               placeholder="Enter email address"
            {...register("email")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
-            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+        
           </div>
+              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
 
     {/* First Name Field */}
         <div className="space-y-2">
           <label
             htmlFor="first_name"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             First Name
           </label>
@@ -126,17 +127,18 @@ setSuccess("");
               type="text"
               placeholder="Enter First Name"
            {...register("first_name")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
-            {errors.first_name && <p className="text-sm text-red-500">{errors.first_name.message}</p>}
-        
+    
           </div>
+                  {errors.first_name && <p className="text-sm text-red-500">{errors.first_name.message}</p>}
+        
         </div>
             {/* Last Name Field */}
         <div className="space-y-2">
           <label
             htmlFor="last_name"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Last Name
           </label>
@@ -147,21 +149,22 @@ setSuccess("");
               type="text"
               placeholder="Enter last name"
           {...register("last_name")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
             />
-            {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
+    
         
           </div>
+                  {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
         </div>
         {/* Phone Input */}
         <div>
           <label
             htmlFor="phone"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Contact Number
           </label>
-          <div className="flex mt-1">
+          <div className="flex mt-1 text-gray-700">
             <select
               value={selectedCountry.code}
               onChange={(e) =>
@@ -170,7 +173,7 @@ setSuccess("");
                     countries[0]
                 )
               }
-              className="rounded-l-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-l-lg border border-gray-300  bg-gray-100  px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {countries.map((country) => (
                 <option key={country.code} value={country.code}>
@@ -185,7 +188,7 @@ setSuccess("");
               placeholder="Enter phone number"
              {...register("phone")}
          
-              className="flex-1 rounded-r-lg border border-l-0 border-gray-300 dark:border-gray-600 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="flex-1 rounded-r-lg border border-l-0 border-gray-300  px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white  text-gray-900 "
             />
 
           </div>
@@ -197,7 +200,7 @@ setSuccess("");
         <div className="space-y-2">
           <label
             htmlFor="password"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Password
           </label>
@@ -209,12 +212,12 @@ setSuccess("");
               placeholder="********"
           {...register("password")}
             
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-900 "
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
@@ -225,7 +228,7 @@ setSuccess("");
         <div className="space-y-2">
           <label
             htmlFor="confirmPassword"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-sm font-medium text-gray-700 "
           >
             Confirm Password
           </label>
@@ -237,12 +240,12 @@ setSuccess("");
               placeholder="********"
          {...register("confirmPassword")}
           
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-900"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
             >
               {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
             </button>
@@ -264,7 +267,7 @@ setSuccess("");
       </form>
 
       {/* Footer Link */}
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-center text-sm text-gray-600 ">
         Already have an account?{" "}
         <Link
           href="/auth/pages/login"
@@ -274,9 +277,9 @@ setSuccess("");
         </Link>
       </p>
 
-      <div className="my-4 border-t border-gray-300 dark:border-gray-700" />
+      <div className="my-4 border-t border-gray-300 " />
 
-      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+      <p className="text-center text-sm text-gray-600 ">
         By continuing, you consent to the fact that you have read and understood
         our{" "}
         <Link

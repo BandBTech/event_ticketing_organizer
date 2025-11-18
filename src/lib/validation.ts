@@ -4,7 +4,7 @@ const dateString = z
   .string()
   .refine(
     (val) => !isNaN(Date.parse(val)),
-    "Must be a valid date or datetime string"
+    "Enter valid datetime"
   );
 export const ticketSchema = z
   .object({
@@ -13,7 +13,7 @@ export const ticketSchema = z
       .string()
       .min(1, "Ticket name is required")
       .max(100, "Ticket name must be under 100 characters"),
-    price: z.coerce.number().min(1, "price must be positive"),
+    price: z.coerce.number().min(1, "Price must be positive"),
     quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
     gst: z.coerce
       .number()
@@ -41,8 +41,8 @@ export const promoCodeSchema = z.object({
 
 export const eventSchema = z
   .object({
-    name: z.string().min(1, "Event name is required"),
-    description: z.string().min(1, "Description is required"),
+    name: z.string().min(1, "Event title is required"),
+    description: z.string().min(1, "Event Description is required"),
     tags: z.array(z.string()).min(1, "At least one tag is required"),
     image: z.string().min(1, "Image is required"),
     venue: z.string().min(1, "Venue name is required"),
@@ -60,8 +60,8 @@ export const eventSchema = z
   });
 
 export const loginSchema = z.object({
-  email: z.email("invalid Email format").min(1, "Email is required"),
-  password: z.string().min(1, "Password is reuired"),
+  email: z.email().min(1, "Email is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export const passwordSchema= z

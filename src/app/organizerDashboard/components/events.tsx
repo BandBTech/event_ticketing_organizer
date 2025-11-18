@@ -80,11 +80,11 @@ export default function Events() {
       </div>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-           {(events as Event[]).map((event) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {(events as Event[]).map((event) => (
           <div
             key={event.id}
-            className="rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden dark:bg-gray-500 "
+            className="rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full" // Added flex flex-col h-full
           >
             {/* Image */}
             <div className="relative h-40">
@@ -111,13 +111,13 @@ export default function Events() {
             </div>
 
             {/* Content */}
-            <div className="p-4 space-y-3">
+            <div className="p-4 space-y-3 flex flex-col flex-1"> {/* Added flex flex-col flex-1 */}
               {/* Tags */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex text-gray-700 flex-wrap gap-2">
                 {event.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-gray-100 px-2 py-1 rounded-lg dark:bg-gray-600 "
+                    className="text-xs bg-gray-200 px-2 py-1 rounded-lg"
                   >
                     {tag}
                   </span>
@@ -130,28 +130,29 @@ export default function Events() {
               </h3>
 
               {/* Date & Location */}
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-900">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Calendar className="w-4 h-4" />
                 {event.date}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-900">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="w-4 h-4" />
                 {event.venueAddress}
               </div>
 
               {/* Actions */}
-              <div className="my-4 border-t border-gray-300 dark:border-gray-900" />
-              <div className="flex justify-between items-center mt-3">
-             <Link
-                    href={`/dashboard/pages/eventdetails/${event.id}`}
-                    className="flex items-center gap-2 border border-gray-300 dark:border-gray-900 dark:text-gray-900 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg dark:hover:bg-gray-400"
+              <div className="mt-auto pt-3"> 
+                <div className="my-4 border-t border-gray-300" />
+                <div className="flex justify-between items-center">
+                  <Link
+                    href={`/organizerDashboard/pages/eventdetails/${event.id}`}
+                    className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
                   >
                     View Detail <ArrowRight className="w-4 h-4" />
                   </Link>
-            
-                <button className="p-2 rounded-lg border border-gray-300 dark:border-gray-900 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-400 hover:shadow-lg ">
-                  <PencilLine className="w-4 h-4" />
-                </button>
+                  <button className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg">
+                    <PencilLine className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -159,7 +160,7 @@ export default function Events() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center gap-2 mt-8">
+      <div className="flex justify-center text-gray-700 items-center gap-2 mt-8">
         <button className="flex items-center px-3 py-1 border border-gray-300 rounded-full hover:bg-gray-50">
           <ArrowLeft className="w-4 h-4" />
           Previous

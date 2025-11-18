@@ -12,7 +12,7 @@ export default function StaffDashboardLayout({
     const [showSidebar, setShowSidebar] = useState(true);
   return (
 
-      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen bg-gray-50 ">
       <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
     <div className="flex flex-col flex-1 transition-all duration-300 ">
           <Header />
