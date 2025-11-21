@@ -25,7 +25,7 @@ export default function VerifyOtpContent() {
     const urlType = searchParams.get("type");
     
     // Only access localStorage on client side
-    const storedEmail = localStorage.getItem("reset_email");
+    const storedEmail = localStorage.getItem("signup_email");
     
     setEmail(urlEmail || storedEmail || "");
     setType(urlType || "signup");
@@ -70,11 +70,12 @@ export default function VerifyOtpContent() {
       const payload ={
         identifier: email.trim(),
         otp_code: otpCode,
-        otp_type: type ==="reset" ? "password_reset" : "registration"
+        otp_type: type ==="reset" ? "password_reset" : "registration",
+        role: "user"
       };
 
       const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/auth/verify-otp",
+        "https://sandbox.timroticket.com/api/v1/auth/organizer/verify-otp",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -88,8 +89,8 @@ export default function VerifyOtpContent() {
       }
       setSuccess("OTP verified successfully!");
       
-      if (localStorage.getItem("reset_email")) {
-        localStorage.removeItem("reset_email");
+      if (localStorage.getItem("signup_email")) {
+        localStorage.removeItem("signup_email");
       }
       
       setTimeout(() => {
@@ -120,10 +121,11 @@ export default function VerifyOtpContent() {
     try {
       const payload = {
         identifier: email.trim(),
-        otp_type: type === "reset" ? "password_reset" : "registration"
+        otp_type: type === "reset" ? "password_reset" : "registration",
+        role: "user"
       };
       const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/auth/send-otp",
+        "https://sandbox.timroticket.com/api/v1/auth/organizer/send-otp",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

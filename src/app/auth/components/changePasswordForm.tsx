@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Eye, KeyRound, EyeClosed} from "lucide-react";
 
-import { useLoading, ButtonLoader, LinkLoader } from "@/components/loader";
+import { useLoading, ButtonLoader, LinkLoader } from "@/components/layout/loader";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { ResetPasswordFormData, resetPasswordSchema } from "@/lib/validation";
@@ -50,7 +50,7 @@ export default function ResetPassword() {
       reset_token: resetToken
     };
     const res = await fetch(
-      "https://sandbox.timroticket.com/api/v1/auth/reset-password",
+      "https://sandbox.timroticket.com/api/v1/auth/organizer/reset-password",
       {
         method:"POST",
         headers:{

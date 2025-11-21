@@ -21,7 +21,7 @@ export default function ForgotPassword() {
     setSuccess("");
         try {
       const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/auth/reset-password-request",
+        "https://sandbox.timroticket.com/api/v1/auth/organizer/reset-password-request",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -67,7 +67,7 @@ export default function CreateEventPage() {
     name: "promoCodes",
   });
 
-  const onSubmit: SubmitHandler<EventFormData> = (data) => {
+  const onSubmit: SubmitHandler<EventFormData> = async (data) => {
     try {
       const eventDate = new Date(data.startDate).toLocaleDateString("en-US", {
         year: "numeric",
@@ -81,32 +81,35 @@ export default function CreateEventPage() {
       });
 
       const newEvent: Omit<Event, "id"> = {
-        name: data.name,
+        title: data.name,
         description: data.description,
         tags: data.tags,
-        image: data.image || "/default-event.jpg",
-        venue: data.venue,
-        venueAddress: data.venueAddress,
+        banner_image: data.image || "/default-event.jpg",
+        venue_name: data.venue,
+        address: data.venueAddress,
         capacity: data.capacity,
         timezone: data.timezone,
-        startDate: data.startDate,
-        endDate: data.endDate,
+        start_date: data.startDate,
+        end_date: data.endDate,
         date: eventDate,
         time: eventTime,
         status: "ON SALE",
-        tickets: data.tickets.map((ticket, index) => ({
+        price: data.tickets[0]?.price ?? 0,
+        tiers: data.tickets.map((t, index) => ({
           id: (index + 1).toString(),
-          name: ticket.name,
-          price: ticket.price,
-          quantity: ticket.quantity,
-          gst: ticket.gst,
-          salesStart: ticket.salesStart,
-          salesEnd: ticket.salesEnd,
+          tier_name: t.name,
+          price: t.price,
+          quantity: t.quantity,
+          gst: t.gst,
+          sales_start: t.salesStart,
+          sales_end: t.salesEnd,
+          currency: "NPR",
+          sort_order: index,
         })),
       };
 
       addEvent(newEvent);
-      router.push("/dashboard/pages/events");
+      router.push("/organizerDashboard/pages/events");
     } catch (error) {
       console.error("Error creating event:", error);
     }

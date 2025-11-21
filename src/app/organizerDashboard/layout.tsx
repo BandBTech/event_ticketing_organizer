@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/sidebar";
-import DashboardHeader from "@/components/dashboardHeader";
+import Sidebar from "@/components/layout/sidebar";
+import DashboardHeader from "@/components/layout/dashboardHeader";
 import { useRouter } from "next/navigation";
 import { UserProvider } from "@/app/contexts/UserContext";
 

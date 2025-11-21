@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "@/components/footer";
+import Footer from "@/components/layout/footer";
 import {
   MapPin,
   Calendar,
@@ -18,11 +18,11 @@ interface EventDetails{
 
 export default function EventDetailsPage({event}:EventDetails) {
 
-  const totalTicketsSold = event.tickets.reduce((sum, ticket) => 
+  const totalTicketsSold = event.tiers.reduce((sum, ticket) => 
     sum + Math.floor(ticket.quantity * 0.4), 0 
   );
-  const totalCapacity = event.tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
-  const totalRevenue = event.tickets.reduce((sum, ticket) => 
+  const totalCapacity = event.tiers.reduce((sum, ticket) => sum + ticket.quantity, 0);
+  const totalRevenue = event.tiers.reduce((sum, ticket) => 
     sum + (Math.floor(ticket.quantity * 0.4) * ticket.price), 0
   );
   return (
@@ -33,7 +33,7 @@ export default function EventDetailsPage({event}:EventDetails) {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <h2 className="text-3xl text-gray-700 font-bold">
-              {event.name}
+              {event.title}
             </h2>
             <div className="flex items-center gap-3 text-sm text-gray-600">
                 <span className="bg-green-500 flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium">
@@ -44,7 +44,7 @@ export default function EventDetailsPage({event}:EventDetails) {
                 <Calendar size={14} /> {event.date} {event.time}
               </div>
               <div className="flex items-center gap-1 text-gray-700 ">
-                <MapPin size={14} />{event.venueAddress}
+                <MapPin size={14} />{event.address}
               </div>
             </div>
           </div>
@@ -68,8 +68,8 @@ export default function EventDetailsPage({event}:EventDetails) {
           <div className="md:col-span-2 space-y-6">
             <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
               <Image
-                src={event.image}
-                alt={event.name}
+                src={event.banner_image}
+                alt={event.title}
                 fill={true}
                 className="w-full h-full object-cover"
               />
@@ -98,23 +98,23 @@ export default function EventDetailsPage({event}:EventDetails) {
                 <div>
                   <h3 className="font-semibold">Venue</h3>
                   <p className="font-medium text-gray-500">
-                    {event.venue}
+                    {event.venue_name}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Location</h3>
-                  <p className="font-medium text-gray-500">{event.venueAddress}</p>
+                  <p className="font-medium text-gray-500">{event.address}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Event Starts On</h3>
                   <p className="font-medium text-gray-500">
-                   {new Date(event.startDate).toLocaleDateString()} {new Date(event.startDate).toLocaleTimeString()}
+                   {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
                   </p>
                 </div>
                 <div>
                   <h3 className="font-semibold ">Event Ends On</h3>
                   <p className="font-medium text-gray-500">
-               {new Date(event.endDate).toLocaleDateString()} {new Date(event.endDate).toLocaleTimeString()}
+               {new Date(event.end_date).toLocaleDateString()} {new Date(event.end_date).toLocaleTimeString()}
                   </p>
                 </div>
                 <div>
@@ -138,7 +138,7 @@ export default function EventDetailsPage({event}:EventDetails) {
             {/* Ticket Tiers */}
             <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold">Ticket Tiers</h3>
-               {event.tickets.map((ticket, index) => {
+               {event.tiers.map((ticket, index) => {
                 const colors = [
                   { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
                   { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
@@ -151,7 +151,7 @@ export default function EventDetailsPage({event}:EventDetails) {
                 return (
                   <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
                     <div className="flex justify-between text-sm">
-                      <p className={`font-semibold ${color.labelClass}`}>{ticket.name}</p>
+                      <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
                       <p className="text-gray-600">NPR {ticket.price}/ticket</p>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Mail, KeyRound, EyeClosed, MoveRight } from "lucide-react";
+import {  Mail, MoveRight } from "lucide-react";
 import Link from "next/link";
 import { UserIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,6 @@ const countries: CountryOption[] = [
 
 export default function Signup() {
 
-  const [showPassword, setShowPassword] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<CountryOption>(
     countries[0]
   );
@@ -40,7 +39,7 @@ setError("");
 setSuccess("");
     try {
       const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/auth/register",
+        "https://sandbox.timroticket.com/api/v1/auth/organizer/register",
         {
           method: "POST",
           headers: {
@@ -48,7 +47,6 @@ setSuccess("");
           },
           body: JSON.stringify({
             email: data.email,
-            password: data.password,
             phone: data.phone,
             first_name : data.first_name,
             last_name: data.last_name,
@@ -67,6 +65,7 @@ setSuccess("");
       setSuccess("Account created successfully! Please verify your email.");
       
       setTimeout(() => {
+        localStorage.setItem("signup_email", data.email);
         router.push(`/auth/pages/verifyotp?email=${encodeURIComponent(data.email)}`);
       }, 1500);
     } catch (err) {
@@ -196,65 +195,9 @@ setSuccess("");
         
         </div>
 
-        {/* Password Field */}
-        <div className="space-y-2">
-          <label
-            htmlFor="password"
-            className="text-sm font-medium text-gray-700 "
-          >
-            Password
-          </label>
-          <div className="relative">
-            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="********"
-          {...register("password")}
-            
-              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-900 "
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
-            >
-              {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
-            </button>
-          </div>
-          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-        
-        </div>
-        <div className="space-y-2">
-          <label
-            htmlFor="confirmPassword"
-            className="text-sm font-medium text-gray-700 "
-          >
-            Confirm Password
-          </label>
-          <div className="relative">
-            <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              id="confirmPassword"
-              type={showPassword ? "text" : "password"}
-              placeholder="********"
-         {...register("confirmPassword")}
-          
-              className="w-full pl-10 pr-10 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white text-gray-900"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 "
-            >
-              {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
-            </button>
-          </div>
-          {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>}
-        
-        </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         {success && <p className="text-sm text-green-500">{success}</p>}
+
         {/* Submit Button */}
         <button
           type="submit"

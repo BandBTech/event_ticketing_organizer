@@ -15,31 +15,32 @@ import Image from "next/image";
 import { events as eventsData } from "@/app/data/events";
 import Link from "next/link";
 
-export interface Ticket{
+export interface Tiers{
   id: string;
-  name: string;
+  tier_name: string;
   price: number;
   quantity: number;
   gst: number;
-  salesStart: string;
-  salesEnd: string;
+  sales_start: string;
+  sales_end: string;
 }
 export interface Event {
   id: string;
-  name: string;
+  title: string;
   date: string;
   time: string;
-  venue: string;
-  venueAddress: string;
+  venue_name: string;
+  address: string;
   capacity: number;
   timezone: string;
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   status: "ON SALE" | "UPCOMING" | "SOLD OUT" | string;
-  tickets: Ticket[];
+  tiers: Tiers[];
   tags: string[];
   description: string;
-  image: string;
+  banner_image: string;
+  price: number;
 }
 
 const events: Event[] = eventsData as Event[];
@@ -89,8 +90,8 @@ export default function Events() {
             {/* Image */}
             <div className="relative h-40">
               <Image
-                src={event.image}
-                alt={event.name}
+                src={event.banner_image}
+                alt={event.title}
                 fill={true}
                 className="w-full h-full object-cover"
               />
@@ -126,7 +127,7 @@ export default function Events() {
 
               {/* Title */}
               <h3 className="text-lg font-semibold text-gray-900">
-                {event.name}
+                {event.title}
               </h3>
 
               {/* Date & Location */}
@@ -136,7 +137,7 @@ export default function Events() {
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="w-4 h-4" />
-                {event.venueAddress}
+                {event.address}
               </div>
 
               {/* Actions */}

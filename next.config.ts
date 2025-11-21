@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
    images: {
     unoptimized: true, 
   },
+  transpilePackages: ["shared_ui"],
 };
 
 export default nextConfig;

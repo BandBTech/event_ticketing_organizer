@@ -32,8 +32,8 @@ export default function StaffDashboardHomePage() {
             >
               {/* Event Image */}
               <Image
-                src={event.image}
-                alt={event.name}
+                src={event.banner_image}
+                alt={event.title}
                 width={400}
                 height={250}
                 className="w-full xl:w-64 h-48 object-cover"
@@ -55,7 +55,7 @@ export default function StaffDashboardHomePage() {
                   </div>
 
                   {/* Name */}
-                  <h2 className="font-semibold  text-lg">{event.name}</h2>
+                  <h2 className="font-semibold  text-lg">{event.title}</h2>
 
                   {/* Date */}
                   <div className="flex items-center text-sm text-gray-500 gap-2">
@@ -99,8 +99,8 @@ export default function StaffDashboardHomePage() {
               className="bg-white  shadow rounded-xl overflow-hidden"
             >
               <Image
-                src={event.image}
-                alt={event.name}
+                src={event.banner_image}
+                alt={event.title}
                 width={400}
                 height={250}
                 className="w-full h-48 object-cover"
@@ -120,7 +120,7 @@ export default function StaffDashboardHomePage() {
                 </div>
 
                 {/* Name */}
-                <h2 className="font-semibold text-lg">{event.name}</h2>
+                <h2 className="font-semibold text-lg">{event.title}</h2>
 
                 {/* Date */}
                 <div className="flex items-center text-sm text-gray-500 gap-2">
