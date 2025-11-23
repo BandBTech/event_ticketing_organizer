@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, Mail, KeyRound, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   useLoading,
-  ButtonLoader,
   LinkLoader,
 } from "@/components/layout/loader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormData, loginSchema } from "@/lib/validation";
 import { useForm } from "react-hook-form";
-import Header from "@/components/layout/header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

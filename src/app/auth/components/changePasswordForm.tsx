@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { ResetPasswordFormData, resetPasswordSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ZodEmail } from "zod";
+
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
