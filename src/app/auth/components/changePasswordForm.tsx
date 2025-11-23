@@ -71,6 +71,7 @@ export default function ResetPassword() {
     setTimeout(()=>{
       router.push("/auth/pages/login");
     }, 1500);
+
   }catch(err){
     setError("Server Error. Please try again later")
   }finally{
