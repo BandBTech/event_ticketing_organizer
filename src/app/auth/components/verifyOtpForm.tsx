@@ -64,14 +64,15 @@ export default function VerifyOtpContent() {
       setError("Email is required.");
       return;
     }
-    
+   
+
     setSubmitting(true);
     try {
       const payload ={
         identifier: email.trim(),
         otp_code: otpCode,
         otp_type: type ==="reset" ? "password_reset" : "registration",
-        role: "user"
+       
       };
 
       const res = await fetch(
@@ -87,6 +88,7 @@ export default function VerifyOtpContent() {
         setError(data.message || data.error || "Invalid OTP. Please try again");
         return;
       }
+
       setSuccess("OTP verified successfully!");
       
       if (localStorage.getItem("signup_email")) {
@@ -96,10 +98,10 @@ export default function VerifyOtpContent() {
       setTimeout(() => {
         if (type === "reset") {
           router.push(
-            `/auth/pages/resetpassword?email=${encodeURIComponent(email)}&token=${data.reset_token}`
+            `/auth/pages/resetpassword?email=${encodeURIComponent(email)}&otp=${otpCode}`
           );
         } else {
-          router.push("/auth/pages/login");
+          router.push(`/auth/pages/createpassword?email=${encodeURIComponent(email)}&otp=${otpCode}`);
         }
       }, 1500);
     } catch (err) {
@@ -115,6 +117,7 @@ export default function VerifyOtpContent() {
       setError("Missing email address!");
       return;
     }
+  
     setError("");
     setSuccess("");
     setResending(true);
@@ -122,7 +125,7 @@ export default function VerifyOtpContent() {
       const payload = {
         identifier: email.trim(),
         otp_type: type === "reset" ? "password_reset" : "registration",
-        role: "user"
+  
       };
       const res = await fetch(
         "https://sandbox.timroticket.com/api/v1/auth/organizer/send-otp",
@@ -135,6 +138,7 @@ export default function VerifyOtpContent() {
       const data = await res.json();
       if (!res.ok) setError(data.message || "Failed to resend OTP");
 
+  
       setSuccess("New OTP sent to your email!");
     } catch (err) {
       console.error("Error resending OTP:", err);

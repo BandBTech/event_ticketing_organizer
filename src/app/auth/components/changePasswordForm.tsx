@@ -8,21 +8,23 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { ResetPasswordFormData, resetPasswordSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ZodEmail } from "zod";
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [otp, setOtp] = useState("");
   const { isLoading, startLoading, stopLoading } = useLoading();
     const [email, setEmail] = useState("");
-  const [resetToken, setResetToken] = useState("");
   const router = useRouter();
+
  
 
    useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     setEmail(searchParams.get("email") || "");
-    setResetToken(searchParams.get("token") || "");
+    setOtp(searchParams.get("otp") || "");
   }, []);
 
   const {
@@ -34,9 +36,8 @@ export default function ResetPassword() {
     setError("");
     setSuccess("");
 
-    if(!resetToken || !email){
-      setError("Missing Email or Token. Please try the reset process again");
-    ;
+    if(!email ||!otp ){
+      setError("Missing required information. Please try again.");
     return;
   }
   
@@ -47,7 +48,8 @@ export default function ResetPassword() {
       new_password: data.password,
       confirm_password: data.confirmPassword,
       email_token: email,
-      reset_token: resetToken
+      otp: otp,
+      role: "organizer"
     };
     const res = await fetch(
       "https://sandbox.timroticket.com/api/v1/auth/organizer/reset-password",
@@ -65,6 +67,7 @@ export default function ResetPassword() {
       return;
     }
     setSuccess("Password reset successfully! Redirecting to login...");
+
     setTimeout(()=>{
       router.push("/auth/pages/login");
     }, 1500);

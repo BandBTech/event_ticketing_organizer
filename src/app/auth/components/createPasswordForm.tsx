@@ -2,65 +2,71 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreatePasswordFormData, createPasswordSchema } from "@/lib/validation";
 import { EyeClosedIcon, EyeIcon, KeyIcon } from "@phosphor-icons/react";
 
-export default function CreatePassword(){
-    const router = useRouter();
-    const search = useSearchParams();
-    const email = search.get("email");
-    const [showPassword, setShowPassword] = useState(false);
+export default function CreatePassword() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-    const {
-        register,
-        handleSubmit,
-        formState:{
-            errors, isSubmitting
-        },
-    } = useForm({
-        resolver: zodResolver(createPasswordSchema),
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setEmail(params.get("email") || "");
+    setToken(params.get("token") || "");
+  }, []);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(createPasswordSchema),
+  });
 
-    });
-
-    const onSubmit = async (data: CreatePasswordFormData) => {
-        if(!email){
-            setError("Missing email. Try again.");
-            return;
+  const onSubmit = async (data: CreatePasswordFormData) => {
+    if (!email) {
+      setError("Missing email. Try again.");
+      return;
+    }
+    if (!token) {
+      setError("Missing token. Try again.");
+    }
+    setError("");
+    setSuccess("");
+    try {
+      const res = await fetch(
+        "https://sandbox.timroticket.com/api/v1/auth/organizer/set-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email,
+            password: data.password,
+            token: token,
+          }),
         }
-        setError("");
-        setSuccess("");
-        try{
-            const res = await fetch(
-                "https://sandbox.timroticket.com/api/v1/auth/organizer/set-password",
-                {
-                    method: "POST",
-                    headers:{"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        email: email,
-                        password: data.password,
-                    }),
-                }
-            );
-            const result = await res.json();
-            if(!res.ok){
-                setError(result.message || "Failed to create password");
-                return;
-            }
-            setSuccess("Password created successfully! Redirecting...");
-            setTimeout(()=>{
-                router.push("/auth/pages/login");
-            }, 1500);
-        }catch(err){
-            console.error(err);
-            setError("Server error. Try agin later");
-        }
-    };
-    return(
-         <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 space-y-6">
+      );
+      const result = await res.json();
+      if (!res.ok) {
+        setError(result.message || "Failed to create password");
+        return;
+      }
+      setSuccess("Password created successfully! Redirecting...");
+      setTimeout(() => {
+        router.push("/auth/pages/login");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Try agin later");
+    }
+  };
+  return (
+    <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Create Password</h1>
       <p className="text-sm text-gray-600">
         Set a password for: <strong>{email}</strong>
@@ -85,7 +91,11 @@ export default function CreatePassword(){
               className="absolute right-3 top-1/2 -translate-y-1/2"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeIcon className="text-gray-400"  /> : <EyeClosedIcon className="text-gray-400" />}
+              {showPassword ? (
+                <EyeIcon className="text-gray-400" />
+              ) : (
+                <EyeClosedIcon className="text-gray-400" />
+              )}
             </button>
           </div>
           {errors.password && (
@@ -113,7 +123,11 @@ export default function CreatePassword(){
               className="absolute right-3 top-1/2 -translate-y-1/2"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeIcon className="text-gray-400" /> : <EyeClosedIcon className="text-gray-400" />}
+              {showPassword ? (
+                <EyeIcon className="text-gray-400" />
+              ) : (
+                <EyeClosedIcon className="text-gray-400" />
+              )}
             </button>
           </div>
           {errors.confirmPassword && (
@@ -135,6 +149,5 @@ export default function CreatePassword(){
         </button>
       </form>
     </div>
-    );
-
+  );
 }

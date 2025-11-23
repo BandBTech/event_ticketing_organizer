@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-    if(token) router.push("/organizerDashboard");
+    if(token) router.push("/organizerdashboard");
   }, [router]);
   return (
     <div className="min-h-screen flex flex-col">
