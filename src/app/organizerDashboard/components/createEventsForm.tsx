@@ -109,7 +109,7 @@ export default function CreateEventPage() {
       };
 
       addEvent(newEvent);
-      router.push("/organizerdashboard/pages/events");
+      router.push("/organizerDashboard/pages/events");
     } catch (error) {
       console.error("Error creating event:", error);
     }

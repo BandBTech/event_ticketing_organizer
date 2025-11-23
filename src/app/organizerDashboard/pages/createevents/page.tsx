@@ -1,4 +1,4 @@
-import CreateEvents from "@/app/organizerdashboard/components/createEventsForm";
+import CreateEvents from "@/app/organizerDashboard/components/createEventsForm";
 
 export default function CreateEventsPage(){
     return <CreateEvents/>;

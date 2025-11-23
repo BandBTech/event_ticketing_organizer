@@ -68,7 +68,7 @@ export default function Login() {
       }
 
       localStorage.setItem("auth_token", result.token);
-      router.push("/organizerdashboard");
+      router.push("/organizerDashboard");
     } catch (err) {
       console.error(err);
       setError("Server Error");
