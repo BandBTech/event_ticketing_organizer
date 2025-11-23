@@ -67,7 +67,7 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("auth_token", result.token);
+      localStorage.setItem("auth_token", result.data.access_token);
       router.push("/organizerDashboard");
     } catch (err) {
       console.error(err);

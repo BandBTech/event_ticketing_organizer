@@ -51,10 +51,7 @@ export default function DashboardHeader() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    router.push("/auth/pages/login");
-  };
+
   return (
     <>
       <header className="flex items-center justify-between ">
@@ -71,13 +68,7 @@ export default function DashboardHeader() {
             </button>
             
           )}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-md"
-          >
-            <SignOutIcon className="h-4 w-4" />
-            Logout
-          </button>
+      
           <LanguageSelector />
           <div className="flex items-center gap-1 bg-gray-100  px-3 py-2 rounded-full shadow-md cursor-pointer">
             <BellIcon className="h-4 w-4 text-gray-800 " />
