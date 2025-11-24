@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
 import { useTranslation } from '@/hooks/useTranslation';
@@ -102,7 +103,7 @@ export const signupSchema = z.object({
     .string()
     .trim()
     .min(2, "First Name must be at least 2 characters.")
-    .max(50, "First name cannor exceed 50 characters")
+    .max(50, "First name cannot exceed 50 characters.")
     .regex(/^[A-Za-z\s'-]+$/, "First name can only conatin letters and spaces."),
 
   last_name: z

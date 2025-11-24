@@ -112,6 +112,7 @@ export default function Sidebar({
     }
 
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("refresh_token");
     router.push("/auth/pages/login");
   };
     useEffect(() => {
