@@ -83,7 +83,8 @@
         "loginFailed": "Login failed. Please try again."
       },
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "asOrganizer": "as Organizer"
     },
     "signup": {
       "title": "Register",
@@ -131,7 +132,8 @@
       },
       "showPassword": "Show password",
       "hidePassword": "Hide password",
-      "setPassword": "Create a secure password for"
+      "setPassword": "Create a secure password for",
+      "loginAsOrganizer": "Sign in as Organizer."
     },
     "forgotPassword": {
       "title": "Forgot Password",

@@ -269,34 +269,61 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/store/authStore";
-import { AuthError } from "@/services/authService";
+import { AuthError } from "@/lib/authService";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { tokenManager } from "@/lib/tokenManager";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createLoginSchema } from "@/lib/validation";
+import { createValidationHelpers } from "@/lib/validation";
 
+// Create validation schema with translations
+const createLoginSchema = (
+  t: (key: string, fallback?: string) => string
+) => {
+  const v = createValidationHelpers(t);
 
+  return z.object({
+    email: z.string().min(1, v.required("Email")).email(v.email("Email")),
+    password: z
+      .string()
+      .min(1, v.required("Password"))
+      .min(8, v.minLength("Password", 8))
+      .max(100, v.maxLength("Password", 100))
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+      .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
+      .regex(/[0-9]/, v.passwordNumber()),
+    rememberMe: z.boolean(),
+  });
+};
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { login, isLoading, clearError } = useAuthStore();
+  const { login, isLoading, clearError, isAuthenticated } = useAuthStore();
 
   const [loginError, setLoginError] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/organizerDashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const loginSchema = createLoginSchema(t);
   type LoginFormData = z.infer<typeof loginSchema>;
 
+  // Check for saved credentials on component mount
+  const savedCredentials = tokenManager.getSavedCredentials();
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
+      email: savedCredentials?.email || "",
+      password: savedCredentials?.password || "",
+      rememberMe: tokenManager.hasCredentialsSaved(),
     },
     mode: "onBlur",
   });
@@ -308,20 +335,6 @@ export default function LoginPage() {
     watch,
     formState: { errors },
   } = form;
-
-  // Load saved credentials on client side only
-  useEffect(() => {
-    const savedCredentials = tokenManager.getSavedCredentials();
-    const hasSaved = tokenManager.hasCredentialsSaved();
-
-    if (savedCredentials) {
-      setValue("email", savedCredentials.email);
-      setValue("password", savedCredentials.password);
-    }
-    if (hasSaved) {
-      setValue("rememberMe", true);
-    }
-  }, [setValue]);
 
   const rememberMe = watch("rememberMe") ?? false;
 
@@ -349,18 +362,16 @@ export default function LoginPage() {
       // Show success toast
       toast.success("auth.toast.loginSuccess", "Welcome back!");
 
-      // Redirect to homepage
-      router.push("/");
+      // Redirect to organizer dashboard
+      router.push("/organizerDashboard");
     } catch (error) {
-      console.error("Login failed:", error);
-
       // Handle different error types and show toast
       if (error instanceof AuthError) {
         switch (error.code) {
           case "UNAUTHORIZED":
             toast.error(
-              "auth.toast.invalidCredentials",
-              "Invalid email or password"
+              "",
+              error.message || "Invalid email or password"
             );
             break;
           case "NETWORK_ERROR":
@@ -395,7 +406,7 @@ export default function LoginPage() {
                     {t("auth.login.title")}
                   </h1>
                   <span className="text-sm font-medium text-blue-500">
-                    {t("auth.login.subtitle")}
+                    {t("auth.login.asOrganizer")}
                   </span>
                 </div>
               </div>
@@ -540,8 +551,8 @@ export default function LoginPage() {
                   </div>
 
                   <Link
-                    href="/forgot-password"
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    href="/auth/pages/forgotpassword"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                   >
                     {t("auth.login.forgotPassword")}
                   </Link>
@@ -572,7 +583,7 @@ export default function LoginPage() {
                 <p className="text-sm text-gray-600">
                   {t("auth.login.noAccount")}{" "}
                   <Link
-                    href="/signup"
+                    href="/auth/pages/register"
                     className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
                     {t("auth.login.signUpHere")}

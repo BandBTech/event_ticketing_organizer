@@ -46,6 +46,10 @@ interface OrganizerProfile {
   business_logo_url?: string;
 }
 
+import { useAuthStore } from "@/store/authStore";
+
+// ... existing imports ...
+
 export default function Sidebar({
   showSidebar,
   setShowSidebar,
@@ -57,6 +61,7 @@ export default function Sidebar({
   const router = useRouter();
   const [user, setUser] = useState<OrganizerProfile | null>(null);
   const [openMenu, setOpenMenu] = useState(false);
+  const { logout } = useAuthStore();
 
   useEffect(() => {
 
@@ -98,22 +103,13 @@ export default function Sidebar({
 
   const handleLogout = async () => {
     try {
-        const token = localStorage.getItem("auth_token");
-    if (!token) return;
-      await fetch("https://sandbox.timroticket.com/api/v1/auth/logout", {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await logout();
+      router.push("/auth/pages/login");
     } catch (error) {
       console.error("Logout error", error);
+      // Force redirect even if API fails
+      router.push("/auth/pages/login");
     }
-
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("refresh_token");
-    router.push("/auth/pages/login");
   };
     useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

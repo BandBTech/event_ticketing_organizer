@@ -6,6 +6,8 @@ import DashboardHeader from "@/components/layout/dashboardHeader";
 import { useRouter } from "next/navigation";
 import { UserProvider } from "@/app/contexts/UserContext";
 
+import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -15,19 +17,19 @@ export default function DashboardLayout({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) router.push("/auth/pages/login");
-    else setIsAuthenticated(true);
-  }, [router]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("auth_token");
+  //   if (!token) router.push("/auth/pages/login");
+  //   else setIsAuthenticated(true);
+  // }, [router]);
 
-  if (isAuthenticated === null) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Checking authentication...
-      </div>
-    );
-  }
+  // if (isAuthenticated === null) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       Checking authentication...
+  //     </div>
+  //   );
+  // }
 
   return (
     <UserProvider>
@@ -46,6 +48,7 @@ export default function DashboardLayout({
         <DashboardHeader />
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+        <CompleteProfileDialog />
     </div>
     </UserProvider>
   );

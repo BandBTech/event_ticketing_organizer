@@ -1,3 +1,5 @@
+import { setCookie, deleteCookie, getCookie } from 'cookies-next';
+
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const REMEMBER_ME_KEY = 'remember_me';
@@ -15,10 +17,31 @@ class TokenManager {
   setTokens(accessToken: string, refreshToken: string, rememberMe: boolean = false): void {
     if (typeof window === 'undefined') return;
 
-    // Always store tokens in localStorage for cross-tab synchronization
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    localStorage.setItem(REMEMBER_ME_KEY, rememberMe ? 'true' : 'false');
+    // Common cookie options
+    const cookieOptions = {
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const
+    };
+
+    if (rememberMe) {
+      // Persistent: Store in localStorage AND Persistent Cookies (30 days)
+      localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+      localStorage.setItem(REMEMBER_ME_KEY, 'true');
+
+      setCookie('auth_token', accessToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 });
+      setCookie('refresh_token_cookie', refreshToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 });
+    } else {
+      // Session: Store ONLY in Session Cookies (cleared on browser close)
+      // Remove from localStorage to ensure no persistence
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.setItem(REMEMBER_ME_KEY, 'false');
+
+      setCookie('auth_token', accessToken, cookieOptions);
+      setCookie('refresh_token_cookie', refreshToken, cookieOptions);
+    }
   }
 
   /**
@@ -89,7 +112,7 @@ class TokenManager {
    */
   getAccessToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
+    return localStorage.getItem(ACCESS_TOKEN_KEY) || (getCookie('auth_token') as string) || null;
   }
 
   /**
@@ -97,7 +120,7 @@ class TokenManager {
    */
   getRefreshToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
+    return localStorage.getItem(REFRESH_TOKEN_KEY) || (getCookie('refresh_token_cookie') as string) || null;
   }
 
   /**
@@ -117,6 +140,10 @@ class TokenManager {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(REMEMBER_ME_KEY);
+
+    // Remove cookies
+    deleteCookie('auth_token', { path: '/' });
+    deleteCookie('refresh_token_cookie', { path: '/' });
   }
 
   hasTokens(): boolean {

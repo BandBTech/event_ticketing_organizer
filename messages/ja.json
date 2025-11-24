@@ -11,5 +11,10 @@
     "noResults": "イベントが見つかりません",
     "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
     "cancelButton": "キャンセル"
+  },
+  "auth": {
+    "signup": {
+      "loginAsOrganizer": "オーガナイザーとしてサインインします。"
+    }
   }
 }
