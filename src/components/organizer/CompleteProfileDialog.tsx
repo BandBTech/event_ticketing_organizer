@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/store/authStore";
-import { BuildingOfficeIcon, FileTextIcon } from "@phosphor-icons/react";
+import { BuildingOfficeIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/ui/shadcn-io/dropzone";
 
@@ -64,9 +64,10 @@ export function CompleteProfileDialog() {
       toast.success("profile.updateSuccess", "Profile updated successfully!");
       setIsOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to update profile", error);
-      toast.error("profile.updateError", error.message || "Failed to update profile");
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
+      toast.error("profile.updateError", errorMessage);
     },
   });
 

@@ -277,6 +277,6 @@ export const api = {
     apiRequest<T>(endpoint, {
       ...config,
       method: 'PUT',
-      body: formData as any, // FormData is valid RequestInit body
+      body: formData,
     }),
 };

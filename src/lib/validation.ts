@@ -162,11 +162,12 @@ export const eventSchema = z
 //   });
 
 
-export type CreatePasswordFormData = z.infer<typeof createPasswordSchema>;
-export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
-export type SignupFormData = z.infer<typeof signupSchema>;
-export type LoginFormData = z.infer<typeof createLoginSchema>;
+
+// export type CreatePasswordFormData = z.infer<typeof createPasswordSchema>;
+// export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+// export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+// export type SignupFormData = z.infer<typeof signupSchema>;
+// export type LoginFormData = z.infer<typeof createLoginSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
 export type TicketFormData = z.infer<typeof ticketSchema>;
 export type PromoCodeFormData = z.infer<typeof promoCodeSchema>;

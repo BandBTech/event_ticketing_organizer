@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authService, AuthError } from '@/lib/authService';
 import { tokenManager } from '@/lib/tokenManager';
-import { AuthUser, LoginRequest } from '@/types/auth';
+import { AuthUser, LoginRequest, UserProfileResponse } from '@/types/auth';
 
 interface AuthStore {
   // State
@@ -113,7 +113,7 @@ export const useAuthStore = create<AuthStore>()(
             countryCode: profile.country_code,
             isEmailVerified: profile.is_email_verified,
             organization: profile.organization,
-            roles: (profile as any).roles || [], // Cast to any if roles are missing from type definition but present in API
+            roles: [],
           };
 
           set({
@@ -167,7 +167,9 @@ export const useAuthStore = create<AuthStore>()(
       hasRole: (role: string) => {
         const { user } = get();
         if (!user || !user.roles) return false;
-        return user.roles.some((r: any) => r.name === role || r === role);
+        return user.roles.some((r: string | { name: string }) =>
+          typeof r === 'string' ? r === role : r.name === role
+        );
       },
 
       // Clear error

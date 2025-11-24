@@ -108,8 +108,8 @@ class AuthService {
   /**
    * Get organizer profile information
    */
-  async getOrganizerProfile(): Promise<any> {
-    return await api.get<any>('/organizer/profile', {
+  async getOrganizerProfile(): Promise<Record<string, unknown>> {
+    return await api.get<Record<string, unknown>>('/organizer/profile', {
       requiresAuth: true,
     });
   }
@@ -131,7 +131,7 @@ class AuthService {
     business_name: string;
     business_description?: string;
     business_logo?: File;
-  }): Promise<any> {
+  }): Promise<Record<string, unknown>> {
     const formData = new FormData();
     formData.append('business_name', data.business_name);
     if (data.business_description) {
@@ -141,7 +141,7 @@ class AuthService {
       formData.append('business_logo', data.business_logo);
     }
 
-    return await api.putFormData<any>('/organizer/profile', formData, {
+    return await api.putFormData<Record<string, unknown>>('/organizer/profile', formData, {
       requiresAuth: true,
       showSuccessToast: false, // Let component handle success toast
       showErrorToast: false, // Let component handle error toast
