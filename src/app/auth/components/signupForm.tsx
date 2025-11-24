@@ -1,242 +1,239 @@
+// components/auth/BasicInfoForm.tsx
 "use client";
 
-import { useState } from "react";
-import {  Mail, MoveRight } from "lucide-react";
-import Link from "next/link";
-import { UserIcon } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { SignupFormData, signupSchema } from "@/lib/validation";
+import { useForm, Controller } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { cn } from "@/lib/utils";
+import { BasicInfoData, createBasicInfoSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UserIcon, EnvelopeSimpleIcon, ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
+import type { Country } from "react-phone-number-input";
+import Link from "next/link";
 
-type CountryOption = {
-  code: string;
-  dialCode: string;
-};
+interface BasicInfoFormProps {
+  isLoading: boolean;
+  defaultCountry: Country;
+  onBasicInfoSubmit: (data: BasicInfoData) => Promise<void>;
+}
 
-const countries: CountryOption[] = [
-  { code: "US", dialCode: "+1" },
-  { code: "DK", dialCode: "+45" },
-  { code: "NPL", dialCode: "+977" },
-  { code: "GB", dialCode: "+44" },
-];
-
-export default function Signup() {
-
-  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(
-    countries[0]
-  );
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const router = useRouter();
-const {register, handleSubmit, formState:{errors, isSubmitting},}= useForm<SignupFormData>({
-  resolver: zodResolver(signupSchema),
-});
-  const onSubmit = async (data: SignupFormData) => {
-
-setError("");
-setSuccess("");
-    try {
-      const res = await fetch(
-        "https://sandbox.timroticket.com/api/v1/auth/organizer/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: data.email,
-            phone: data.phone,
-            first_name : data.first_name,
-            last_name: data.last_name,
-            country_code: selectedCountry.dialCode,
-          }),
-        }
-      );
-      const result = await res.json();
-    
-
-      if (!res.ok) {
-        setError(result.message || result.error || "Registration failed");
-        return;
-      }
-
-      setSuccess("Account created successfully! Please verify your email.");
-      
-      setTimeout(() => {
-        localStorage.setItem("signup_email", data.email);
-        router.push(`/auth/pages/verifyotp?email=${encodeURIComponent(data.email)}`);
-      }, 1500);
-    } catch (err) {
-      console.error("Error registering:", err);
-      setError("Server error -please try again later.");
-    }
-
-  };
+export default function BasicInfoForm({
+  isLoading,
+  defaultCountry,
+  onBasicInfoSubmit,
+}: BasicInfoFormProps) {
+  const basicInfoSchema = createBasicInfoSchema();
+  const basicInfoForm = useForm<BasicInfoData>({
+    resolver: zodResolver(basicInfoSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    },
+    mode: "onChange",
+  });
 
   return (
-    <div className="w-full max-w-md bg-white  shadow-lg rounded-2xl p-8 space-y-6">
-      {/* Header */}
-      <div className="text-left">
-        <h1 className="text-2xl font-bold text-gray-900 ">
-          Register{" "}
-          <span className="text-blue-600 text-sm font-normal">
-            as Organizer
-          </span>
-        </h1>
-      </div>
+    <>
+      <form onSubmit={basicInfoForm.handleSubmit(onBasicInfoSubmit)} className="space-y-6">
+        {/* Name Fields */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label
+              htmlFor="firstName"
+              className="text-sm font-medium text-gray-900 block"
+            >
+              First Name
+            </label>
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                <UserIcon
+                  weight="duotone"
+                  size={24}
+                  className="text-gray-600"
+                />
+              </div>
+              <Input
+                id="firstName"
+                type="text"
+                placeholder="Enter first name"
+                className={cn(
+                  "h-12 pl-14 pr-4 login-input",
+                  basicInfoForm.formState.errors.firstName &&
+                    "border-destructive"
+                )}
+                {...basicInfoForm.register("firstName")}
+              />
+            </div>
+            {basicInfoForm.formState.errors.firstName && (
+              <p className="text-sm text-destructive">
+                {basicInfoForm.formState.errors.firstName.message}
+              </p>
+            )}
+          </div>
 
-      {/* Form */}
-      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-2">
+            <label
+              htmlFor="lastName"
+              className="text-sm font-medium text-gray-900 block"
+            >
+              Last Name
+            </label>
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                <UserIcon
+                  weight="duotone"
+                  size={24}
+                  className="text-gray-600"
+                />
+              </div>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Enter last name"
+                className={cn(
+                  "h-12 login-input pl-14 pr-4",
+                  basicInfoForm.formState.errors.lastName &&
+                    "border-destructive"
+                )}
+                {...basicInfoForm.register("lastName")}
+              />
+            </div>
+            {basicInfoForm.formState.errors.lastName && (
+              <p className="text-sm text-destructive">
+                {basicInfoForm.formState.errors.lastName.message}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Email Field */}
         <div className="space-y-2">
           <label
             htmlFor="email"
-            className="text-sm font-medium text-gray-700"
+            className="text-sm font-medium text-gray-900 block"
           >
             Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <EnvelopeSimpleIcon
+                weight="duotone"
+                size={24}
+                className="text-gray-600"
+              />
+            </div>
+            <Input
               id="email"
               type="email"
               placeholder="Enter email address"
-           {...register("email")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
+              className={cn(
+                "h-12 pl-14 pr-4 login-input",
+                basicInfoForm.formState.errors.email && "border-destructive"
+              )}
+              {...basicInfoForm.register("email")}
             />
-        
           </div>
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+          {basicInfoForm.formState.errors.email && (
+            <p className="text-sm text-destructive">
+              {basicInfoForm.formState.errors.email.message}
+            </p>
+          )}
         </div>
 
-    {/* First Name Field */}
+        {/* Phone Field */}
         <div className="space-y-2">
-          <label
-            htmlFor="first_name"
-            className="text-sm font-medium text-gray-700 "
-          >
-            First Name
-          </label>
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              id="first_name"
-              type="text"
-              placeholder="Enter First Name"
-           {...register("first_name")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
-            />
-    
-          </div>
-                  {errors.first_name && <p className="text-sm text-red-500">{errors.first_name.message}</p>}
-        
-        </div>
-            {/* Last Name Field */}
-        <div className="space-y-2">
-          <label
-            htmlFor="last_name"
-            className="text-sm font-medium text-gray-700 "
-          >
-            Last Name
-          </label>
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              id="last_name"
-              type="text"
-              placeholder="Enter last name"
-          {...register("last_name")}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white  text-gray-900 "
-            />
-    
-        
-          </div>
-                  {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
-        </div>
-        {/* Phone Input */}
-        <div>
           <label
             htmlFor="phone"
-            className="text-sm font-medium text-gray-700 "
+            className="text-sm font-medium text-gray-900 block"
           >
             Contact Number
           </label>
-          <div className="flex mt-1 text-gray-700">
-            <select
-              value={selectedCountry.code}
-              onChange={(e) =>
-                setSelectedCountry(
-                  countries.find((c) => c.code === e.target.value) ||
-                    countries[0]
-                )
-              }
-              className="rounded-l-lg border border-gray-300  bg-gray-100  px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.code} {country.dialCode}
-                </option>
-              ))}
-            </select>
-            <input
-              id="phone"
-              type="text"
-              inputMode="numeric"
-              placeholder="Enter phone number"
-             {...register("phone")}
-         
-              className="flex-1 rounded-r-lg border border-l-0 border-gray-300  px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white  text-gray-900 "
-            />
-
-          </div>
-                      {errors.phone && <p className="text-sm text-red-500">{errors.phone.message}</p>}
-        
+          <Controller
+            name="phone"
+            control={basicInfoForm.control}
+            render={({ field }) => (
+              <PhoneInput
+                value={field.value}
+                onChange={field.onChange}
+                defaultCountry={defaultCountry}
+                placeholder="Enter valid contact number"
+                className={cn(
+                  basicInfoForm.formState.errors.phone && "border-destructive"
+                )}
+              />
+            )}
+          />
+          {basicInfoForm.formState.errors.phone && (
+            <p className="text-sm text-destructive">
+              {basicInfoForm.formState.errors.phone.message}
+            </p>
+          )}
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {success && <p className="text-sm text-green-500">{success}</p>}
-
-        {/* Submit Button */}
-        <button
+        <Button
           type="submit"
-         
-          className="relative w-full flex items-center gap-2 justify-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+          disabled={isLoading}
+          className={cn(
+            "w-full h-12 rounded-lg font-medium",
+            "bg-blue-600 hover:bg-blue-700 text-white",
+            "shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+          )}
         >
-          {isSubmitting ? "Submitting..." : "Get Started"}
-          <MoveRight className="w-4 h-4" />
-        </button>
+          {isLoading ? (
+            "Sending verification code..."
+          ) : (
+            <>
+              Continue
+              <ArrowRightIcon size={20} weight="bold" />
+            </>
+          )}
+        </Button>
       </form>
 
-      {/* Footer Link */}
-      <p className="text-center text-sm text-gray-600 ">
-        Already have an account?{" "}
-        <Link
-          href="/auth/pages/login"
-          className="text-blue-600 hover:underline"
-        >
-          Sign in as Organizer.
-        </Link>
-      </p>
+      {/* Footer */}
+      <div className="space-y-4">
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/auth/pages/login"
+              className="font-medium text-blue-600 hover:text-blue-700"
+            >
+              Sign in as Organizer.
+            </Link>
+          </p>
+        </div>
 
-      <div className="my-4 border-t border-gray-300 " />
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200/50"></div>
+          </div>
+        </div>
 
-      <p className="text-center text-sm text-gray-600 ">
-        By continuing, you consent to the fact that you have read and understood
-        our{" "}
-        <Link
-          href="/termsandconditions"
-          className="text-blue-600 hover:underline"
-        >
-          terms and conditions{" "}
-        </Link>
-        and{" "}
-        <Link href="/policy" className="text-blue-600 hover:underline">
-          privacy policy{" "}
-        </Link>
-      </p>
-    </div>
-    // </main>
+        <div className="text-center pt-3">
+          <p className="text-xs text-gray-600 leading-relaxed">
+            By continuing, you consent to the fact that you have read and
+            understood our{" "}
+            <Link
+              href="/terms"
+              className="text-blue-600 hover:text-blue-700 underline"
+            >
+              terms and conditions
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              className="text-blue-600 hover:text-blue-700 underline"
+            >
+              privacy policy
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
 const dateString = z
@@ -87,7 +88,7 @@ export const signupSchema = z.object({
     .string()
     .trim()
     .min(2, "First Name must be at least 2 characters.")
-    .max(50, "First name cannor exceed 50 characters")
+    .max(50, "First name cannot exceed 50 characters.")
     .regex(/^[A-Za-z\s'-]+$/, "First name can only conatin letters and spaces."),
 
   last_name: z
@@ -135,15 +136,70 @@ export const forgotPasswordSchema= z.object({
   .pipe(z.email("Please enter a valid email address.")),
 });
 
-export const createPasswordSchema = z
-.object({
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, "Please confirm your password."),
-})
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match.",
+
+export const createValidationHelpers = () => ({
+  required: (field: string) => `${field} is required.`,
+  minLength: (field: string, min: number) => `${field} must be at least ${min} characters`,
+  maxLength: (field: string, max: number) => `${field} must be less than ${max} characters`,
+  email: () => "Please enter a valid email address.",
+  phone: () => "Please enter a valid phone number.",
+  passwordUppercase: () => "Password must contain at least one uppercase letter.",
+  passwordLowercase: () => "Password must contain at least one lowercase letter.",
+  passwordNumber: () => "Password must contain at least one number.",
+  passwordMatch: () => "Passwords do not match.",
+});
+
+// Step 1: Basic Info Schema
+export const createBasicInfoSchema = () => {
+  const v = createValidationHelpers();
+
+  return z.object({
+    firstName: z
+      .string()
+      .min(1, v.required("First name"))
+      .min(3, "First name must be at least 3 characters.")
+      .max(50, "First name must be less than 50 characters."),
+    lastName: z
+      .string()
+      .min(1, v.required("Last name"))
+      .min(3, "Last name must be at least 3 characters.")
+      .max(50, "Last name must be less than 50 characters."),
+    email: z.string().min(1, "Email is required.").email("Please enter a valid email address."),
+    phone: z
+      .string()
+      .min(1, "Contact number is required.")
+      .refine((val) => isValidPhoneNumber(val), "Please enter a valid phone number."),
   });
+};
+
+// Step 2: OTP Schema
+export const createOTPSchema = () => {
+  return z.object({
+    otp: z.string().length(6, "OTP must be 6 digits."),
+  });
+};
+
+// Step 3: Password Schema
+export const createPasswordSchema = () => {
+  const v = createValidationHelpers();
+
+  return z
+    .object({
+      password: z
+        .string()
+        .min(1, "Password is required.")
+        .min(8, "Password must be at least 8 characters.")
+        .max(100, "Password is too long.")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter.")
+        .regex(/[0-9]/, "Password must contain at least one number."),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords do not match.",
+      path: ["confirmPassword"],
+    });
+};
 
 
 export type CreatePasswordFormData = z.infer<typeof createPasswordSchema>;
@@ -154,3 +210,10 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
 export type TicketFormData = z.infer<typeof ticketSchema>;
 export type PromoCodeFormData = z.infer<typeof promoCodeSchema>;
+export type BasicInfoData = z.infer<ReturnType<typeof createBasicInfoSchema>>;
+export type OTPFormData = z.infer<ReturnType<typeof createOTPSchema>>;
+export type PasswordData = z.infer<ReturnType<typeof createPasswordSchema>>;
+export type LoginData = z.infer<typeof loginSchema>;
+export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
+

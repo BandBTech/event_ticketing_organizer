@@ -68,6 +68,7 @@ export default function Login() {
       }
 
       localStorage.setItem("auth_token", result.data.access_token);
+      localStorage.setItem("refresh_token", result.data.refresh_token);
       router.push("/organizerDashboard");
     } catch (err) {
       console.error(err);
@@ -239,7 +240,7 @@ export default function Login() {
       <div className="text-center text-sm text-gray-600 ">
         Don&apos;t have an account?{" "}
         <LinkLoader
-          href="/auth/pages/signup"
+          href="/auth/pages/register"
           isLoading={isSigningUp}
           onClick={handleSignupClick}
           loadingText="Processing..."
