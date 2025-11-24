@@ -1,0 +1,15 @@
+{
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Qualcosa è andato storto",
+    "search": "Cerca",
+    "filter": "Filtro",
+    "clear": "Cancella",
+    "viewDetails": "Vedi Dettagli",
+    "edit": "Modifica",
+    "loadMore": "Carica Altri Eventi",
+    "noResults": "Nessun evento trovato",
+    "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
+    "cancelButton": "Cancellare"
+  }
+}

@@ -14,11 +14,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     if(token) router.push("/organizerDashboard");
   }, [router]);
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="relative z-10 min-h-screen flex flex-col">
       {/* Auth Header */}
       <Header />
       {/* Main Auth Content */}
-      <main className="flex-1 flex items-center justify-center">{children}</main>
+      <main className="flex-grow grid">{children}</main>
       {/* Auth Footer */}
       <Footer />
     </div>

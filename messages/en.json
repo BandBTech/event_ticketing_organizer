@@ -1,0 +1,220 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "loadMore": "Load More Events",
+    "noResults": "No events found",
+    "tryAgain": "Try adjusting your search criteria or check back later for new events.",
+    "optional": "(Optional)",
+    "validation": {
+      "required": "{field} is required.",
+      "invalid": "{field} is invalid.",
+      "minLength": "{field} must be at least {length} characters long.",
+      "maxLength": "{field} cannot exceed {length} characters.",
+      "min": "{field} must be at least {value}.",
+      "max": "{field} cannot exceed {value}.",
+      "pattern": "{field} format is invalid."
+    },
+    "cancelButton": "Cancel"
+  },
+  "navigation": {
+    "events": "Events",
+    "categories": "Categories",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "organizeEvent": "Organize Event",
+    "profile": "My Profile",
+    "logout": "Logout"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "emailNote": "Email cannot be changed",
+    "organization": "Organization",
+    "editButton": "Edit Profile",
+    "saveButton": "Save Changes",
+    "cancelButton": "Cancel",
+    "saving": "Saving...",
+    "toast": {
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Failed to update profile"
+    }
+  },
+  "languages": {
+    "en": "English",
+    "ja": "Japanese",
+    "it": "Italian"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "as Attendee",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter email address",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password?",
+      "loginButton": "Login",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUpHere": "Sign up here.",
+      "demoCredentials": "Demo: Use attendee@example.com / password123",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 6 characters long",
+        "passwordTooLong": "Password is too long"
+      },
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "loginFailed": "Login failed. Please try again."
+      },
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "signup": {
+      "title": "Register",
+      "subtitle": "as Attendee",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Contact Number",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "firstNamePlaceholder": "John",
+      "lastNamePlaceholder": "Doe",
+      "emailPlaceholder": "Enter email address",
+      "phonePlaceholder": "Enter valid contact number",
+      "passwordPlaceholder": "••••••••••••",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "signupButton": "Get Started",
+      "signingUp": "Creating account...",
+      "haveAccount": "Already have an account?",
+      "loginHere": "Sign in as Attendee.",
+      "termsPrefix": "By continuing, you consent to the fact that you have read and understood our",
+      "terms": "terms and conditions",
+      "termsAnd": "and",
+      "privacy": "privacy policy",
+      "validation": {
+        "firstNameTooShort": "First name must be at least 2 characters.",
+        "firstNameTooLong": "First name is too long.",
+        "lastNameTooShort": "Last name must be at least 2 characters.",
+        "lastNameTooLong": "Last name is too long.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "phoneInvalid": "Please enter a valid phone number.",
+        "passwordTooShort": "Password must be at least 8 characters.",
+        "passwordTooLong": "Password is too long.",
+        "passwordUppercase": "Password must contain at least one uppercase letter.",
+        "passwordLowercase": "Password must contain at least one lowercase letter.",
+        "passwordNumber": "Password must contain at least one number.",
+        "passwordMismatch": "Passwords do not match.",
+        "phoneRequired": "Contact number is required.",
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required."
+      },
+      "errors": {
+        "signupFailed": "Registration failed. Please try again."
+      },
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "setPassword": "Create a secure password for"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive a password reset code",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "sendResetCode": "Send Reset Code",
+      "sending": "Sending...",
+      "backToLogin": "Back to login",
+      "rememberPassword": "Remember your password?",
+      "loginHere": "Login here",
+      "continueToReset": "Continue to Reset Password",
+      "successMessage": "Password reset code has been sent to your email. Please check your inbox.",
+      "validation": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address."
+      },
+      "errors": {
+        "requestFailed": "Failed to send reset email. Please try again."
+      }
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Set a new password for",
+      "back": "Back",
+      "otp": "Verification Code",
+      "otpPlaceholder": "Enter code",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "resetButton": "Reset Password",
+      "resetting": "Resetting...",
+      "backToLogin": "Back to login",
+      "successMessage": "Password reset successful! Redirecting to login...",
+      "validation": {
+        "otpRequired": "OTP is required",
+        "otpInvalid": "Invalid OTP",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "passwordTooLong": "Password is too long",
+        "passwordUppercase": "Must contain uppercase letter",
+        "passwordLowercase": "Must contain lowercase letter",
+        "passwordNumber": "Must contain number",
+        "passwordMismatch": "Passwords do not match"
+      },
+      "errors": {
+        "resetFailed": "Failed to reset password. Please try again."
+      }
+    },
+    "verifyOTP": {
+      "title": "Verify Your Email",
+      "subtitle": "Enter the 6-digit code sent to",
+      "back": "Back",
+      "otp": "Verification Code",
+      "otpPlaceholder": "Enter 6-digit code",
+      "verifyButton": "Verify Email",
+      "verifying": "Verifying...",
+      "didntReceive": "Didn't receive the code?",
+      "resend": "Resend",
+      "resending": "Resending...",
+      "checkSpam": "Check your spam folder if you don't see the email",
+      "otpResent": "OTP has been resent to your email",
+      "errors": {
+        "otpIncomplete": "Please enter the complete 6-digit code",
+        "verificationFailed": "Invalid OTP. Please try again.",
+        "resendFailed": "Failed to resend OTP. Please try again."
+      },
+      "otpValidity": "The code will automatically expire after 10 minutes."
+    },
+    "toast": {
+      "loginSuccess": "Welcome back!",
+      "loginError": "Login failed. Please try again.",
+      "signupSuccess": "Account created successfully!",
+      "signupError": "Registration failed. Please try again.",
+      "otpSent": "Verification code sent to your email",
+      "otpVerified": "Email verified successfully!",
+      "otpResent": "New code sent to your email",
+      "passwordResetSent": "Password reset code sent to your email",
+      "passwordResetSuccess": "Password reset successful!",
+      "logoutSuccess": "You have been logged out",
+      "invalidCredentials": "Invalid email or password",
+      "networkError": "Network error. Please check your connection.",
+      "serverError": "Something went wrong. Please try again."
+    }
+  }
+}
