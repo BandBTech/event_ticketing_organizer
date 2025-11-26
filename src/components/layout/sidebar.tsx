@@ -218,7 +218,7 @@ export default function Sidebar({
 
             {/* Profile */}
             <div
-              onClick={() => router.push("/profile")}
+              onClick={() => router.push("/organizerDashboard/settings")}
               className=" flex items-center gap-2  p-2 text-sm hover:bg-gray-100 cursor-pointer rounded mt-2"
             >
               <UserIcon className="h-4 w-4" />

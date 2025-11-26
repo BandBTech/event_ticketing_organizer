@@ -131,6 +131,7 @@ class AuthService {
     business_name: string;
     business_description?: string;
     business_logo?: File;
+    role?: string;
   }): Promise<Record<string, unknown>> {
     const formData = new FormData();
     formData.append('business_name', data.business_name);
@@ -139,6 +140,9 @@ class AuthService {
     }
     if (data.business_logo) {
       formData.append('business_logo', data.business_logo);
+    }
+    if (data.role) {
+      formData.append('role', data.role);
     }
 
     return await api.putFormData<Record<string, unknown>>('/organizer/profile', formData, {
@@ -244,7 +248,7 @@ class AuthService {
    * Uses apiClientRequest with returnFullResponse to get message
    */
   async requestPasswordReset(email: string): Promise<{ message?: string }> {
-    const response = await apiClientRequest<AuthApiResponse<any>>(
+    const response = await apiClientRequest<AuthApiResponse<unknown>>(
       '/auth/organizer/reset-password-request',
       {
         method: 'POST',

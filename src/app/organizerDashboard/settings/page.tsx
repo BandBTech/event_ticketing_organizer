@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { User, LockKey } from "@phosphor-icons/react";
+import { User, LockKey, IdentificationBadgeIcon, LockKeyIcon, Buildings } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import ProfileSettings from "./components/ProfileSettings";
 import SecuritySettings from "./components/SecuritySettings";
+import OrganizerProfileSettings from "./components/OrganizerProfileSettings";
 
 const sidebarItems = [
   {
     id: "profile",
     label: "Profile",
     icon: User,
+  },
+  {
+    id: "organizer",
+    label: "Organizer Profile",
+    icon: Buildings,
   },
   {
     id: "security",
@@ -25,13 +31,6 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-2">
-          Manage your account settings and preferences.
-        </p>
-      </div>
-
       <div className="flex flex-col md:flex-row gap-8">
         {/* Settings Sidebar */}
         <aside className="w-full md:w-64 flex-shrink-0">
@@ -63,6 +62,7 @@ export default function SettingsPage() {
         {/* Content Area */}
         <div className="flex-1">
           {activeTab === "profile" && <ProfileSettings />}
+          {activeTab === "organizer" && <OrganizerProfileSettings />}
           {activeTab === "security" && <SecuritySettings />}
         </div>
       </div>
