@@ -40,7 +40,7 @@ export function CompleteProfileDialog() {
     formState: { errors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   useEffect(() => {

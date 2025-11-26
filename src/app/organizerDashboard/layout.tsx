@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Sidebar from "@/components/layout/sidebar";
 import DashboardHeader from "@/components/layout/dashboardHeader";
-import { useRouter } from "next/navigation";
 import { UserProvider } from "@/app/contexts/UserContext";
 
 import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
@@ -14,8 +13,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [showSidebar, setShowSidebar] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const router = useRouter();
 
   // useEffect(() => {
   //   const token = localStorage.getItem("auth_token");

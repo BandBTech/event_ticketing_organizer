@@ -325,7 +325,7 @@ export default function LoginPage() {
       password: savedCredentials?.password || "",
       rememberMe: tokenManager.hasCredentialsSaved(),
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const {

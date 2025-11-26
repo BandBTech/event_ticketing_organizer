@@ -113,7 +113,7 @@ export const useAuthStore = create<AuthStore>()(
             countryCode: profile.country_code,
             isEmailVerified: profile.is_email_verified,
             organization: profile.organization,
-            roles: [],
+            roles: profile.roles || [],
           };
 
           set({

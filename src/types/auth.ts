@@ -85,6 +85,7 @@ export interface UserProfileResponse {
   is_email_verified: boolean;
   organization_id?: string;
   organization?: Organization;
+  roles?: Role[];
   created_at: string;
   updated_at: string;
   created_by?: string;

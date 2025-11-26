@@ -1,6 +1,6 @@
 "use client";
 
-import { BellIcon, SignOutIcon } from "@phosphor-icons/react";
+import { BellIcon } from "@phosphor-icons/react";
 import { ChevronDown, Globe, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";

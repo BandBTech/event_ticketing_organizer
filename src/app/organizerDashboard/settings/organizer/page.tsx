@@ -28,46 +28,51 @@ export default function OrganizerProfileSettings() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile, error: profileError, isError } = useQuery({
     queryKey: ["organizerProfile"],
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();
       return res as unknown; // Casting as unknown for now since we know the structure roughly
     },
+    retry: false, // Don't retry on permission errors
   });
 
-  console.log("=== ORGANIZER PROFILE DEBUG ===");
-  console.log("1. Raw profile:", profile);
+  // Define proper types for the organization data
+  interface OrganizationData {
+    business_name?: string;
+    business_description?: string;
+    business_logo_url?: string;
+  }
 
-  const rawData = (profile as { data?: unknown })?.data || profile;
-  console.log("2. After data extraction:", rawData);
+  interface ProfileData {
+    data?: unknown;
+    organization?: OrganizationData;
+    organizer?: { organization?: OrganizationData };
+    user?: { organizer?: { organization?: OrganizationData } };
+  }
 
-  const org = (rawData as any)?.organization ||
-    (rawData as any)?.organizer?.organization ||
-    (rawData as any)?.user?.organizer?.organization ||
-    rawData || {};
+  const rawData = (profile as ProfileData)?.data || profile;
 
-  console.log("3. Final org object:", org);
-  console.log("4. org.business_name:", (org as any)?.business_name);
-  console.log("5. org.business_description:", (org as any)?.business_description);
-  console.log("6. org.business_logo_url:", (org as any)?.business_logo_url);
-  console.log("=== END DEBUG ===");
+  const org: OrganizationData = (rawData as ProfileData)?.organization ||
+    (rawData as ProfileData)?.organizer?.organization ||
+    (rawData as ProfileData)?.user?.organizer?.organization ||
+    (rawData as OrganizationData) || {};
 
   const form = useForm<OrganizerProfileFormValues>({
     resolver: zodResolver(organizerProfileSchema),
     values: {
-      business_name: (org as any)?.business_name || "",
-      business_description: (org as any)?.business_description || "",
+      business_name: org?.business_name || "",
+      business_description: org?.business_description || "",
     },
   });
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = form;
+  const { register, handleSubmit, formState: { errors }, reset } = form;
 
   useEffect(() => {
-    if ((org as { business_logo_url?: string })?.business_logo_url) {
-      setPreviewUrl((org as { business_logo_url?: string }).business_logo_url || null);
+    if (org?.business_logo_url) {
+      setPreviewUrl(org.business_logo_url);
     }
-  }, [org]);
+  }, [org?.business_logo_url]);
 
   const mutation = useMutation({
     mutationFn: async (data: OrganizerProfileFormValues) => {
@@ -112,16 +117,16 @@ export default function OrganizerProfileSettings() {
     setIsEditing(false);
     setSelectedFile(null);
     if (profile) {
-      const rawData = (profile as { data?: unknown })?.data || profile;
-      const org = (rawData as any)?.organization ||
-        (rawData as any)?.organizer?.organization ||
-        (rawData as any)?.user?.organizer?.organization ||
-        rawData || {};
+      const rawData = (profile as ProfileData)?.data || profile;
+      const org: OrganizationData = (rawData as ProfileData)?.organization ||
+        (rawData as ProfileData)?.organizer?.organization ||
+        (rawData as ProfileData)?.user?.organizer?.organization ||
+        (rawData as OrganizationData) || {};
       reset({
-        business_name: (org as any)?.business_name || "",
-        business_description: (org as any)?.business_description || "",
+        business_name: org?.business_name || "",
+        business_description: org?.business_description || "",
       });
-      setPreviewUrl((org as any)?.business_logo_url || null);
+      setPreviewUrl(org?.business_logo_url || null);
     }
   };
 

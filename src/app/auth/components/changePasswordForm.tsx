@@ -84,7 +84,7 @@ function ResetPasswordContent() {
       newPassword: "",
       confirmPassword: "",
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const {
