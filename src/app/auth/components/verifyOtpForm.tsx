@@ -112,7 +112,6 @@ function VerifyOTPContent() {
       } else {
         toast.error("auth.toast.serverError", "Invalid OTP. Please try again.");
       }
-      setOtp(""); // Clear OTP on error
     } finally {
       setIsLoading(false);
     }
@@ -129,6 +128,7 @@ function VerifyOTPContent() {
       });
 
       setError("");
+      setOtp("");
       // Show success toast
       toast.success("auth.toast.otpResent", "New code sent to your email");
 
@@ -154,7 +154,12 @@ function VerifyOTPContent() {
             <div className="space-y-6 p-2 sm:p-3">
               {/* Back Button */}
               <button
-                onClick={() => router.back()}
+                onClick={() => {
+                  if (otpType === "password_reset") {
+                    sessionStorage.setItem("password_reset_email", email);
+                  }
+                  router.back();
+                }}
                 className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
               >
                 <ArrowLeftIcon size={16} />

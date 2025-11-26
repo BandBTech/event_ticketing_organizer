@@ -7,7 +7,7 @@ import {
   AuthApiError
 } from '@/types/auth';
 import { tokenManager } from './tokenManager';
-import { api } from './apiClient';
+import { api, apiRequest as apiClientRequest } from './apiClient';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
 
@@ -241,13 +241,22 @@ class AuthService {
 
   /**
    * Request password reset OTP
-   * Updated to use new endpoint
+   * Uses apiClientRequest with returnFullResponse to get message
    */
-  async requestPasswordReset(email: string): Promise<void> {
-    await apiRequest<void>('/auth/organizer/reset-password-request', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
+  async requestPasswordReset(email: string): Promise<{ message?: string }> {
+    const response = await apiClientRequest<AuthApiResponse<any>>(
+      '/auth/organizer/reset-password-request',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+        returnFullResponse: true, // Get full response including message
+        showErrorToast: false, // Let component handle error toast to avoid duplicates
+      }
+    );
+
+    return {
+      message: response.message,
+    }
   }
 
   /**

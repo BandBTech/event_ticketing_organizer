@@ -32,6 +32,7 @@ export interface ApiRequestConfig extends RequestInit {
   successMessage?: string;
   errorMessage?: string;
   translateResponse?: boolean; // If true, tries to translate API response message
+  returnFullResponse?: boolean; // If true, returns full response including message
 }
 
 /**
@@ -49,6 +50,7 @@ export async function apiRequest<T>(
     successMessage,
     errorMessage,
     translateResponse = false,
+    returnFullResponse = false,
     headers = {},
     ...restConfig
   } = config;
@@ -143,6 +145,11 @@ export async function apiRequest<T>(
       const responseMessage = data?.message;
       const displayMessage = successMessage || responseMessage || 'Success';
       toast.success('api.success', displayMessage);
+
+      if (returnFullResponse) {
+        return data as T;
+      }
+
     }
 
     // Return successful response data
