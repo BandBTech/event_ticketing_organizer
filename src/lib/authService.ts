@@ -11,17 +11,7 @@ import { api, apiRequest as apiClientRequest } from './apiClient';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
 
-export class AuthError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public status?: number,
-    public details?: string
-  ) {
-    super(message);
-    this.name = 'AuthError';
-  }
-}
+import { AuthError } from './errors';
 
 // Legacy API request function for non-authenticated endpoints
 async function apiRequest<T>(
@@ -366,14 +356,13 @@ class AuthService {
     email: string;
     password: string;
   }): Promise<{ user: UserProfileResponse; message?: string }> {
-    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/organizer/set-password', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    const response = await api.post<AuthApiResponse<UserProfileResponse>>('/auth/organizer/set-password', data, {
+      returnFullResponse: true,
     });
 
     return {
-      user: response,
-      message: 'message' in response ? response.message : undefined
+      user: response.data,
+      message: response.message
     };
   }
 }

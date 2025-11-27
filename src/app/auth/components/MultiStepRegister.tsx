@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/input-otp";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { authService, AuthError } from "@/lib/authService";
+import { authService } from "@/lib/authService";
+import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { createValidationHelpers } from "@/lib/validation";
@@ -79,7 +80,7 @@ const createPasswordSchema = (
       password: z
         .string()
         .min(1, v.required("Password"))
-        .min(8)
+        .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
         .regex(/(?=.*[a-z])(?=.*[A-Z])/)
         .regex(/[^A-Za-z0-9]/)
@@ -364,7 +365,7 @@ export default function MultiStepRegister() {
       sessionStorage.removeItem("registration_data");
 
       // Redirect to login
-      router.push(`/login?email=${encodeURIComponent(registrationData.email)}`);
+      router.push(`/auth/pages/login`);
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
@@ -792,11 +793,17 @@ export default function MultiStepRegister() {
                         )}
                       </button>
                     </div>
-                    {passwordForm.formState.errors.password && passwordForm.formState.errors.password.message !== "Invalid input" && (
-                      <p className="text-sm text-destructive">
-                        {passwordForm.formState.errors.password.message}
-                      </p>
-                    )}
+                    {passwordForm.formState.errors.password &&
+                      passwordForm.formState.errors.password.message !== "Invalid input" &&
+                      // Filter out messages that are already covered by PasswordRequirements
+                      !passwordForm.formState.errors.password.message?.includes("must be at least 8 characters") &&
+                      !passwordForm.formState.errors.password.message?.includes("uppercase and one lowercase") &&
+                      !passwordForm.formState.errors.password.message?.includes("special character") &&
+                      !passwordForm.formState.errors.password.message?.includes("numeric digit") && (
+                        <p className="text-sm text-destructive">
+                          {passwordForm.formState.errors.password.message}
+                        </p>
+                      )}
                     <PasswordRequirements password={passwordForm.watch("password")} />
                   </div>
 

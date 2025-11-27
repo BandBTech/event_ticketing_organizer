@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/ui/shadcn-io/dropzone";
-import { authService, AuthError } from "@/lib/authService";
+import { authService } from "@/lib/authService";
+import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 

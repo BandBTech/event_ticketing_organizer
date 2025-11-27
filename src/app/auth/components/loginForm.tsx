@@ -269,7 +269,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/store/authStore";
-import { AuthError } from "@/lib/authService";
+import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { tokenManager } from "@/lib/tokenManager";

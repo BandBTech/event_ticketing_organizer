@@ -4,7 +4,7 @@
  */
 
 import { tokenManager } from './tokenManager';
-import { AuthError } from './authService';
+import { AuthError } from './errors';
 import { toast } from './toast';
 import { useLanguageStore } from '@/store/languageStore';
 
