@@ -1,50 +1,88 @@
 "use client";
 
-import { Image as ImageIcon, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Image as ImageIcon, Plus, Trash2, CalendarIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { MapPinAreaIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { EventFormData, eventSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { addEvent, Event } from "./events";
+import { eventService } from "@/services/eventService";
+import { Event, TierTemplate } from "@/types/event";
 import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, BtnUnderline, Editor, EditorProvider, Separator, Toolbar } from "react-simple-wysiwyg";
+import { toast } from "@/lib/toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
+interface CreateEventFormProps {
+  initialData?: Event;
+  isEditing?: boolean;
+}
 
-export default function CreateEventPage() {
+export default function CreateEventPage({ initialData, isEditing = false }: CreateEventFormProps) {
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string>("");
-  
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors, isSubmitting },
-    setValue,
-  } = useForm<EventFormData>({
+  const queryClient = useQueryClient();
+  const [imagePreview, setImagePreview] = useState<string>(initialData?.banner_image || "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  // Fetch tier templates using TanStack Query
+  const { data: tierTemplates = [] } = useQuery({
+    queryKey: ['tierTemplates'],
+    queryFn: eventService.getTierTemplates,
+  });
+
+  const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
     defaultValues: {
-      name: "",
-      description: "",
-      tags: [],
-      image: "",
-      venue: "",
-      venueAddress: "",
-      capacity: 0,
-      timezone: "",
-      startDate: "",
-      endDate: "",
-      tickets: [
-        {
-          name: "General Admission",
-          price: 0,
-          quantity: 0,
-          gst: 13,
-          salesStart: "",
-          salesEnd: "",
-        },
-      ],
+      name: initialData?.title || "",
+      description: initialData?.description || "",
+      tags: initialData?.category || [],
+      image: initialData?.banner_image || "",
+      venue: initialData?.venue_name || "",
+      venueAddress: initialData?.address || "",
+      capacity: initialData?.capacity || 0,
+      timezone: initialData?.timezone || "",
+      startDate: initialData?.start_date || "",
+      endDate: initialData?.end_date || "",
+      tickets: initialData?.tiers?.map(t => ({
+        id: t.id,
+        name: t.tier_name,
+        price: t.price,
+        quantity: t.quantity,
+        gst: t.gst || 0,
+        salesStart: t.sales_start || "",
+        salesEnd: t.sales_end || "",
+      })) || [
+          {
+            name: "General Admission",
+            price: 0,
+            quantity: 0,
+            gst: 13,
+            salesStart: "",
+            salesEnd: "",
+          },
+        ],
       promoCodes: [],
     },
   });
@@ -54,7 +92,7 @@ export default function CreateEventPage() {
     append: appendTicket,
     remove: removeTicket,
   } = useFieldArray({
-    control,
+    control: form.control,
     name: "tickets",
   });
 
@@ -63,66 +101,123 @@ export default function CreateEventPage() {
     append: appendPromo,
     remove: removePromo,
   } = useFieldArray({
-    control,
+    control: form.control,
     name: "promoCodes",
+  });
+
+  // Create Tier Template Mutation
+  const createTierTemplateMutation = useMutation({
+    mutationFn: eventService.createTierTemplate,
+    onSuccess: (newTemplate) => {
+      queryClient.setQueryData(['tierTemplates'], (old: TierTemplate[] | undefined) =>
+        old ? [...old, newTemplate] : [newTemplate]
+      );
+    },
+  });
+
+  // Create/Update Event Mutation
+  const saveEventMutation = useMutation({
+    mutationFn: async (data: { eventData: any, isUpdate: boolean, id?: string }) => {
+      if (data.isUpdate && data.id) {
+        return eventService.updateEvent(data.id, data.eventData);
+      } else {
+        return eventService.createEvent(data.eventData);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Success", isEditing ? "Event updated successfully" : "Event created successfully");
+      router.push("/organizerDashboard/pages/events");
+    },
+    onError: (error: any) => {
+      console.error("Error saving event:", error);
+      toast.error("Error", "Failed to save event");
+    },
   });
 
   const onSubmit: SubmitHandler<EventFormData> = async (data) => {
     try {
-      const eventDate = new Date(data.startDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      const eventTime = new Date(data.startDate).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
+      // 1. Handle Tiers
+      const tiersData = [];
+      for (let i = 0; i < data.tickets.length; i++) {
+        const ticket = data.tickets[i];
+        let tierId = "";
 
-      const newEvent: Omit<Event, "id"> = {
+        // Find existing template
+        const existingTemplate = tierTemplates.find(t => t.template_name.toLowerCase() === ticket.name.toLowerCase());
+
+        if (existingTemplate) {
+          tierId = existingTemplate.id;
+        } else {
+          // Create new template
+          try {
+            const newTemplate = await createTierTemplateMutation.mutateAsync({
+              template_name: ticket.name,
+              description: `Template for ${ticket.name}`
+            });
+            tierId = newTemplate.id;
+          } catch (err) {
+            console.error("Failed to create tier template", err);
+            toast.error("Error", `Failed to create tier template for ${ticket.name}`);
+            return;
+          }
+        }
+
+        tiersData.push({
+          tier_id: tierId,
+          price: ticket.price,
+          quantity: ticket.quantity,
+          gst: ticket.gst,
+          sales_start: ticket.salesStart || undefined, // Already ISO string or empty
+          sales_end: ticket.salesEnd || undefined,     // Already ISO string or empty
+          sort_order: i
+        });
+      }
+
+      // 2. Prepare Event Data
+      const eventData: any = {
         title: data.name,
         description: data.description,
-        tags: data.tags,
-        banner_image: data.image || "/default-event.jpg",
+        category: data.tags.join(","),
         venue_name: data.venue,
         address: data.venueAddress,
-        capacity: data.capacity,
+        start_date: data.startDate || undefined, // Already ISO string or empty
+        end_date: data.endDate || undefined,     // Already ISO string or empty
         timezone: data.timezone,
-        start_date: data.startDate,
-        end_date: data.endDate,
-        date: eventDate,
-        time: eventTime,
-        status: "ON SALE",
+        capacity: data.capacity,
         price: data.tickets[0]?.price ?? 0,
-        tiers: data.tickets.map((t, index) => ({
-          id: (index + 1).toString(),
-          tier_name: t.name,
-          price: t.price,
-          quantity: t.quantity,
-          gst: t.gst,
-          sales_start: t.salesStart,
-          sales_end: t.salesEnd,
-          currency: "NPR",
-          sort_order: index,
-        })),
+        tiers: JSON.stringify(tiersData)
       };
 
-      addEvent(newEvent);
-      router.push("/organizerDashboard/pages/events");
+      if (imageFile) {
+        eventData.banner_image = imageFile;
+      }
+
+      // 3. Call API
+      if (isEditing && initialData) {
+        const updateData = {
+          ...eventData,
+          tiers: tiersData,
+          banner_image: undefined
+        };
+        saveEventMutation.mutate({ eventData: updateData, isUpdate: true, id: initialData.id });
+      } else {
+        saveEventMutation.mutate({ eventData, isUpdate: false });
+      }
+
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error preparing event data:", error);
     }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setImagePreview(result);
-        setValue("image", result);
+        form.setValue("image", result);
       };
       reader.readAsDataURL(file);
     }
@@ -133,411 +228,550 @@ export default function CreateEventPage() {
       .split(",")
       .map((tag) => tag.trim())
       .filter((tag) => tag);
-    setValue("tags", tags);
+    form.setValue("tags", tags);
+  };
+
+  // Helper to combine date and time
+  const combineDateAndTime = (date: Date | undefined, timeString: string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    const [hours, minutes] = timeString.split(':').map(Number);
+    if (!isNaN(hours) && !isNaN(minutes)) {
+      d.setHours(hours);
+      d.setMinutes(minutes);
+      d.setSeconds(0);
+      d.setMilliseconds(0);
+    }
+    return d.toISOString();
+  };
+
+  const DateTimePicker = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
+    const dateValue = value ? new Date(value) : undefined;
+    const timeValue = value && !isNaN(new Date(value).getTime()) ? format(new Date(value), "HH:mm") : "00:00";
+
+    return (
+      <div className="flex gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-[240px] justify-start text-left font-normal",
+                !dateValue && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={dateValue}
+              onSelect={(date) => {
+                if (date) {
+                  onChange(combineDateAndTime(date, timeValue));
+                } else {
+                  onChange(""); // Clear date if unselected
+                }
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        <Input
+          type="time"
+          value={timeValue}
+          onChange={(e) => {
+            if (dateValue && !isNaN(dateValue.getTime())) {
+              onChange(combineDateAndTime(dateValue, e.target.value));
+            } else {
+              // If no date is picked, just update the time part of a default date (e.g., today)
+              // Or, if we want to enforce date selection first, we could do nothing or show an error.
+              // For now, let's assume a date will be picked or is already present.
+              // If value is empty, combineDateAndTime will return empty string.
+              onChange(combineDateAndTime(new Date(), e.target.value));
+            }
+          }}
+          className="w-[120px]"
+        />
+      </div>
+    );
   };
 
   return (
     <div className="p-6 space-y-6">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Event details */}
-        <div className="mb-6 rounded-xl border border-gray-200 text-gray-700  bg-white  shadow-sm">
-          <div className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-blue-600">Event Details</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Banner Image</label>
-                <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-4 text-center text-gray-500 cursor-pointer">
-                  <ImageIcon />
-                  Upload banner image or drag & drop
-                  <span className="text-xs">PNG/JPG file of 1820x1200px size up to 5MB</span>
-                  <br />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="banner-upload"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          {/* Event details */}
+          <div className="mb-6 rounded-xl border border-gray-200 text-gray-700 bg-white shadow-sm">
+            <div className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-blue-600">Event Details</h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label>Banner Image</Label>
+                  <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-4 text-center text-gray-500 cursor-pointer">
+                    <ImageIcon />
+                    Upload banner image or drag & drop
+                    <span className="text-xs">PNG/JPG file of 1820x1200px size up to 5MB</span>
+                    <br />
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="banner-upload"
+                    />
+                    <label
+                      htmlFor="banner-upload"
+                      className="border rounded-lg px-3 py-1 text-sm cursor-pointer hover:bg-gray-50"
+                    >
+                      Browse File
+                    </label>
+                    {imagePreview && (
+                      <div className="mt-2">
+                        <img src={imagePreview} alt="preview" className="max-h-32 rounded" />
+                      </div>
+                    )}
+                    {form.formState.errors.image && (
+                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.image.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-between gap-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Event Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter Title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  <label
-                    htmlFor="banner-upload"
-                    className="border rounded-lg px-3 py-1 text-sm cursor-pointer"
-                  >
-                    Browse File
-                  </label>
-                  {imagePreview && (
-                    <div className="mt-2">
-                      <img src={imagePreview} alt="preview" className="max-h-32 rounded"/>
-                    </div>
-                  )}
-                      {errors.image && (
-                    <p className="text-red-500 text-xs mt-1">{errors.image.message}</p>
-                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category Tags</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g. Music, Concert, Festival"
+                            onChange={handleTagsChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between gap-4">
-                <div>
-                  <label className="text-sm font-medium">Event Title</label>
-                  <input
-                    {...register("name")}
-                    type="text"
-                    placeholder="Enter Title"
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-                  )}
+              <div>
+                <Label>Event Description</Label>
+                <div className="mt-1 border border-gray-300 rounded-lg overflow-hidden">
+                  <EditorProvider>
+                    <Editor
+                      value={form.watch("description") || ""}
+                      onChange={(e) => form.setValue("description", e.target.value)}
+                      placeholder="Tell what makes your event special"
+                      className="min-h-[150px] w-full bg-white text-gray-900 focus:outline-none"
+                    >
+                      <Toolbar>
+                        <BtnBold />
+                        <BtnItalic />
+                        <BtnUnderline />
+                        <Separator />
+                        <BtnNumberedList />
+                        <BtnBulletList />
+                        <Separator />
+                        <BtnLink />
+                      </Toolbar>
+                    </Editor>
+                  </EditorProvider>
                 </div>
-
-                <div>
-                  <label className="text-sm font-medium">Category Tags</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Music, Concert, Festival"
-                    onChange={handleTagsChange}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                      {errors.tags && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tags.message}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-       <div>
-  <label className="text-sm font-medium">Event Description</label>
-
-  <div className="mt-1 border border-gray-300  rounded-lg overflow-hidden">
-    <EditorProvider>
-      <Editor
-        value={watch("description") || ""}
-        onChange={(e) => setValue("description", e.target.value)}
-        placeholder="Tell what makes your event special"
-        className="min-h-[150px] w-full bg-white  text-gray-900  focus:outline-none"
-      >
-        <Toolbar>
-          <BtnBold />
-          <BtnItalic />
-          <BtnUnderline />
-          <Separator />
-          <BtnNumberedList />
-          <BtnBulletList />
-          <Separator />
-          <BtnLink />
-        </Toolbar>
-      </Editor>
-    </EditorProvider>
-  </div>
-
-  {errors.description && (
-    <p className="text-red-500 text-xs mt-1">
-      {errors.description.message}
-    </p>
-  )}
-</div>
-          </div>
-        </div>
-
-        {/* Venue & Schedule */}
-        <div className="rounded-xl mb-6 border border-gray-200  bg-white  shadow-sm">
-          <div className="p-6 space-y-4 text-gray-700 ">
-            <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
-            <div className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Venue Name</label>
-                <input
-                  {...register("venue")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Venue name"
-                />
-                {errors.venue && (
-                  <p className="text-red-500 text-xs mt-1">{errors.venue.message}</p>
-                )}
-              </div>
-
-              <div className="flex relative flex-col">
-                <label className="text-sm font-medium">Venue Address</label>
-                <input
-                  {...register("venueAddress")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter venue address"
-                />
-                <MapPinAreaIcon className="absolute right-3 top-1/2 text-gray-400 w-5 h-5" />
-                {errors.venueAddress && (
-                  <p className="text-red-500 text-xs mt-1">{errors.venueAddress.message}</p>
-                )}
-              </div>
-
-              {/* <div className="flex flex-col">
-                <label className="text-sm font-medium">Location</label>
-                <input
-                  {...register("location")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="City, State"
-                />
-                {errors.location && (
-                  <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>
-                )}
-              </div> */}
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Capacity</label>
-                <input
-                  {...register("capacity", { valueAsNumber: true })}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g 5000"
-                  type="number"
-                />
-                    {errors.capacity && (
-                    <p className="text-red-500 text-xs mt-1">{errors.capacity.message}</p>
-                  )}
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Timezone</label>
-                <select
-                  {...register("timezone")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="" disabled>Select Timezone</option>
-                  <option value="America/New_York">Eastern Time (ET)</option>
-                  <option value="America/Chicago">Central Time (CT)</option>
-                  <option value="America/Denver">Mountain Time (MT)</option>
-                  <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                </select>
-                {errors.timezone && (
-                  <p className="text-red-500 text-xs mt-1">{errors.timezone.message}</p>
-                )}
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">Start Date & Time</label>
-                <input
-                  {...register("startDate")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                  type="datetime-local"
-                />
-                {errors.startDate && (
-                  <p className="text-red-500 text-xs mt-1">{errors.startDate.message}</p>
-                )}
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-sm font-medium">End Date & Time</label>
-                <input
-                  {...register("endDate")}
-                  className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                  type="datetime-local"
-                />
-                {errors.endDate && (
-                  <p className="text-red-500 text-xs mt-1">{errors.endDate.message}</p>
+                {form.formState.errors.description && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {form.formState.errors.description.message}
+                  </p>
                 )}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Ticketing */}
-        <div className="rounded-xl mb-6 border border-gray-200 text-gray-700  bg-white  shadow-sm">
-          <div className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
-            
-            {ticketFields.map((field, index) => (
-              <div key={field.id} className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4 relative">
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Tier Name</label>
-                  <input
-                    {...register(`tickets.${index}.name`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="General Admission"
+          {/* Venue & Schedule */}
+          <div className="rounded-xl mb-6 border border-gray-200 bg-white shadow-sm">
+            <div className="p-6 space-y-4 text-gray-700">
+              <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
+              <div className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4">
+                <FormField
+                  control={form.control}
+                  name="venue"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Venue Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Venue name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="venueAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Venue Address</FormLabel>
+                      <div className="relative">
+                        <FormControl>
+                          <Input placeholder="Enter venue address" {...field} />
+                        </FormControl>
+                        <MapPinAreaIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="capacity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Capacity</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="e.g 5000"
+                          {...field}
+                          onChange={e => field.onChange(e.target.valueAsNumber)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="timezone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Timezone</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Timezone" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                          <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                          <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
+                          <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                          <SelectItem value="Asia/Kathmandu">Nepal Time (NPT)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date & Time</FormLabel>
+                      <FormControl>
+                        <DateTimePicker value={field.value} onChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date & Time</FormLabel>
+                      <FormControl>
+                        <DateTimePicker value={field.value} onChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Ticketing */}
+          <div className="rounded-xl mb-6 border border-gray-200 text-gray-700 bg-white shadow-sm">
+            <div className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
+
+              {ticketFields.map((field, index) => (
+                <div key={field.id} className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4 relative">
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tier Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="General Admission" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.tickets?.[index]?.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.name?.message}</p>
+
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.price`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g. 100"
+                            {...field}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.quantity`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantity</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter number of quantity"
+                            {...field}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.gst`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>GST(%)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter GST in percentage"
+                            {...field}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.salesStart`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sales start</FormLabel>
+                        <FormControl>
+                          <DateTimePicker value={field.value} onChange={field.onChange} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.salesEnd`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sales ends</FormLabel>
+                        <FormControl>
+                          <DateTimePicker value={field.value} onChange={field.onChange} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {ticketFields.length > 1 && (
+                    <Trash2
+                      onClick={() => removeTicket(index)}
+                      className="absolute right-4 top-4 text-red-400 w-5 h-5 hover:bg-red-200 cursor-pointer"
+                    />
                   )}
                 </div>
+              ))}
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Price</label>
-                  <input
-                    {...register(`tickets.${index}.price`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g. 100"
-                    type="number"
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => appendTicket({
+                  name: "",
+                  price: 0,
+                  quantity: 0,
+                  gst: 13,
+                  salesStart: "",
+                  salesEnd: "",
+                })}
+                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+              >
+                <Plus className="w-4 h-4" />
+                Add ticket tier
+              </Button>
+            </div>
+          </div>
+
+          {/* Discounts & Promo Codes */}
+          <div className="rounded-xl mb-6 border border-gray-200 text-gray-700 bg-white shadow-sm">
+            <div className="p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
+
+              {promoFields.map((field, index) => (
+                <div key={field.id} className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 relative">
+                  <FormField
+                    control={form.control}
+                    name={`promoCodes.${index}.code`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Promo code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g EARLYBIRD" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.tickets?.[index]?.price && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.price?.message}</p>
-                  )}
-                </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Quantity</label>
-                  <input
-                    {...register(`tickets.${index}.quantity`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter number of quantity"
-                    type="number"
+                  <FormField
+                    control={form.control}
+                    name={`promoCodes.${index}.discountType`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Discount Type</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Select Types" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.tickets?.[index]?.quantity && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.quantity?.message}</p>
-                  )}
-                </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">GST(%)</label>
-                  <input
-                    {...register(`tickets.${index}.gst`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter GST in percentage"
-                    type="number"
+                  <FormField
+                    control={form.control}
+                    name={`promoCodes.${index}.amount`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Amount</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="500"
+                            {...field}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.tickets?.[index]?.gst && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.gst?.message}</p>
-                  )}
-                </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Sales start</label>
-                  <input
-                    {...register(`tickets.${index}.salesStart`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    type="datetime-local"
+                  <FormField
+                    control={form.control}
+                    name={`promoCodes.${index}.quantity`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantity</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="500"
+                            {...field}
+                            onChange={e => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.tickets?.[index]?.salesStart && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.salesStart?.message}</p>
-                  )}
-                </div>
 
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Sales ends</label>
-                  <input
-                    {...register(`tickets.${index}.salesEnd`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    type="datetime-local"
-                  />
-                  {errors.tickets?.[index]?.salesEnd && (
-                    <p className="text-red-500 text-xs mt-1">{errors.tickets[index]?.salesEnd?.message}</p>
-                  )}
-                </div>
-
-                {ticketFields.length > 1 && (
                   <Trash2
-                    onClick={() => removeTicket(index)}
+                    onClick={() => removePromo(index)}
                     className="absolute right-4 top-4 text-red-400 w-5 h-5 hover:bg-red-200 cursor-pointer"
                   />
-                )}
-              </div>
-            ))}
+                </div>
+              ))}
 
-            <button
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => appendPromo({
+                  code: "",
+                  discountType: "",
+                  amount: 0,
+                  quantity: 0,
+                })}
+                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+              >
+                <Plus className="w-4 h-4" />
+                Add promo code
+              </Button>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-between items-center gap-3">
+            <Button
               type="button"
-              onClick={() => appendTicket({
-                name: "",
-                price: 0,
-                quantity: 0,
-                gst: 13,
-                salesStart: "",
-                salesEnd: "",
-              })}
-              className="flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
+              variant="outline"
+              onClick={() => router.back()}
             >
-              <Plus className="w-4 h-4" />
-              Add ticket tier
-            </button>
+              Cancel
+            </Button>
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                Save as draft
+              </Button>
+              <Button
+                type="submit"
+                disabled={saveEventMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                {saveEventMutation.isPending ? "Saving..." : (isEditing ? "Update Event" : "Create Event")}
+              </Button>
+            </div>
           </div>
-        </div>
-
-        {/* Discounts & Promo Codes */}
-        <div className="rounded-xl mb-6 border border-gray-200 text-gray-700  bg-white  shadow-sm">
-          <div className="p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
-            
-            {promoFields.map((field, index) => (
-              <div key={field.id} className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 relative">
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Promo code</label>
-                  <input
-                    {...register(`promoCodes.${index}.code`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g EARLYBIRD"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Discount Type</label>
-                  <input
-                    {...register(`promoCodes.${index}.discountType`)}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Select Types"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Amount</label>
-                  <input
-                    {...register(`promoCodes.${index}.amount`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300  rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="500"
-                    type="number"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium">Quantity</label>
-                  <input
-                    {...register(`promoCodes.${index}.quantity`, { valueAsNumber: true })}
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="500"
-                    type="number"
-                  />
-                </div>
-
-                <Trash2
-                  onClick={() => removePromo(index)}
-                  className="absolute right-4 top-4 text-red-400 w-5 h-5 hover:bg-red-200 cursor-pointer"
-                />
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={() => appendPromo({
-                code: "",
-                discountType: "",
-                amount: 0,
-                quantity: 0,
-              })}
-              className="flex items-center px-3 py-1 text-sm border rounded-lg text-blue-600 border-blue-600 hover:bg-blue-50"
-            >
-              <Plus className="w-4 h-4" />
-              Add promo code
-            </button>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex justify-between items-center gap-3">
-          <button
-            type="button"
-            className="px-4 py-2 rounded-lg border hover:bg-gray-500 border-gray-300"
-            onClick={() => router.back()}
-          >
-            Cancel
-          </button>
-             <div className="flex gap-3">
-         <button className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-700">
-            Save as draft
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex items-center px-4 py-2 gap-2 rounded-lg border border-blue-600 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            <Plus className="w-5 h-5" />
-            {isSubmitting ? "Creating..." : "Create Event"}
-          </button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </Form>
     </div>
   );
 }
