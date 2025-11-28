@@ -272,7 +272,6 @@ import { useAuthStore } from "@/store/authStore";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { tokenManager } from "@/lib/tokenManager";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createValidationHelpers } from "@/lib/validation";
@@ -285,14 +284,7 @@ const createLoginSchema = (
 
   return z.object({
     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-    password: z
-      .string()
-      .min(1, v.required("Password"))
-      .min(8, v.minLength("Password", 8))
-      .max(100, v.maxLength("Password", 100))
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-      .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-      .regex(/[0-9]/, v.passwordNumber()),
+    password: z.string().min(1, v.required("Password")),
     rememberMe: z.boolean(),
   });
 };
