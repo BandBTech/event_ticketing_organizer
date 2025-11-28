@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
-import { authService, AuthError } from '@/lib/authService';
+import { authService } from '@/lib/authService';
+import { AuthError } from '@/lib/errors';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
@@ -31,7 +32,7 @@ const createChangePasswordSchema = (
       newPassword: z
         .string()
         .min(1, v.required('Password'))
-        .min(8)
+        .min(8, v.minLength('Password', 8))
         .max(100, v.maxLength('Password', 100))
         .regex(/(?=.*[a-z])(?=.*[A-Z])/)
         .regex(/[^A-Za-z0-9]/)
@@ -204,10 +205,16 @@ export default function SecuritySettingsPage() {
                 )}
               </button>
             </div>
+            {errors.newPassword &&
+              errors.newPassword.message !== "Invalid input" &&
+              // Filter out messages that are already covered by PasswordRequirements
+              !errors.newPassword.message?.includes("must be at least 8 characters") &&
+              !errors.newPassword.message?.includes("uppercase and one lowercase") &&
+              !errors.newPassword.message?.includes("special character") &&
+              !errors.newPassword.message?.includes("numeric digit") && (
+                <p className="text-xs text-destructive">{errors.newPassword.message}</p>
+              )}
             <PasswordRequirements password={form.watch('newPassword')} />
-            {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
-              <p className="text-xs text-destructive">{errors.newPassword.message}</p>
-            )}
           </div>
 
           {/* Confirm Password */}

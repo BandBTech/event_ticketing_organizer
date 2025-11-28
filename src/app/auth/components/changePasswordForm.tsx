@@ -15,7 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { authService, AuthError } from "@/lib/authService";
+import { authService } from "@/lib/authService";
+import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -34,7 +35,7 @@ const createResetPasswordSchema = (
       newPassword: z
         .string()
         .min(1, v.required("Password"))
-        .min(8)
+        .min(8, v.minLength("Password", 8))
         .max(100, v.maxLength("Password", 100))
         .regex(/(?=.*[a-z])(?=.*[A-Z])/)
         .regex(/[^A-Za-z0-9]/)
@@ -181,78 +182,85 @@ function ResetPasswordContent() {
                   {error && (
                     <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                       <p className="text-sm text-destructive">{error}</p>
-                      </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* Form */}
-                    <form
-                      onSubmit={handleSubmit(onSubmit)}
-                      className="space-y-6"
-                    >
-                      {/* New Password Field */}
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="newPassword"
-                          className="text-sm font-medium text-gray-900 block"
+                  {/* Form */}
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    {/* New Password Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="newPassword"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t(
+                          "auth.resetPassword.newPassword",
+                          "New Password"
+                        )}
+                      </label>
+                      <div className="relative">
+                        <div
+                          className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                          aria-hidden="true"
                         >
-                          {t(
-                            "auth.resetPassword.newPassword",
-                            "New Password"
+                          <KeyIcon
+                            weight="duotone"
+                            size={24}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <Input
+                          id="newPassword"
+                          type={showNewPassword ? "text" : "password"}
+                          autoComplete="new-password"
+                          placeholder={t(
+                            "auth.resetPassword.newPasswordPlaceholder",
+                            "••••••••••••"
                           )}
-                        </label>
-                        <div className="relative">
-                          <div
-                            className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                            aria-hidden="true"
-                          >
-                            <KeyIcon
+                          className={cn(
+                            "h-12 pl-16 pr-16 login-input",
+                            errors.newPassword && "border-destructive"
+                          )}
+                          {...register("newPassword")}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowNewPassword(!showNewPassword)
+                          }
+                          aria-label={
+                            showNewPassword
+                              ? "Hide password"
+                              : "Show password"
+                          }
+                          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                        >
+                          {showNewPassword ? (
+                            <EyeIcon
                               weight="duotone"
                               size={24}
                               className="text-gray-600"
                             />
-                          </div>
-                          <Input
-                            id="newPassword"
-                            type={showNewPassword ? "text" : "password"}
-                            autoComplete="new-password"
-                            placeholder={t(
-                              "auth.resetPassword.newPasswordPlaceholder",
-                              "••••••••••••"
-                            )}
-                            className={cn(
-                              "h-12 pl-16 pr-16 login-input",
-                              errors.newPassword && "border-destructive"
-                            )}
-                            {...register("newPassword")}
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowNewPassword(!showNewPassword)
-                            }
-                            aria-label={
-                              showNewPassword
-                                ? "Hide password"
-                                : "Show password"
-                            }
-                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
-                          >
-                            {showNewPassword ? (
-                              <EyeIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            ) : (
-                              <EyeClosedIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            )}
-                          </button>
-                        </div>
-                        {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
+                          ) : (
+                            <EyeClosedIcon
+                              weight="duotone"
+                              size={24}
+                              className="text-gray-600"
+                            />
+                          )}
+                        </button>
+                      </div>
+                      <PasswordRequirements password={form.watch("newPassword")} />
+                      {errors.newPassword &&
+                        errors.newPassword.message !== "Invalid input" &&
+                        // Filter out messages that are already covered by PasswordRequirements
+                        !errors.newPassword.message?.includes("must be at least 8 characters") &&
+                        !errors.newPassword.message?.includes("uppercase and one lowercase") &&
+                        !errors.newPassword.message?.includes("special character") &&
+                        !errors.newPassword.message?.includes("numeric digit") && (
                           <p
                             className="text-sm text-destructive"
                             role="alert"
@@ -260,114 +268,113 @@ function ResetPasswordContent() {
                             {errors.newPassword.message}
                           </p>
                         )}
-                        <PasswordRequirements password={form.watch("newPassword")} />
-                      </div>
+                    </div>
 
-                      {/* Confirm Password Field */}
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="confirmPassword"
-                          className="text-sm font-medium text-gray-900 block"
+                    {/* Confirm Password Field */}
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-medium text-gray-900 block"
+                      >
+                        {t(
+                          "auth.resetPassword.confirmPassword",
+                          "Confirm Password"
+                        )}
+                      </label>
+                      <div className="relative">
+                        <div
+                          className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                          aria-hidden="true"
                         >
-                          {t(
-                            "auth.resetPassword.confirmPassword",
-                            "Confirm Password"
+                          <KeyIcon
+                            weight="duotone"
+                            size={24}
+                            className="text-gray-600"
+                          />
+                        </div>
+                        <Input
+                          id="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          autoComplete="new-password"
+                          placeholder={t(
+                            "auth.resetPassword.confirmPasswordPlaceholder",
+                            "••••••••••••"
                           )}
-                        </label>
-                        <div className="relative">
-                          <div
-                            className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                            aria-hidden="true"
-                          >
-                            <KeyIcon
+                          className={cn(
+                            "h-12 pl-16 pr-16 login-input",
+                            errors.confirmPassword && "border-destructive"
+                          )}
+                          {...register("confirmPassword")}
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          aria-label={
+                            showConfirmPassword
+                              ? "Hide password"
+                              : "Show password"
+                          }
+                          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeIcon
                               weight="duotone"
                               size={24}
                               className="text-gray-600"
                             />
-                          </div>
-                          <Input
-                            id="confirmPassword"
-                            type={showConfirmPassword ? "text" : "password"}
-                            autoComplete="new-password"
-                            placeholder={t(
-                              "auth.resetPassword.confirmPasswordPlaceholder",
-                              "••••••••••••"
-                            )}
-                            className={cn(
-                              "h-12 pl-16 pr-16 login-input",
-                              errors.confirmPassword && "border-destructive"
-                            )}
-                            {...register("confirmPassword")}
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
-                            aria-label={
-                              showConfirmPassword
-                                ? "Hide password"
-                                : "Show password"
-                            }
-                            className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
-                          >
-                            {showConfirmPassword ? (
-                              <EyeIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            ) : (
-                              <EyeClosedIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            )}
-                          </button>
-                        </div>
-                        {errors.confirmPassword && (
-                          <p
-                            className="text-sm text-destructive"
-                            role="alert"
-                          >
-                            {errors.confirmPassword.message}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Submit Button */}
-                      <div className="space-y-4 pt-2">
-                        <Button
-                          type="submit"
-                          disabled={isLoading}
-                          className={cn(
-                            "w-full h-12 rounded-lg font-medium transition-all duration-200",
-                            "bg-blue-600 hover:bg-blue-700 text-white",
-                            "shadow-lg hover:shadow-xl",
-                            "disabled:opacity-50 disabled:cursor-not-allowed",
-                            isLoading && "animate-pulse"
+                          ) : (
+                            <EyeClosedIcon
+                              weight="duotone"
+                              size={24}
+                              className="text-gray-600"
+                            />
                           )}
-                        >
-                          {isLoading
-                            ? t(
-                              "auth.resetPassword.resetting",
-                              "Resetting..."
-                            )
-                            : t(
-                              "auth.resetPassword.resetButton",
-                              "Reset Password"
-                            )}
-                        </Button>
+                        </button>
                       </div>
-                    </form>
+                      {errors.confirmPassword && (
+                        <p
+                          className="text-sm text-destructive"
+                          role="alert"
+                        >
+                          {errors.confirmPassword.message}
+                        </p>
+                      )}
+                    </div>
 
-                    {/* Back to Login */}
-                    <div className="text-center">
-                      <Link
-                        href="/auth/pages/login"
-                        className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    {/* Submit Button */}
+                    <div className="space-y-4 pt-2">
+                      <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className={cn(
+                          "w-full h-12 rounded-lg font-medium transition-all duration-200",
+                          "bg-blue-600 hover:bg-blue-700 text-white",
+                          "shadow-lg hover:shadow-xl",
+                          "disabled:opacity-50 disabled:cursor-not-allowed",
+                          isLoading && "animate-pulse"
+                        )}
                       >
+                        {isLoading
+                          ? t(
+                            "auth.resetPassword.resetting",
+                            "Resetting..."
+                          )
+                          : t(
+                            "auth.resetPassword.resetButton",
+                            "Reset Password"
+                          )}
+                      </Button>
+                    </div>
+                  </form>
+
+                  {/* Back to Login */}
+                  <div className="text-center">
+                    <Link
+                      href="/auth/pages/login"
+                      className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    >
                       {t("auth.resetPassword.backToLogin", "Back to login")}
                     </Link>
                   </div>

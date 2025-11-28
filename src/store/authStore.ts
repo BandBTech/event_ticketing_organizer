@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authService, AuthError } from '@/lib/authService';
+import { authService } from '@/lib/authService';
+import { AuthError } from '@/lib/errors';
 import { tokenManager } from '@/lib/tokenManager';
 import { AuthUser, LoginRequest, UserProfileResponse } from '@/types/auth';
 
