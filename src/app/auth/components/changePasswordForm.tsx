@@ -67,7 +67,7 @@ function ResetPasswordContent() {
 
     if (!emailParam || !otpParam) {
       // Redirect to forgot password if email or OTP is missing
-      router.push("/forgot-password");
+      router.push("/auth/pages/forgotpassword");
       return;
     }
 
@@ -114,9 +114,8 @@ function ResetPasswordContent() {
       setIsSuccess(true);
 
       // Redirect to login immediately
-      router.push("/login");
+      router.push("/auth/pages/login");
     } catch (err) {
-      console.log(typeof err);
       // Show error toast
       if (err instanceof AuthError) {
         console.error("Password reset failed:", err, err.message, err.details);
@@ -253,7 +252,6 @@ function ResetPasswordContent() {
                             )}
                           </button>
                         </div>
-                        <PasswordRequirements password={form.watch("newPassword")} />
                         {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
                           <p
                             className="text-sm text-destructive"
@@ -262,6 +260,7 @@ function ResetPasswordContent() {
                             {errors.newPassword.message}
                           </p>
                         )}
+                        <PasswordRequirements password={form.watch("newPassword")} />
                       </div>
 
                       {/* Confirm Password Field */}
@@ -366,7 +365,7 @@ function ResetPasswordContent() {
                     {/* Back to Login */}
                     <div className="text-center">
                       <Link
-                        href="/login"
+                        href="/auth/pages/login"
                         className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
                       >
                       {t("auth.resetPassword.backToLogin", "Back to login")}

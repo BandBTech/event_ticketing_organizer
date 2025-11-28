@@ -38,7 +38,7 @@ function VerifyOTPContent() {
     const typeParam = searchParams.get("type") || "registration";
 
     if (!emailParam) {
-      router.push("/signup");
+      router.push("/auth/pages/register");
       return;
     }
 
@@ -75,7 +75,7 @@ function VerifyOTPContent() {
         identifier: email,
         otp_code: otp,
         otp_type: otpType,
-        role: "user",
+        role: "organizer",
       });
 
       // Show success toast
@@ -85,7 +85,7 @@ function VerifyOTPContent() {
       if (otpType === "password_reset") {
         // For password reset, redirect to reset password page
         router.push(
-          `/reset-password?email=${encodeURIComponent(
+          `/auth/pages/resetpassword?email=${encodeURIComponent(
             email
           )}&otp=${encodeURIComponent(otp)}`
         );

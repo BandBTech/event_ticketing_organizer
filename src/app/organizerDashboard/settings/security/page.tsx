@@ -204,10 +204,10 @@ export default function SecuritySettingsPage() {
                 )}
               </button>
             </div>
+            <PasswordRequirements password={form.watch('newPassword')} />
             {errors.newPassword && errors.newPassword.message !== "Invalid input" && (
               <p className="text-xs text-destructive">{errors.newPassword.message}</p>
             )}
-            <PasswordRequirements password={form.watch('newPassword')} />
           </div>
 
           {/* Confirm Password */}

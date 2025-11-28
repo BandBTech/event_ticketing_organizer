@@ -792,12 +792,12 @@ export default function MultiStepRegister() {
                         )}
                       </button>
                     </div>
+                    <PasswordRequirements password={passwordForm.watch("password")} />
                     {passwordForm.formState.errors.password && passwordForm.formState.errors.password.message !== "Invalid input" && (
                       <p className="text-sm text-destructive">
                         {passwordForm.formState.errors.password.message}
                       </p>
                     )}
-                    <PasswordRequirements password={passwordForm.watch("password")} />
                   </div>
 
                   {/* Confirm Password Field */}

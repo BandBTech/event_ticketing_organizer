@@ -347,7 +347,7 @@ class AuthService {
     otp_type: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/user/verify-otp', {
+    await apiRequest<void>('/auth/organizer/verify-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
