@@ -315,15 +315,12 @@ export default function LoginPage() {
   const loginSchema = createLoginSchema(t);
   type LoginFormData = z.infer<typeof loginSchema>;
 
-  // Check for saved credentials on component mount
-  const savedCredentials = tokenManager.getSavedCredentials();
-
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: savedCredentials?.email || "",
-      password: savedCredentials?.password || "",
-      rememberMe: tokenManager.hasCredentialsSaved(),
+      email: "",
+      password: "",
+      rememberMe: false,
     },
     mode: "onChange",
   });
@@ -351,13 +348,6 @@ export default function LoginPage() {
         },
         data.rememberMe
       );
-
-      // Save or clear credentials based on Remember Me
-      if (data.rememberMe) {
-        tokenManager.saveCredentials(data.email, data.password);
-      } else {
-        tokenManager.clearCredentials();
-      }
 
       // Show success toast
       toast.success("auth.toast.loginSuccess", "Welcome back!");

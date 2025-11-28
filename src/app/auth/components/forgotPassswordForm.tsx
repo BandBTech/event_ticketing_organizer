@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
 
       // Redirect immediately to OTP verification page
       router.push(
-        `verify-otp?email=${encodeURIComponent(
+        `/auth/pages/verify-otp?email=${encodeURIComponent(
           data.email
         )}&type=password_reset`
       );

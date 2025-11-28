@@ -230,7 +230,8 @@ async function refreshAccessToken(): Promise<string> {
     const tokens = data.data || data;
 
     // Update tokens
-    tokenManager.setTokens(tokens.access_token, tokens.refresh_token);
+    const rememberMe = tokenManager.isRememberMeEnabled();
+    tokenManager.setTokens(tokens.access_token, tokens.refresh_token, rememberMe);
 
     // Notify all waiting requests
     onTokenRefreshed(tokens.access_token);

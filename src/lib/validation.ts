@@ -62,115 +62,11 @@ export const eventSchema = z
     path: ["endDate"],
   });
 
-// export const createLoginSchema = (
-//   t: (key: string, fallback?: string) => string
-// ) => {
-//   const v = createValidationHelpers(t);
-
-//   return z.object({
-//     email: z.string().min(1, v.required("Email")).email(v.email("Email")),
-//     password: z
-//       .string()
-//       .min(1, v.required("Password"))
-//       .min(8, v.minLength("Password", 8))
-//       .max(100, v.maxLength("Password", 100))
-//       .regex(/[A-Z]/, v.passwordUppercase())
-//       .regex(/[a-z]/, v.passwordLowercase())
-//       .regex(/[0-9]/, v.passwordNumber()),
-//     rememberMe: z.boolean(),
-//   });
-// };
-// export const passwordSchema = z
-//   .string()
-//   .min(8, "Password must be at least 8 characters long.")
-//   .max(64, "Password cannot exceed 64 characters.")
-//   .refine((val) => /[A-Z]/.test(val), {
-//     message: "Password must include at least one uppercase letter.",
-//   })
-
-//   .refine((val) => /[a-z]/.test(val), {
-//     message: "Password must include at least one lowercase letter.",
-//   })
-//   .refine((val) => /\d/.test(val), {
-//     message: "Password must include at least one number.",
-//   })
-//   .refine((val) => /[!@#$%^&*(),.?":{}|<>_\-]/.test(val), {
-//     message: "Password must include at least one special character.",
-//   });
-
-// export const signupSchema = z.object({
-//   first_name: z
-//     .string()
-//     .trim()
-//     .min(2, "First Name must be at least 2 characters.")
-//     .max(50, "First name cannot exceed 50 characters.")
-//     .regex(/^[A-Za-z\s'-]+$/, "First name can only conatin letters and spaces."),
-
-//   last_name: z
-//     .string()
-//     .trim()
-//     .min(2, "Last name must be at least 2 characters.")
-//     .max(50, "Last name cannot exceed 50 characters.")
-//     .regex(/^[A-Za-z\s'-]+$/, "Last name can only contain letters and spaces."),
-//   phone: z
-//     .string()
-//     .trim()
-//     .min(7, "Phone number must have at least 7 digits.")
-//     .max(15, "Phone number cannot exceed 15 digits.")
-//     .regex(/^\d+$/, "Phone number must contain digits only."),
-
-//   country_code: z
-//     .string()
-//     .optional(),
-
-//   email: z
-//     .string()
-//     .trim()
-//     .min(1, "Email is required.")
-//     .toLowerCase()
-//     .pipe(z.email("Please enter a valid email address.")),
-
-// });
-
-// export const resetPasswordSchema = z
-//   .object({
-//     password: passwordSchema,
-//     confirmPassword: z.string().min(1, "Please confirm your password."),
-//   })
-//   .refine((data) => data.password === data.confirmPassword, {
-//     path: ["confirmPassword"],
-//     message: "Passwords do not match.",
-//   });
-
-// export const forgotPasswordSchema = z.object({
-//   email: z
-//     .string()
-//     .trim()
-//     .min(1, "Email is required.")
-//     .toLowerCase()
-//     .pipe(z.email("Please enter a valid email address.")),
-// });
-
-// export const createPasswordSchema = z
-//   .object({
-//     password: passwordSchema,
-//     confirmPassword: z.string().min(1, "Please confirm your password."),
-//   })
-//   .refine((data) => data.password === data.confirmPassword, {
-//     path: ["confirmPassword"],
-//     message: "Passwords do not match.",
-//   });
-
-
-
-// export type CreatePasswordFormData = z.infer<typeof createPasswordSchema>;
-// export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-// export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
-// export type SignupFormData = z.infer<typeof signupSchema>;
-// export type LoginFormData = z.infer<typeof createLoginSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
 export type TicketFormData = z.infer<typeof ticketSchema>;
 export type PromoCodeFormData = z.infer<typeof promoCodeSchema>;
+
+
 
 
 /**
@@ -268,14 +164,14 @@ export const createValidationHelpers = (
   /**
    * Email specific validation
    */
-  email: (field: string) => {
+  email: () => {
     return t('auth.signup.validation.emailInvalid', 'Please enter a valid email address');
   },
 
   /**
    * Phone specific validation
    */
-  phone: (field: string) => {
+  phone: () => {
     return t('auth.signup.validation.phoneInvalid', 'Please enter a valid phone number');
   },
 
