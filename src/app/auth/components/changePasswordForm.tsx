@@ -252,8 +252,7 @@ function ResetPasswordContent() {
                             />
                           )}
                         </button>
-                      </div>
-                      <PasswordRequirements password={form.watch("newPassword")} />
+                        </div>
                       {errors.newPassword &&
                         errors.newPassword.message !== "Invalid input" &&
                         // Filter out messages that are already covered by PasswordRequirements
@@ -268,6 +267,7 @@ function ResetPasswordContent() {
                             {errors.newPassword.message}
                           </p>
                         )}
+                        <PasswordRequirements password={form.watch("newPassword")} />
                     </div>
 
                     {/* Confirm Password Field */}

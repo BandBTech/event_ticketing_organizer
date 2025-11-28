@@ -40,7 +40,7 @@ export default function SettingsLayout({
       <div className="flex flex-col md:flex-row gap-8">
         {/* Settings Sidebar */}
         <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="rounded-xl sticky top-24">
+          <div className="rounded-xl">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 px-2">
               {t('settings.title', 'Settings')}
             </h2>
