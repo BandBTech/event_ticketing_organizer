@@ -15,6 +15,9 @@
   "auth": {
     "signup": {
       "loginAsOrganizer": "Accedi come Organizzatore."
+    },
+    "toast": {
+      "passwordChangedLogin": "Effettua il login con la tua nuova password."
     }
   }
 }
