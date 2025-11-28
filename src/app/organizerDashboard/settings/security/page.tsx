@@ -96,7 +96,7 @@ export default function SecuritySettingsPage() {
       // Use setTimeout to ensure toast is shown before logout
       setTimeout(async () => {
         await logout();
-        router.push('/login');
+        router.push('/auth/pages/login');
       }, 500);
 
     } catch (error) {

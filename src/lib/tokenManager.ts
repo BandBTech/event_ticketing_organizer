@@ -1,149 +1,56 @@
-import { setCookie, deleteCookie, getCookie } from 'cookies-next';
+import Cookies from 'js-cookie';
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const REMEMBER_ME_KEY = 'remember_me';
-const SAVED_EMAIL_KEY = 'saved_email';
-const SAVED_PASSWORD_KEY = 'saved_password';
-const CREDENTIALS_SAVED_KEY = 'credentials_saved';
 
 class TokenManager {
   /**
    * Store tokens with "Remember Me" preference
    * @param accessToken - Access token from API
    * @param refreshToken - Refresh token from API
-   * @param rememberMe - If true, also saves login credentials for auto-fill
+   * @param rememberMe - If true, tokens persist across browser sessions (7 days). If false, tokens are session-only.
    */
   setTokens(accessToken: string, refreshToken: string, rememberMe: boolean = false): void {
-    if (typeof window === 'undefined') return;
-
-    // Common cookie options
-    const cookieOptions = {
+    const cookieOptions: Cookies.CookieAttributes = {
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const
+      ...(rememberMe ? { expires: 7 } : {})
     };
 
-    if (rememberMe) {
-      // Persistent: Store in localStorage AND Persistent Cookies (30 days)
-      localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-      localStorage.setItem(REMEMBER_ME_KEY, 'true');
+    Cookies.set(ACCESS_TOKEN_KEY, accessToken, cookieOptions);
+    Cookies.set(REFRESH_TOKEN_KEY, refreshToken, cookieOptions);
+    Cookies.set(REMEMBER_ME_KEY, rememberMe ? 'true' : 'false', cookieOptions);
 
-      setCookie('auth_token', accessToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 });
-      setCookie('refresh_token_cookie', refreshToken, { ...cookieOptions, maxAge: 30 * 24 * 60 * 60 });
-    } else {
-      // Session: Store ONLY in Session Cookies (cleared on browser close)
-      // Remove from localStorage to ensure no persistence
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
-      localStorage.removeItem(REFRESH_TOKEN_KEY);
-      localStorage.setItem(REMEMBER_ME_KEY, 'false');
-
-      setCookie('auth_token', accessToken, cookieOptions);
-      setCookie('refresh_token_cookie', refreshToken, cookieOptions);
-    }
   }
 
   /**
-   * Save login credentials for auto-fill (when Remember Me is checked)
-   * @param email - User's email
-   * @param password - User's password
-   */
-  saveCredentials(email: string, password: string): void {
-    if (typeof window === 'undefined') return;
-
-    // Encode credentials (basic encoding, not encryption)
-    // Note: For production, consider using proper encryption
-    const encodedEmail = btoa(email);
-    const encodedPassword = btoa(password);
-
-    localStorage.setItem(SAVED_EMAIL_KEY, encodedEmail);
-    localStorage.setItem(SAVED_PASSWORD_KEY, encodedPassword);
-    localStorage.setItem(CREDENTIALS_SAVED_KEY, 'true');
-  }
-
-  /**
-   * Get saved credentials for auto-fill
-   * @returns Object with email and password, or null if not saved
-   */
-  getSavedCredentials(): { email: string; password: string } | null {
-    if (typeof window === 'undefined') return null;
-
-    const credentialsSaved = localStorage.getItem(CREDENTIALS_SAVED_KEY) === 'true';
-    if (!credentialsSaved) return null;
-
-    const encodedEmail = localStorage.getItem(SAVED_EMAIL_KEY);
-    const encodedPassword = localStorage.getItem(SAVED_PASSWORD_KEY);
-
-    if (!encodedEmail || !encodedPassword) return null;
-
-    try {
-      // Decode credentials
-      const email = atob(encodedEmail);
-      const password = atob(encodedPassword);
-      return { email, password };
-    } catch (error) {
-      console.error('Error decoding saved credentials:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Clear saved credentials
-   */
-  clearCredentials(): void {
-    if (typeof window === 'undefined') return;
-
-    localStorage.removeItem(SAVED_EMAIL_KEY);
-    localStorage.removeItem(SAVED_PASSWORD_KEY);
-    localStorage.removeItem(CREDENTIALS_SAVED_KEY);
-  }
-
-  /**
-   * Check if credentials are saved
-   */
-  hasCredentialsSaved(): boolean {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(CREDENTIALS_SAVED_KEY) === 'true';
-  }
-
-  /**
-   * Get access token from localStorage
+   * Get access token from cookies
    */
   getAccessToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(ACCESS_TOKEN_KEY) || (getCookie('auth_token') as string) || null;
+    return Cookies.get(ACCESS_TOKEN_KEY) || null;
   }
 
   /**
-   * Get refresh token from localStorage
+   * Get refresh token from cookies
    */
   getRefreshToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(REFRESH_TOKEN_KEY) || (getCookie('refresh_token_cookie') as string) || null;
+    return Cookies.get(REFRESH_TOKEN_KEY) || null;
   }
 
   /**
    * Check if "Remember Me" was enabled
    */
   isRememberMeEnabled(): boolean {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem(REMEMBER_ME_KEY) === 'true';
+    return Cookies.get(REMEMBER_ME_KEY) === 'true';
   }
 
   /**
    * Clear all tokens and remember me preference
    */
   clearTokens(): void {
-    if (typeof window === 'undefined') return;
-
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(REMEMBER_ME_KEY);
-
-    // Remove cookies
-    deleteCookie('auth_token', { path: '/' });
-    deleteCookie('refresh_token_cookie', { path: '/' });
+    Cookies.remove(ACCESS_TOKEN_KEY);
+    Cookies.remove(REFRESH_TOKEN_KEY);
+    Cookies.remove(REMEMBER_ME_KEY);
   }
 
   hasTokens(): boolean {
