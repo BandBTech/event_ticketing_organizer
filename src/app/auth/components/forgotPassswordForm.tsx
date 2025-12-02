@@ -84,8 +84,6 @@ export default function ForgotPasswordPage() {
         )}&type=password_reset`
       );
     } catch (err) {
-      // Show error toast
-      console.log("Its here:", err);
       if (err instanceof AuthError) {
         toast.error("", err.message || "Failed to send reset email. Please try again later.", err.details);
       } else {
