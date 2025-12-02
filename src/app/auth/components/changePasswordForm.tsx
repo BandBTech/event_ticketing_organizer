@@ -119,7 +119,6 @@ function ResetPasswordContent() {
     } catch (err) {
       // Show error toast
       if (err instanceof AuthError) {
-        console.error("Password reset failed:", err, err.message, err.details);
         toast.error(
           "auth.toast.serverError",
           err.message || "Failed to reset password. Please try again."
@@ -157,10 +156,7 @@ function ResetPasswordContent() {
                   {t("auth.resetPassword.title", "Reset Password")}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.resetPassword.subtitle",
-                    "Set a new password for"
-                  )}{" "}
+                  {t("auth.resetPassword.subtitle", "Set a new password for")}{" "}
                   <strong>{email}</strong>
                 </p>
               </div>

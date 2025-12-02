@@ -84,8 +84,6 @@ export default function ForgotPasswordPage() {
         )}&type=password_reset`
       );
     } catch (err) {
-      // Show error toast
-      console.log("Its here:", err);
       if (err instanceof AuthError) {
         toast.error("", err.message || "Failed to send reset email. Please try again later.", err.details);
       } else {
@@ -103,13 +101,13 @@ export default function ForgotPasswordPage() {
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-8 p-2 sm:p-3">
               {/* Back Button */}
-              <Link
+              {/* <Link
                 href="/auth/pages/login"
                 className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <ArrowLeftIcon size={16} />
                 {t("auth.forgotPassword.backToLogin", "Back to login")}
-              </Link>
+              </Link> */}
 
               {/* Header */}
               <div className="space-y-2">
