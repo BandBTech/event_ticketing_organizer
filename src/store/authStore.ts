@@ -1,9 +1,10 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authService } from '@/lib/authService';
+import { authService } from '@/services/authService';
 import { AuthError } from '@/lib/errors';
 import { tokenManager } from '@/lib/tokenManager';
-import { AuthUser, LoginRequest, UserProfileResponse } from '@/types/auth';
+import { AuthUser, LoginRequest } from '@/types/auth';
 
 interface AuthStore {
   // State

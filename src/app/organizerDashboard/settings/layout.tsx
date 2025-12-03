@@ -1,6 +1,6 @@
 "use client";
 
-import { UserIcon, BuildingsIcon, LockKeyIcon } from "@phosphor-icons/react";
+import { UserIcon, BuildingsIcon, LockKeyIcon, StackIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,6 +22,11 @@ const menuItems = [
     href: "/organizerDashboard/settings/security",
     label: "Security",
     icon: LockKeyIcon,
+  },
+  {
+    href: "/organizerDashboard/settings/tiers",
+    label: "Tier Templates",
+    icon: StackIcon,
   },
 ];
 

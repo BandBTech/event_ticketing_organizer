@@ -6,7 +6,7 @@
 import { tokenManager } from './tokenManager';
 import { AuthError } from './errors';
 import { toast } from './toast';
-import { useLanguageStore } from '@/store/languageStore';
+// import { useLanguageStore } from '@/store/languageStore';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
@@ -49,7 +49,7 @@ export async function apiRequest<T>(
     showErrorToast = true, // Show errors by default
     successMessage,
     errorMessage,
-    translateResponse = false,
+    // translateResponse = false,
     returnFullResponse = false,
     headers = {},
     ...restConfig

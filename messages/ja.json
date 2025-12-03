@@ -10,7 +10,10 @@
     "loadMore": "もっと見る",
     "noResults": "イベントが見つかりません",
     "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
-    "cancelButton": "キャンセル"
+    "cancelButton": "キャンセル",
+    "validation": {
+      "invalidDatetime": "有効な日時を入力してください。"
+    }
   },
   "auth": {
     "signup": {
@@ -18,6 +21,17 @@
     },
     "toast": {
       "passwordChangedLogin": "新しいパスワードでログインしてください。"
+    }
+  },
+  "event": {
+    "field": {
+      "bannerImage": "バナー画像",
+      "eventTitle": "イベントタイトル"
+    },
+    "helperText": {
+      "bannerImage": "バナー画像をアップロードまたはドラッグ",
+      "bannerImageSize": "1920x1200px、サイズ最大5MBのPNG/JPGファイル",
+      "bannerImageBrowse": "ファイルの参照"
     }
   }
 }

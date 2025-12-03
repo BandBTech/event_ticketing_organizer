@@ -18,7 +18,8 @@
       "maxLength": "{field} cannot exceed {length} characters.",
       "min": "{field} must be at least {value}.",
       "max": "{field} cannot exceed {value}.",
-      "pattern": "{field} format is invalid."
+      "pattern": "{field} format is invalid.",
+      "invalidDatetime": "Enter valid datetime."
     },
     "cancelButton": "Cancel"
   },
@@ -236,5 +237,17 @@
       "updateButton": "Update Password"
     },
     "title": "Settings"
+  },
+  "event": {
+    "eventDetails": "Event Details",
+    "field": {
+      "bannerImage": "Banner image",
+      "eventTitle": "Event Title"
+    },
+    "helperText": {
+      "bannerImage": "Upload banner image or drag & drop",
+      "bannerImageSize": "PNG/JPG file of 1920x1200px with size up to 5MB",
+      "bannerImageBrowse": "Browse File"
+    }
   }
 }

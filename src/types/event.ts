@@ -34,7 +34,7 @@ export interface Event {
 }
 
 export interface CreateEventTierRequest {
-    tier_id: string;
+  tier_template_id: string;
     price: number;
     quantity: number;
     currency?: string;

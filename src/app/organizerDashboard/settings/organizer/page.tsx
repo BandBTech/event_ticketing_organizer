@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/ui/shadcn-io/dropzone";
-import { authService } from "@/lib/authService";
+import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -29,7 +29,7 @@ export default function OrganizerProfileSettings() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading: isLoadingProfile, error: profileError, isError } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ["organizerProfile"],
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();

@@ -1,18 +1,19 @@
 "use client";
 
-import { Image as ImageIcon, Plus, Trash2, CalendarIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Image as ImageIcon, Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
+import { useState, useMemo } from "react";
 import { MapPinAreaIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { EventFormData, eventSchema } from "@/lib/validation";
+import { EventFormData, createEventSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { eventService } from "@/services/eventService";
 import { Event, TierTemplate } from "@/types/event";
-import { BtnBold, BtnBulletList, BtnItalic, BtnLink, BtnNumberedList, BtnUnderline, Editor, EditorProvider, Separator, Toolbar } from "react-simple-wysiwyg";
+import { Editor } from "@/components/blocks/rte/editor";
 import { toast } from "@/lib/toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   Form,
   FormControl,
@@ -30,10 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
+import TierNameSelector from "./TierNameSelector";
+
 
 interface CreateEventFormProps {
   initialData?: Event;
@@ -43,6 +43,7 @@ interface CreateEventFormProps {
 export default function CreateEventPage({ initialData, isEditing = false }: CreateEventFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string>(initialData?.banner_image || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -51,6 +52,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     queryKey: ['tierTemplates'],
     queryFn: eventService.getTierTemplates,
   });
+
+  const eventSchema = useMemo(() => createEventSchema(t), [t]);
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
@@ -85,6 +88,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         ],
       promoCodes: [],
     },
+    mode: "onChange"
   });
 
   const {
@@ -117,6 +121,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
   // Create/Update Event Mutation
   const saveEventMutation = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (data: { eventData: any, isUpdate: boolean, id?: string }) => {
       if (data.isUpdate && data.id) {
         return eventService.updateEvent(data.id, data.eventData);
@@ -128,6 +133,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       toast.success("Success", isEditing ? "Event updated successfully" : "Event created successfully");
       router.push("/organizerDashboard/pages/events");
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       console.error("Error saving event:", error);
       toast.error("Error", "Failed to save event");
@@ -163,7 +169,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         }
 
         tiersData.push({
-          tier_id: tierId,
+          tier_template_id: tierId,
           price: ticket.price,
           quantity: ticket.quantity,
           gst: ticket.gst,
@@ -174,6 +180,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       }
 
       // 2. Prepare Event Data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const eventData: any = {
         title: data.name,
         description: data.description,
@@ -212,12 +219,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validation
+      if (!file.type.startsWith("image/")) {
+        toast.error("Error", "Invalid file type. Please upload an image.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Error", "File size exceeds 5MB.");
+        return;
+      }
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setImagePreview(result);
         form.setValue("image", result);
+        form.clearErrors("image");
       };
       reader.readAsDataURL(file);
     }
@@ -231,89 +249,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     form.setValue("tags", tags);
   };
 
-  // Helper to combine date and time
-  const combineDateAndTime = (date: Date | undefined, timeString: string) => {
-    if (!date) return "";
-    const d = new Date(date);
-    const [hours, minutes] = timeString.split(':').map(Number);
-    if (!isNaN(hours) && !isNaN(minutes)) {
-      d.setHours(hours);
-      d.setMinutes(minutes);
-      d.setSeconds(0);
-      d.setMilliseconds(0);
-    }
-    return d.toISOString();
-  };
 
-  const DateTimePicker = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
-    const dateValue = value ? new Date(value) : undefined;
-    const timeValue = value && !isNaN(new Date(value).getTime()) ? format(new Date(value), "HH:mm") : "00:00";
-
-    return (
-      <div className="flex gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-[240px] justify-start text-left font-normal",
-                !dateValue && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={dateValue}
-              onSelect={(date) => {
-                if (date) {
-                  onChange(combineDateAndTime(date, timeValue));
-                } else {
-                  onChange(""); // Clear date if unselected
-                }
-              }}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-        <Input
-          type="time"
-          value={timeValue}
-          onChange={(e) => {
-            if (dateValue && !isNaN(dateValue.getTime())) {
-              onChange(combineDateAndTime(dateValue, e.target.value));
-            } else {
-              // If no date is picked, just update the time part of a default date (e.g., today)
-              // Or, if we want to enforce date selection first, we could do nothing or show an error.
-              // For now, let's assume a date will be picked or is already present.
-              // If value is empty, combineDateAndTime will return empty string.
-              onChange(combineDateAndTime(new Date(), e.target.value));
-            }
-          }}
-          className="w-[120px]"
-        />
-      </div>
-    );
-  };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-5 pt-3 space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event details */}
           <div className="mb-6 rounded-xl border border-gray-200 text-gray-700 bg-white shadow-sm">
-            <div className="p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-blue-600">Event Details</h2>
+            <div className="p-6 space-y-2">
+              <h2 className="text-md font-semibold text-primary">{t("event.eventDetails", "Event Details")}</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
-                  <Label>Banner Image</Label>
+                  <Label>{t("event.field.bannerImage", "Banner Image")}</Label>
                   <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-4 text-center text-gray-500 cursor-pointer">
                     <ImageIcon />
-                    Upload banner image or drag & drop
-                    <span className="text-xs">PNG/JPG file of 1820x1200px size up to 5MB</span>
+                    {t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
+                    <span className="text-xs">{t("event.helperText.bannerImageSize", "PNG/JPG file of 1920x1200px with size up to 5MB")}</span>
                     <br />
                     <Input
                       type="file"
@@ -326,7 +278,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                       htmlFor="banner-upload"
                       className="border rounded-lg px-3 py-1 text-sm cursor-pointer hover:bg-gray-50"
                     >
-                      Browse File
+                      {t("event.helperText.bannerImageBrowse", "Browse File")}
                     </label>
                     {imagePreview && (
                       <div className="mt-2">
@@ -345,7 +297,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Event Title</FormLabel>
+                        <FormLabel>{t("event.field.eventTitle", "Event Title")}</FormLabel>
                         <FormControl>
                           <Input placeholder="Enter Title" {...field} />
                         </FormControl>
@@ -363,6 +315,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         <FormControl>
                           <Input
                             placeholder="e.g. Music, Concert, Festival"
+                            value={field.value.join(", ")}
                             onChange={handleTagsChange}
                           />
                         </FormControl>
@@ -375,27 +328,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
               <div>
                 <Label>Event Description</Label>
-                <div className="mt-1 border border-gray-300 rounded-lg overflow-hidden">
-                  <EditorProvider>
-                    <Editor
-                      value={form.watch("description") || ""}
-                      onChange={(e) => form.setValue("description", e.target.value)}
-                      placeholder="Tell what makes your event special"
-                      className="min-h-[150px] w-full bg-white text-gray-900 focus:outline-none"
-                    >
-                      <Toolbar>
-                        <BtnBold />
-                        <BtnItalic />
-                        <BtnUnderline />
-                        <Separator />
-                        <BtnNumberedList />
-                        <BtnBulletList />
-                        <Separator />
-                        <BtnLink />
-                      </Toolbar>
-                    </Editor>
-                  </EditorProvider>
-                </div>
+                <Editor
+                  initialHtml={form.getValues("description")}
+                  onHtmlChange={(html) => form.setValue("description", html)}
+                />
                 {form.formState.errors.description && (
                   <p className="text-red-500 text-xs mt-1">
                     {form.formState.errors.description.message}
@@ -530,7 +466,11 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                       <FormItem>
                         <FormLabel>Tier Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="General Admission" {...field} />
+                          <TierNameSelector
+                            value={field.value}
+                            onChange={field.onChange}
+                            templates={tierTemplates}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

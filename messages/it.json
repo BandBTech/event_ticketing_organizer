@@ -10,7 +10,10 @@
     "loadMore": "Carica Altri Eventi",
     "noResults": "Nessun evento trovato",
     "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
-    "cancelButton": "Cancellare"
+    "cancelButton": "Cancellare",
+    "validation": {
+      "invalidDatetime": "Inserisci una data/ora valida."
+    }
   },
   "auth": {
     "signup": {
@@ -18,6 +21,17 @@
     },
     "toast": {
       "passwordChangedLogin": "Effettua il login con la tua nuova password."
+    }
+  },
+  "event": {
+    "field": {
+      "bannerImage": "Immagine dello striscione",
+      "eventTitle": "Titolo dell'evento"
+    },
+    "helperText": {
+      "bannerImage": "Carica l'immagine del banner o trascinala",
+      "bannerImageSize": "File PNG/JPG di 1920x1200px con dimensioni fino a 5 MB",
+      "bannerImageBrowse": "Sfoglia file"
     }
   }
 }

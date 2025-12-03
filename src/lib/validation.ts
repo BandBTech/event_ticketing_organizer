@@ -3,71 +3,117 @@ import { z } from "zod";
 
 // import { useTranslation } from '@/hooks/useTranslation';
 
-const dateString = z
-  .string()
-  .refine(
-    (val) => !isNaN(Date.parse(val)),
-    "Enter valid datetime."
-  );
-export const ticketSchema = z
+
+
+// Helper for required date string
+const createRequiredDateSchema = (t: (key: string, fallback?: string) => string) =>
+  z.string().min(1, t('common.validation.required', 'This field is required.')).superRefine((val, ctx) => {
+    const date = new Date(val);
+    if (isNaN(date.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('common.validation.invalidDatetime', 'Enter valid datetime.'),
+      });
+      return;
+    }
+    if (date.getFullYear() > 9999) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('common.validation.yearLimit', 'Year cannot be more than 4 digits.'),
+      });
+    }
+  });
+
+// Helper for optional date string (allows empty string)
+const createOptionalDateSchema = (t: (key: string, fallback?: string) => string) =>
+  z.string().superRefine((val, ctx) => {
+    if (!val) return;
+    const date = new Date(val);
+    if (isNaN(date.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('common.validation.invalidDatetime', 'Enter valid datetime.'),
+      });
+      return;
+    }
+    if (date.getFullYear() > 9999) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('common.validation.yearLimit', 'Year cannot be more than 4 digits.'),
+      });
+    }
+  });
+
+
+export const createTicketSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
     id: z.string().optional(),
     name: z
       .string()
-      .min(1, "Ticket name is required.")
-      .max(100, "Ticket name must be under 100 characters."),
-    price: z.coerce.number().min(1, "Price must be positive."),
-    quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
+      .min(1, t('event.validation.ticketNameRequired', "Ticket name is required."))
+      .max(100, t('event.validation.ticketNameLength', "Ticket name must be under 100 characters.")),
+    price: z.coerce.number().min(0, t('event.validation.pricePositive', "Price must be positive.")),
+    quantity: z.coerce.number().min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
     gst: z.coerce
       .number()
-      .min(0, "GST myst be positive.")
-      .max(100, "GST cannot exceed 100%."),
-    salesStart: dateString,
-    salesEnd: dateString,
+      .min(0, t('event.validation.gstPositive', "GST must be positive."))
+      .max(100, t('event.validation.gstMax', "GST cannot exceed 100%.")),
+    salesStart: createOptionalDateSchema(t),
+    salesEnd: createOptionalDateSchema(t),
   })
-  .refine((data) => new Date(data.salesEnd) >= new Date(data.salesStart), {
-    message: "Sales end date must be after sales start date.",
+  .refine((data) => {
+    if (!data.salesEnd || !data.salesStart) return true;
+    return new Date(data.salesEnd) >= new Date(data.salesStart);
+  }, {
+    message: t('event.validation.salesEndAfterStart', "Sales end date must be after sales start date."),
     path: ["salesEnd"],
   });
-export const promoCodeSchema = z.object({
+
+export const createPromoCodeSchema = (t: (key: string, fallback?: string) => string) => z.object({
   code: z
     .string()
-    .min(1, "Promo code is required.")
-    .regex(/^[A-Z0-9_-]+$/, "Promo code may only coantain A-Z , 0-9, _ or -"),
-  discountType: z.string().min(1, "Discount type is required."),
-  amount: z.coerce.number().min(0, "Amount must be positive."),
+    .min(1, t('event.validation.promoCodeRequired', "Promo code is required."))
+    .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo code may only contain A-Z , 0-9, _ or -")),
+  discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount type is required.")),
+  amount: z.coerce.number().min(0, t('event.validation.amountPositive', "Amount must be positive.")),
   quantity: z.coerce
     .number()
-    .int("Quantity must be integer.")
-    .min(1, "Quantity must be at least 1."),
+    .int(t('event.validation.quantityInteger', "Quantity must be integer."))
+    .min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
 });
 
-export const eventSchema = z
+export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
-    name: z.string().min(1, "Event Title is required."),
-    description: z.string().min(1, "Event Description is required."),
-    tags: z.array(z.string()).min(1, "At least one tag is required."),
-    image: z.string().min(1, "Image is required."),
-    venue: z.string().min(1, "Venue Name is required."),
-    venueAddress: z.string().min(1, "Venue Address is required."),
-    capacity: z.coerce.number().min(1, "Capacity must be at least 1."),
-    timezone: z.string().min(1, "Timezone is required."),
-    startDate: dateString,
-    endDate: dateString,
-    tickets: z.array(ticketSchema).min(1, "At least one ticket is required."),
-    promoCodes: z.array(promoCodeSchema).optional(),
+    name: z.string().min(1, t('event.validation.titleRequired', "Event Title is required.")),
+    description: z.string().min(1, t('event.validation.descriptionRequired', "Event Description is required.")),
+    tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
+    image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
+    venue: z.string().min(1, t('event.validation.venueRequired', "Venue Name is required.")),
+    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue Address is required.")),
+    capacity: z.coerce.number().min(1, t('event.validation.capacityMin', "Capacity must be at least 1.")),
+    timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
+    startDate: createRequiredDateSchema(t),
+    endDate: createRequiredDateSchema(t),
+    tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one ticket is required.")),
+    promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })
-  .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
-    message: "Event end date must be after start date.",
+  .refine((data) => {
+    if (!data.endDate || !data.startDate) return true;
+    return new Date(data.endDate) > new Date(data.startDate);
+  }, {
+    message: t('event.validation.endDateAfterStart', "Event end date must be after start date."),
     path: ["endDate"],
   });
 
-export type EventFormData = z.infer<typeof eventSchema>;
-export type TicketFormData = z.infer<typeof ticketSchema>;
-export type PromoCodeFormData = z.infer<typeof promoCodeSchema>;
+export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
+  template_name: z.string().min(1, t('event.validation.tierNameRequired', "Tier Template Name is required.")),
+  description: z.string().optional(),
+});
 
-
-
+export type EventFormData = z.infer<ReturnType<typeof createEventSchema>>;
+export type TicketFormData = z.infer<ReturnType<typeof createTicketSchema>>;
+export type PromoCodeFormData = z.infer<ReturnType<typeof createPromoCodeSchema>>;
+export type TierTemplateFormData = z.infer<ReturnType<typeof createTierTemplateSchema>>;
 
 /**
  * Validation helper utility

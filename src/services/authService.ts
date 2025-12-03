@@ -1,3 +1,4 @@
+
 import {
   LoginRequest,
   TokenResponse,
@@ -7,21 +8,11 @@ import {
   AuthApiError
 } from '@/types/auth';
 import { tokenManager } from '@/lib/tokenManager';
-import { api } from '@/lib/apiClient';
+import { api, apiRequest as apiClientRequest } from '@/lib/apiClient';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
 
-export class AuthError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public status?: number,
-    public details?: unknown
-  ) {
-    super(message);
-    this.name = 'AuthError';
-  }
-}
+import { AuthError } from '@/lib/errors';
 
 // Legacy API request function for non-authenticated endpoints
 async function apiRequest<T>(
@@ -84,7 +75,7 @@ class AuthService {
    * @param rememberMe - If true, stores tokens in localStorage; if false, stores in sessionStorage
    */
   async login(credentials: LoginRequest, rememberMe: boolean = false): Promise<TokenResponse> {
-    const tokens = await apiRequest<TokenResponse>('/auth/user/login', {
+    const tokens = await apiRequest<TokenResponse>('/auth/organizer/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -102,6 +93,53 @@ class AuthService {
   async getProfile(): Promise<UserProfileResponse> {
     return await api.get<UserProfileResponse>('/auth/profile', {
       requiresAuth: true,
+    });
+  }
+
+  /**
+   * Get organizer profile information
+   */
+  async getOrganizerProfile(): Promise<Record<string, unknown>> {
+    return await api.get<Record<string, unknown>>('/organizer/profile', {
+      requiresAuth: true,
+    });
+  }
+
+  /**
+   * Get organizer onboarding status
+   */
+  async getOrganizerStatus(): Promise<{ is_complete: boolean }> {
+    return await api.get<{ is_complete: boolean }>('/organizer/status', {
+      requiresAuth: true,
+    });
+  }
+
+  /**
+   * Update organizer profile (onboarding)
+   * Accepts multipart/form-data
+   */
+  async updateOrganizerProfile(data: {
+    business_name: string;
+    business_description?: string;
+    business_logo?: File;
+    role?: string;
+  }): Promise<Record<string, unknown>> {
+    const formData = new FormData();
+    formData.append('business_name', data.business_name);
+    if (data.business_description) {
+      formData.append('business_description', data.business_description);
+    }
+    if (data.business_logo) {
+      formData.append('business_logo', data.business_logo);
+    }
+    if (data.role) {
+      formData.append('role', data.role);
+    }
+
+    return await api.putFormData<Record<string, unknown>>('/organizer/profile', formData, {
+      requiresAuth: true,
+      showSuccessToast: false, // Let component handle success toast
+      showErrorToast: false, // Let component handle error toast
     });
   }
 
@@ -136,7 +174,7 @@ class AuthService {
    * Logout user
    * Returns message from API response for toast display
    */
-  async logout(revokeAll: boolean = false): Promise<{ message?: string }> {
+  async logout(): Promise<{ message?: string }> {
     try {
       const response = await api.post<{ message?: string }>(
         `/auth/logout`,
@@ -179,14 +217,14 @@ class AuthService {
     last_name: string;
     phone?: string;
     country_code?: string;
-  }): Promise<{ user: UserProfileResponse; message?: string }> {
-    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/register', {
+  }): Promise<{ user: UserProfileResponse }> {
+    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/organizer/register', {
       method: 'POST',
       body: JSON.stringify({
         email: userData.email,
         first_name: userData.first_name,
         last_name: userData.last_name,
-        phone: userData.phone,
+        phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
         country_code: userData.country_code
       }),
     });
@@ -198,13 +236,22 @@ class AuthService {
 
   /**
    * Request password reset OTP
-   * Updated to use new endpoint
+   * Uses apiClientRequest with returnFullResponse to get message
    */
-  async requestPasswordReset(email: string): Promise<void> {
-    await apiRequest<void>('/auth/user/reset-password-request', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
+  async requestPasswordReset(email: string): Promise<{ message?: string }> {
+    const response = await apiClientRequest<AuthApiResponse<unknown>>(
+      '/auth/organizer/reset-password-request',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+        returnFullResponse: true, // Get full response including message
+        showErrorToast: false, // Let component handle error toast to avoid duplicates
+      }
+    );
+
+    return {
+      message: response.message,
+    }
   }
 
   /**
@@ -218,7 +265,7 @@ class AuthService {
     confirm_password: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/user/reset-password', {
+    await apiRequest<void>('/auth/organizer/reset-password', {
       method: 'POST',
       body: JSON.stringify({
         otp: data.otp,
@@ -256,6 +303,9 @@ class AuthService {
     phone?: string;
     country_code?: string;
   }): Promise<UserProfileResponse> {
+    if (data.country_code && data.phone) {
+      data.phone = data.country_code + data.phone;
+    }
     return await api.put<UserProfileResponse>('/auth/profile', data, {
       requiresAuth: true,
     });
@@ -269,7 +319,7 @@ class AuthService {
     identifier: string;
     otp_type: string;
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
-    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/user/send-otp', {
+    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/organizer/send-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
@@ -288,7 +338,7 @@ class AuthService {
     otp_type: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/user/verify-otp', {
+    await apiRequest<void>('/auth/organizer/verify-otp', {
       method: 'POST',
       body: JSON.stringify({
         identifier: data.identifier,
@@ -307,40 +357,14 @@ class AuthService {
     email: string;
     password: string;
   }): Promise<{ user: UserProfileResponse; message?: string }> {
-    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/user/set-password', {
-      method: 'POST',
-      body: JSON.stringify(data),
+    const response = await api.post<AuthApiResponse<UserProfileResponse>>('/auth/organizer/set-password', data, {
+      returnFullResponse: true,
     });
 
     return {
-      user: response
+      user: response.data,
+      message: response.message
     };
-  }
-
-  /**
-   * Verify guest token for booking
-   * Used when a guest user clicks the verification link in their email
-   * Returns user data and access token for temporary authenticated session
-   */
-  async verifyGuestToken(token: string): Promise<{
-    user: UserProfileResponse;
-    token: string;
-    message?: string;
-  }> {
-    const response = await apiRequest<{
-      user: UserProfileResponse;
-      token: string;
-      message?: string;
-    }>(`/auth/guest/verify/${token}`, {
-      method: 'GET',
-    });
-
-    // Store the temporary guest token
-    if (response.token) {
-      tokenManager.setTokens(response.token, '', false); // No refresh token for guests, use session storage
-    }
-
-    return response;
   }
 }
 

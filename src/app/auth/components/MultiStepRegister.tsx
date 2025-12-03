@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { authService } from "@/lib/authService";
+import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";

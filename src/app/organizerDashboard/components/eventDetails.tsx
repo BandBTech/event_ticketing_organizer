@@ -10,7 +10,7 @@ import {
   CircleDot,
 } from "lucide-react";
 import Image from "next/image";
-import {Event  } from "./events";
+import { Event } from "@/types/event";
 
 interface EventDetails{
   event: Event;
@@ -18,13 +18,13 @@ interface EventDetails{
 
 export default function EventDetailsPage({event}:EventDetails) {
 
-  const totalTicketsSold = event.tiers.reduce((sum, ticket) => 
+  const totalTicketsSold = event.tiers?.reduce((sum, ticket) => 
     sum + Math.floor(ticket.quantity * 0.4), 0 
-  );
-  const totalCapacity = event.tiers.reduce((sum, ticket) => sum + ticket.quantity, 0);
-  const totalRevenue = event.tiers.reduce((sum, ticket) => 
+  ) || 0;
+  const totalCapacity = event.tiers?.reduce((sum, ticket) => sum + ticket.quantity, 0) || 0;
+  const totalRevenue = event.tiers?.reduce((sum, ticket) => 
     sum + (Math.floor(ticket.quantity * 0.4) * ticket.price), 0
-  );
+  ) || 0;
   return (
     <>
       <div className="flex flex-col min-h-screen">
@@ -41,7 +41,7 @@ export default function EventDetailsPage({event}:EventDetails) {
                 {event.status}
               </span>
               <div className="flex items-center gap-1 text-gray-700 ">
-                <Calendar size={14} /> {event.date} {event.time}
+                  <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
               </div>
               <div className="flex items-center gap-1 text-gray-700 ">
                 <MapPin size={14} />{event.address}
@@ -68,7 +68,7 @@ export default function EventDetailsPage({event}:EventDetails) {
           <div className="md:col-span-2 space-y-6">
             <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
               <Image
-                src={event.banner_image}
+                  src={event.banner_image || "/placeholder.png"}
                 alt={event.title}
                 fill={true}
                 className="w-full h-full object-cover"
@@ -84,14 +84,21 @@ export default function EventDetailsPage({event}:EventDetails) {
               </p>
               <div className="flex flex-wrap gap-2 ">
                 <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
-                {event.tags.map((tag) => (
-                  <span
+                  {Array.isArray(event.category) ? event.category.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
+                    >
+                      {tag}
+                    </span>
+                  )) : typeof event.category === 'string' ? (event.category as string).split(',').map((tag: string) => (
+                    <span
                     key={tag}
                     className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
                   >
                     {tag}
                   </span>
-                ))}
+                  )) : null}
               </div>
               {/* Details */}
               <div className=" grid grid-cols-2 gap-4 text-gray-700">
@@ -138,7 +145,7 @@ export default function EventDetailsPage({event}:EventDetails) {
             {/* Ticket Tiers */}
             <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold">Ticket Tiers</h3>
-               {event.tiers.map((ticket, index) => {
+                {event.tiers?.map((ticket, index) => {
                 const colors = [
                   { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
                   { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
