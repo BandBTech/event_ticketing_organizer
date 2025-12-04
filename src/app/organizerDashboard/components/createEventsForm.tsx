@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DateTimePicker } from "@/components/ui/datetime-picker";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import TierNameSelector from "./TierNameSelector";
 
 
@@ -249,15 +250,13 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     form.setValue("tags", tags);
   };
 
-
-
   return (
     <div className="p-5 pt-3 space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event details */}
-          <div className="mb-6 rounded-xl border border-gray-200 text-gray-700 bg-white shadow-sm">
-            <div className="p-6 space-y-2">
+          <div className="mb-6 text-gray-700">
+            <div className="p-6 space-y-2 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary">{t("event.eventDetails", "Event Details")}</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
@@ -342,10 +341,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Venue & Schedule */}
-          <div className="rounded-xl mb-6 border border-gray-200 bg-white shadow-sm">
-            <div className="p-6 space-y-4 text-gray-700">
+          <div className="mb-6">
+            <div className="p-6 space-y-4 text-gray-700 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
-              <div className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="venue"
@@ -428,7 +427,24 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     <FormItem>
                       <FormLabel>Start Date & Time</FormLabel>
                       <FormControl>
-                        <DateTimePicker value={field.value} onChange={field.onChange} />
+                        <DateTimePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                          use12HourFormat
+                          timePicker={{
+                            hour: true,
+                            minute: true,
+                          }}
+                          renderTrigger={({ open, value, setOpen }) => (
+                            <DateTimeInput
+                              value={value}
+                              onChange={(x) => !open && field.onChange(x)}
+                              format="dd/MM/yyyy hh:mm aa"
+                              disabled={open}
+                              onCalendarClick={() => setOpen(!open)}
+                            />
+                          )}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -442,7 +458,24 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     <FormItem>
                       <FormLabel>End Date & Time</FormLabel>
                       <FormControl>
-                        <DateTimePicker value={field.value} onChange={field.onChange} />
+                        <DateTimePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                          use12HourFormat
+                          timePicker={{
+                            hour: true,
+                            minute: true,
+                          }}
+                          renderTrigger={({ open, value, setOpen }) => (
+                            <DateTimeInput
+                              value={value}
+                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
+                              format="dd/MM/yyyy hh:mm aa"
+                              disabled={open}
+                              onCalendarClick={() => setOpen(!open)}
+                            />
+                          )}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -453,8 +486,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Ticketing */}
-          <div className="rounded-xl mb-6 border border-gray-200 text-gray-700 bg-white shadow-sm">
-            <div className="p-6 space-y-4">
+          <div className="mb-6 text-gray-700">
+            <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
 
               {ticketFields.map((field, index) => (
@@ -541,7 +574,24 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                       <FormItem>
                         <FormLabel>Sales start</FormLabel>
                         <FormControl>
-                          <DateTimePicker value={field.value} onChange={field.onChange} />
+                          <DateTimePicker
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                            use12HourFormat
+                            timePicker={{
+                              hour: true,
+                              minute: true,
+                            }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
+                                format="dd/MM/yyyy hh:mm aa"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -555,7 +605,24 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                       <FormItem>
                         <FormLabel>Sales ends</FormLabel>
                         <FormControl>
-                          <DateTimePicker value={field.value} onChange={field.onChange} />
+                          <DateTimePicker
+                            value={field.value ? new Date(field.value) : undefined}
+                            onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                            use12HourFormat
+                            timePicker={{
+                              hour: true,
+                              minute: true,
+                            }}
+                            renderTrigger={({ open, value, setOpen }) => (
+                              <DateTimeInput
+                                value={value}
+                                onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
+                                format="dd/MM/yyyy hh:mm aa"
+                                disabled={open}
+                                onCalendarClick={() => setOpen(!open)}
+                              />
+                            )}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
