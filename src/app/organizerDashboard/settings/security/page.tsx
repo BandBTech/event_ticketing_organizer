@@ -111,13 +111,13 @@ export default function SecuritySettingsPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 font-poppins">
           {t('settings.security.title', 'Security Settings')}
         </h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-gray-600">
           {t('settings.security.subtitle', 'Manage your password and authentication')}
         </p>
       </div>
@@ -135,9 +135,9 @@ export default function SecuritySettingsPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Current Password */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label htmlFor="currentPassword" className="text-sm font-medium text-gray-900 block">
               {t('settings.security.currentPassword', 'Current Password')}
             </label>
@@ -174,7 +174,7 @@ export default function SecuritySettingsPage() {
           </div>
 
           {/* New Password */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label htmlFor="newPassword" className="text-sm font-medium text-gray-900 block">
               {t('settings.security.newPassword', 'New Password')}
             </label>
@@ -218,7 +218,7 @@ export default function SecuritySettingsPage() {
           </div>
 
           {/* Confirm Password */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900 block">
               {t('settings.security.confirmPassword', 'Confirm New Password')}
             </label>

@@ -32,7 +32,7 @@ export function PasswordRequirements({ password = "" }: PasswordRequirementsProp
   ];
 
   return (
-    <div className="space-y-2 mt-3">
+    <div className="space-y-1 mt-3">
       {requirements.map((req, index) => (
         <div key={index} className="flex items-center gap-2 text-xs">
           {req.met ? (

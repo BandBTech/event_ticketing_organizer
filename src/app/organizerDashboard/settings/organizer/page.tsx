@@ -136,14 +136,14 @@ export default function OrganizerProfileSettings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 font-poppins">
             Organizer Profile
           </h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600">
             Manage your organization details and branding
           </p>
         </div>

@@ -146,14 +146,14 @@ export default function ProfileSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 font-poppins">
             {t('settings.profile.title', 'Profile Settings')}
           </h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600">
             {t('settings.profile.subtitle', 'Manage your personal information')}
           </p>
         </div>
