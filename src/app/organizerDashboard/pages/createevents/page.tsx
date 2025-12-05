@@ -1,9 +1,70 @@
-import CreateEvents from "@/app/organizerDashboard/components/createEventsForm";
+"use client";
 
-export default function CreateEventsPage(){
-    return <CreateEvents/>;
+import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { eventService } from "@/services/eventService";
+import CreateEvents from "@/app/organizerDashboard/components/createEventsForm";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function CreateEventsPage() {
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get("id");
+  const isEditing = searchParams.get("edit") === "true";
+
+  const { data: eventData, isLoading, isError } = useQuery({
+    queryKey: ["event", eventId],
+    queryFn: () => eventService.getEvent(eventId!),
+    enabled: !!eventId && isEditing,
+  });
+
+  if (isEditing && isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="mb-6">
+          <div className="p-6 space-y-4 bg-white/60 rounded-xl">
+            <Skeleton className="h-8 w-48" />
+            <div className="grid md:grid-cols-2 gap-4">
+              <Skeleton className="h-40 w-full" />
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+            <Skeleton className="h-32 w-full" />
+          </div>
+        </div>
+        <div className="mb-6">
+          <div className="p-6 space-y-4 bg-white/60 rounded-xl">
+            <Skeleton className="h-8 w-48" />
+            <div className="grid md:grid-cols-3 gap-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isEditing && isError) {
+    return (
+      <div className="p-6 text-center text-red-500">
+        Failed to load event data. Please try again.
+      </div>
+    );
+  }
+
+  return (
+    <CreateEvents
+      initialData={isEditing ? eventData : undefined}
+      isEditing={isEditing}
+    />
+  );
 }
-    
 
 // "use client";
 

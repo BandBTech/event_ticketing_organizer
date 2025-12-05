@@ -27,7 +27,7 @@ import {
 } from 'date-fns';
 
 interface SimpleTimeOption {
-    value: any;
+  value: number;
     label: string;
     disabled?: boolean;
 }
@@ -153,19 +153,19 @@ export function SimpleTimePicker({
             }
         }, 1);
         return () => clearTimeout(timeoutId);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, [open]);
     const onHourChange = useCallback(
         (v: SimpleTimeOption) => {
             if (min) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
                 if (newTime < min) {
                     setMinute(min.getMinutes());
                     setSecond(min.getSeconds());
                 }
             }
             if (max) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
                 if (newTime > max) {
                     setMinute(max.getMinutes());
                     setSecond(max.getSeconds());
@@ -179,13 +179,13 @@ export function SimpleTimePicker({
     const onMinuteChange = useCallback(
         (v: SimpleTimeOption) => {
             if (min) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
                 if (newTime < min) {
                     setSecond(min.getSeconds());
                 }
             }
             if (max) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
                 if (newTime > max) {
                     setSecond(newTime.getSeconds());
                 }
@@ -198,7 +198,7 @@ export function SimpleTimePicker({
     const onAmpmChange = useCallback(
         (v: SimpleTimeOption) => {
             if (min) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
                 if (newTime < min) {
                     const minH = min.getHours() % 12;
                     setHour(minH === 0 ? 12 : minH);
@@ -207,7 +207,7 @@ export function SimpleTimePicker({
                 }
             }
             if (max) {
-                let newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
                 if (newTime > max) {
                     const maxH = max.getHours() % 12;
                     setHour(maxH === 0 ? 12 : maxH);

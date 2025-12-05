@@ -242,7 +242,8 @@
     "eventDetails": "Event Details",
     "field": {
       "bannerImage": "Banner image",
-      "eventTitle": "Event Title"
+      "eventTitle": "Event Title",
+      "eventDescription": "Write about your event..."
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",

@@ -169,7 +169,7 @@ export type DateTimePickerProps = {
   /**
    * Callback function to handle datetime changes.
    */
-  onChange: (date: Date | undefined) => void;
+  onChange: (date: Date | undefined | string) => void;
   /**
    * The minimum datetime value allowed.
    * @default undefined
@@ -278,7 +278,9 @@ export function DateTimePicker({
     [setDate, setMonth]
   );
   const onSubmit = useCallback(() => {
-    onChange(new Date(date));
+    // Convert to UTC ISO string format (e.g., "2025-12-11T15:04:05Z")
+    const isoString = new Date(date).toISOString();
+    onChange(isoString); // No type assertion needed now
     setOpen(false);
   }, [date, onChange]);
 
@@ -329,7 +331,7 @@ export function DateTimePicker({
         ) : (
           <div
             className={cn(
-              'flex w-full cursor-pointer items-center h-9 ps-3 pe-1 font-normal border border-input rounded-md text-sm shadow-sm',
+              'flex w-full cursor-pointer items-center h-13 ps-3 pe-1 font-normal border border-input rounded-md text-sm shadow-sm',
               !displayValue && 'text-muted-foreground',
               (!clearable || !value) && 'pe-3',
               disabled && 'opacity-50 cursor-not-allowed',
@@ -343,6 +345,7 @@ export function DateTimePicker({
             </div>
             {clearable && value && (
               <Button
+                  type="button"
                 disabled={disabled}
                 variant="ghost"
                 size="sm"
@@ -373,15 +376,15 @@ export function DateTimePicker({
                 {format(month, 'yyyy')}
               </span>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setMonthYearPicker(monthYearPicker ? false : 'year')}>
+            <Button type="button" variant="ghost" size="icon" onClick={() => setMonthYearPicker(monthYearPicker ? false : 'year')}>
               {monthYearPicker ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </Button>
           </div>
           <div className={cn('flex space-x-2', monthYearPicker ? 'hidden' : '')}>
-            <Button variant="ghost" size="icon" onClick={onPrevMonth}>
+            <Button type="button" variant="ghost" size="icon" onClick={onPrevMonth}>
               <ChevronLeftIcon />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onNextMonth}>
+            <Button type="button" variant="ghost" size="icon" onClick={onNextMonth}>
               <ChevronRightIcon />
             </Button>
           </div>
@@ -430,7 +433,7 @@ export function DateTimePicker({
           ></div>
           <MonthYearPicker
             value={month}
-            mode={monthYearPicker as any}
+            mode={monthYearPicker === 'year' ? 'year' : 'month'}
             onChange={onMonthYearChanged}
             minDate={minDate}
             maxDate={maxDate}
@@ -449,7 +452,7 @@ export function DateTimePicker({
             />
           )}
           <div className="flex flex-row-reverse items-center justify-between">
-            <Button className="ms-2 h-7 px-2" onClick={onSubmit}>
+            <Button type="button" className="ms-2 h-7 px-2" onClick={onSubmit}>
               Done
             </Button>
             {timezone && (
@@ -533,6 +536,7 @@ function MonthYearPicker({
             {years.map((year) => (
               <div key={year.value} ref={year.value === getYear(value) ? yearRef : undefined}>
                 <Button
+                  type="button"
                   disabled={year.disabled}
                   variant={getYear(value) === year.value ? 'default' : 'ghost'}
                   className="rounded-full"
@@ -548,6 +552,7 @@ function MonthYearPicker({
           <div className="grid grid-cols-3 gap-4">
             {months.map((month) => (
               <Button
+                type="button"
                 key={month.value}
                 size="lg"
                 disabled={month.disabled}
@@ -628,16 +633,17 @@ function TimePicker({
   );
   const minutes: TimeOption[] = useMemo(() => {
     const anchorDate = setHours(value, _hourIn24h);
-    return Array.from({ length: 60 }, (_, i) => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const minuteValue = i * 5; // Generate multiples of 5: 0, 5, 10, 15, ..., 55
       let disabled = false;
-      const mDate = setMinutes(anchorDate, i);
+      const mDate = setMinutes(anchorDate, minuteValue);
       const mStart = startOfMinute(mDate);
       const mEnd = endOfMinute(mDate);
       if (min && mEnd < min) disabled = true;
       if (max && mStart > max) disabled = true;
       return {
-        value: i,
-        label: i.toString().padStart(2, '0'),
+        value: minuteValue,
+        label: minuteValue.toString().padStart(2, '0'),
         disabled,
       };
     });
@@ -689,20 +695,20 @@ function TimePicker({
       }
     }, 1);
     return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [open]);
 
   const onHourChange = useCallback(
     (v: TimeOption) => {
       if (min) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
         if (newTime < min) {
           setMinute(min.getMinutes());
           setSecond(min.getSeconds());
         }
       }
       if (max) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
         if (newTime > max) {
           setMinute(max.getMinutes());
           setSecond(max.getSeconds());
@@ -716,13 +722,13 @@ function TimePicker({
   const onMinuteChange = useCallback(
     (v: TimeOption) => {
       if (min) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
         if (newTime < min) {
           setSecond(min.getSeconds());
         }
       }
       if (max) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
         if (newTime > max) {
           setSecond(newTime.getSeconds());
         }
@@ -735,7 +741,7 @@ function TimePicker({
   const onAmpmChange = useCallback(
     (v: TimeOption) => {
       if (min) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
         if (newTime < min) {
           const minH = min.getHours() % 12;
           setHour(minH === 0 ? 12 : minH);
@@ -744,7 +750,7 @@ function TimePicker({
         }
       }
       if (max) {
-        let newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
+        const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute, second, ampm: v.value });
         if (newTime > max) {
           const maxH = max.getHours() % 12;
           setHour(maxH === 0 ? 12 : maxH);
@@ -758,7 +764,7 @@ function TimePicker({
   );
 
   const display = useMemo(() => {
-    let arr = [];
+    const arr = [];
     for (const element of ['hour', 'minute', 'second']) {
       if (!timePicker || timePicker[element as keyof typeof timePicker]) {
         if (element === 'hour') {

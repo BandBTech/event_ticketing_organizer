@@ -1,8 +1,8 @@
 "use client";
 
-import { Image as ImageIcon, Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
-import { useState, useMemo } from "react";
-import { MapPinAreaIcon } from "@phosphor-icons/react";
+import { Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { ImageIcon, MapPinAreaIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { EventFormData, createEventSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,6 +34,18 @@ import {
 import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { DateTimeInput } from "@/components/ui/datetime-input";
 import TierNameSelector from "./TierNameSelector";
+import { useDropzone } from "react-dropzone";
+import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 interface CreateEventFormProps {
@@ -47,7 +59,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const { t } = useTranslation();
   const [imagePreview, setImagePreview] = useState<string>(initialData?.banner_image || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
-
+  const [imageError, setImageError] = useState<string>("");
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [formModified, setFormModified] = useState(false);
   // Fetch tier templates using TanStack Query
   const { data: tierTemplates = [] } = useQuery({
     queryKey: ['tierTemplates'],
@@ -79,7 +96,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         salesEnd: t.sales_end || "",
       })) || [
           {
-            name: "General Admission",
+          name: "",
             price: 0,
             quantity: 0,
             gst: 13,
@@ -110,6 +127,63 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     name: "promoCodes",
   });
 
+  // Check if form has unsaved changes
+  const hasUnsavedChanges = useCallback(() => {
+    // Check if form was modified after initial render
+    return formModified || imageFile !== null;
+  }, [formModified, imageFile]);
+
+  // Track form changes
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      // Only set formModified if form has been touched after initial load
+      if (form.formState.isDirty) {
+        setFormModified(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // Handle browser refresh/close
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges()) {
+        e.preventDefault();
+        // Most browsers will show their own message, but this is required
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  // Handle navigation with confirmation
+  const handleNavigateAway = useCallback((navigationAction: () => void) => {
+    if (hasUnsavedChanges()) {
+      setPendingNavigation(() => navigationAction);
+      setShowLeaveDialog(true);
+    } else {
+      navigationAction();
+    }
+  }, [hasUnsavedChanges]);
+
+  // Confirm leaving the page
+  const confirmLeave = () => {
+    setShowLeaveDialog(false);
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+  };
+
+  // Cancel leaving
+  const cancelLeave = () => {
+    setShowLeaveDialog(false);
+    setPendingNavigation(null);
+  };
+
   // Create Tier Template Mutation
   const createTierTemplateMutation = useMutation({
     mutationFn: eventService.createTierTemplate,
@@ -132,6 +206,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     },
     onSuccess: () => {
       toast.success("Success", isEditing ? "Event updated successfully" : "Event created successfully");
+      setFormModified(false); // Reset to prevent unsaved changes dialog
       router.push("/organizerDashboard/pages/events");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -217,19 +292,57 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     }
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validation
-      if (!file.type.startsWith("image/")) {
-        toast.error("Error", "Invalid file type. Please upload an image.");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Error", "File size exceeds 5MB.");
+  const validateAndProcessImage = (file: File) => {
+    // Clear any previous errors
+    setImageError("");
+
+    // 1. File type validation
+    if (!file.type.startsWith("image/")) {
+      setImageError("Invalid file type. Please upload an image (PNG/JPG).");
+      return;
+    }
+
+    // 2. File size validation (Max 5MB)
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSizeInBytes) {
+      setImageError("File size exceeds 5MB. Please upload a smaller image.");
+      return;
+    }
+
+    // 3. Image dimension validation
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      // Clean up the object URL
+      URL.revokeObjectURL(objectUrl);
+
+      const width = img.width;
+      const height = img.height;
+      const maxWidth = 1920;
+      const maxHeight = 1200;
+      const aspectRatio = 1920 / 1200; // 1.6 or 8:5
+
+      // Check if dimensions exceed maximum
+      if (width > maxWidth || height > maxHeight) {
+        setImageError(`Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`);
         return;
       }
 
+      // Check aspect ratio (allow small tolerance)
+      const imageAspectRatio = width / height;
+      const tolerance = 0.1; // 10% tolerance
+      const minAspectRatio = aspectRatio - tolerance;
+      const maxAspectRatio = aspectRatio + tolerance;
+
+      if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
+        setImageError(
+          `Image aspect ratio must be approximately ${aspectRatio.toFixed(2)} (16:10).`
+        );
+        return;
+      }
+
+    // All validations passed, proceed with file upload
       setImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -237,10 +350,59 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         setImagePreview(result);
         form.setValue("image", result);
         form.clearErrors("image");
+        setImageError(""); // Clear error on success
       };
       reader.readAsDataURL(file);
-    }
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setImageError("Failed to load image. Please try another file.");
+    };
+
+    img.src = objectUrl;
   };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Reset the input value to allow re-uploading the same file after error
+    event.target.value = "";
+
+    validateAndProcessImage(file);
+  };
+
+  // Configure react-dropzone
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    accept: {
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+    },
+    maxSize: 5 * 1024 * 1024, // 5MB
+    multiple: false,
+    noClick: true, // Disable default click behavior, we'll handle it manually
+    noKeyboard: false,
+    onDrop: (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (file) {
+        validateAndProcessImage(file);
+      }
+    },
+    onDropRejected: (fileRejections) => {
+      const rejection = fileRejections[0];
+      if (rejection) {
+        const error = rejection.errors[0];
+        if (error.code === 'file-too-large') {
+          setImageError('File size exceeds 5MB. Please upload a smaller image.');
+        } else if (error.code === 'file-invalid-type') {
+          setImageError('Invalid file type. Please upload an image (PNG/JPG).');
+        } else {
+          setImageError(error.message);
+        }
+      }
+    },
+  });
 
   const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tags = event.target.value
@@ -255,50 +417,84 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event details */}
-          <div className="mb-6 text-gray-700">
+          <div className="mb-6">
             <div className="p-6 space-y-2 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary">{t("event.eventDetails", "Event Details")}</h2>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <Label>{t("event.field.bannerImage", "Banner Image")}</Label>
-                  <div className="border-2 border-dashed border-gray-300 flex flex-col items-center rounded-lg p-4 text-center text-gray-500 cursor-pointer">
-                    <ImageIcon />
-                    {t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
-                    <span className="text-xs">{t("event.helperText.bannerImageSize", "PNG/JPG file of 1920x1200px with size up to 5MB")}</span>
-                    <br />
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="banner-upload"
-                    />
-                    <label
-                      htmlFor="banner-upload"
-                      className="border rounded-lg px-3 py-1 text-sm cursor-pointer hover:bg-gray-50"
-                    >
-                      {t("event.helperText.bannerImageBrowse", "Browse File")}
-                    </label>
-                    {imagePreview && (
-                      <div className="mt-2">
-                        <img src={imagePreview} alt="preview" className="max-h-32 rounded" />
+                  <Label className={imageError || form.formState.errors.image ? "text-red-500" : ""}>
+                    {t("event.field.bannerImage", "Banner Image")}
+                  </Label>
+                  <div
+                    {...getRootProps()}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed grow ${imageError || form.formState.errors.image
+                      ? 'border-red-500 bg-red-50/50'
+                      : isDragActive
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-300'
+                      } flex flex-col items-center justify-center rounded-lg text-center text-gray-500 cursor-pointer transition-colors relative overflow-hidden`}
+                  >
+                    <input {...getInputProps()} ref={fileInputRef} />
+                    {imagePreview ? (
+                      // Show uploaded image filling the box
+                      <div className="relative w-full h-full group">
+                        <img
+                          src={imagePreview}
+                          alt="Banner preview"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        {/* Overlay with update button */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="text-white space-y-2">
+                            <p className="font-medium">Change Image</p>
+                            <p className="text-xs">Click or drag to update</p>
+                          </div>
+                        </div>
                       </div>
+                    ) : (
+                      // Show upload prompt when no image
+                      <>
+                        <ImageIcon weight="duotone" className="w-6 h-6 mb-2" />
+                        {isDragActive ? (
+                          <p className="text-blue-600 font-medium">Drop the image here...</p>
+                        ) : (
+                          <>
+                            <p>{t("event.helperText.bannerImage", "Upload banner image or drag & drop")}</p>
+                            <span className="text-xs">{t("event.helperText.bannerImageSize", "PNG/JPG file of 1920x1200px with size up to 5MB")}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    fileInputRef.current?.click();
+                                  }}
+                                  className="mt-2"
+                                >
+                                  {t("event.helperText.bannerImageBrowse", "Browse File")}
+                              </Button>
+                            </>
+                          )}
+                      </>
                     )}
-                    {form.formState.errors.image && (
-                      <p className="text-red-500 text-xs mt-1">{form.formState.errors.image.message}</p>
+                    {(form.formState.errors.image || imageError) && (
+                      <p className="text-red-500 text-xs mt-1 absolute bottom-2 left-0 right-0">
+                        {imageError || form.formState.errors.image?.message}
+                      </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-between gap-4">
+                <div className="flex flex-col gap-5">
                   <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("event.field.eventTitle", "Event Title")}</FormLabel>
+                        <FormLabel className="inline-block">{t("event.field.eventTitle", "Event Title")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter Title" {...field} />
+                          <Input className="h-13 md:text-md" placeholder="Enter Title" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -310,9 +506,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name="tags"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category Tags</FormLabel>
+                        <FormLabel className="inline-block">Category Tags</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             placeholder="e.g. Music, Concert, Festival"
                             value={field.value.join(", ")}
                             onChange={handleTagsChange}
@@ -325,14 +521,31 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 </div>
               </div>
 
-              <div>
-                <Label>Event Description</Label>
-                <Editor
-                  initialHtml={form.getValues("description")}
-                  onHtmlChange={(html) => form.setValue("description", html)}
-                />
+
+              <div className="space-y-2">
+                <Label className={cn("inline-block", form.formState.errors.description && "text-red-500")}>
+                  Event Description <span className="text-red-500">*</span>
+                </Label>
+                <div className={cn(
+                  "rounded-lg border transition-colors",
+                  form.formState.errors.description
+                    ? "border-red-500 ring-1 ring-red-500/20"
+                    : "border-gray-300"
+                )}>
+                  <Editor
+                    initialHtml={form.getValues("description")}
+                    onHtmlChange={(html) => {
+                      form.setValue("description", html);
+                      // Clear validation error when user types
+                      if (html && html.trim()) {
+                        form.clearErrors("description");
+                      }
+                    }}
+                    placeholder={t("event.field.eventDescription", "Write about your event")}
+                  />
+                </div>
                 {form.formState.errors.description && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
                     {form.formState.errors.description.message}
                   </p>
                 )}
@@ -342,17 +555,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
           {/* Venue & Schedule */}
           <div className="mb-6">
-            <div className="p-6 space-y-4 text-gray-700 shadow-blur-subtle-md bg-white/60 rounded-xl">
+            <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-3 gap-5">
                 <FormField
                   control={form.control}
                   name="venue"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Venue Name</FormLabel>
+                      <FormLabel className="inline-block">Venue Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Venue name" {...field} />
+                        <Input className="h-13 md:text-md" placeholder="Venue name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -364,10 +577,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="venueAddress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Venue Address</FormLabel>
+                      <FormLabel className="inline-block">Venue Address</FormLabel>
                       <div className="relative">
                         <FormControl>
-                          <Input placeholder="Enter venue address" {...field} />
+                          <Input className="h-13 md:text-md" placeholder="Enter venue address" {...field} />
                         </FormControl>
                         <MapPinAreaIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       </div>
@@ -381,9 +594,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="capacity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Capacity</FormLabel>
+                      <FormLabel className="inline-block">Capacity</FormLabel>
                       <FormControl>
-                        <Input
+                        <Input className="h-13 md:text-md"
                           type="number"
                           placeholder="e.g 5000"
                           {...field}
@@ -400,10 +613,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="timezone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Timezone</FormLabel>
+                      <FormLabel className="inline-block">Timezone</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="h-13 md:text-md">
                             <SelectValue placeholder="Select Timezone" />
                           </SelectTrigger>
                         </FormControl>
@@ -423,44 +636,20 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 <FormField
                   control={form.control}
                   name="startDate"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel>Start Date & Time</FormLabel>
+                      <FormLabel className="inline-block">Start Date & Time</FormLabel>
                       <FormControl>
                         <DateTimePicker
-                          value={field.value ? new Date(field.value) : undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString() : "")}
-                          use12HourFormat
-                          timePicker={{
-                            hour: true,
-                            minute: true,
+                          classNames={{
+                            trigger: "h-13 md:text-md",
                           }}
-                          renderTrigger={({ open, value, setOpen }) => (
-                            <DateTimeInput
-                              value={value}
-                              onChange={(x) => !open && field.onChange(x)}
-                              format="dd/MM/yyyy hh:mm aa"
-                              disabled={open}
-                              onCalendarClick={() => setOpen(!open)}
-                            />
-                          )}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>End Date & Time</FormLabel>
-                      <FormControl>
-                        <DateTimePicker
                           value={field.value ? new Date(field.value) : undefined}
-                          onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                          onChange={(date) => {
+                            if (!date) field.onChange("");
+                            else if (typeof date === 'string') field.onChange(date);
+                            else field.onChange(date.toISOString());
+                          }}
                           use12HourFormat
                           timePicker={{
                             hour: true,
@@ -473,6 +662,45 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                               format="dd/MM/yyyy hh:mm aa"
                               disabled={open}
                               onCalendarClick={() => setOpen(!open)}
+                              error={!!fieldState.error}
+                              className="h-13 md:text-md placeholder:text-gray-300"
+                            />
+                          )}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="inline-block">End Date & Time</FormLabel>
+                      <FormControl>
+                        <DateTimePicker
+                          value={field.value ? new Date(field.value) : undefined}
+                          onChange={(date) => {
+                            if (!date) field.onChange("");
+                            else if (typeof date === 'string') field.onChange(date);
+                            else field.onChange(date.toISOString());
+                          }}
+                          use12HourFormat
+                          timePicker={{
+                            hour: true,
+                            minute: true,
+                          }}
+                          renderTrigger={({ open, value, setOpen }) => (
+                            <DateTimeInput
+                              value={value}
+                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
+                              format="dd/MM/yyyy hh:mm aa"
+                              disabled={open}
+                              onCalendarClick={() => setOpen(!open)}
+                              error={!!fieldState.error}
+                              className="h-13 md:text-md"
                             />
                           )}
                         />
@@ -486,18 +714,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Ticketing */}
-          <div className="mb-6 text-gray-700">
+          <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
 
               {ticketFields.map((field, index) => (
-                <div key={field.id} className="grid md:grid-cols-3 gap-4 border border-gray-200 rounded-lg p-4 relative">
+                <div key={field.id} className="grid md:grid-cols-3 gap-5 border border-gray-200 rounded-lg p-4 relative">
                   <FormField
                     control={form.control}
                     name={`tickets.${index}.name`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tier Name</FormLabel>
+                        <FormLabel className="inline-block">Tier Name</FormLabel>
                         <FormControl>
                           <TierNameSelector
                             value={field.value}
@@ -515,9 +743,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`tickets.${index}.price`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Price</FormLabel>
+                        <FormLabel className="inline-block">Price</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             type="number"
                             placeholder="e.g. 100"
                             {...field}
@@ -534,9 +762,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`tickets.${index}.quantity`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Quantity</FormLabel>
+                        <FormLabel className="inline-block">Quantity</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             type="number"
                             placeholder="Enter number of quantity"
                             {...field}
@@ -553,9 +781,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`tickets.${index}.gst`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>GST(%)</FormLabel>
+                        <FormLabel className="inline-block">GST(%)</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             type="number"
                             placeholder="Enter GST in percentage"
                             {...field}
@@ -570,13 +798,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   <FormField
                     control={form.control}
                     name={`tickets.${index}.salesStart`}
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel>Sales start</FormLabel>
+                        <FormLabel className="inline-block">Sales start</FormLabel>
                         <FormControl>
                           <DateTimePicker
                             value={field.value ? new Date(field.value) : undefined}
-                            onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                            onChange={(date) => {
+                              if (!date) field.onChange("");
+                              else if (typeof date === 'string') field.onChange(date);
+                              else field.onChange(date.toISOString());
+                            }}
                             use12HourFormat
                             timePicker={{
                               hour: true,
@@ -589,6 +821,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                                 format="dd/MM/yyyy hh:mm aa"
                                 disabled={open}
                                 onCalendarClick={() => setOpen(!open)}
+                                error={!!fieldState.error}
+                                className="h-13 md:text-md"
                               />
                             )}
                           />
@@ -601,13 +835,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   <FormField
                     control={form.control}
                     name={`tickets.${index}.salesEnd`}
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel>Sales ends</FormLabel>
+                        <FormLabel className="inline-block">Sales ends</FormLabel>
                         <FormControl>
                           <DateTimePicker
                             value={field.value ? new Date(field.value) : undefined}
-                            onChange={(date) => field.onChange(date ? date.toISOString() : "")}
+                            onChange={(date) => {
+                              if (!date) field.onChange("");
+                              else if (typeof date === 'string') field.onChange(date);
+                              else field.onChange(date.toISOString());
+                            }}
                             use12HourFormat
                             timePicker={{
                               hour: true,
@@ -620,6 +858,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                                 format="dd/MM/yyyy hh:mm aa"
                                 disabled={open}
                                 onCalendarClick={() => setOpen(!open)}
+                                error={!!fieldState.error}
+                                className="h-13 md:text-md"
                               />
                             )}
                           />
@@ -658,7 +898,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Discounts & Promo Codes */}
-          <div className="rounded-xl mb-6 border border-gray-200 text-gray-700 bg-white shadow-sm">
+          <div className="rounded-xl mb-6 border border-gray-200 bg-white shadow-sm">
             <div className="p-6 space-y-4">
               <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
 
@@ -669,9 +909,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`promoCodes.${index}.code`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Promo code</FormLabel>
+                        <FormLabel className="inline-block">Promo code</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g EARLYBIRD" {...field} />
+                          <Input className="h-13 md:text-md" placeholder="e.g EARLYBIRD" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -683,9 +923,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`promoCodes.${index}.discountType`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Discount Type</FormLabel>
+                        <FormLabel className="inline-block">Discount Type</FormLabel>
                         <FormControl>
-                          <Input placeholder="Select Types" {...field} />
+                          <Input className="h-13 md:text-md" placeholder="Select Types" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -697,9 +937,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`promoCodes.${index}.amount`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Amount</FormLabel>
+                        <FormLabel className="inline-block">Amount</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             type="number"
                             placeholder="500"
                             {...field}
@@ -716,9 +956,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name={`promoCodes.${index}.quantity`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Quantity</FormLabel>
+                        <FormLabel className="inline-block">Quantity</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input className="h-13 md:text-md"
                             type="number"
                             placeholder="500"
                             {...field}
@@ -759,7 +999,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
             <Button
               type="button"
               variant="outline"
-              onClick={() => router.back()}
+              onClick={() => handleNavigateAway(() => router.back())}
             >
               Cancel
             </Button>
@@ -779,6 +1019,29 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
         </form>
       </Form>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to leave? All your progress will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelLeave}>
+              Stay on Page
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmLeave}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Leave Page
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

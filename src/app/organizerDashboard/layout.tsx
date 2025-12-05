@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "@/components/layout/sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import DashboardHeader from "@/components/layout/dashboardHeader";
 import { UserProvider } from "@/app/contexts/UserContext";
-
 import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
 
 export default function DashboardLayout({
@@ -12,41 +11,24 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [showSidebar, setShowSidebar] = useState(true);
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("auth_token");
-  //   if (!token) router.push("/auth/pages/login");
-  //   else setIsAuthenticated(true);
-  // }, [router]);
-
-  // if (isAuthenticated === null) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       Checking authentication...
-  //     </div>
-  //   );
-  // }
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <UserProvider>
-    <div className="flex min-h-screen  ">
-     
-      {/* Sidebar */}
-      <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <div className="flex min-h-screen bg-gray-50/50">
+        {/* Sidebar */}
+        <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
-      {/* Main Content Area */}
-      <div
-        className={`flex flex-col transition-all duration-300 ${
-          showSidebar ? "flex-1" : "w-full"
-        }`}
-      >
-        
-        <DashboardHeader />
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
+        {/* Main Content Area */}
+        <div className="flex flex-1 flex-col">
+          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-white px-6">
+            <DashboardHeader />
+          </header>
+          <main className="flex-1 overflow-auto">{children}</main>
+        </div>
+
         <CompleteProfileDialog />
-    </div>
+      </div>
     </UserProvider>
   );
 }

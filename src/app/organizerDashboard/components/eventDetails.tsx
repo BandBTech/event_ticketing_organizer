@@ -1,89 +1,236 @@
 "use client";
 
+import { useState } from "react";
 import Footer from "@/components/layout/footer";
 import {
   MapPin,
   Calendar,
   XCircle,
   PauseCircle,
+  PlayCircle,
+  StopCircle,
   PencilLine,
   CircleDot,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
-import { Event } from "@/types/event";
+import Link from "next/link";
+import { Event, EventAnalyticsResponse, SalesAction } from "@/types/event";
+import { eventService } from "@/services/eventService";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
-interface EventDetails{
+interface EventDetailsProps {
   event: Event;
+  analytics?: EventAnalyticsResponse;
 }
 
-export default function EventDetailsPage({event}:EventDetails) {
+export default function EventDetailsPage({ event, analytics }: EventDetailsProps) {
+  const queryClient = useQueryClient();
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [salesDialogOpen, setSalesDialogOpen] = useState(false);
+  const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
+  const [salesReason, setSalesReason] = useState("");
 
-  const totalTicketsSold = event.tiers?.reduce((sum, ticket) => 
-    sum + Math.floor(ticket.quantity * 0.4), 0 
-  ) || 0;
-  const totalCapacity = event.tiers?.reduce((sum, ticket) => sum + ticket.quantity, 0) || 0;
-  const totalRevenue = event.tiers?.reduce((sum, ticket) => 
-    sum + (Math.floor(ticket.quantity * 0.4) * ticket.price), 0
-  ) || 0;
+  // Use analytics data if available, otherwise fall back to event tiers
+  const totalTicketsSold = analytics?.sold_seats ??
+    (event.tiers?.reduce((sum, ticket) => sum + (ticket.sold || 0), 0) || 0);
+  const totalCapacity = analytics?.total_seats ??
+    (event.tiers?.reduce((sum, ticket) => sum + ticket.quantity, 0) || 0);
+  const totalRevenue = analytics?.total_revenue ??
+    (event.tiers?.reduce((sum, ticket) => sum + ((ticket.sold || 0) * ticket.price), 0) || 0);
+
+  // Sales control mutation
+  const salesControlMutation = useMutation({
+    mutationFn: ({ action, reason }: { action: SalesAction; reason?: string }) =>
+      eventService.controlEventSales(event.id, { action, reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['event', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      setSalesDialogOpen(false);
+      setSalesReason("");
+      setSalesAction(null);
+    },
+  });
+
+  // Cancel event mutation
+  const cancelEventMutation = useMutation({
+    mutationFn: (reason: string) => eventService.cancelEvent(event.id, { reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['event', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      setCancelDialogOpen(false);
+      setCancelReason("");
+    },
+  });
+
+  const handleSalesAction = (action: SalesAction) => {
+    setSalesAction(action);
+    if (action === 'stop') {
+      // Stop requires confirmation dialog
+      setSalesDialogOpen(true);
+    } else {
+      // Pause/Resume can be done directly
+      salesControlMutation.mutate({ action });
+    }
+  };
+
+  const confirmSalesAction = () => {
+    if (salesAction) {
+      salesControlMutation.mutate({ action: salesAction, reason: salesReason });
+    }
+  };
+
+  const handleCancelEvent = () => {
+    if (cancelReason.length >= 10) {
+      cancelEventMutation.mutate(cancelReason);
+    }
+  };
+
+  // Determine sales status for button display
+  const salesStatus = analytics?.sales_status || 'active';
+  const isEventCancelled = event.status === 'cancelled';
+  const canControlSales = event.status === 'approved' && !isEventCancelled;
+
+  // Get the first tier's sales dates if available
+  const firstTier = event.tiers?.[0];
+  const salesStartDate = firstTier?.sales_start
+    ? new Date(firstTier.sales_start).toLocaleString()
+    : 'Not set';
+  const salesEndDate = firstTier?.sales_end
+    ? new Date(firstTier.sales_end).toLocaleString()
+    : 'Not set';
+
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <div className="flex-grow p-6 space-y-6">
-        {/* Event Title + Actions */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <h2 className="text-3xl text-gray-700 font-bold">
-              {event.title}
-            </h2>
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-                <span className="bg-green-500 flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium">
-                <CircleDot className="w-3 h-3" />
-                {event.status}
-              </span>
-              <div className="flex items-center gap-1 text-gray-700 ">
+          {/* Event Title + Actions */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <h2 className="text-3xl text-gray-700 font-bold">
+                {event.title}
+              </h2>
+              <div className="flex items-center gap-3 text-sm text-gray-600">
+                <span className={`flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium ${event.status === 'approved' ? 'bg-green-500' :
+                  event.status === 'pending' ? 'bg-yellow-500' :
+                    event.status === 'cancelled' ? 'bg-red-500' :
+                      event.status === 'draft' ? 'bg-gray-500' :
+                        'bg-blue-500'
+                  }`}>
+                  <CircleDot className="w-3 h-3" />
+                  {event.status}
+                </span>
+                {analytics?.sales_status && (
+                  <span className={`flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium ${analytics.sales_status === 'active' ? 'bg-emerald-500' :
+                    analytics.sales_status === 'paused' ? 'bg-amber-500' :
+                      'bg-red-500'
+                    }`}>
+                    Sales: {analytics.sales_status}
+                  </span>
+                )}
+                <div className="flex items-center gap-1 text-gray-700 ">
                   <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
+                </div>
+                <div className="flex items-center gap-1 text-gray-700 ">
+                  <MapPin size={14} />{event.address}
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-gray-700 ">
-                <MapPin size={14} />{event.address}
-              </div>
+            </div>
+
+            <div className="flex gap-3 mt-4 md:mt-0">
+              {canControlSales && (
+                <>
+                  {salesStatus === 'active' && (
+                    <button
+                      onClick={() => handleSalesAction('pause')}
+                      disabled={salesControlMutation.isPending}
+                      className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                      {salesControlMutation.isPending ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <PauseCircle size={16} />
+                      )}
+                      Pause Sales
+                    </button>
+                  )}
+                  {salesStatus === 'paused' && (
+                    <button
+                      onClick={() => handleSalesAction('resume')}
+                      disabled={salesControlMutation.isPending}
+                      className="flex items-center gap-2 px-4 py-2 border border-green-400 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50"
+                    >
+                      {salesControlMutation.isPending ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <PlayCircle size={16} />
+                      )}
+                      Resume Sales
+                    </button>
+                  )}
+                  {salesStatus !== 'stopped' && (
+                    <button
+                      onClick={() => handleSalesAction('stop')}
+                      disabled={salesControlMutation.isPending}
+                      className="flex items-center gap-2 px-4 py-2 border border-orange-400 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 disabled:opacity-50"
+                    >
+                      <StopCircle size={16} />
+                      Stop Sales
+                    </button>
+                  )}
+                </>
+              )}
+              <Link
+                href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <PencilLine size={16} /> Edit Event
+              </Link>
+              {!isEventCancelled && (
+                <button
+                  onClick={() => setCancelDialogOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
+                >
+                  <XCircle size={16} /> Cancel
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="flex gap-3 ">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
-              <PauseCircle size={16} /> Pause Sales
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
-              <PencilLine size={16} /> Edit Event
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300">
-              <XCircle size={16} /> Cancel
-            </button>
-          </div>
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Banner */}
-          <div className="md:col-span-2 space-y-6">
-            <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
-              <Image
+          {/* Main Grid */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Banner */}
+            <div className="md:col-span-2 space-y-6">
+              <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
+                <Image
                   src={event.banner_image || "/placeholder.png"}
-                alt={event.title}
-                fill={true}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            {/* Description */}
-            <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 ">
-                Event description
-              </h3>
-              <p className="text-gray-600">
-              {event.description}
-              </p>
-              <div className="flex flex-wrap gap-2 ">
-                <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
+                  alt={event.title}
+                  fill={true}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Description */}
+              <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
+                <h3 className="text-lg font-semibold text-gray-700 ">
+                  Event description
+                </h3>
+                <p className="text-gray-600">
+                  {event.description}
+                </p>
+                <div className="flex flex-wrap gap-2 ">
+                  <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
                   {Array.isArray(event.category) ? event.category.map((tag: string) => (
                     <span
                       key={tag}
@@ -93,129 +240,234 @@ export default function EventDetailsPage({event}:EventDetails) {
                     </span>
                   )) : typeof event.category === 'string' ? (event.category as string).split(',').map((tag: string) => (
                     <span
-                    key={tag}
-                    className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
-                  >
-                    {tag}
-                  </span>
+                      key={tag}
+                      className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
+                    >
+                      {tag}
+                    </span>
                   )) : null}
-              </div>
-              {/* Details */}
-              <div className=" grid grid-cols-2 gap-4 text-gray-700">
-                <div>
-                  <h3 className="font-semibold">Venue</h3>
-                  <p className="font-medium text-gray-500">
-                    {event.venue_name}
-                  </p>
                 </div>
-                <div>
-                  <h3 className="font-semibold ">Location</h3>
-                  <p className="font-medium text-gray-500">{event.address}</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold ">Event Starts On</h3>
-                  <p className="font-medium text-gray-500">
-                   {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold ">Event Ends On</h3>
-                  <p className="font-medium text-gray-500">
-               {new Date(event.end_date).toLocaleDateString()} {new Date(event.end_date).toLocaleTimeString()}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Ticket Sales Starts On</h3>
-                  <p className="font-medium text-gray-500">
-                    5-Sep-2025 9:00 AM
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold">Ticket Sales Ends On</h3>
-                  <p className="font-medium text-gray-500">
-                    25-Sep-2025 9:00 AM
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right - Ticket Sales */}
-          <div className="space-y-6 text-gray-700">
-            {/* Ticket Tiers */}
-            <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold">Ticket Tiers</h3>
-                {event.tiers?.map((ticket, index) => {
-                const colors = [
-                  { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
-                  { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
-                  { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
-                  { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
-                ];
-                const color = colors[index % colors.length];
-                const sold = Math.floor(ticket.quantity * 0.4); 
-
-                return (
-                  <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
-                    <div className="flex justify-between text-sm">
-                      <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
-                      <p className="text-gray-600">NPR {ticket.price}/ticket</p>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`${color.barClass} h-2 rounded-full`} 
-                        style={{ width: `${(sold / ticket.quantity) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm">{sold}/{ticket.quantity} sold</span>
+                {/* Details */}
+                <div className=" grid grid-cols-2 gap-4 text-gray-700">
+                  <div>
+                    <h3 className="font-semibold">Venue</h3>
+                    <p className="font-medium text-gray-500">
+                      {event.venue_name}
+                    </p>
                   </div>
-                );
-              })}
-              <div className="grid grid-cols-2 border-t-1 p-2">
-                <div>
-                  <p className="font-semibold">Total Sales</p>
-                  <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
-                </div>
-                <div className="justify-items-end">
-                  <p className="font-semibold">Total Revenue</p>
-                  <p className="font-semibold">NPR {totalRevenue.toLocaleString()}</p>
+                  <div>
+                    <h3 className="font-semibold ">Location</h3>
+                    <p className="font-medium text-gray-500">{event.address}</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold ">Event Starts On</h3>
+                    <p className="font-medium text-gray-500">
+                      {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold ">Event Ends On</h3>
+                    <p className="font-medium text-gray-500">
+                      {new Date(event.end_date).toLocaleDateString()} {new Date(event.end_date).toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Ticket Sales Starts On</h3>
+                    <p className="font-medium text-gray-500">
+                      {salesStartDate}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Ticket Sales Ends On</h3>
+                    <p className="font-medium text-gray-500">
+                      {salesEndDate}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Promo Codes */}
-            <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-              <h3 className="text-lg font-semibold">Promo/Discount Codes</h3>
-              {[
-                { code: "EARLYBIRD10", value: 200, used: 25, total: 100 },
-                { code: "PROMO101", value: 1000, used: 20, total: 50 },
-              ].map((promo) => (
-                <div key={promo.code} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <p className="font-medium text-blue-500">{promo.code}</p>
-                    <p>NPR {promo.value}</p>
+            {/* Right - Ticket Sales */}
+            <div className="space-y-6 text-gray-700">
+              {/* Ticket Tiers */}
+              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
+                <h3 className="text-lg font-semibold">Ticket Tiers</h3>
+                {/* Use analytics tiers if available, otherwise fall back to event tiers */}
+                {analytics?.tiers ? (
+                  analytics.tiers.map((tier, index) => {
+                    const colors = [
+                      { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
+                      { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
+                      { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
+                      { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
+                    ];
+                    const color = colors[index % colors.length];
+                    const soldPercent = tier.total_seats > 0
+                      ? (tier.sold_seats / tier.total_seats) * 100
+                      : 0;
+
+                    return (
+                      <div key={tier.tier_id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
+                        <div className="flex justify-between text-sm">
+                          <p className={`font-semibold ${color.labelClass}`}>{tier.tier_name}</p>
+                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/ticket</p>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`${color.barClass} h-2 rounded-full`}
+                            style={{ width: `${Math.min(soldPercent, 100)}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>{tier.sold_seats}/{tier.total_seats} sold</span>
+                          <span className="text-green-600 font-medium">
+                            {tier.currency || 'NPR'} {tier.revenue.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  event.tiers?.map((ticket, index) => {
+                    const colors = [
+                      { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
+                      { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
+                      { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
+                      { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
+                    ];
+                    const color = colors[index % colors.length];
+                    const sold = ticket.sold || 0;
+                    const soldPercent = ticket.quantity > 0 ? (sold / ticket.quantity) * 100 : 0;
+
+                    return (
+                      <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
+                        <div className="flex justify-between text-sm">
+                          <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
+                          <p className="text-gray-600">NPR {ticket.price}/ticket</p>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`${color.barClass} h-2 rounded-full`} 
+                            style={{ width: `${Math.min(soldPercent, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-sm">{sold}/{ticket.quantity} sold</span>
+                      </div>
+                    );
+                  })
+                )}
+                <div className="grid grid-cols-2 border-t-1 p-2">
+                  <div>
+                    <p className="font-semibold">Total Sales</p>
+                    <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-500 h-2 rounded-full"
-                      style={{
-                        width: `${(promo.used / promo.total) * 100}%`,
-                      }}
-                    />
+                  <div className="justify-items-end">
+                    <p className="font-semibold">Total Revenue</p>
+                    <p className="font-semibold text-green-600">NPR {totalRevenue.toLocaleString()}</p>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    {promo.used}/{promo.total} used
-                  </p>
                 </div>
-              ))}
+              </div>
+
+              {/* Promo Codes */}
+              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
+                <h3 className="text-lg font-semibold">Promo/Discount Codes</h3>
+                <p className="text-gray-500 text-sm">No promo codes configured for this event.</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-</div>
+
+      {/* Cancel Event Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Event</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this event? This action cannot be undone.
+              All ticket holders will be notified.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="cancel-reason">Reason for cancellation (minimum 10 characters)</Label>
+              <Textarea
+                id="cancel-reason"
+                placeholder="Please provide a reason for cancelling this event..."
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="min-h-[100px]"
+              />
+              <p className="text-sm text-gray-500">{cancelReason.length}/500 characters</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+              Keep Event
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelEvent}
+              disabled={cancelReason.length < 10 || cancelEventMutation.isPending}
+            >
+              {cancelEventMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                'Cancel Event'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Stop Sales Confirmation Dialog */}
+      <Dialog open={salesDialogOpen} onOpenChange={setSalesDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Stop Event Sales</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to stop sales for this event?
+              This will prevent any new ticket purchases.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="sales-reason">Reason (optional)</Label>
+              <Textarea
+                id="sales-reason"
+                placeholder="Provide a reason for stopping sales..."
+                value={salesReason}
+                onChange={(e) => setSalesReason(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSalesDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmSalesAction}
+              disabled={salesControlMutation.isPending}
+            >
+              {salesControlMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                'Stop Sales'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Footer */}
       <Footer />
-      
     </>
   );
 }

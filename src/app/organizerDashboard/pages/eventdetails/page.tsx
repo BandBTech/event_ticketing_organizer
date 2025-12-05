@@ -12,11 +12,28 @@ function EventDetailsContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id") as string;
 
-  const { data: event, isLoading, isError } = useQuery({
+  // Fetch event details
+  const {
+    data: event,
+    isLoading: isEventLoading,
+    isError: isEventError
+  } = useQuery({
     queryKey: ['event', id],
     queryFn: () => eventService.getEvent(id),
     enabled: !!id,
   });
+
+  // Fetch event analytics
+  const {
+    data: analytics,
+    isLoading: isAnalyticsLoading,
+  } = useQuery({
+    queryKey: ['eventAnalytics', id],
+    queryFn: () => eventService.getEventAnalytics(id),
+    enabled: !!id,
+  });
+
+  const isLoading = isEventLoading || isAnalyticsLoading;
 
   if (isLoading) {
     return (
@@ -50,11 +67,11 @@ function EventDetailsContent() {
     );
   }
 
-  if (isError || !event) {
+  if (isEventError || !event) {
     return <div className="p-6 text-red-600">Event not found or failed to load!</div>;
   }
 
-  return <EventDetails event={event} />;
+  return <EventDetails event={event} analytics={analytics} />;
 }
 
 export default function EventDetailsPage() {

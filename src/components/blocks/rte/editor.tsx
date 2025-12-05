@@ -30,6 +30,7 @@ export function Editor({
   onChange,
   onSerializedChange,
   onHtmlChange,
+  placeholder = "Start typing ...",
 }: {
   editorState?: EditorState
   editorSerializedState?: SerializedEditorState
@@ -37,9 +38,10 @@ export function Editor({
   onChange?: (editorState: EditorState) => void
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void
   onHtmlChange?: (html: string) => void
+    placeholder?: string
 }) {
   return (
-    <div className="bg-background overflow-hidden rounded-lg border shadow">
+    <div className="bg-background overflow-hidden rounded-lg shadow">
       <LexicalComposer
         initialConfig={{
           ...editorConfig,
@@ -56,7 +58,7 @@ export function Editor({
         <HtmlInitPlugin initialHtml={initialHtml} />
 
         <TooltipProvider>
-          <Plugins />
+          <Plugins placeholder={placeholder} />
 
           <OnChangePlugin
             ignoreSelectionChange={true}
