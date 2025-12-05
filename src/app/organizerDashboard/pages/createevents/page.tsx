@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import CreateEvents from "@/app/organizerDashboard/components/createEventsForm";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function CreateEventsPage() {
+function CreateEventsContent() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
   const isEditing = searchParams.get("edit") === "true";
@@ -63,6 +64,29 @@ export default function CreateEventsPage() {
       initialData={isEditing ? eventData : undefined}
       isEditing={isEditing}
     />
+  );
+}
+
+export default function CreateEventsPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6 space-y-6">
+        <div className="mb-6">
+          <div className="p-6 space-y-4 bg-white/60 rounded-xl">
+            <Skeleton className="h-8 w-48" />
+            <div className="grid md:grid-cols-2 gap-4">
+              <Skeleton className="h-40 w-full" />
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <CreateEventsContent />
+    </Suspense>
   );
 }
 
