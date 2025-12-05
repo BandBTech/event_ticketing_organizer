@@ -1,15 +1,29 @@
 "use client";
 
 import { BellIcon } from "@phosphor-icons/react";
-import { ChevronDown, Globe, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useMemo } from "react";
 import { useUser } from "@/app/contexts/UserContext";
 import { Button } from "@/components/ui/button";
+import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
+import { useAuthStore } from "@/store/authStore";
 
-const pageHeaders: { prefix: string; title: string; editTitle?: string }[] = [
+/**
+ * Get time-based greeting message
+ */
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 17) return "Good Afternoon";
+  return "Good Evening";
+}
+
+const pageHeaders: { prefix: string; title: string; editTitle?: string; isDynamic?: boolean }[] = [
   { prefix: "/organizerDashboard/pages/events", title: "Events" },
-  { prefix: "/organizerDashboard", title: "Good Evening John Doe!" },
+  { prefix: "/organizerDashboard/settings", title: "" },
+  { prefix: "/organizerDashboard/reports", title: "Reports" },
+  { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
   { prefix: "/organizerDashboard/pages/createevents", title: "Create new event", editTitle: "Edit Event" },
   { prefix: "/organizerDashboard/pages/eventdetails", title: "Event details" },
   { prefix: "/organizerDashboard/pages/users", title: "Users" },
@@ -22,6 +36,15 @@ export default function DashboardHeader() {
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
   const { openCreateUserModal } = useUser();
+  const { user } = useAuthStore();
+
+  // Get user's first name or fallback
+  const userName = user?.firstName || "there";
+
+  // Dynamic greeting for dashboard
+  const dynamicGreeting = useMemo(() => {
+    return `${getGreeting()}, ${userName}!`;
+  }, [userName]);
 
   // Pick the best match (longest prefix first)
   const matched = pageHeaders
@@ -34,10 +57,12 @@ export default function DashboardHeader() {
         pathname.startsWith(p.prefix)
     );
 
-  // Use edit title if in edit mode and available
-  const headerText = (isEditMode && matched?.editTitle)
+  // Use edit title if in edit mode and available, or dynamic greeting for dashboard
+  const headerText = isEditMode && matched?.editTitle
     ? matched.editTitle
-    : (matched?.title ?? "organizerDashboard");
+    : matched?.isDynamic
+      ? dynamicGreeting
+      : (matched?.title ?? "Dashboard");
 
   const isUsersPage = matched?.title === "Users";
   const isEventsPage = matched?.title === "Events";
@@ -64,7 +89,7 @@ export default function DashboardHeader() {
         {showCreateButton && (
           <Button
             onClick={handleCreateButton}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white h-9 px-4"
+            className="flex items-center gap-2 h-9 px-4"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">{createButtonLabel}</span>
@@ -77,16 +102,6 @@ export default function DashboardHeader() {
           <BellIcon className="h-4 w-4 text-gray-700" />
         </button>
       </div>
-    </div>
-  );
-}
-
-function LanguageSelector() {
-  return (
-    <div className="hidden md:flex items-center gap-1 bg-gray-100 px-3 h-9 rounded-full cursor-pointer hover:bg-gray-200 transition-colors">
-      <Globe className="h-4 w-4 text-gray-700" />
-      <span className="text-sm text-gray-700 font-medium">English</span>
-      <ChevronDown className="h-4 w-4 text-gray-700" />
     </div>
   );
 }

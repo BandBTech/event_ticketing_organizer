@@ -16,8 +16,57 @@
     }
   },
   "auth": {
+    "login": {
+      "title": "Accedi",
+      "subtitle": "come Partecipante",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Inserisci indirizzo email",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "Ricordami",
+      "forgotPassword": "Password Dimenticata?",
+      "loginButton": "Accedi",
+      "signingIn": "Accesso in corso...",
+      "noAccount": "Non hai un account?",
+      "signUpHere": "Registrati qui.",
+      "validation": {
+        "emailRequired": "Email è richiesta",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "passwordRequired": "Password è richiesta",
+        "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+        "passwordTooLong": "La password è troppo lunga"
+      },
+      "errors": {
+        "invalidCredentials": "Email o password non validi. Prova: attendee@example.com / password123",
+        "loginFailed": "Accesso fallito. Riprova."
+      },
+      "showPassword": "Mostra password",
+      "hidePassword": "Nascondi password"
+    },
     "signup": {
-      "loginAsOrganizer": "Accedi come Organizzatore."
+      "phonePlaceholder": "Inserisci un numero di contatto valido",
+      "validation": {
+        "phoneRequired": "Il numero di contatto è obbligatorio",
+        "firstNameRequired": "Il nome è obbligatorio",
+        "firstNameTooLong": "Il nome è troppo lungo",
+        "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
+        "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
+        "passwordSpecialChar": "Deve contenere almeno un carattere speciale",
+        "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
+        "passwordNumber": "La password deve contenere almeno un numero.",
+        "emailInvalid": "Si prega di inserire un indirizzo email valido.",
+        "phoneInvalid": "Inserisci un numero di telefono valido.",
+        "passwordMismatch": "Le password non corrispondono."
+      },
+      "setPassword": "Crea una password sicura per",
+      "phone": "Numero di contatto"
+    },
+    "resetPassword": {
+      "subtitle": "Imposta una nuova password per"
+    },
+    "verifyOTP": {
+      "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
+      "verifyButton": "Verificare l'OTP"
     },
     "toast": {
       "passwordChangedLogin": "Effettua il login con la tua nuova password."

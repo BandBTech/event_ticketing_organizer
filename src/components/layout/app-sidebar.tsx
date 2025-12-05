@@ -70,7 +70,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
   return (
     <aside
-      className={`relative flex flex-col min-h-screen bg-white border-r border-gray-200 transition-all duration-300 ${collapsed ? "w-20" : "w-56"
+      className={`relative flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${collapsed ? "w-20" : "w-56"
         }`}
     >
       {/* Header with Logo and Collapse Button */}

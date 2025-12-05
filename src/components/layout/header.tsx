@@ -1,23 +1,18 @@
 "use client";
-import { Globe, ChevronDown, Ticket } from "lucide-react";
+import { Ticket } from "lucide-react";
+import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
 
 export default function Header() {
   return (
     <header className="w-full flex items-center justify-between px-6 py-3">
       {/* Logo / Brand Name */}
       <div className=" flex gap-1 items-center text-xl font-bold text-blue-600 select-none">
-        <Ticket className="w-6 h-6"/>
+        <Ticket className="w-6 h-6" />
         Timro-Ticket
       </div>
 
       {/* Language Selector */}
-      <button className="flex items-center space-x-1 px-3 py-2 bg-gray-100  hover:bg-gray-200  rounded-full shadow-md transition">
-        <Globe className="h-5 w-5 text-gray-600 " />
-        <span className="text-gray-700  text-sm font-medium">
-          English
-        </span>
-        <ChevronDown className="h-4 w-4 text-gray-500 " />
-      </button>
+      <LanguageSelector />
     </header>
   );
 }

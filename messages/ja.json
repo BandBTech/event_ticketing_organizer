@@ -16,8 +16,57 @@
     }
   },
   "auth": {
+    "login": {
+      "title": "ログイン",
+      "subtitle": "参加者として",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "emailPlaceholder": "メールアドレスを入力",
+      "passwordPlaceholder": "••••••••••••",
+      "rememberMe": "ログイン状態を保持",
+      "forgotPassword": "パスワードを忘れた方",
+      "loginButton": "ログイン",
+      "signingIn": "ログイン中...",
+      "noAccount": "アカウントをお持ちでない方は",
+      "signUpHere": "こちらから登録",
+      "validation": {
+        "emailRequired": "メールアドレスは必須です",
+        "emailInvalid": "有効なメールアドレスを入力してください",
+        "passwordRequired": "パスワードは必須です",
+        "passwordTooShort": "パスワードは6文字以上である必要があります",
+        "passwordTooLong": "パスワードが長すぎます"
+      },
+      "errors": {
+        "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。試してください: attendee@example.com / password123",
+        "loginFailed": "ログインに失敗しました。もう一度お試しください。"
+      },
+      "showPassword": "パスワードを表示",
+      "hidePassword": "パスワードを非表示"
+    },
     "signup": {
-      "loginAsOrganizer": "オーガナイザーとしてサインインします。"
+      "phonePlaceholder": "有効な連絡先番号を入力してください",
+      "validation": {
+        "phoneRequired": "連絡先番号は必須です",
+        "firstNameRequired": "名は必須です",
+        "firstNameTooLong": "名前が長すぎます",
+        "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
+        "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
+        "passwordSpecialChar": "少なくとも 1 つの特殊文字を含める必要があります",
+        "passwordUpperLower": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
+        "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
+        "emailInvalid": "有効なメールアドレスを入力してください。",
+        "phoneInvalid": "有効な電話番号を入力してください。",
+        "passwordMismatch": "パスワードが一致しません。"
+      },
+      "setPassword": "安全なパスワードを作成する",
+      "phone": "連絡先番号"
+    },
+    "resetPassword": {
+      "subtitle": "新しいパスワードを設定してください"
+    },
+    "verifyOTP": {
+      "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
+      "verifyButton": "OTP を確認する"
     },
     "toast": {
       "passwordChangedLogin": "新しいパスワードでログインしてください。"

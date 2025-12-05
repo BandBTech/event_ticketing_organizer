@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { formatDateTime } from "@/lib/utils";
 
 interface EventDetailsProps {
   event: Event;
@@ -262,13 +263,13 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   <div>
                     <h3 className="font-semibold ">Event Starts On</h3>
                     <p className="font-medium text-gray-500">
-                      {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
+                      {formatDateTime(event.start_date)}
                     </p>
                   </div>
                   <div>
                     <h3 className="font-semibold ">Event Ends On</h3>
                     <p className="font-medium text-gray-500">
-                      {new Date(event.end_date).toLocaleDateString()} {new Date(event.end_date).toLocaleTimeString()}
+                      {formatDateTime(event.end_date)}
                     </p>
                   </div>
                   <div>
@@ -347,7 +348,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className={`${color.barClass} h-2 rounded-full`} 
+                            className={`${color.barClass} h-2 rounded-full`}
                             style={{ width: `${Math.min(soldPercent, 100)}%` }}
                           />
                         </div>

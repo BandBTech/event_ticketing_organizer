@@ -25,9 +25,11 @@ const TierNameSelector = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between font-normal"
+          className="w-full h-13 justify-between font-normal md:text-md hover:bg-transparent"
         >
-          {value || "Select or type tier name..."}
+          <span className={cn(!value && "text-muted-foreground")}>
+            {value || "Select or type tier name..."}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

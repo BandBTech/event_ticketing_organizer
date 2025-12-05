@@ -15,16 +15,16 @@ export default function DashboardLayout({
 
   return (
     <UserProvider>
-      <div className="flex min-h-screen bg-gray-50/50">
+      <div className="flex h-screen overflow-hidden bg-gray-50/50">
         {/* Sidebar */}
         <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
         {/* Main Content Area */}
         <div className="flex flex-1 flex-col">
-          <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-white px-6">
+          <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6">
             <DashboardHeader />
           </header>
-          <main className="flex-1 overflow-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
 
         <CompleteProfileDialog />
