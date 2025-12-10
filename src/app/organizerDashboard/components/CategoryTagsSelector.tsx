@@ -1,256 +1,118 @@
 "use client";
 
 import { useState, useRef, KeyboardEvent } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { publicServices } from "@/services/publicServices";
-import { Check, ChevronsUpDown, Plus, X, Loader2 } from "lucide-react";
 
 interface CategoryTagsSelectorProps {
-	value: string[];
-	onChange: (value: string[]) => void;
-	placeholder?: string;
-	maxTags?: number;
-	className?: string;
+  value: string[];
+  onChange: (value: string[]) => void;
+  placeholder?: string;
+  maxTags?: number;
+  className?: string;
+  error?: boolean;
 }
 
 const CategoryTagsSelector = ({
-	value = [],
-	onChange,
-	placeholder = "Select or type categories...",
-	maxTags = 5,
-	className,
+  value = [],
+  onChange,
+  placeholder = "Type and press Enter to add...",
+  maxTags = 5,
+  className,
+  error = false,
 }: CategoryTagsSelectorProps) => {
-	const [open, setOpen] = useState(false);
-	const [inputValue, setInputValue] = useState("");
-	const inputRef = useRef<HTMLInputElement>(null);
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-	// Fetch categories from API
-	const { data: categoriesData, isLoading, isError } = useQuery({
-		queryKey: ["categories"],
-		queryFn: () => publicServices.getCategories(),
-		staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-	});
+  const handleAddTag = () => {
+    const trimmedValue = inputValue.trim();
+    if (
+      trimmedValue &&
+      !value.some((tag) => tag.toLowerCase() === trimmedValue.toLowerCase()) &&
+      value.length < maxTags
+    ) {
+      onChange([...value, trimmedValue]);
+      setInputValue("");
+    }
+  };
 
-	const categories = Array.isArray(categoriesData) ? categoriesData : [];
+  const handleRemove = (tagToRemove: string) => {
+    onChange(value.filter((tag) => tag !== tagToRemove));
+  };
 
-	const categoryNames = categories.map((cat) => cat.name);
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    } else if (e.key === "," || e.key === "Tab") {
+      if (inputValue.trim()) {
+        e.preventDefault();
+        handleAddTag();
+      }
+    } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
+      handleRemove(value[value.length - 1]);
+    }
+  };
 
-	const filteredSuggestions = categoryNames.filter(
-		(category) =>
-			!value.includes(category) &&
-			category.toLowerCase().includes(inputValue.toLowerCase())
-	);
+  const handleContainerClick = () => {
+    inputRef.current?.focus();
+  };
 
-	const handleSelect = (category: string) => {
-		if (!value.includes(category) && value.length < maxTags) {
-			onChange([...value, category]);
-			setInputValue("");
-		}
-	};
+  const isMaxReached = value.length >= maxTags;
 
-	const handleRemove = (category: string) => {
-		onChange(value.filter((tag) => tag !== category));
-	};
+  return (
+    <div
+      onClick={handleContainerClick}
+      className={cn(
+        "flex flex-wrap items-center gap-2 px-3 py-2 min-h-[52px] w-full rounded-md border border-input bg-white text-sm shadow-xs transition-[color,box-shadow] outline-none cursor-text",
+        "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+        error && "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20",
+        className
+      )}
+    >
+      {/* Tags */}
+      {value.map((tag) => (
+        <span
+          key={tag}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200"
+        >
+          {tag}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove(tag);
+            }}
+            className="p-0.5 rounded-full hover:bg-blue-200 transition-colors"
+            aria-label={`Remove ${tag}`}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </span>
+      ))}
 
-	const handleCreateNew = () => {
-		const trimmedValue = inputValue.trim();
-		if (
-			trimmedValue &&
-			!value.includes(trimmedValue) &&
-			value.length < maxTags
-		) {
-			onChange([...value, trimmedValue]);
-			setInputValue("");
-		}
-	};
+      {/* Input */}
+      {!isMaxReached && (
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleAddTag}
+          placeholder={value.length === 0 ? placeholder : "Add more..."}
+          className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
+        />
+      )}
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter") {
-			e.preventDefault();
-			const trimmedValue = inputValue.trim();
-
-			// Check if it matches an existing suggestion
-			const matchedSuggestion = filteredSuggestions.find(
-				(s) => s.toLowerCase() === trimmedValue.toLowerCase()
-			);
-
-			if (matchedSuggestion) {
-				handleSelect(matchedSuggestion);
-			} else if (trimmedValue) {
-				handleCreateNew();
-			}
-		} else if (e.key === "Backspace" && !inputValue && value.length > 0) {
-			handleRemove(value[value.length - 1]);
-		}
-	};
-
-	const isMaxReached = value.length >= maxTags;
-	const showCreateOption =
-		inputValue.trim() &&
-		!filteredSuggestions.some(
-			(s) => s.toLowerCase() === inputValue.trim().toLowerCase()
-		) &&
-		!value.some((v) => v.toLowerCase() === inputValue.trim().toLowerCase());
-
-	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					className={cn(
-						"w-full min-h-[52px] h-auto justify-between font-normal hover:bg-transparent",
-						className
-					)}
-				>
-					<div className="flex flex-wrap items-center gap-1.5 flex-1">
-						{value.length > 0 ? (
-							<>
-								{value.map((tag) => (
-									<Badge
-										key={tag}
-										variant="secondary"
-										className="px-2 py-1 text-sm bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
-									>
-										{tag}
-										<span
-											role="button"
-											tabIndex={0}
-											onClick={(e) => {
-												e.stopPropagation();
-												handleRemove(tag);
-											}}
-											onKeyDown={(e) => {
-												if (e.key === 'Enter' || e.key === ' ') {
-													e.stopPropagation();
-													handleRemove(tag);
-												}
-											}}
-											className="ml-1 rounded-full hover:bg-blue-200 p-0.5 transition-colors cursor-pointer"
-											aria-label={`Remove ${tag}`}
-										>
-											<X className="h-3 w-3" />
-										</span>
-									</Badge>
-								))}
-								{!isMaxReached && (
-									<span className="text-muted-foreground text-sm">
-										+ Add more
-									</span>
-								)}
-							</>
-						) : (
-							<span className="text-muted-foreground">{placeholder}</span>
-						)}
-					</div>
-					<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent className="w-[350px] p-0" align="start">
-				<Command>
-					<CommandInput
-						ref={inputRef}
-						placeholder={
-							isMaxReached
-								? `Max ${maxTags} categories reached`
-								: "Search or create category..."
-						}
-						value={inputValue}
-						onValueChange={setInputValue}
-						onKeyDown={handleKeyDown}
-						disabled={isMaxReached}
-					/>
-					<CommandList>
-						{isLoading ? (
-							<div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								Loading categories...
-							</div>
-						) : isError ? (
-							<div className="p-4 text-center text-sm text-destructive">
-								Failed to load categories. You can still type custom ones.
-							</div>
-						) : !isMaxReached ? (
-							<>
-								{showCreateOption && (
-									<CommandGroup>
-										<CommandItem
-											value={`create-${inputValue}`}
-											onSelect={handleCreateNew}
-											className="cursor-pointer"
-										>
-											<Plus className="mr-2 h-4 w-4 text-green-600" />
-											<span>
-												Create &quot;
-												<span className="font-medium">{inputValue.trim()}</span>
-												&quot;
-											</span>
-										</CommandItem>
-									</CommandGroup>
-								)}
-
-								{filteredSuggestions.length > 0 ? (
-									<CommandGroup heading="Categories">
-										{filteredSuggestions.map((category) => (
-											<CommandItem
-												key={category}
-												value={category}
-												onSelect={() => handleSelect(category)}
-												className="cursor-pointer"
-											>
-												<Check
-													className={cn(
-														"mr-2 h-4 w-4",
-														value.includes(category)
-															? "opacity-100"
-															: "opacity-0"
-													)}
-												/>
-												{category}
-											</CommandItem>
-										))}
-									</CommandGroup>
-								) : (
-									!showCreateOption && (
-										<CommandEmpty>
-											<div className="p-2 text-center text-sm text-muted-foreground">
-												{inputValue
-													? "No matching categories. Press Enter to create."
-													: "All categories selected."}
-											</div>
-										</CommandEmpty>
-									)
-								)}
-							</>
-						) : (
-							<div className="p-4 text-center text-sm text-muted-foreground">
-								Maximum of {maxTags} categories reached.
-								<br />
-								Remove a category to add more.
-							</div>
-						)}
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
-	);
+      {/* Max reached message */}
+      {isMaxReached && value.length > 0 && (
+        <span className="text-xs text-muted-foreground">
+          Max {maxTags} tags
+        </span>
+      )}
+    </div>
+  );
 };
 
 export default CategoryTagsSelector;

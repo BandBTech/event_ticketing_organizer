@@ -1,8 +1,8 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { MapPinAreaIcon } from "@phosphor-icons/react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 import { useRouter } from "next/navigation";
 import { EventFormData, createEventSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,6 +58,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [formModified, setFormModified] = useState(false);
+  const lastInitializedEventId = React.useRef<string | null>(null);
 
   // Fetch tier templates using TanStack Query
   const { data: tierTemplates = [] } = useQuery({
@@ -125,6 +126,69 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     return formModified || imageFile !== null;
   }, [formModified, imageFile]);
 
+  // Reset form when initialData changes (for edit mode)
+  useEffect(() => {
+    if (initialData && isEditing) {
+      // Prevent re-initializing if we've already initialized this event
+      if (lastInitializedEventId.current === initialData.id) {
+        return;
+      }
+      lastInitializedEventId.current = initialData.id;
+
+      // Helper function to get tier name from template if tier_name is empty
+      const getTierName = (tier: typeof initialData.tiers[0]) => {
+        if (tier.tier_name) return tier.tier_name;
+        // Look up from tier templates if tier_name is empty
+        if (tier.tier_template_id && tierTemplates.length > 0) {
+          const template = tierTemplates.find(t => t.id === tier.tier_template_id);
+          return template?.template_name || "";
+        }
+        return "";
+      };
+
+      form.reset({
+        name: initialData.title || "",
+        description: initialData.description || "",
+        tags: initialData.category || [],
+        image: initialData.banner_image || "",
+        venue: initialData.venue_name || "",
+        venueAddress: initialData.address || "",
+        capacity: initialData.capacity || 0,
+        timezone: initialData.timezone || "",
+        startDate: initialData.start_date || "",
+        endDate: initialData.end_date || "",
+        tickets: initialData.tiers?.map((t) => ({
+          id: t.id,
+          name: getTierName(t),
+          price: t.price,
+          quantity: t.quantity,
+          gst: t.gst || 0,
+          salesStart: t.sales_start || "",
+          salesEnd: t.sales_end || "",
+        })) || [
+            {
+              name: "",
+              price: 0,
+              quantity: 0,
+              gst: 13,
+              salesStart: "",
+              salesEnd: "",
+            },
+          ],
+        promoCodes: [],
+      });
+      // Also update image preview
+      if (initialData.banner_image) {
+        // Only set preview if it's a string URL (not when we have a file upload which shouldn't happen on init usually)
+        if (typeof initialData.banner_image === 'string') {
+          setImagePreview(initialData.banner_image);
+        }
+      }
+      // Reset form modified state after setting initial data
+      setFormModified(false);
+    }
+  }, [initialData, isEditing, form, tierTemplates]);
+
   useEffect(() => {
     const subscription = form.watch(() => {
       if (form.formState.isDirty) {
@@ -155,7 +219,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       window.history.pushState({ formPage: true }, "");
     }
 
-    const handlePopState = (e: PopStateEvent) => {
+    const handlePopState = () => {
       if (hasUnsavedChanges()) {
         // Push state back to prevent navigation
         window.history.pushState({ formPage: true }, "");
@@ -231,6 +295,79 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     },
   });
 
+  // Helper function to get only changed fields for update
+  const getChangedFields = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (currentData: EventFormData, tiersData: any[]) => {
+      if (!initialData) return null;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const changedFields: Record<string, any> = {};
+
+      // Compare simple fields
+      if (currentData.name !== initialData.title) {
+        changedFields.title = currentData.name;
+      }
+      if (currentData.description !== initialData.description) {
+        changedFields.description = currentData.description;
+      }
+      if (JSON.stringify(currentData.tags) !== JSON.stringify(initialData.category || [])) {
+        changedFields.category = currentData.tags;
+      }
+      if (currentData.venue !== initialData.venue_name) {
+        changedFields.venue_name = currentData.venue;
+      }
+      if (currentData.venueAddress !== initialData.address) {
+        changedFields.address = currentData.venueAddress;
+      }
+      if (currentData.capacity !== initialData.capacity) {
+        changedFields.capacity = currentData.capacity;
+      }
+      if (currentData.timezone !== initialData.timezone) {
+        changedFields.timezone = currentData.timezone;
+      }
+      if (currentData.startDate !== initialData.start_date) {
+        changedFields.start_date = currentData.startDate || undefined;
+      }
+      if (currentData.endDate !== initialData.end_date) {
+        changedFields.end_date = currentData.endDate || undefined;
+      }
+
+      // Compare tiers - check if anything changed
+      const initialTiers = initialData.tiers || [];
+      const tiersChanged =
+        tiersData.length !== initialTiers.length ||
+        tiersData.some((tier, index) => {
+          const initialTier = initialTiers[index];
+          if (!initialTier) return true;
+          return (
+            tier.price !== initialTier.price ||
+            tier.quantity !== initialTier.quantity ||
+            tier.gst !== (initialTier.gst || 0) ||
+            tier.sales_start !== (initialTier.sales_start || "") ||
+            tier.sales_end !== (initialTier.sales_end || "")
+          );
+        });
+
+      if (tiersChanged) {
+        changedFields.tiers = tiersData;
+      }
+
+      // Check for new banner image
+      if (imageFile) {
+        changedFields.banner_image = imageFile;
+      }
+
+      // Update price if first tier price changed
+      if (currentData.tickets[0]?.price !== initialTiers[0]?.price) {
+        changedFields.price = currentData.tickets[0]?.price ?? 0;
+      }
+
+      return changedFields;
+    },
+    [initialData, imageFile]
+  );
+
   const onSubmit: SubmitHandler<EventFormData> = async (data) => {
     try {
       const tiersData = [];
@@ -269,33 +406,38 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const eventData: any = {
-        title: data.name,
-        description: data.description,
-        category: data.tags.join(","),
-        venue_name: data.venue,
-        address: data.venueAddress,
-        start_date: data.startDate || undefined,
-        end_date: data.endDate || undefined,
-        timezone: data.timezone,
-        capacity: data.capacity,
-        price: data.tickets[0]?.price ?? 0,
-        tiers: JSON.stringify(tiersData),
-      };
-
-      if (imageFile) {
-        eventData.banner_image = imageFile;
-      }
-
       if (isEditing && initialData) {
-        const updateData = {
-          ...eventData,
-          tiers: tiersData,
-          banner_image: undefined,
-        };
-        saveEventMutation.mutate({ eventData: updateData, isUpdate: true, id: initialData.id });
+        // Only send changed fields for update
+        const changedFields = getChangedFields(data, tiersData);
+
+        if (changedFields && Object.keys(changedFields).length === 0) {
+          toast.info("No Changes", "No changes detected to update.");
+          return;
+        }
+
+        console.log("Sending only changed fields:", changedFields);
+        saveEventMutation.mutate({ eventData: changedFields, isUpdate: true, id: initialData.id });
       } else {
+      // For new events, send all data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const eventData: any = {
+          title: data.name,
+          description: data.description,
+          category: data.tags,
+          venue_name: data.venue,
+          address: data.venueAddress,
+          start_date: data.startDate || undefined,
+          end_date: data.endDate || undefined,
+          timezone: data.timezone,
+          capacity: data.capacity,
+          price: data.tickets[0]?.price ?? 0,
+          tiers: JSON.stringify(tiersData),
+        };
+
+        if (imageFile) {
+          eventData.banner_image = imageFile;
+        }
+
         saveEventMutation.mutate({ eventData, isUpdate: false });
       }
     } catch (error) {
@@ -410,7 +552,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   <FormField
                     control={form.control}
                     name="tags"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="inline-block">Category Tags</FormLabel>
                         <FormControl>
@@ -420,6 +562,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                             placeholder="Select or type categories..."
                             maxTags={5}
                             className="h-13 md:text-md"
+                            error={!!fieldState.error}
                           />
                         </FormControl>
                         <FormMessage />
@@ -448,13 +591,14 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   )}
                 >
                   <Editor
-                    initialHtml={form.getValues("description")}
-                    onHtmlChange={(html) => {
+                    key={isEditing ? `editor-${initialData?.id}` : "editor-new"}
+                    initialHtml={isEditing ? initialData?.description || "" : ""}
+                    onHtmlChange={useCallback((html: string) => {
                       form.setValue("description", html);
                       if (html && html.trim()) {
                         form.clearErrors("description");
                       }
-                    }}
+                    }, [form])}
                     placeholder={t("event.field.eventDescription", "Write about your event")}
                   />
                 </div>
@@ -489,19 +633,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 <FormField
                   control={form.control}
                   name="venueAddress"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="inline-block">Venue Address</FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            className="h-13 md:text-md"
-                            placeholder="Enter venue address"
-                            {...field}
-                          />
-                        </FormControl>
-                        <MapPinAreaIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      </div>
+                      <FormControl>
+                        <AddressAutocomplete
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Search for venue address"
+                          className="h-13 md:text-md"
+                          error={!!fieldState.error}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -530,11 +673,15 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 <FormField
                   control={form.control}
                   name="timezone"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="inline-block">Timezone</FormLabel>
                       <FormControl>
-                        <TimezoneSelector value={field.value} onChange={field.onChange} />
+                        <TimezoneSelector
+                          value={field.value}
+                          onChange={field.onChange}
+                          error={!!fieldState.error}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -696,18 +843,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleNavigateAway(() => router.back())}
+              onClick={() => handleNavigateAway(() => router.push('/organizerDashboard/pages/events'))}
             >
               Cancel
             </Button>
             <div className="flex gap-3">
-              <Button
+              {/* <Button
                 type="button"
                 variant="outline"
                 className="text-blue-600 border-blue-600 hover:bg-blue-50"
               >
                 Save as draft
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
                 disabled={saveEventMutation.isPending}

@@ -1,83 +1,44 @@
+
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import EventDetails from "@/app/organizerDashboard/components/eventDetails";
+import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
-import { Skeleton } from "@/components/ui/skeleton";
+import EventDetailsPage from "../../components/eventDetails";
+import { Loader2 } from "lucide-react";
 
-import { Suspense } from "react";
-
-function EventDetailsContent() {
+export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id") as string;
+  const eventId = searchParams.get("id");
 
-  // Fetch event details
-  const {
-    data: event,
-    isLoading: isEventLoading,
-    isError: isEventError
-  } = useQuery({
-    queryKey: ['event', id],
-    queryFn: () => eventService.getEvent(id),
-    enabled: !!id,
+  const { data: event, isLoading: eventLoading } = useQuery({
+    queryKey: ['event', eventId],
+    queryFn: () => eventService.getEvent(eventId!),
+    enabled: !!eventId,
   });
 
-  // Fetch event analytics
-  const {
-    data: analytics,
-    isLoading: isAnalyticsLoading,
-  } = useQuery({
-    queryKey: ['eventAnalytics', id],
-    queryFn: () => eventService.getEventAnalytics(id),
-    enabled: !!id,
+  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+    queryKey: ['eventAnalytics', eventId],
+    queryFn: () => eventService.getEventAnalytics(eventId!),
+    enabled: !!eventId,
   });
 
-  const isLoading = isEventLoading || isAnalyticsLoading;
+  if (!eventId) {
+    return <div className="p-8 text-center text-gray-500">Event ID missing</div>;
+  }
 
-  if (isLoading) {
+  if (eventLoading || analyticsLoading) {
     return (
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <div className="flex gap-3">
-              <Skeleton className="h-6 w-20 rounded-full" />
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-6 w-32" />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Skeleton className="h-10 w-32 rounded-lg" />
-            <Skeleton className="h-10 w-32 rounded-lg" />
-            <Skeleton className="h-10 w-32 rounded-lg" />
-          </div>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            <Skeleton className="h-80 w-full rounded-xl" />
-            <Skeleton className="h-64 w-full rounded-xl" />
-          </div>
-          <div className="space-y-6">
-            <Skeleton className="h-64 w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
-          </div>
-        </div>
+      <div className="flex justify-center items-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  if (isEventError || !event) {
-    return <div className="p-6 text-red-600">Event not found or failed to load!</div>;
+  if (!event) {
+    return <div className="p-8 text-center text-red-500">Event not found</div>;
   }
 
-  return <EventDetails event={event} analytics={analytics} />;
-}
-
-export default function EventDetailsPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <EventDetailsContent />
-    </Suspense>
-  );
+  // Cast analytics if needed, or assume strictly matches
+  return <EventDetailsPage event={event} analytics={analytics as any} />;
 }

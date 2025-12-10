@@ -36,7 +36,7 @@ const TicketTierCard = ({
 			<FormField
 				control={control}
 				name={`tickets.${index}.name`}
-				render={({ field }) => (
+        render={({ field, fieldState }) => (
 					<FormItem>
 						<FormLabel className="inline-block">Tier Name</FormLabel>
 						<FormControl>
@@ -44,6 +44,7 @@ const TicketTierCard = ({
 								value={field.value}
 								onChange={field.onChange}
 								templates={tierTemplates}
+                error={!!fieldState.error}
 							/>
 						</FormControl>
 						<FormMessage />

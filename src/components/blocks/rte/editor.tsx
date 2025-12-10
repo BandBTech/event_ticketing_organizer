@@ -40,6 +40,12 @@ export function Editor({
   onHtmlChange?: (html: string) => void
     placeholder?: string
 }) {
+  const onHtmlChangeRef = useRef(onHtmlChange)
+
+  useEffect(() => {
+    onHtmlChangeRef.current = onHtmlChange
+  }, [onHtmlChange])
+
   return (
     <div className="bg-background overflow-hidden rounded-lg shadow">
       <LexicalComposer
@@ -65,10 +71,10 @@ export function Editor({
             onChange={(editorState, editor) => {
               onChange?.(editorState)
               onSerializedChange?.(editorState.toJSON())
-              if (onHtmlChange) {
+              if (onHtmlChangeRef.current) {
                 editorState.read(() => {
                   const html = $generateHtmlFromNodes(editor, null)
-                  onHtmlChange(html)
+                  onHtmlChangeRef.current?.(html)
                 })
               }
             }}
@@ -80,33 +86,31 @@ export function Editor({
 }
 
 import { $getRoot, $insertNodes } from "lexical"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 
 function HtmlInitPlugin({ initialHtml }: { initialHtml?: string }) {
   const [editor] = useLexicalComposerContext()
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
-    if (!initialHtml) return
+    if (!initialHtml || hasInitialized.current) return
 
-    // We only want to set this once on mount.
-    // But LexicalComposer handles initialConfig.
-    // If we do it here, we might overwrite user changes if we are not careful.
-    // But this is "Initial" html.
+    // Mark as initialized to prevent re-running
+    hasInitialized.current = true
 
-    // Check if editor is empty?
+    // Set the initial HTML content
     editor.update(() => {
       const root = $getRoot()
-      if (root.isEmpty()) {
-        const parser = new DOMParser()
-        const dom = parser.parseFromString(initialHtml, "text/html")
-        const nodes = $generateNodesFromDOM(editor, dom)
-        root.select()
-        $insertNodes(nodes)
-      }
+      // Clear existing content and set new content
+      root.clear()
+      const parser = new DOMParser()
+      const dom = parser.parseFromString(initialHtml, "text/html")
+      const nodes = $generateNodesFromDOM(editor, dom)
+      root.select()
+      $insertNodes(nodes)
     })
-  }, [editor, initialHtml]) // Only run if initialHtml changes? Or just once?
-  // Usually initialHtml is static.
+  }, [editor, initialHtml])
 
   return null
 }

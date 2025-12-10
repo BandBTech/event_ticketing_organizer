@@ -1,14 +1,14 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authService } from '@/services/authService';
 import { AuthError } from '@/lib/errors';
 import { tokenManager } from '@/lib/tokenManager';
-import { AuthUser, LoginRequest } from '@/types/auth';
+import { AuthUser, LoginRequest, OrganizerProfile } from '@/types/auth';
 
 interface AuthStore {
   // State
   user: AuthUser | null;
+  organizerProfile: OrganizerProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -18,11 +18,13 @@ interface AuthStore {
   login: (credentials: LoginRequest, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<{ message?: string }>;
   fetchProfile: () => Promise<void>;
+  fetchOrganizerProfile: () => Promise<void>;
   clearError: () => void;
   checkAuth: () => void;
   checkOrganizerCompletion: () => Promise<void>;
   updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
   hasRole: (role: string) => boolean;
+  getOrganizationId: () => string | undefined;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       // Initial state
       user: null,
+      organizerProfile: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -43,8 +46,9 @@ export const useAuthStore = create<AuthStore>()(
           // Call login API with remember me preference
           await authService.login(credentials, rememberMe);
 
-          // Fetch user profile
+          // Fetch user profile and organizer profile
           await get().fetchProfile();
+          await get().fetchOrganizerProfile();
 
           // Check organizer completion status
           await get().checkOrganizerCompletion();
@@ -56,6 +60,7 @@ export const useAuthStore = create<AuthStore>()(
 
           set({
             user: null,
+            organizerProfile: null,
             isAuthenticated: false,
             isLoading: false,
             error: errorMessage,
@@ -73,6 +78,7 @@ export const useAuthStore = create<AuthStore>()(
           const result = await authService.logout();
           set({
             user: null,
+            organizerProfile: null,
             isAuthenticated: false,
             isLoading: false,
             error: null,
@@ -83,6 +89,7 @@ export const useAuthStore = create<AuthStore>()(
           console.error('Logout error:', error);
           set({
             user: null,
+            organizerProfile: null,
             isAuthenticated: false,
             isLoading: false,
             error: null,
@@ -92,7 +99,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      // Fetch user profile
+      // Fetch user profile from /auth/profile
       fetchProfile: async () => {
         set({ isLoading: true, error: null });
 
@@ -100,10 +107,6 @@ export const useAuthStore = create<AuthStore>()(
           const profile = await authService.getProfile();
 
           // Transform to AuthUser
-          // Note: The API response for /auth/profile returns a UserProfileResponse
-          // which might need mapping to AuthUser if they differ significantly.
-          // Based on previous code, we map it manually.
-
           const user: AuthUser = {
             id: profile.id,
             email: profile.email,
@@ -114,6 +117,8 @@ export const useAuthStore = create<AuthStore>()(
               : (profile?.country_code && profile?.phone ? profile.country_code + profile.phone : profile?.phone),
             countryCode: profile.country_code,
             isEmailVerified: profile.is_email_verified,
+            // Organization ID will come from organizer profile (organizer_id)
+            organizationId: profile.organization?.id || profile.organization_id,
             organization: profile.organization,
             roles: profile.roles || [],
           };
@@ -140,6 +145,30 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
+      // Fetch organizer profile from /organizer/profile
+      fetchOrganizerProfile: async () => {
+        try {
+          const orgProfile = await authService.getOrganizerProfile();
+
+          set({ organizerProfile: orgProfile });
+
+          // Update user's organizationId with organizer_id from organizer profile
+          // According to API, organizer_id is the organization ID for team management
+          const currentUser = get().user;
+          if (currentUser && orgProfile.organizer_id) {
+            set({
+              user: {
+                ...currentUser,
+                organizationId: orgProfile.organizer_id,
+              }
+            });
+          }
+        } catch (error) {
+          console.warn("Failed to fetch organizer profile:", error);
+          // Don't throw - organizer profile is optional/supplementary
+        }
+      },
+
       // Check organizer completion
       checkOrganizerCompletion: async () => {
         try {
@@ -147,8 +176,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ isOrganizerComplete: status.is_complete });
         } catch (error) {
           console.error("Failed to check organizer status", error);
-          // If check fails, assume complete to avoid blocking user? 
-          // Or assume incomplete? Let's assume true to be safe against API errors blocking usage.
+          // If check fails, assume complete to avoid blocking user
           set({ isOrganizerComplete: true });
         }
       },
@@ -157,7 +185,8 @@ export const useAuthStore = create<AuthStore>()(
       updateOrganizerProfile: async (data: { business_name: string; business_description?: string; business_logo?: File }) => {
         try {
           await authService.updateOrganizerProfile(data);
-          // Re-check completion status after update
+          // Re-fetch organizer profile and check completion status after update
+          await get().fetchOrganizerProfile();
           await get().checkOrganizerCompletion();
         } catch (error) {
           console.error("Failed to update organizer profile", error);
@@ -172,6 +201,13 @@ export const useAuthStore = create<AuthStore>()(
         return user.roles.some((r: string | { name: string }) =>
           typeof r === 'string' ? r === role : r.name === role
         );
+      },
+
+      // Get organization ID (primarily from organizer profile's organizer_id)
+      getOrganizationId: () => {
+        const { user, organizerProfile } = get();
+        // Priority: organizer_id from organizer profile > organization.id > organization_id from user
+        return organizerProfile?.organizer_id || user?.organization?.id || user?.organizationId;
       },
 
       // Clear error
@@ -195,13 +231,15 @@ export const useAuthStore = create<AuthStore>()(
           // Set loading while fetching profile
           set({ isLoading: true });
 
-          // Try to fetch profile and check completion
+          // Try to fetch profile, organizer profile, and check completion
           get().fetchProfile()
+            .then(() => get().fetchOrganizerProfile())
             .then(() => get().checkOrganizerCompletion())
             .catch(() => {
               // If profile fetch fails, clear everything
               set({
                 user: null,
+                organizerProfile: null,
                 isAuthenticated: false,
                 isLoading: false,
               });
@@ -211,6 +249,7 @@ export const useAuthStore = create<AuthStore>()(
           tokenManager.clearTokens();
           set({
             user: null,
+            organizerProfile: null,
             isAuthenticated: false,
             isLoading: false,
           });
@@ -222,6 +261,7 @@ export const useAuthStore = create<AuthStore>()(
       // Only persist user data, not loading/error states
       partialize: (state) => ({
         user: state.user,
+        organizerProfile: state.organizerProfile,
         // Do not persist isAuthenticated to ensure checkAuth runs and restores cookies before redirect
         // isAuthenticated: state.isAuthenticated,
         isOrganizerComplete: state.isOrganizerComplete,

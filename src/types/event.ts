@@ -1,6 +1,7 @@
 export interface EventTier {
   id: string;
   tier_name: string;
+  tier_template_id?: string;
   price: number;
   quantity: number;
   gst?: number;

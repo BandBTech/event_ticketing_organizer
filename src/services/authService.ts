@@ -1,11 +1,11 @@
-
 import {
   LoginRequest,
   TokenResponse,
   UserProfileResponse,
   RefreshTokenRequest,
   AuthApiResponse,
-  AuthApiError
+  AuthApiError,
+  OrganizerProfile
 } from '@/types/auth';
 import { tokenManager } from '@/lib/tokenManager';
 import { api, apiRequest as apiClientRequest } from '@/lib/apiClient';
@@ -99,8 +99,8 @@ class AuthService {
   /**
    * Get organizer profile information
    */
-  async getOrganizerProfile(): Promise<Record<string, unknown>> {
-    return await api.get<Record<string, unknown>>('/organizer/profile', {
+  async getOrganizerProfile(): Promise<OrganizerProfile> {
+    return await api.get<OrganizerProfile>('/organizer/profile', {
       requiresAuth: true,
     });
   }

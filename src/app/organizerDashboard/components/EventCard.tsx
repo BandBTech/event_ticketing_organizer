@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { Event } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
 import { CalendarDotIcon, CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react";
+import { Badge } from "@/components/ui/badge";
 
 interface EventStatus {
 	label: string;
@@ -131,12 +132,22 @@ export default function EventCard({ event }: EventCardProps) {
 					fill={true}
 					className="w-full h-full object-cover"
 				/>
-				<span
-					className={`flex items-center gap-1 absolute top-2 left-2 text-xs font-semibold px-3 py-1 rounded-full text-white shadow-lg ${status.color}`}
-				>
-					{status.icon && <CircleDot className="w-3 h-3 animate-pulse" />}
-					{status.label}
-				</span>
+        {/* Event Status Badge */}
+        {event.status && (
+          <Badge
+            className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
+              event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
+                event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
+                  event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
+                    event.status === 'live' ? 'bg-green-500 hover:bg-green-500' :
+                      event.status === 'ended' ? 'bg-gray-500 hover:bg-gray-500' :
+                        event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
+                          'bg-gray-500 hover:bg-gray-500'
+              }`}
+          >
+            {event.status}
+          </Badge>
+        )}
 			</div>
 
 			{/* Content */}

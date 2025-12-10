@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { formatDateTime } from "@/lib/utils";
+import { HtmlRenderer } from "@/components/ui/html-renderer";
 
 interface EventDetailsProps {
   event: Event;
@@ -227,9 +228,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 <h3 className="text-lg font-semibold text-gray-700 ">
                   Event description
                 </h3>
-                <p className="text-gray-600">
-                  {event.description}
-                </p>
+                <HtmlRenderer html={event.description || ""} />
                 <div className="flex flex-wrap gap-2 ">
                   <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
                   {Array.isArray(event.category) ? event.category.map((tag: string) => (

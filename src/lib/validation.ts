@@ -52,7 +52,7 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
       .string()
       .min(1, t('event.validation.ticketNameRequired', "Ticket name is required."))
       .max(100, t('event.validation.ticketNameLength', "Ticket name must be under 100 characters.")),
-    price: z.coerce.number().min(0, t('event.validation.pricePositive', "Price must be positive.")),
+    price: z.coerce.number().min(1, t('event.validation.priceRequired', "Price is required and must be at least 1.")),
     quantity: z.coerce.number().min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
     gst: z.coerce
       .number()
@@ -114,6 +114,33 @@ export type EventFormData = z.infer<ReturnType<typeof createEventSchema>>;
 export type TicketFormData = z.infer<ReturnType<typeof createTicketSchema>>;
 export type PromoCodeFormData = z.infer<ReturnType<typeof createPromoCodeSchema>>;
 export type TierTemplateFormData = z.infer<ReturnType<typeof createTierTemplateSchema>>;
+
+export const createOrgUserSchema = (t: (key: string, fallback?: string) => string) => z.object({
+  first_name: z.string()
+    .min(2, t('common.validation.firstNameMin', "First name must be at least 2 characters."))
+    .max(50, t('common.validation.firstNameMax', "First name must not exceed 50 characters.")),
+  last_name: z.string()
+    .min(2, t('common.validation.lastNameMin', "Last name must be at least 2 characters."))
+    .max(50, t('common.validation.lastNameMax', "Last name must not exceed 50 characters.")),
+  email: z.string()
+    .min(1, t('common.validation.emailRequired', "Email is required."))
+    .email(t('common.validation.emailInvalid', "Invalid email address.")),
+  password: z.string()
+    .min(8, t('auth.validation.passwordMin', "Password must be at least 8 characters.")),
+  phone: z.string().optional(),
+  role_name: z.enum(['staff', 'manager']),
+});
+
+// Update schema uses t for consistency and potential future validation messages
+export const updateOrgUserSchema = (t: (key: string, fallback?: string) => string) => z.object({
+  role_type: z.enum(['staff', 'manager'], {
+    message: t('users.validation.roleRequired', 'Role is required')
+  }),
+  active: z.boolean().optional(),
+});
+
+export type CreateOrgUserFormData = z.infer<ReturnType<typeof createOrgUserSchema>>;
+export type UpdateOrgUserFormData = z.infer<ReturnType<typeof updateOrgUserSchema>>;
 
 /**
  * Validation helper utility

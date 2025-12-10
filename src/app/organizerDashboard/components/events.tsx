@@ -57,7 +57,7 @@ export default function Events() {
           <Skeleton className="h-10 w-full max-w-md rounded-lg" />
           <Skeleton className="h-10 w-32 rounded-lg ml-4" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-6">
           <EventCardSkeleton count={6} />
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function Events() {
       </div>
 
       {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-6">
         {currentEvents.length === 0 ? (
           <div className="col-span-full grid place-items-center py-12 text-gray-500">
             <CalendarXIcon className="w-12 h-12 mb-2" />

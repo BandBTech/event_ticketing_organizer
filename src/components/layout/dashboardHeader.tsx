@@ -40,6 +40,7 @@ export default function DashboardHeader() {
 
   // Get user's first name or fallback
   const userName = user?.firstName || "there";
+  const orgId = user?.organization?.id || user?.organizationId;
 
   // Dynamic greeting for dashboard
   const dynamicGreeting = useMemo(() => {
@@ -67,13 +68,13 @@ export default function DashboardHeader() {
   const isUsersPage = matched?.title === "Users";
   const isEventsPage = matched?.title === "Events";
   const isDashboard = pathname === "/organizerDashboard";
-  const isCreateEventsPage = pathname.startsWith("/organizerDashboard/pages/createevents");
 
-  // Don't show create button when editing an event
-  const showCreateButton = (isUsersPage || isEventsPage || isDashboard) && !isEditMode;
+  // Don't show create button when editing an event, or if no organization
+  const showCreateButton = (isUsersPage || isEventsPage || isDashboard) && !isEditMode && !!orgId;
   const createButtonLabel = isUsersPage ? "Create New User" : "Create New Event";
 
   const handleCreateButton = () => {
+    if (!orgId) return;
     if (isUsersPage) {
       openCreateUserModal();
     } else {

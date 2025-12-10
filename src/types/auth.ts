@@ -121,12 +121,27 @@ export interface AuthUser {
   phone?: string;
   countryCode?: string;
   isEmailVerified: boolean;
+  organizationId?: string;
   organization?: Organization;
   roles: Role[];
 }
 
+// Organizer Profile from /organizer/profile endpoint
+export interface OrganizerProfile {
+  id: string;
+  organizer_id: string; // This is also the organization ID for team management
+  is_complete: boolean;
+  business_name: string;
+  business_description?: string;
+  business_logo_url?: string;
+  organizer_status: 'pending' | 'approved' | 'rejected' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
 export interface AuthState {
   user: AuthUser | null;
+  organizerProfile: OrganizerProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
