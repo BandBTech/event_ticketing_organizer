@@ -22,7 +22,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     // Only check after initial auth check is complete
     if (!isLoading) {
       if (!isAuthenticated) {
-        router.replace('/auth/login');
+        router.replace('/auth/pages/login');
       } else {
         setIsChecking(false);
       }
