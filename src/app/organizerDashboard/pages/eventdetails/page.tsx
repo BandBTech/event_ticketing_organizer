@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import EventDetailsPage from "../../components/eventDetails";
 import { Loader2 } from "lucide-react";
+import { EventAnalyticsResponse } from "@/types/event";
 
 export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
@@ -39,6 +40,6 @@ export default function EventDetailsRoute() {
     return <div className="p-8 text-center text-red-500">Event not found</div>;
   }
 
-  // Cast analytics if needed, or assume strictly matches
-  return <EventDetailsPage event={event} analytics={analytics as any} />;
+  return <EventDetailsPage event={event} analytics={analytics as EventAnalyticsResponse | undefined} />;
 }
+
