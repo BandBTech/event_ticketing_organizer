@@ -108,10 +108,10 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   // Get the first tier's sales dates if available
   const firstTier = event.tiers?.[0];
   const salesStartDate = firstTier?.sales_start
-    ? new Date(firstTier.sales_start).toLocaleString()
+    ? formatDateTime(firstTier.sales_start)
     : 'Not set';
   const salesEndDate = firstTier?.sales_end
-    ? new Date(firstTier.sales_end).toLocaleString()
+    ? formatDateTime(firstTier.sales_end)
     : 'Not set';
 
   return (

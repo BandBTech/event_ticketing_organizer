@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import DashboardHeader from "@/components/layout/dashboardHeader";
 import { UserProvider } from "@/app/contexts/UserContext";
 import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
+import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 
 export default function DashboardLayout({
   children,
@@ -14,8 +15,9 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <UserProvider>
-      <div className="flex h-screen overflow-hidden bg-gray-50/50">
+    <ProtectedRoute>
+      <UserProvider>
+        <div className="flex h-screen overflow-hidden bg-gray-50/50">
         {/* Sidebar */}
         <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
@@ -30,7 +32,8 @@ export default function DashboardLayout({
         </div>
 
         <CompleteProfileDialog />
-      </div>
-    </UserProvider>
+        </div>
+      </UserProvider>
+    </ProtectedRoute>
   );
 }

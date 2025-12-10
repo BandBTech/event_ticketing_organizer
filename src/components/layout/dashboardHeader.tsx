@@ -35,7 +35,7 @@ export default function DashboardHeader() {
   const pathname = rawPath.replace(/\/+$/, "") || "/";
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
-  const { openCreateUserModal } = useUser();
+  // const { openCreateUserModal } = useUser();
   const { user } = useAuthStore();
 
   // Get user's first name or fallback
@@ -65,21 +65,16 @@ export default function DashboardHeader() {
       ? dynamicGreeting
       : (matched?.title ?? "Dashboard");
 
-  const isUsersPage = matched?.title === "Users";
+  // const isUsersPage = matched?.title === "Users";
   const isEventsPage = matched?.title === "Events";
   const isDashboard = pathname === "/organizerDashboard";
 
   // Don't show create button when editing an event, or if no organization
-  const showCreateButton = (isUsersPage || isEventsPage || isDashboard) && !isEditMode && !!orgId;
-  const createButtonLabel = isUsersPage ? "Create New User" : "Create New Event";
+  const showCreateButton = (isEventsPage || isDashboard) && !isEditMode && !!orgId;
+  const createButtonLabel = "Create New Event";
 
   const handleCreateButton = () => {
-    if (!orgId) return;
-    if (isUsersPage) {
-      openCreateUserModal();
-    } else {
-      router.push("/organizerDashboard/pages/createevents");
-    }
+    router.push("/organizerDashboard/pages/createevents");
   };
 
   return (
