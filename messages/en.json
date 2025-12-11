@@ -243,7 +243,11 @@
     "field": {
       "bannerImage": "Banner image",
       "eventTitle": "Event Title",
-      "eventDescription": "Write about your event..."
+      "eventDescription": "Write about your event...",
+      "startDateTime": "Start date & time",
+      "endDateTime": "End date & time",
+      "salesStart": "Sales start",
+      "salesEnd": "Sales end"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",

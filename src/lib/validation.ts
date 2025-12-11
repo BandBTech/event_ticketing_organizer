@@ -6,8 +6,8 @@ import { z } from "zod";
 
 
 // Helper for required date string
-const createRequiredDateSchema = (t: (key: string, fallback?: string) => string) =>
-  z.string().min(1, t('common.validation.required', 'This field is required.')).superRefine((val, ctx) => {
+const createRequiredDateSchema = (t: (key: string, fallback?: string) => string, fieldName?: string) =>
+  z.string().min(1, fieldName ? `${fieldName} is required.` : t('event.validation.dateTimeRequired', 'This field is required.')).superRefine((val, ctx) => {
     const date = new Date(val);
     if (isNaN(date.getTime())) {
       ctx.addIssue({
@@ -58,8 +58,8 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
       .number()
       .min(0, t('event.validation.gstPositive', "GST must be positive."))
       .max(100, t('event.validation.gstMax', "GST cannot exceed 100%.")),
-    salesStart: createOptionalDateSchema(t),
-    salesEnd: createOptionalDateSchema(t),
+    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales start')),
+    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales end')),
   })
   .refine((data) => {
     if (!data.salesEnd || !data.salesStart) return true;
@@ -75,7 +75,7 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
     .min(1, t('event.validation.promoCodeRequired', "Promo code is required."))
     .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo code may only contain A-Z , 0-9, _ or -")),
   discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount type is required.")),
-  amount: z.coerce.number().min(0, t('event.validation.amountPositive', "Amount must be positive.")),
+  amount: z.coerce.number().min(1, t('event.validation.amountRequired', "Amount is required and must be at least 1.")),
   quantity: z.coerce
     .number()
     .int(t('event.validation.quantityInteger', "Quantity must be integer."))
@@ -92,8 +92,8 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue Address is required.")),
     capacity: z.coerce.number().min(1, t('event.validation.capacityMin', "Capacity must be at least 1.")),
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
-    startDate: createRequiredDateSchema(t),
-    endDate: createRequiredDateSchema(t),
+    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Start date & time')),
+    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'End date & time')),
     tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one ticket is required.")),
     promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })
