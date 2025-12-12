@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
 
@@ -104,6 +105,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   const salesStatus = analytics?.sales_status || 'active';
   const isEventCancelled = event.status === 'cancelled';
   const canControlSales = event.status === 'approved' && !isEventCancelled;
+  const canEdit = event.status === 'pending' || event.status === 'draft';
 
   // Get the first tier's sales dates if available
   const firstTier = event.tiers?.[0];
@@ -125,22 +127,27 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 {event.title}
               </h2>
               <div className="flex items-center gap-3 text-sm text-gray-600">
-                <span className={`flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium ${event.status === 'approved' ? 'bg-green-500' :
-                  event.status === 'pending' ? 'bg-yellow-500' :
-                    event.status === 'cancelled' ? 'bg-red-500' :
-                      event.status === 'draft' ? 'bg-gray-500' :
-                        'bg-blue-500'
-                  }`}>
+                <Badge
+                  className={`flex items-center gap-1 capitalize ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
+                    event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
+                      event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
+                        event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
+                          event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
+                            'bg-blue-500 hover:bg-blue-500'
+                    }`}
+                >
                   <CircleDot className="w-3 h-3" />
                   {event.status}
-                </span>
-                {analytics?.sales_status && (
-                  <span className={`flex items-center gap-2 text-white px-2 py-0.5 rounded-full text-xs font-medium ${analytics.sales_status === 'active' ? 'bg-emerald-500' :
-                    analytics.sales_status === 'paused' ? 'bg-amber-500' :
-                      'bg-red-500'
-                    }`}>
+                </Badge>
+                {event.status === 'approved' && analytics?.sales_status && (
+                  <Badge
+                    className={`capitalize ${analytics.sales_status === 'active' ? 'bg-green-500 hover:bg-green-500' :
+                      analytics.sales_status === 'paused' ? 'bg-amber-500 hover:bg-amber-500' :
+                        'bg-red-500 hover:bg-red-500'
+                      }`}
+                  >
                     Sales: {analytics.sales_status}
-                  </span>
+                  </Badge>
                 )}
                 <div className="flex items-center gap-1 text-gray-700 ">
                   <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
@@ -194,22 +201,34 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   )}
                 </>
               )}
-              <Link
-                href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
-                <PencilLine size={16} /> Edit Event
-              </Link>
-              {!isEventCancelled && (
+              {canEdit && (
+                <Link
+                  href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  <PencilLine size={16} /> Edit Event
+                </Link>
+              )}
+              {!isEventCancelled && event.status !== 'rejected' && (
                 <button
                   onClick={() => setCancelDialogOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
+                  className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
                 >
                   <XCircle size={16} /> Cancel
                 </button>
               )}
             </div>
           </div>
+
+          {/* Admin Remark Section */}
+          {event.admin_remark && (
+            <div className={`p-4 rounded-xl ${event.status === 'approved' ? 'bg-green-50 border border-green-200' : event.status === 'rejected' ? 'bg-red-50 border border-red-200' : 'bg-gray-50 border border-gray-200'}`}>
+              <h3 className={`font-semibold mb-2 ${event.status === 'approved' ? 'text-green-700' : event.status === 'rejected' ? 'text-red-700' : 'text-gray-700'}`}>
+                Admin Notes
+              </h3>
+              <p className="text-gray-600">{event.admin_remark}</p>
+            </div>
+          )}
 
           {/* Main Grid */}
           <div className="grid md:grid-cols-3 gap-6">

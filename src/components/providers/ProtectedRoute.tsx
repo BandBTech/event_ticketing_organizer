@@ -10,27 +10,39 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
-  const [isChecking, setIsChecking] = useState(true);
+  const { isAuthenticated, isLoading, checkAuth, user, _hasHydrated } = useAuthStore();
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // Check auth on mount
-    checkAuth();
-  }, [checkAuth]);
+    // Only run checkAuth after hydration is complete
+    if (_hasHydrated) {
+      checkAuth();
+    }
+  }, [_hasHydrated, checkAuth]);
 
   useEffect(() => {
-    // Only check after initial auth check is complete
-    if (!isLoading) {
-      if (!isAuthenticated) {
+    // Only proceed after:
+    // 1. Hydration is complete (_hasHydrated = true)
+    // 2. Auth check is not in progress (isLoading = false)
+    if (_hasHydrated && !isLoading) {
+      // Check if we have user data (from persisted storage) or are authenticated
+      const hasUserData = !!user;
+
+      if (!isAuthenticated && !hasUserData) {
+    // No auth and no persisted user - redirect to login
         router.replace('/auth/pages/login');
       } else {
-        setIsChecking(false);
+        // Either authenticated or have persisted user data - allow access
+        setAuthChecked(true);
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [_hasHydrated, isAuthenticated, isLoading, router, user]);
 
-  // Show loading state while checking authentication
-  if (isLoading || isChecking) {
+  // Show loading state while:
+  // 1. Waiting for hydration
+  // 2. Checking authentication
+  // 3. Auth check not complete
+  if (!_hasHydrated || isLoading || !authChecked) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50/50">
         <div className="flex flex-col items-center gap-4">
@@ -41,8 +53,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  // Don't render children if not authenticated
-  if (!isAuthenticated) {
+  // Don't render children if not authenticated and no user data
+  if (!isAuthenticated && !user) {
     return null;
   }
 

@@ -11,16 +11,20 @@ export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
 
-  const { data: event, isLoading: eventLoading } = useQuery({
+  const { data: event, isLoading: eventLoading, refetch: refetchEvent } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => eventService.getEvent(eventId!),
     enabled: !!eventId,
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always refetch when returning to page
   });
 
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery({
     queryKey: ['eventAnalytics', eventId],
     queryFn: () => eventService.getEventAnalytics(eventId!),
     enabled: !!eventId,
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always refetch when returning to page
   });
 
   if (!eventId) {

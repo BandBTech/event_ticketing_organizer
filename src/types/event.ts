@@ -28,6 +28,7 @@ export interface Event {
   capacity: number;
   price: number;
   status: string;
+  admin_remark?: string;
   tiers: EventTier[];
   organizer_id: string;
   created_at: string;
@@ -49,7 +50,7 @@ export interface CreateEventData {
   title: string;
   description?: string;
   banner_image?: File;
-  category: string; // comma-separated
+  category: string[];
   venue_name: string;
   address: string;
   start_date: string;
@@ -64,7 +65,7 @@ export interface UpdateEventRequest {
   title?: string;
   description?: string;
   banner_image?: string | File;
-  category?: string;
+  category?: string[];
   venue_name?: string;
   address?: string;
   start_date?: string;

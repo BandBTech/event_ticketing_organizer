@@ -357,3 +357,6 @@ html[dir=ltr] {
 .active-menu::before {
   box-shadow: 0 2px 8px hsl(var(--primary));
 }
+button {
+  cursor: pointer;
+}

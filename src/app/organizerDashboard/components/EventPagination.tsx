@@ -30,7 +30,7 @@ export default function EventPagination({
 			<button
 				onClick={goToPrevious}
 				disabled={currentPage === 1}
-				className={`flex items-center px-3 py-1 border border-gray-300 rounded-full transition-colors ${currentPage === 1
+        className={`flex items-center px-3 py-1 border border-gray-300 rounded-full cursor-pointer disabled:cursor-not-allowed transition-colors ${currentPage === 1
 					? "opacity-50 cursor-not-allowed"
 					: "hover:bg-gray-50 hover:shadow-sm"
 					}`}
@@ -63,7 +63,7 @@ export default function EventPagination({
 					<button
 						key={page}
 						onClick={() => onPageChange(page)}
-						className={`px-3 py-1 rounded-full transition-all ${currentPage === page
+            className={`px-3 py-1 rounded-full transition-all cursor-pointer ${currentPage === page
 							? "bg-gradient-to-r from-blue-600 to-indigo-500 text-white shadow-md"
 							: "border border-gray-300 hover:bg-gray-50 hover:shadow-sm"
 							}`}
@@ -76,7 +76,7 @@ export default function EventPagination({
 			<button
 				onClick={goToNext}
 				disabled={currentPage === totalPages}
-				className={`flex items-center px-3 py-1 border border-gray-300 rounded-full transition-colors ${currentPage === totalPages
+        className={`flex items-center px-3 py-1 border border-gray-300 rounded-full cursor-pointer transition-colors ${currentPage === totalPages
 					? "opacity-50 cursor-not-allowed"
 					: "hover:bg-gray-50 hover:shadow-sm"
 					}`}

@@ -186,12 +186,14 @@ export default function EventCard({ event }: EventCardProps) {
 						>
 							View Detail <ArrowRight className="w-4 h-4" />
 						</Link>
-						<Link
-							href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
-							className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
-						>
-							<PencilLine className="w-4 h-4" />
-						</Link>
+            {(event.status === 'pending' || event.status === 'draft') && (
+              <Link
+                href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
+                className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+              >
+                <PencilLine className="w-4 h-4" />
+              </Link>
+            )}
 					</div>
 				</div>
 			</div>

@@ -22,7 +22,9 @@ function createEventFormData(data: CreateEventData | UpdateEventRequest): FormDa
     formData.append('banner_image', data.banner_image);
   }
 
-  if (data.category) formData.append('category', data.category);
+  if (data.category) {
+    data.category.forEach((cat) => formData.append('category', cat));
+  }
   if (data.venue_name) formData.append('venue_name', data.venue_name);
   if (data.address) formData.append('address', data.address);
   if (data.start_date) formData.append('start_date', data.start_date);

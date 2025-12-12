@@ -126,14 +126,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     return formModified || imageFile !== null;
   }, [formModified, imageFile]);
 
+  // Track if we initialized with tierTemplates available
+  const lastInitializedWithTemplates = React.useRef<boolean>(false);
+
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
     if (initialData && isEditing) {
-      // Prevent re-initializing if we've already initialized this event
-      if (lastInitializedEventId.current === initialData.id) {
+      // Check if we should skip initialization
+      const sameEvent = lastInitializedEventId.current === initialData.id;
+      const templatesNowAvailable = tierTemplates.length > 0;
+
+      // Skip if: same event AND (we had templates before OR templates still not available)
+      if (sameEvent && (lastInitializedWithTemplates.current || !templatesNowAvailable)) {
         return;
       }
+
       lastInitializedEventId.current = initialData.id;
+      lastInitializedWithTemplates.current = templatesNowAvailable;
 
       // Helper function to get tier name from template if tier_name is empty
       const getTierName = (tier: typeof initialData.tiers[0]) => {
@@ -189,9 +198,13 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     }
   }, [initialData, isEditing, form, tierTemplates]);
 
+  // Track form modifications - watch for any value changes
+  const watchCallCount = React.useRef(0);
   useEffect(() => {
     const subscription = form.watch(() => {
-      if (form.formState.isDirty) {
+      // Skip first few callbacks (initial form setup triggers watch)
+      watchCallCount.current++;
+      if (watchCallCount.current > 2) {
         setFormModified(true);
       }
     });
@@ -212,11 +225,15 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
+  // Track if we've already pushed history state
+  const historyStatePushed = React.useRef(false);
+
   // Handle browser back/forward buttons
   useEffect(() => {
-    // Push a dummy state to detect back navigation
-    if (typeof window !== "undefined") {
+    // Push a dummy state ONCE to detect back navigation
+    if (typeof window !== "undefined" && !historyStatePushed.current) {
       window.history.pushState({ formPage: true }, "");
+      historyStatePushed.current = true;
     }
 
     const handlePopState = () => {
@@ -229,6 +246,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           window.history.go(-2);
         });
         setShowLeaveDialog(true);
+      } else {
+        // No unsaved changes - allow normal back navigation
+        // Go back one more time since we consumed the popstate event
+        window.history.go(-1);
       }
     };
 
@@ -289,9 +310,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       router.push("/organizerDashboard/pages/events");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      console.error("Error saving event:", error);
-      toast.error("Error", "Failed to save event");
+    onError: (_error: any) => {
+    // Error toast is already shown by apiClient (showErrorToast=true by default)
     },
   });
 

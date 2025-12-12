@@ -13,6 +13,7 @@ interface AuthStore {
   isLoading: boolean;
   error: string | null;
   isOrganizerComplete: boolean;
+  _hasHydrated: boolean;
 
   // Actions
   login: (credentials: LoginRequest, rememberMe?: boolean) => Promise<void>;
@@ -25,6 +26,7 @@ interface AuthStore {
   updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
   hasRole: (role: string) => boolean;
   getOrganizationId: () => string | undefined;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -37,6 +39,10 @@ export const useAuthStore = create<AuthStore>()(
       isLoading: false,
       error: null,
       isOrganizerComplete: true, // Default to true to avoid flashing dialog
+      _hasHydrated: false,
+
+      // Hydration setter
+      setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
 
       // Login action
       login: async (credentials: LoginRequest, rememberMe: boolean = false) => {
@@ -266,6 +272,10 @@ export const useAuthStore = create<AuthStore>()(
         // isAuthenticated: state.isAuthenticated,
         isOrganizerComplete: state.isOrganizerComplete,
       }),
+      // Called when hydration from localStorage completes
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
