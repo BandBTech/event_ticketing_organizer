@@ -22,8 +22,9 @@ function createEventFormData(data: CreateEventData | UpdateEventRequest): FormDa
     formData.append('banner_image', data.banner_image);
   }
 
-  if (data.category) {
-    data.category.forEach((cat) => formData.append('category', cat));
+  if (data.category && data.category.length > 0) {
+    // Send as array with single quotes: ['Music', 'Concert']
+    formData.append('category', JSON.stringify(data.category).replace(/"/g, "'"));
   }
   if (data.venue_name) formData.append('venue_name', data.venue_name);
   if (data.address) formData.append('address', data.address);
