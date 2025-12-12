@@ -55,7 +55,7 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
     price: z.coerce.number().min(1, t('event.validation.priceRequired', "Price is required and must be at least 1.")),
     quantity: z.coerce.number().min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
     gst: z.coerce
-      .number()
+      .number({ message: t('event.validation.gstRequired', "GST is required. Set to 0 if not applicable.") })
       .min(0, t('event.validation.gstPositive', "GST must be positive."))
       .max(100, t('event.validation.gstMax', "GST cannot exceed 100%.")),
     salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales start')),

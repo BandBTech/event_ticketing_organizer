@@ -417,9 +417,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
         tiersData.push({
           tier_template_id: tierId,
-          price: ticket.price,
-          quantity: ticket.quantity,
-          gst: ticket.gst,
+          price: ticket.price || 0,
+          quantity: ticket.quantity || 0,
+          gst: isNaN(ticket.gst) ? 0 : (ticket.gst || 0),
           sales_start: ticket.salesStart || undefined,
           sales_end: ticket.salesEnd || undefined,
           sort_order: i,
