@@ -272,6 +272,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   );
 
   const confirmLeave = () => {
+    // Reset form state to prevent popstate handler from blocking navigation
+    setFormModified(false);
+    setImageFile(null);
     setShowLeaveDialog(false);
     if (pendingNavigation) {
       pendingNavigation();
