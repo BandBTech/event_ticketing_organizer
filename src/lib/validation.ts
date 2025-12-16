@@ -1,4 +1,4 @@
-// import { isValidPhoneNumber } from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
 // import { useTranslation } from '@/hooks/useTranslation';
@@ -184,21 +184,35 @@ export type TicketFormData = z.infer<ReturnType<typeof createTicketSchema>>;
 export type PromoCodeFormData = z.infer<ReturnType<typeof createPromoCodeSchema>>;
 export type TierTemplateFormData = z.infer<ReturnType<typeof createTierTemplateSchema>>;
 
-export const createOrgUserSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  first_name: z.string()
-    .min(2, t('common.validation.firstNameMin', "First name must be at least 2 characters."))
-    .max(50, t('common.validation.firstNameMax', "First name must not exceed 50 characters.")),
-  last_name: z.string()
-    .min(2, t('common.validation.lastNameMin', "Last name must be at least 2 characters."))
-    .max(50, t('common.validation.lastNameMax', "Last name must not exceed 50 characters.")),
-  email: z.string()
-    .min(1, t('common.validation.emailRequired', "Email is required."))
-    .email(t('common.validation.emailInvalid', "Invalid email address.")),
-  password: z.string()
-    .min(8, t('auth.validation.passwordMin', "Password must be at least 8 characters.")),
-  phone: z.string().optional(),
-  role_name: z.enum(['staff', 'manager']),
-});
+export const createOrgUserSchema = (t: (key: string, fallback?: string) => string) => {
+  const v = createValidationHelpers(t);
+
+  return z.object({
+    first_name: z.string()
+      .trim()
+      .min(1, v.required("First name"))
+      .min(2, t('common.validation.firstNameMin', "First name must be at least 2 characters."))
+      .max(50, t('common.validation.firstNameMax', "First name must not exceed 50 characters.")),
+    last_name: z.string()
+      .trim()
+      .min(1, v.required("Last name"))
+      .min(2, t('common.validation.lastNameMin', "Last name must be at least 2 characters."))
+      .max(50, t('common.validation.lastNameMax', "Last name must not exceed 50 characters.")),
+    email: z.string()
+      .min(1, t('common.validation.emailRequired', "Email is required."))
+      .email(t('common.validation.emailInvalid', "Invalid email address.")),
+    password: z.string()
+      .min(1, v.required("Password"))
+      .min(8, t('auth.validation.passwordMin', "Password must be at least 8 characters."))
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
+      .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
+      .regex(/[0-9]/, v.passwordNumber()),
+    phone: z.string()
+      .optional()
+      .refine((val) => !val || isValidPhoneNumber(val), v.phone("Phone")),
+    role_name: z.enum(['staff', 'manager']),
+  });
+};
 
 // Update schema uses t for consistency and potential future validation messages
 export const updateOrgUserSchema = (t: (key: string, fallback?: string) => string) => z.object({
