@@ -253,21 +253,22 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 <HtmlRenderer html={event.description || ""} />
                 <div className="flex flex-wrap gap-2 ">
                   <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">{t("event.field.tags", "Tags")}</h3>
-                  {Array.isArray(event.category) ? event.category.map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
-                    >
-                      {tag}
-                    </span>
-                  )) : typeof event.category === 'string' ? (event.category as string).split(',').map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
-                    >
-                      {tag}
-                    </span>
-                  )) : null}
+                  {(Array.isArray(event.category)
+                    ? (event.category as string[])
+                    : typeof event.category === "string"
+                      ? (event.category as string).split(",")
+                      : []
+                  )
+                    .map((tag) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
+                    .filter(Boolean)
+                    .map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                 </div>
                 {/* Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">

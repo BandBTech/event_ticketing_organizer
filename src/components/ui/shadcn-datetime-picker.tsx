@@ -23,6 +23,7 @@ interface ShadcnDateTimePickerProps {
   clearable?: boolean;
   minDate?: Date;
   maxDate?: Date;
+  error?: boolean;
 }
 
 export function ShadcnDateTimePicker({
@@ -32,6 +33,7 @@ export function ShadcnDateTimePicker({
   disabled,
   clearable = true,
   format: formatStr,
+  error = false,
 }: ShadcnDateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -48,7 +50,7 @@ export function ShadcnDateTimePicker({
 
   function handleTimeChange(type: "hour" | "minute" | "ampm", val: string) {
     const currentDate = value || new Date();
-    let newDate = new Date(currentDate);
+    const newDate = new Date(currentDate);
 
     if (type === "hour") {
       const hour = parseInt(val, 10);
@@ -84,6 +86,8 @@ export function ShadcnDateTimePicker({
             variant={"outline"}
             className={cn(
               "w-full h-13 pl-3 text-left font-normal border-input bg-background md:text-md",
+              "focus:ring-2 focus:ring-ring focus:ring-offset-2", // Add focus styles
+              error && "border-red-500 focus-visible:ring-red-500", // Add error styles
               !value && "text-muted-foreground",
               disabled && "cursor-not-allowed opacity-50"
             )}

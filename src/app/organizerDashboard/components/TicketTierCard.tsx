@@ -132,6 +132,7 @@ const TicketTierCard = ({
 								}}
 								format="yyyy-mm-dd hh:mm aa"
 								clearable
+                error={!!fieldState.error}
 							/>
 						</FormControl>
 						<FormMessage />
@@ -154,6 +155,7 @@ const TicketTierCard = ({
 								}}
 								format="yyyy-mm-dd hh:mm aa"
 								clearable
+                error={!!fieldState.error}
 							/>
 						</FormControl>
 						<FormMessage />

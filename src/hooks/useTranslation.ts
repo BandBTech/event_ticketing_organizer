@@ -14,7 +14,12 @@ const translations: Record<Locale, () => Promise<TranslationMessages>> = {
   it: () => import('../../messages/it.json').then(m => m.default),
 };
 
-export function useTranslation(locale: Locale = 'en') {
+import { useLanguageStore } from '@/store/languageStore';
+
+export function useTranslation(localeOverride?: Locale) {
+  const { locale: storeLocale } = useLanguageStore();
+  const locale = localeOverride || storeLocale || 'en';
+
   const [messages, setMessages] = useState<TranslationMessages>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,7 +41,7 @@ export function useTranslation(locale: Locale = 'en') {
     loadMessages();
   }, [locale]);
 
-  const t = (key: string, fallback?: string): string => {
+  const t = (key: string, fallback?: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: string | TranslationMessages = messages;
     
@@ -44,11 +49,20 @@ export function useTranslation(locale: Locale = 'en') {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        return fallback || key;
+        value = fallback || key;
+        break;
       }
     }
     
-    return typeof value === 'string' ? value : fallback || key;
+    let result = typeof value === 'string' ? value : fallback || key;
+
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        result = result.replace(new RegExp(`{${key}}`, 'g'), String(val));
+      });
+    }
+
+    return result;
   };
 
   return { t, isLoading, locale };

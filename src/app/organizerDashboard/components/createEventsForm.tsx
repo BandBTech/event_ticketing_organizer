@@ -56,6 +56,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const [imagePreview, setImagePreview] = useState<string>(initialData?.banner_image || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageError, setImageError] = useState<string>("");
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [formModified, setFormModified] = useState(false);
@@ -64,11 +65,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const lastInitializedEventId = React.useRef<string | null>(null);
 
   // Helper to parse category which might be a comma-separated string from backend despite type definition
+  // Helper to parse category which might be a comma-separated string from backend despite type definition
   const parseCategory = useCallback((category: string | string[] | undefined): string[] => {
     if (!category) return [];
-    if (Array.isArray(category)) return category;
-    if (typeof category === 'string') {
-      return (category as string).split(',').map(c => c.trim()).filter(Boolean);
+    if (Array.isArray(category)) {
+      return category.map((c) => c.trim().replace(/^[{"]+|[}"]+$/g, ""));
+    }
+    if (typeof category === "string") {
+      return (category as string)
+        .split(",")
+        .map((c) => c.trim().replace(/^[{"]+|[}"]+$/g, ""))
+        .filter(Boolean);
     }
     return [];
   }, []);
@@ -542,11 +549,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       setImageFile(null);
       setImagePreview("");
       form.setValue("image", "");
+      setImageRemoved(true);
     };
 
     if (!file.type.startsWith("image/")) {
       clearImageState();
-      setImageError("Invalid file type. Please upload an image (PNG/JPG).");
+      setImageError(t("event.error.invalidImageType", "Invalid file type. Please upload an image (PNG/JPG)."));
       return;
     }
 
@@ -567,14 +575,20 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       const height = img.height;
       const maxWidth = 1920;
       const maxHeight = 1200;
-      const aspectRatio = 1920 / 1200;
+      // const aspectRatio = 1920 / 1200;
 
       if (width > maxWidth || height > maxHeight) {
         // Optional: We can relax this to just a warning or remove it if "recommended" means no max limit.
         // For now, assuming we still want to prevent massive images but maybe the user just cares about aspect ratio.
         // Let's keep max dimensions for performance/storage reasons as it was existing logic, unless user complains.
         clearImageState();
-        setImageError(`Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`);
+        setImageError(
+          t(
+            "event.error.invalidImageSize",
+            `Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`,
+            { maxWidth, maxHeight }
+          )
+        );
         return;
       }
 
@@ -588,6 +602,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         form.setValue("image", result);
         form.clearErrors("image");
         setImageError("");
+        setImageRemoved(false);
       };
       reader.readAsDataURL(file);
     };
@@ -606,6 +621,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     setImagePreview("");
     form.setValue("image", "");
     setImageError("");
+    setImageRemoved(true);
   };
 
   return (
@@ -614,8 +630,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event Details Section */}
           <div className="mb-6">
-            <div className="p-6 space-y-2 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-md font-semibold text-primary">
+            <div className="p-6 space-y-5 shadow-blur-subtle-md bg-white/60 rounded-xl">
+              <h2 className="text-md font-semibold text-primary mb-2!">
                 {t("event.eventDetails", "Event Details")}
               </h2>
               <div className="grid md:grid-cols-2 gap-5">
@@ -623,12 +639,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   label={t("event.field.uploadBanner", "Upload Banner")}
                   helperText={t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
                   helperTextSize={t("event.helperText.bannerImageSize", "Recommended: PNG/JPG file of 1920x1200px with size up to 5MB")}
-                  value={imagePreview || initialData?.banner_image || ""}
+                  value={imageRemoved ? "" : (imagePreview || initialData?.banner_image || "")}
                   onChange={(file) => {
                     if (file) validateAndProcessImage(file);
                   }}
                   onRemove={handleRemoveImage}
-                  error={imageError}
+                  error={imageError || form.formState.errors.image?.message}
                   browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
                   required
                 />
@@ -643,7 +659,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           {t("event.field.eventTitle", "Event Title")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input className="h-13 md:text-md" placeholder="Enter Title" {...field} />
+                          <Input className="h-13 md:text-md" placeholder={t("event.placeholder.eventTitle", "Enter event title")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -700,11 +716,11 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         form.clearErrors("description");
                       }
                     }, [form])}
-                    placeholder={t("event.field.eventDescription", "Write about your event")}
+                    placeholder={t("event.placeholder.eventDescription", "Write about your event...")}
                   />
                 </div>
                 {form.formState.errors.description && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                  <p className="text-red-500 text-[0.8rem] mt-1 flex items-center gap-1">
                     {form.formState.errors.description.message}
                   </p>
                 )}
@@ -715,7 +731,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Venue & Schedule Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.venueSchedule", "Venue & Schedule")}</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.venueSchedule", "Venue & Schedule")}</h2>
               <div className="grid md:grid-cols-3 gap-5">
                 <FormField
                   control={form.control}
@@ -724,7 +740,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     <FormItem>
                       <FormLabel className="inline-block">{t("event.field.venueName", "Venue Name")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input className="h-13 md:text-md" placeholder="Venue name" {...field} />
+                        <Input className="h-13 md:text-md" placeholder={t("event.placeholder.venueName", "Enter venue name")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -741,7 +757,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         <AddressAutocomplete
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Search for venue address"
+                          placeholder={t("event.placeholder.venueAddress", "Search for venue address")}
                           className="h-13 md:text-md"
                           error={!!fieldState.error}
                         />
@@ -761,7 +777,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         <Input
                           className="h-13 md:text-md"
                           type="number"
-                          placeholder="e.g 5000"
+                          placeholder={t("event.placeholder.capacity", "e.g 5000")}
                           {...field}
                           onChange={(e) => field.onChange(e.target.valueAsNumber)}
                         />
@@ -782,6 +798,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           value={field.value}
                           onChange={field.onChange}
                           error={!!fieldState.error}
+                          placeholder={t("event.placeholder.timezone", "Select timezone")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -804,6 +821,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           }}
                           format="yyyy-mm-dd hh:mm aa"
                           clearable
+                          error={!!fieldState.error}
                         />
                       </FormControl>
                       <FormMessage />
@@ -826,6 +844,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           }}
                           format="yyyy-mm-dd hh:mm aa"
                           clearable
+                          error={!!fieldState.error}
                         />
                       </FormControl>
                       <FormMessage />
@@ -839,7 +858,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Ticketing Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.ticketing", "Ticketing")}</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.ticketing", "Ticketing")}</h2>
 
               {ticketFields.map((field, index) => (
                 <TicketTierCard
@@ -869,7 +888,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     salesEnd: "",
                   })
                 }
-                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                className="flex items-center gap-2 text-primary border-primary hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
                 {t("event.button.addTicketTier", "Add ticket tier")}
@@ -880,7 +899,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Discounts & Promo Codes Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.discountsPromo", "Discounts & Promo Codes")}</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.discountsPromo", "Discounts & Promo Codes")}</h2>
 
               {promoFields.map((field, index) => (
                 <PromoCodeCard
@@ -902,7 +921,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     quantity: 0,
                   })
                 }
-                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                className="flex items-center gap-2 text-primary border-primary hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
                 {t("event.button.addPromoCode", "Add promo code")}

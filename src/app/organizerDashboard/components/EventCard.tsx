@@ -116,11 +116,14 @@ export default function EventCard({ event }: EventCardProps) {
 	const status = getEventStatus(event);
 
 	// Parse categories
-	const categories: string[] = Array.isArray(event.category)
+  const categories: string[] = (Array.isArray(event.category)
 		? (event.category as string[])
 		: typeof event.category === "string"
-			? (event.category as string).split(",").map((tag: string) => tag.trim())
-			: [];
+      ? (event.category as string).split(",")
+      : []
+  )
+    .map((tag: string) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
+    .filter(Boolean);
 
 	return (
 		<div className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full">

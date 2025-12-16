@@ -15,6 +15,20 @@
       "invalidDatetime": "Inserisci una data/ora valida."
     }
   },
+  "navigation": {
+    "events": "Eventi",
+    "dashboard": "Pannello di controllo",
+    "reports": "Rapporti",
+    "users": "Utenti",
+    "settings": "Impostazioni",
+    "categories": "Categorie",
+    "about": "Di",
+    "contact": "Contatto",
+    "signIn": "Accedi",
+    "organizeEvent": "Organizzare l'evento",
+    "profile": "Il mio profilo",
+    "logout": "Disconnettersi"
+  },
   "auth": {
     "login": {
       "title": "Accedi",
@@ -75,12 +89,31 @@
   "event": {
     "field": {
       "bannerImage": "Immagine dello striscione",
-      "eventTitle": "Titolo dell'evento"
+      "eventTitle": "Titolo dell'evento",
+      "eventDescription": "Descrizione dell'evento",
+      "venueName": "Nome della sede",
+      "venueAddress": "Indirizzo della sede",
+      "capacity": "Capacità",
+      "timezone": "Fuso orario"
     },
     "helperText": {
       "bannerImage": "Carica l'immagine del banner o trascinala",
       "bannerImageSize": "File PNG/JPG di 1920x1200px con dimensioni fino a 5 MB",
       "bannerImageBrowse": "Sfoglia file"
+    },
+    "error": {
+      "invalidImageType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG)."
+    },
+    "placeholder": {
+      "eventDescription": "Scrivi del tuo evento...",
+      "venueName": "Inserisci il nome della sede",
+      "venueAddress": "Cerca l'indirizzo della sede",
+      "capacity": "ad esempio 5000",
+      "timezone": "Seleziona fuso orario",
+      "eventTitle": "Inserisci il titolo dell'evento"
+    },
+    "section": {
+      "venueSchedule": "Luogo"
     }
   }
 }

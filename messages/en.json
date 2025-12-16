@@ -25,6 +25,10 @@
   },
   "navigation": {
     "events": "Events",
+    "dashboard": "Dashboard",
+    "reports": "Reports",
+    "users": "Users",
+    "settings": "Settings",
     "categories": "Categories",
     "about": "About",
     "contact": "Contact",
@@ -243,16 +247,35 @@
     "field": {
       "bannerImage": "Banner image",
       "eventTitle": "Event Title",
-      "eventDescription": "Write about your event...",
+      "eventDescription": "Event Description",
       "startDateTime": "Event start date",
       "endDateTime": "Event end date",
       "salesStart": "Sales start date",
-      "salesEnd": "Sales end date"
+      "salesEnd": "Sales end date",
+      "venueName": "Venue Name",
+      "venueAddress": "Venue Address",
+      "capacity": "Capacity",
+      "timezone": "Timezone"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
       "bannerImageSize": "PNG/JPG file of 1920x1200px with size up to 5MB",
       "bannerImageBrowse": "Browse File"
+    },
+    "error": {
+      "invalidImageType": "Invalid file type. Please upload an image (PNG/JPG).",
+      "invalidImageSize": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px."
+    },
+    "placeholder": {
+      "eventDescription": "Write about your event...",
+      "venueName": "Enter venue name",
+      "venueAddress": "Search for venue address",
+      "capacity": "e.g 5000",
+      "timezone": "Select timezone",
+      "eventTitle": "Enter event title"
+    },
+    "section": {
+      "venueSchedule": "Venue & Schedule"
     }
   }
 }

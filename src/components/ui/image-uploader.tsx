@@ -147,7 +147,7 @@ export function ImageUploader({
         onClick={!value ? handleClick : undefined}
         className={cn(
           "border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden",
-          !value && "cursor-pointer min-h-[200px]",
+          !value && "cursor-pointer min-h-[100px]",
           hasError
             ? "border-red-500 bg-red-50/50"
             : isDragActive
@@ -158,7 +158,7 @@ export function ImageUploader({
         <input {...getInputProps()} ref={fileInputRef} />
 
         {value ? (
-          <div className="relative w-full h-full group min-h-[200px]">
+          <div className="relative w-full h-full group min-h-[100px]">
             {/* Using img tag directly for flexibility with blob URLs and simplicity, optimized next/image requires width/height or fill */}
             <img
               src={value}
@@ -170,7 +170,7 @@ export function ImageUploader({
             {/* Remove Button */}
             <div
               onClick={handleRemove}
-              className="absolute top-2 right-2 p-1.5 bg-white/90 hover:bg-white rounded-full cursor-pointer shadow-sm transition-all hover:scale-110 z-10 text-gray-700 hover:text-red-600"
+              className="absolute top-2 right-2 p-1.5 bg-red-100 hover:bg-red-200 rounded-full cursor-pointer shadow-sm transition-all hover:scale-110 z-10 text-red-600"
               title="Remove image"
             >
               <X className="w-4 h-4" />
@@ -191,8 +191,8 @@ export function ImageUploader({
             </div>
           </div>
         ) : (
-          <div className="p-6 flex flex-col items-center justify-center">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 group-hover:scale-110 transition-transform">
+            <div className="p-4 flex flex-col items-center justify-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2 text-gray-400 group-hover:scale-110 transition-transform">
               <ImageIcon className="w-6 h-6" />
             </div>
             {isDragActive ? (
@@ -200,7 +200,7 @@ export function ImageUploader({
             ) : (
               <>
                 <p className="font-medium text-gray-900 mb-1">{helperText}</p>
-                {helperTextSize && <p className="text-xs text-gray-500 mb-4">{helperTextSize}</p>}
+                    {helperTextSize && <p className="text-xs text-gray-500 mb-2">{helperTextSize}</p>}
                 <Button
                   type="button"
                   variant="outline"
@@ -220,7 +220,7 @@ export function ImageUploader({
       </div>
 
       {effectiveError && (
-        <p className="text-red-500 text-xs mt-1 animate-in slide-in-from-top-1">
+        <p className="text-[0.8rem] font-medium text-destructive">
           {effectiveError}
         </p>
       )}

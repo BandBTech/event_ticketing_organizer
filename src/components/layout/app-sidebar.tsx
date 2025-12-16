@@ -27,21 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { href: "/organizerDashboard", label: "Dashboard", icon: SpeedometerIcon },
-  {
-    href: "/organizerDashboard/pages/events",
-    label: "Events",
-    icon: CalendarStarIcon,
-  },
-  {
-    href: "/organizerDashboard/reports",
-    label: "Reports",
-    icon: ChartLineIcon,
-  },
-  { href: "/organizerDashboard/pages/users", label: "Users", icon: UsersIcon },
-  { href: "/organizerDashboard/settings", label: "Settings", icon: GearIcon },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -52,6 +38,23 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { t } = useTranslation();
+
+  const navLinks = [
+    { href: "/organizerDashboard", label: t("navigation.dashboard", "Dashboard"), icon: SpeedometerIcon },
+    {
+      href: "/organizerDashboard/pages/events",
+      label: t("navigation.events", "Events"),
+      icon: CalendarStarIcon,
+    },
+    {
+      href: "/organizerDashboard/reports",
+      label: t("navigation.reports", "Reports"),
+      icon: ChartLineIcon,
+    },
+    { href: "/organizerDashboard/pages/users", label: t("navigation.users", "Users"), icon: UsersIcon },
+    { href: "/organizerDashboard/settings", label: t("navigation.settings", "Settings"), icon: GearIcon },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -186,7 +189,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               className="cursor-pointer"
             >
               <UserIcon className="mr-2 h-4 w-4 text-gray-600" />
-              <span className="text-gray-700">Profile</span>
+              <span className="text-gray-700">{t("navigation.profile", "Profile")}</span>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
@@ -197,7 +200,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
             >
               <SignOutIcon className="mr-2 h-4 w-4" />
-              <span>Logout</span>
+              <span>{t("navigation.logout", "Logout")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

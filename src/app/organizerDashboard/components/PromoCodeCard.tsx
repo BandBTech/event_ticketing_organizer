@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { useTranslation } from "@/hooks/useTranslation";
 import { EventFormData } from "@/lib/validation";
+import { cn } from "@/lib/utils";
 
 interface PromoCodeCardProps {
 	index: number;
@@ -52,12 +53,12 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
 			<FormField
 				control={control}
 				name={`promoCodes.${index}.discountType`}
-				render={({ field }) => (
+        render={({ field, fieldState }) => (
 					<FormItem>
 						<FormLabel className="inline-block">{t("event.field.discountType", "Discount Type")} <span className="text-red-500">*</span></FormLabel>
 						<Select value={field.value} onValueChange={field.onChange}>
 							<FormControl>
-								<SelectTrigger className="h-13 md:text-md">
+                <SelectTrigger className={cn("h-13 md:text-md", !!fieldState.error && "border-red-500 focus:ring-red-500/20")}>
 									<SelectValue placeholder={t("common.placeholder.select", "Select Type")} />
 								</SelectTrigger>
 							</FormControl>
