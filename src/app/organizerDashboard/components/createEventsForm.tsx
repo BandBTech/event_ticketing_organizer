@@ -81,7 +81,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   }, []);
 
   // Fetch tier templates using TanStack Query
-  const { data: tierTemplates = [] } = useQuery({
+  // Fetch tier templates using TanStack Query
+  const { data: tierTemplates = [], isLoading: isLoadingTemplates } = useQuery({
     queryKey: ["tierTemplates"],
     queryFn: () => eventService.getTierTemplates(),
   });
@@ -856,6 +857,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   index={index}
                   control={form.control}
                   tierTemplates={tierTemplates}
+                  isLoading={isLoadingTemplates}
                   showDelete={ticketFields.length > 1}
                   onDelete={() => removeTicket(index)}
                   onCreateNew={() => {

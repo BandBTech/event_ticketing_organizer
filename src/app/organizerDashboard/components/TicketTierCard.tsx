@@ -23,6 +23,7 @@ interface TicketTierCardProps {
 	showDelete: boolean;
 	onDelete: () => void;
 	onCreateNew: () => void;
+  isLoading?: boolean;
 }
 
 const TicketTierCard = ({
@@ -32,6 +33,7 @@ const TicketTierCard = ({
 	showDelete,
 	onDelete,
 	onCreateNew,
+  isLoading = false,
 }: TicketTierCardProps) => {
 	const { t } = useTranslation();
 
@@ -50,6 +52,7 @@ const TicketTierCard = ({
 								templates={tierTemplates}
 								error={!!fieldState.error}
 								onCreateNew={onCreateNew}
+                isLoading={isLoading}
 							/>
 						</FormControl>
 						<FormMessage />

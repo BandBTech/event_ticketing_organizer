@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { TierTemplate } from "@/services/tierService";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 
 import { useTranslation } from "@/hooks/useTranslation";
@@ -27,6 +27,7 @@ interface TierNameSelectorProps {
   templates: TierTemplate[];
   error?: boolean;
   onCreateNew?: () => void;
+  isLoading?: boolean;
 }
 
 const TierNameSelector = ({
@@ -35,6 +36,7 @@ const TierNameSelector = ({
   templates,
   error = false,
   onCreateNew,
+  isLoading = false,
 }: TierNameSelectorProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -55,7 +57,11 @@ const TierNameSelector = ({
           <span className={cn(!value && "text-muted-foreground")}>
             {value || t("event.placeholder.selectTier", "Select or type tier name...")}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {isLoading ? (
+            <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+          ) : (
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0" align="start">
