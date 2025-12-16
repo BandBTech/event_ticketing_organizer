@@ -1,17 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import {
 	ChartLineIcon,
 	CalendarCheckIcon,
 	UsersIcon,
 	CurrencyDollarIcon,
 	ArrowUpIcon,
-	ArrowDownIcon,
-	DownloadSimpleIcon,
+  ArrowDownIcon,
 } from "@phosphor-icons/react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 
 // Placeholder stats data
 const statsData = [
@@ -51,19 +47,7 @@ const statsData = [
 
 export default function ReportsPage() {
 	return (
-		<div className="flex-1 p-6 space-y-6">
-			{/* Header */}
-			<div className="flex items-center justify-between">
-				<div>
-					<h1 className="text-2xl font-bold text-gray-900">Reports & Analytics</h1>
-					<p className="text-gray-500 mt-1">View insights and performance metrics</p>
-				</div>
-				<Button variant="outline" className="flex items-center gap-2">
-					<DownloadSimpleIcon className="w-4 h-4" />
-					Export Report
-				</Button>
-			</div>
-
+    <div className="flex-1 p-6 space-y-6">
 			{/* Stats Grid */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				{statsData.map((stat) => {

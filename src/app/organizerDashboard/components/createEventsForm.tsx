@@ -23,14 +23,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import { DateTimePicker } from "@/components/ui/datetime-picker";
-import { DateTimeInput } from "@/components/ui/datetime-input";
+import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import CategoryTagsSelector from "./CategoryTagsSelector";
 import TimezoneSelector from "./TimezoneSelector";
-import BannerImageUploader from "./BannerImageUploader";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import TicketTierCard from "./TicketTierCard";
 import PromoCodeCard from "./PromoCodeCard";
+import { CreateTierTemplateDialog } from "./CreateTierTemplateDialog";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -58,7 +59,19 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [formModified, setFormModified] = useState(false);
+  const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
+  const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(null);
   const lastInitializedEventId = React.useRef<string | null>(null);
+
+  // Helper to parse category which might be a comma-separated string from backend despite type definition
+  const parseCategory = useCallback((category: string | string[] | undefined): string[] => {
+    if (!category) return [];
+    if (Array.isArray(category)) return category;
+    if (typeof category === 'string') {
+      return (category as string).split(',').map(c => c.trim()).filter(Boolean);
+    }
+    return [];
+  }, []);
 
   // Fetch tier templates using TanStack Query
   const { data: tierTemplates = [] } = useQuery({
@@ -73,7 +86,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     defaultValues: {
       name: initialData?.title || "",
       description: initialData?.description || "",
-      tags: initialData?.category || [],
+      tags: parseCategory(initialData?.category),
       image: initialData?.banner_image || "",
       venue: initialData?.venue_name || "",
       venueAddress: initialData?.address || "",
@@ -158,7 +171,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       form.reset({
         name: initialData.title || "",
         description: initialData.description || "",
-        tags: initialData.category || [],
+        tags: parseCategory(initialData.category),
         image: initialData.banner_image || "",
         venue: initialData.venue_name || "",
         venueAddress: initialData.address || "",
@@ -259,6 +272,43 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     };
   }, [hasUnsavedChanges]);
 
+  // Handle sidebar/route navigation clicks
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!hasUnsavedChanges()) return;
+
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+
+      if (anchor) {
+        // Build the URL to check if it's a navigation
+        const href = anchor.getAttribute("href");
+
+        // Ignore non-navigation links
+        if (
+          !href ||
+          href.startsWith("#") ||
+          href.startsWith("mailto:") ||
+          href.startsWith("tel:") ||
+          anchor.target === "_blank"
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        setPendingNavigation(() => () => {
+          router.push(href);
+        });
+        setShowLeaveDialog(true);
+      }
+    };
+
+    window.addEventListener("click", handleClick, true); // Capture phase to intervene early
+    return () => window.removeEventListener("click", handleClick, true);
+  }, [hasUnsavedChanges, router]);
+
   const handleNavigateAway = useCallback(
     (navigationAction: () => void) => {
       if (hasUnsavedChanges()) {
@@ -307,9 +357,27 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         return eventService.createEvent(data.eventData);
       }
     },
-    onSuccess: () => {
-      toast.success("Success", isEditing ? "Event updated successfully" : "Event created successfully");
+    onSuccess: async () => {
+      // Force fetch the latest events data to update cache before navigation
+      // This ensures we don't show stale data (old name) on the list page
+      try {
+        await queryClient.fetchQuery({
+          queryKey: ["events"],
+          queryFn: () => eventService.getEvents(),
+          staleTime: 0,
+        });
+      } catch (error) {
+        console.error("Failed to pre-fetch events:", error);
+        // Fallback to invalidation/reset if fetch fails, so at least we try to get fresh data on mount
+        await queryClient.invalidateQueries({ queryKey: ["events"] });
+      }
+
+      toast.success(
+        isEditing ? "Event Updated" : "Event Created",
+        `Event has been successfully ${isEditing ? "updated" : "created"}.`
+      );
       setFormModified(false);
+      // lastInitializedEventId.current = null; // Clear tracking to prevent re-initializing
       router.push("/organizerDashboard/pages/events");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -334,7 +402,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       if (currentData.description !== initialData.description) {
         changedFields.description = currentData.description;
       }
-      if (JSON.stringify(currentData.tags) !== JSON.stringify(initialData.category || [])) {
+      if (JSON.stringify(currentData.tags) !== JSON.stringify(parseCategory(initialData.category))) {
         changedFields.category = currentData.tags;
       }
       if (currentData.venue !== initialData.venue_name) {
@@ -412,7 +480,6 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
             });
             tierId = newTemplate.id;
           } catch (err) {
-            console.error("Failed to create tier template", err);
             toast.error("Error", `Failed to create tier template for ${ticket.name}`);
             return;
           }
@@ -438,7 +505,6 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           return;
         }
 
-        console.log("Sending only changed fields:", changedFields);
         saveEventMutation.mutate({ eventData: changedFields, isUpdate: true, id: initialData.id });
       } else {
       // For new events, send all data
@@ -471,13 +537,22 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const validateAndProcessImage = (file: File) => {
     setImageError("");
 
+    // Helper to clear image state
+    const clearImageState = () => {
+      setImageFile(null);
+      setImagePreview("");
+      form.setValue("image", "");
+    };
+
     if (!file.type.startsWith("image/")) {
+      clearImageState();
       setImageError("Invalid file type. Please upload an image (PNG/JPG).");
       return;
     }
 
     const maxSizeInBytes = 5 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
+      clearImageState();
       setImageError("File size exceeds 5MB. Please upload a smaller image.");
       return;
     }
@@ -495,19 +570,15 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       const aspectRatio = 1920 / 1200;
 
       if (width > maxWidth || height > maxHeight) {
+        // Optional: We can relax this to just a warning or remove it if "recommended" means no max limit.
+        // For now, assuming we still want to prevent massive images but maybe the user just cares about aspect ratio.
+        // Let's keep max dimensions for performance/storage reasons as it was existing logic, unless user complains.
+        clearImageState();
         setImageError(`Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`);
         return;
       }
 
-      const imageAspectRatio = width / height;
-      const tolerance = 0.1;
-      const minAspectRatio = aspectRatio - tolerance;
-      const maxAspectRatio = aspectRatio + tolerance;
-
-      if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
-        setImageError(`Image aspect ratio must be approximately ${aspectRatio.toFixed(2)} (16:10).`);
-        return;
-      }
+      // Aspect ratio check removed as per requirement.
 
       setImageFile(file);
       const reader = new FileReader();
@@ -523,10 +594,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
     img.onerror = () => {
       URL.revokeObjectURL(objectUrl);
+      clearImageState();
       setImageError("Failed to load image. Please try another file.");
     };
 
     img.src = objectUrl;
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    form.setValue("image", "");
+    setImageError("");
   };
 
   return (
@@ -540,18 +619,16 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 {t("event.eventDetails", "Event Details")}
               </h2>
               <div className="grid md:grid-cols-2 gap-5">
-                <BannerImageUploader
-                  imagePreview={imagePreview}
-                  imageError={imageError}
-                  formError={form.formState.errors.image?.message}
-                  onImageSelect={validateAndProcessImage}
-                  onError={setImageError}
-                  label={t("event.field.bannerImage", "Banner Image")}
+                <ImageUploader
+                  label={t("event.field.uploadBanner", "Upload Banner")}
                   helperText={t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
-                  helperTextSize={t(
-                    "event.helperText.bannerImageSize",
-                    "PNG/JPG file of 1920x1200px with size up to 5MB"
-                  )}
+                  helperTextSize={t("event.helperText.bannerImageSize", "Recommended: PNG/JPG file of 1920x1200px with size up to 5MB")}
+                  value={imagePreview || initialData?.banner_image || ""}
+                  onChange={(file) => {
+                    if (file) validateAndProcessImage(file);
+                  }}
+                  onRemove={handleRemoveImage}
+                  error={imageError}
                   browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
                 />
 
@@ -716,34 +793,16 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="startDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Start Date & Time</FormLabel>
+                      <FormLabel className="inline-block">Event Start Date</FormLabel>
                       <FormControl>
-                        <DateTimePicker
-                          classNames={{
-                            trigger: "h-13 md:text-md",
-                          }}
-                          value={field.value ? new Date(field.value) : undefined}
+                        <ShadcnDateTimePicker
+                          value={field.value ? new Date(field.value) : null}
                           onChange={(date) => {
                             if (!date) field.onChange("");
-                            else if (typeof date === "string") field.onChange(date);
                             else field.onChange(date.toISOString());
                           }}
-                          use12HourFormat
-                          timePicker={{
-                            hour: true,
-                            minute: true,
-                          }}
-                          renderTrigger={({ open, value, setOpen }) => (
-                            <DateTimeInput
-                              value={value}
-                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
-                              format="dd/MM/yyyy hh:mm aa"
-                              disabled={open}
-                              onCalendarClick={() => setOpen(!open)}
-                              error={!!fieldState.error}
-                              className="h-13 md:text-md placeholder:text-gray-300"
-                            />
-                          )}
+                          format="yyyy-mm-dd hh:mm aa"
+                          clearable
                         />
                       </FormControl>
                       <FormMessage />
@@ -756,31 +815,16 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="endDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">End Date & Time</FormLabel>
+                      <FormLabel className="inline-block">Event End Date</FormLabel>
                       <FormControl>
-                        <DateTimePicker
-                          value={field.value ? new Date(field.value) : undefined}
+                        <ShadcnDateTimePicker
+                          value={field.value ? new Date(field.value) : null}
                           onChange={(date) => {
                             if (!date) field.onChange("");
-                            else if (typeof date === "string") field.onChange(date);
                             else field.onChange(date.toISOString());
                           }}
-                          use12HourFormat
-                          timePicker={{
-                            hour: true,
-                            minute: true,
-                          }}
-                          renderTrigger={({ open, value, setOpen }) => (
-                            <DateTimeInput
-                              value={value}
-                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
-                              format="dd/MM/yyyy hh:mm aa"
-                              disabled={open}
-                              onCalendarClick={() => setOpen(!open)}
-                              error={!!fieldState.error}
-                              className="h-13 md:text-md"
-                            />
-                          )}
+                          format="yyyy-mm-dd hh:mm aa"
+                          clearable
                         />
                       </FormControl>
                       <FormMessage />
@@ -804,6 +848,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   tierTemplates={tierTemplates}
                   showDelete={ticketFields.length > 1}
                   onDelete={() => removeTicket(index)}
+                  onCreateNew={() => {
+                    setActiveTicketIndex(index);
+                    setOpenTemplateDialog(true);
+                  }}
                 />
               ))}
 
@@ -913,6 +961,29 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CreateTierTemplateDialog
+        open={openTemplateDialog}
+        onOpenChange={(open) => {
+          setOpenTemplateDialog(open);
+          if (!open) setActiveTicketIndex(null);
+        }}
+        onSuccess={async (newTemplate) => {
+          // Add new template to cache immediately for optimistic UI
+          queryClient.setQueryData(["tierTemplates"], (old: TierTemplate[] | undefined) =>
+            old ? [...old, newTemplate] : [newTemplate]
+          );
+
+          // Invalidate to ensure consistency with backend
+          await queryClient.invalidateQueries({ queryKey: ["tierTemplates"] });
+
+          // If we have an active ticket index, select the new template
+          if (activeTicketIndex !== null) {
+            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name);
+          }
+        }}
+        initialData={null}
+      />
     </div>
   );
 }

@@ -24,6 +24,7 @@ interface TierNameSelectorProps {
   onChange: (val: string) => void;
   templates: TierTemplate[];
   error?: boolean;
+  onCreateNew?: () => void;
 }
 
 const TierNameSelector = ({
@@ -31,6 +32,7 @@ const TierNameSelector = ({
   onChange,
   templates,
   error = false,
+  onCreateNew,
 }: TierNameSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -79,6 +81,19 @@ const TierNameSelector = ({
                 </Button>
               </div>
             </CommandEmpty>
+            <CommandGroup>
+              <CommandItem
+                value="create-new-tier-option"
+                onSelect={() => {
+                  setOpen(false);
+                  onCreateNew?.();
+                }}
+                className="text-blue-600 font-medium cursor-pointer"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create New Tier
+              </CommandItem>
+            </CommandGroup>
             <CommandGroup heading="Templates">
               {templates.map((template) => (
                 <CommandItem

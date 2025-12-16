@@ -17,7 +17,7 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <UserProvider>
-        <div className="flex h-screen overflow-hidden bg-gray-50/50">
+        <div className=" flex h-screen overflow-hidden bg-gray-50/50">
         {/* Sidebar */}
         <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 

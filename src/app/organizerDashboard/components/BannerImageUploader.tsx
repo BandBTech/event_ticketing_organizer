@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { ImageIcon } from "@phosphor-icons/react";
+import { ImageIcon, X } from "lucide-react"; // Using lucide-react for consistency with other components if available, checking imports
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ interface BannerImageUploaderProps {
 	helperText?: string;
 	helperTextSize?: string;
 	browseButtonText?: string;
+  onRemove?: () => void;
 }
 
 const BannerImageUploader = ({
@@ -29,6 +30,7 @@ const BannerImageUploader = ({
 	helperText = "Upload banner image or drag & drop",
 	helperTextSize = "PNG/JPG file of 1920x1200px with size up to 5MB",
 	browseButtonText = "Browse File",
+  onRemove,
 }: BannerImageUploaderProps) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const hasError = !!(imageError || formError);
@@ -72,9 +74,10 @@ const BannerImageUploader = ({
 			<Label className={hasError ? "text-red-500" : ""}>{label}</Label>
 			<div
 				{...getRootProps()}
-				onClick={handleClick}
+        onClick={!imagePreview ? handleClick : undefined}
 				className={cn(
-					"border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 cursor-pointer transition-colors relative overflow-hidden",
+          "border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden",
+          !imagePreview && "cursor-pointer",
 					hasError
 						? "border-red-500 bg-red-50/50"
 						: isDragActive
@@ -90,16 +93,31 @@ const BannerImageUploader = ({
 							alt="Banner preview"
 							className="w-full h-full object-cover rounded-lg"
 						/>
-						<div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            {/* Remove Button */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove?.();
+              }}
+              className="absolute top-2 right-2 p-1 bg-white/80 hover:bg-white rounded-full cursor-pointer shadow-sm transition-colors z-10"
+            >
+              <X className="w-4 h-4 text-gray-700" />
+            </div>
+
+            {/* Overlay for "Change Image" - optional, keeping it simple as per request to have remove button */}
+            <div
+              className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+              onClick={handleClick}
+            >
 							<div className="text-white space-y-2">
 								<p className="font-medium">Change Image</p>
-								<p className="text-xs">Click or drag to update</p>
+                <p className="text-xs">Click to update</p>
 							</div>
 						</div>
 					</div>
 				) : (
 					<>
-						<ImageIcon weight="duotone" className="w-6 h-6 mb-2" />
+              <ImageIcon className="w-6 h-6 mb-2" />
 						{isDragActive ? (
 							<p className="text-blue-600 font-medium">Drop the image here...</p>
 						) : (
@@ -122,12 +140,13 @@ const BannerImageUploader = ({
 						)}
 					</>
 				)}
-				{hasError && (
-					<p className="text-red-500 text-xs mt-1 absolute bottom-2 left-0 right-0">
-						{imageError || formError}
-					</p>
-				)}
-			</div>
+      </div>
+      {/* Error Message Moved Below */}
+      {hasError && (
+        <p className="text-red-500 text-xs">
+          {imageError || formError}
+        </p>
+      )}
 		</div>
 	);
 };

@@ -187,7 +187,6 @@ class AuthService {
       return { message: response?.message };
     } catch (error) {
       // Continue with local logout even if API call fails
-      console.error('Logout API call failed:', error);
       return { message: undefined };
     } finally {
       // Always clear tokens locally

@@ -10,14 +10,14 @@ import { BuildingOfficeIcon, PencilIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/ui/shadcn-io/dropzone";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 const organizerProfileSchema = z.object({
-  business_name: z.string().min(3, "Business name must be at least 3 characters"),
+  business_name: z.string().min(3, "Business name must be at least 3 characters."),
   business_description: z.string().optional(),
 });
 
@@ -164,56 +164,47 @@ export default function OrganizerProfileSettings() {
 
           {/* Logo Section */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-900 block">
-              Business Logo
-            </label>
 
             {isEditing ? (
-              <div className="space-y-2">
-                <Dropzone
-                  onDrop={handleDrop}
-                  accept={{ "image/*": [] }}
-                  maxSize={2 * 1024 * 1024}
-                  maxFiles={1}
-                  className="min-h-[150px] border-dashed border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  {previewUrl ? (
-                    <div className="relative w-full h-full min-h-[150px] flex items-center justify-center">
-                      <div className="relative w-32 h-32">
-                        <Image
-                          src={previewUrl}
-                          alt="Logo preview"
-                          fill
-                          className="object-contain rounded-lg"
-                        />
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-lg text-white font-medium cursor-pointer">
-                        Change Logo
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <DropzoneContent />
-                      <DropzoneEmptyState />
-                    </>
-                  )}
-                </Dropzone>
-                <p className="text-xs text-gray-500">
-                  Recommended size: 500x500px. Max size: 2MB.
-                </p>
-              </div>
+              <ImageUploader
+                label="Business Logo"
+                value={previewUrl || ""}
+                onChange={(file) => {
+                  if (file) {
+                    setSelectedFile(file);
+                    setPreviewUrl(URL.createObjectURL(file));
+                  } else {
+                    setSelectedFile(null);
+                    setPreviewUrl(null);
+                  }
+                }}
+                onRemove={() => {
+                  setSelectedFile(null);
+                  setPreviewUrl(null);
+                }}
+                maxSizeMB={2}
+                helperText="Recommended size: 500x500px."
+                helperTextSize="Max size: 2MB."
+              // checkAspectRatio={true} // Optional: we can enforce 1:1 if desired, but user didn't explicitly ask for strict 1:1 enforcement here, just validation "such as Invalid media file"
+              // Let's keep it simple as per requirement "Validation such as Invalid media file, limit exceed missing"
+              />
             ) : (
-              <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                {previewUrl ? (
-                  <Image
-                    src={previewUrl}
-                    alt="Business Logo"
-                    fill
-                    className="object-contain"
-                  />
-                ) : (
-                  <BuildingOfficeIcon size={48} className="text-gray-300" />
-                )}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900 block">
+                    Business Logo
+                  </label>
+                  <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                    {previewUrl ? (
+                      <Image
+                        src={previewUrl}
+                        alt="Business Logo"
+                        fill
+                        className="object-contain"
+                      />
+                    ) : (
+                      <BuildingOfficeIcon size={48} className="text-gray-300" />
+                    )}
+                  </div>
               </div>
             )}
           </div>

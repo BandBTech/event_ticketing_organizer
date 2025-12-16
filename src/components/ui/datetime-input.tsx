@@ -324,24 +324,16 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
         </Button>
       )}
-      {/* <div className="me-3">
+      <div className="me-3">
         {inputValue ? (
           <CircleCheck className="size-4 text-green-500" />
         ) : (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="flex items-center justify-center">
-                <CircleAlert className={cn('size-4', !areAllSegmentsEmpty && 'text-red-500')} />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>
-                  Please enter a valid value. The input cannot be empty and must be within the range of years 1900 to 2100.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+            <div className="text-red-500 text-xs flex items-center gap-1">
+              <CircleAlert className={cn('size-4', !areAllSegmentsEmpty && 'text-red-500')} />
+              <span>Invalid Format</span>
+            </div>
         )}
-      </div> */}
+      </div>
     </div>
   );
 });

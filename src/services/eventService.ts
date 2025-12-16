@@ -23,8 +23,8 @@ function createEventFormData(data: CreateEventData | UpdateEventRequest): FormDa
   }
 
   if (data.category && data.category.length > 0) {
-    // Send as array with single quotes: ['Music', 'Concert']
-    formData.append('category', JSON.stringify(data.category).replace(/"/g, "'"));
+    // Send as comma-separated string: "music,concert"
+    formData.append('category', data.category.join(','));
   }
   if (data.venue_name) formData.append('venue_name', data.venue_name);
   if (data.address) formData.append('address', data.address);

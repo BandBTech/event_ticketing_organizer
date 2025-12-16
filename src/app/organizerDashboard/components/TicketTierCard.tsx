@@ -10,8 +10,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { DateTimePicker } from "@/components/ui/datetime-picker";
-import { DateTimeInput } from "@/components/ui/datetime-input";
+import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TierNameSelector from "./TierNameSelector";
 import { TierTemplate } from "@/types/event";
 import { EventFormData } from "@/lib/validation";
@@ -22,6 +21,7 @@ interface TicketTierCardProps {
 	tierTemplates: TierTemplate[];
 	showDelete: boolean;
 	onDelete: () => void;
+  onCreateNew: () => void;
 }
 
 const TicketTierCard = ({
@@ -30,6 +30,7 @@ const TicketTierCard = ({
 	tierTemplates,
 	showDelete,
 	onDelete,
+  onCreateNew,
 }: TicketTierCardProps) => {
 	return (
 		<div className="grid md:grid-cols-3 gap-5 border border-gray-200 rounded-lg p-4 relative">
@@ -45,6 +46,7 @@ const TicketTierCard = ({
 								onChange={field.onChange}
 								templates={tierTemplates}
                 error={!!fieldState.error}
+                onCreateNew={onCreateNew}
 							/>
 						</FormControl>
 						<FormMessage />
@@ -117,33 +119,16 @@ const TicketTierCard = ({
 				name={`tickets.${index}.salesStart`}
 				render={({ field, fieldState }) => (
 					<FormItem>
-						<FormLabel className="inline-block">Sales start</FormLabel>
+            <FormLabel className="inline-block">Sales Start Date</FormLabel>
 						<FormControl>
-							<DateTimePicker
-								value={field.value ? new Date(field.value) : undefined}
+              <ShadcnDateTimePicker
+                value={field.value ? new Date(field.value) : null}
 								onChange={(date) => {
-									if (!date) field.onChange("");
-									else if (typeof date === "string") field.onChange(date);
+                  if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-								use12HourFormat
-								timePicker={{
-									hour: true,
-									minute: true,
-								}}
-								renderTrigger={({ open, value, setOpen }) => (
-									<DateTimeInput
-										value={value}
-										onChange={(x) =>
-											!open && field.onChange(x ? x.toISOString() : "")
-										}
-										format="dd/MM/yyyy hh:mm aa"
-										disabled={open}
-										onCalendarClick={() => setOpen(!open)}
-										error={!!fieldState.error}
-										className="h-13 md:text-md"
-									/>
-								)}
+                format="yyyy-mm-dd hh:mm aa"
+                clearable
 							/>
 						</FormControl>
 						<FormMessage />
@@ -156,33 +141,16 @@ const TicketTierCard = ({
 				name={`tickets.${index}.salesEnd`}
 				render={({ field, fieldState }) => (
 					<FormItem>
-						<FormLabel className="inline-block">Sales ends</FormLabel>
+            <FormLabel className="inline-block">Sales End Date</FormLabel>
 						<FormControl>
-							<DateTimePicker
-								value={field.value ? new Date(field.value) : undefined}
+              <ShadcnDateTimePicker
+                value={field.value ? new Date(field.value) : null}
 								onChange={(date) => {
-									if (!date) field.onChange("");
-									else if (typeof date === "string") field.onChange(date);
+                  if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-								use12HourFormat
-								timePicker={{
-									hour: true,
-									minute: true,
-								}}
-								renderTrigger={({ open, value, setOpen }) => (
-									<DateTimeInput
-										value={value}
-										onChange={(x) =>
-											!open && field.onChange(x ? x.toISOString() : "")
-										}
-										format="dd/MM/yyyy hh:mm aa"
-										disabled={open}
-										onCalendarClick={() => setOpen(!open)}
-										error={!!fieldState.error}
-										className="h-13 md:text-md"
-									/>
-								)}
+                format="yyyy-mm-dd hh:mm aa"
+                clearable
 							/>
 						</FormControl>
 						<FormMessage />

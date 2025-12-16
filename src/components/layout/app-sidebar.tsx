@@ -58,7 +58,6 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       await logout();
       router.push("/auth/pages/login");
     } catch (error) {
-      console.error("Logout error", error);
       router.push("/auth/pages/login");
     }
   };

@@ -92,7 +92,6 @@ export const useAuthStore = create<AuthStore>()(
           });
           return result;
         } catch (error) {
-          console.error('Logout error:', error);
           set({
             user: null,
             organizerProfile: null,
@@ -181,7 +180,6 @@ export const useAuthStore = create<AuthStore>()(
           const status = await authService.getOrganizerStatus();
           set({ isOrganizerComplete: status.is_complete });
         } catch (error) {
-          console.error("Failed to check organizer status", error);
           // If check fails, assume complete to avoid blocking user
           set({ isOrganizerComplete: true });
         }
@@ -195,7 +193,6 @@ export const useAuthStore = create<AuthStore>()(
           await get().fetchOrganizerProfile();
           await get().checkOrganizerCompletion();
         } catch (error) {
-          console.error("Failed to update organizer profile", error);
           throw error;
         }
       },

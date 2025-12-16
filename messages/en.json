@@ -244,10 +244,10 @@
       "bannerImage": "Banner image",
       "eventTitle": "Event Title",
       "eventDescription": "Write about your event...",
-      "startDateTime": "Start date & time",
-      "endDateTime": "End date & time",
-      "salesStart": "Sales start",
-      "salesEnd": "Sales end"
+      "startDateTime": "Event start date",
+      "endDateTime": "Event end date",
+      "salesStart": "Sales start date",
+      "salesEnd": "Sales end date"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",

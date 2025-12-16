@@ -58,14 +58,14 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
       .number({ message: t('event.validation.gstRequired', "GST is required. Set to 0 if not applicable.") })
       .min(0, t('event.validation.gstPositive', "GST must be positive."))
       .max(100, t('event.validation.gstMax', "GST cannot exceed 100%.")),
-    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales start')),
-    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales end')),
+    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales Start Date')),
+    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales End Date')),
   })
   .refine((data) => {
     if (!data.salesEnd || !data.salesStart) return true;
     return new Date(data.salesEnd) >= new Date(data.salesStart);
   }, {
-    message: t('event.validation.salesEndAfterStart', "Sales end date must be after sales start date."),
+    message: t('event.validation.salesEndAfterStart', "Sales end date must be after or equal to Sales start date."),
     path: ["salesEnd"],
   });
 
@@ -84,16 +84,16 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
 
 export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
-    name: z.string().min(1, t('event.validation.titleRequired', "Event Title is required.")),
-    description: z.string().min(1, t('event.validation.descriptionRequired', "Event Description is required.")),
+    name: z.string().min(1, t('event.validation.titleRequired', "Event title is required.")),
+    description: z.string().min(1, t('event.validation.descriptionRequired', "Event description is required.")),
     tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
     image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
-    venue: z.string().min(1, t('event.validation.venueRequired', "Venue Name is required.")),
-    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue Address is required.")),
+    venue: z.string().min(1, t('event.validation.venueRequired', "Venue name is required.")),
+    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue address is required.")),
     capacity: z.coerce.number().min(1, t('event.validation.capacityMin', "Capacity must be at least 1.")),
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
-    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Start date & time')),
-    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'End date & time')),
+    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Event Start Date')),
+    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'Event End Date')),
     tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one ticket is required.")),
     promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })
@@ -101,12 +101,12 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     if (!data.endDate || !data.startDate) return true;
     return new Date(data.endDate) > new Date(data.startDate);
   }, {
-    message: t('event.validation.endDateAfterStart', "Event end date must be after start date."),
+    message: t('event.validation.endDateAfterStart', "Event end date must be after Event start date."),
     path: ["endDate"],
   });
 
 export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  template_name: z.string().min(1, t('event.validation.tierNameRequired', "Tier Template Name is required.")),
+  template_name: z.string().min(1, t('event.validation.tierNameRequired', "Tier template name is required.")),
   description: z.string().optional(),
 });
 
