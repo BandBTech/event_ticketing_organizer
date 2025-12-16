@@ -38,7 +38,10 @@ interface EventDetailsProps {
   analytics?: EventAnalyticsResponse;
 }
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export default function EventDetailsPage({ event, analytics }: EventDetailsProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
@@ -137,7 +140,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     }`}
                 >
                   <CircleDot className="w-3 h-3" />
-                  {event.status}
+                  {t(`event.status.${event.status}`, event.status)}
                 </Badge>
                 {event.status === 'approved' && analytics?.sales_status && (
                   <Badge
@@ -146,7 +149,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                         'bg-red-500 hover:bg-red-500'
                       }`}
                   >
-                    Sales: {analytics.sales_status}
+                    {t("event.salesStatus", "Sales: {status}").replace('{status}', analytics.sales_status)}
                   </Badge>
                 )}
                 <div className="flex items-center gap-1 text-gray-700 ">
@@ -172,7 +175,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       ) : (
                         <PauseCircle size={16} />
                       )}
-                      Pause Sales
+                      {t("event.button.pauseSales", "Pause Sales")}
                     </button>
                   )}
                   {salesStatus === 'paused' && (
@@ -186,7 +189,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       ) : (
                         <PlayCircle size={16} />
                       )}
-                      Resume Sales
+                      {t("event.button.resumeSales", "Resume Sales")}
                     </button>
                   )}
                   {salesStatus !== 'stopped' && (
@@ -196,7 +199,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       className="flex items-center gap-2 px-4 py-2 border border-orange-400 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 disabled:opacity-50"
                     >
                       <StopCircle size={16} />
-                      Stop Sales
+                      {t("event.button.stopSales", "Stop Sales")}
                     </button>
                   )}
                 </>
@@ -206,7 +209,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
                 >
-                  <PencilLine size={16} /> Edit Event
+                  <PencilLine size={16} /> {t("event.button.editEvent", "Edit Event")}
                 </Link>
               )}
               {!isEventCancelled && event.status !== 'rejected' && (
@@ -214,7 +217,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   onClick={() => setCancelDialogOpen(true)}
                   className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
                 >
-                  <XCircle size={16} /> Cancel
+                  <XCircle size={16} /> {t("common.button.cancel", "Cancel")}
                 </button>
               )}
             </div>
@@ -224,7 +227,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           {event.admin_remark && (
             <div className={`p-4 rounded-xl ${event.status === 'approved' ? 'bg-green-50 border border-green-200' : event.status === 'rejected' ? 'bg-red-50 border border-red-200' : 'bg-gray-50 border border-gray-200'}`}>
               <h3 className={`font-semibold mb-2 ${event.status === 'approved' ? 'text-green-700' : event.status === 'rejected' ? 'text-red-700' : 'text-gray-700'}`}>
-                Admin Notes
+                {t("event.section.adminNotes", "Admin Notes")}
               </h3>
               <p className="text-gray-600">{event.admin_remark}</p>
             </div>
@@ -245,11 +248,11 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               {/* Description */}
               <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
                 <h3 className="text-lg font-semibold text-gray-700 ">
-                  Event description
+                  {t("event.section.description", "Event description")}
                 </h3>
                 <HtmlRenderer html={event.description || ""} />
                 <div className="flex flex-wrap gap-2 ">
-                  <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">Tags</h3>
+                  <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">{t("event.field.tags", "Tags")}</h3>
                   {Array.isArray(event.category) ? event.category.map((tag: string) => (
                     <span
                       key={tag}
@@ -267,37 +270,37 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   )) : null}
                 </div>
                 {/* Details */}
-                <div className=" grid grid-cols-2 gap-4 text-gray-700">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                   <div>
-                    <h3 className="font-semibold">Venue</h3>
+                    <h3 className="font-semibold">{t("event.field.venue", "Venue")}</h3>
                     <p className="font-medium text-gray-500">
                       {event.venue_name}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold ">Location</h3>
+                    <h3 className="font-semibold ">{t("event.field.location", "Location")}</h3>
                     <p className="font-medium text-gray-500">{event.address}</p>
                   </div>
                   <div>
-                    <h3 className="font-semibold ">Event Starts On</h3>
+                    <h3 className="font-semibold ">{t("event.field.eventStartsOn", "Event Starts On")}</h3>
                     <p className="font-medium text-gray-500">
                       {formatDateTime(event.start_date)}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold ">Event Ends On</h3>
+                    <h3 className="font-semibold ">{t("event.field.eventEndsOn", "Event Ends On")}</h3>
                     <p className="font-medium text-gray-500">
                       {formatDateTime(event.end_date)}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Ticket Sales Starts On</h3>
+                    <h3 className="font-semibold">{t("event.field.ticketSalesStartsOn", "Ticket Sales Starts On")}</h3>
                     <p className="font-medium text-gray-500">
                       {salesStartDate}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Ticket Sales Ends On</h3>
+                    <h3 className="font-semibold">{t("event.field.ticketSalesEndsOn", "Ticket Sales Ends On")}</h3>
                     <p className="font-medium text-gray-500">
                       {salesEndDate}
                     </p>
@@ -310,7 +313,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
             <div className="space-y-6 text-gray-700">
               {/* Ticket Tiers */}
               <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-lg font-semibold">Ticket Tiers</h3>
+                <h3 className="text-lg font-semibold">{t("event.section.ticketTiers", "Ticket Tiers")}</h3>
                 {/* Use analytics tiers if available, otherwise fall back to event tiers */}
                 {analytics?.tiers ? (
                   analytics.tiers.map((tier, index) => {
@@ -329,7 +332,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div key={tier.tier_id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
                         <div className="flex justify-between text-sm">
                           <p className={`font-semibold ${color.labelClass}`}>{tier.tier_name}</p>
-                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/ticket</p>
+                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/{t("event.text.ticket", "ticket")}</p>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -338,7 +341,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                           />
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span>{tier.sold_seats}/{tier.total_seats} sold</span>
+                          <span>{tier.sold_seats}/{tier.total_seats} {t("event.text.sold", "sold")}</span>
                           <span className="text-green-600 font-medium">
                             {tier.currency || 'NPR'} {tier.revenue.toLocaleString()}
                           </span>
@@ -362,7 +365,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
                         <div className="flex justify-between text-sm">
                           <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
-                          <p className="text-gray-600">NPR {ticket.price}/ticket</p>
+                          <p className="text-gray-600">NPR {ticket.price}/{t("event.text.ticket", "ticket")}</p>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -370,18 +373,18 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                             style={{ width: `${Math.min(soldPercent, 100)}%` }}
                           />
                         </div>
-                        <span className="text-sm">{sold}/{ticket.quantity} sold</span>
+                        <span className="text-sm">{sold}/{ticket.quantity} {t("event.text.sold", "sold")}</span>
                       </div>
                     );
                   })
                 )}
                 <div className="grid grid-cols-2 border-t-1 p-2">
                   <div>
-                    <p className="font-semibold">Total Sales</p>
+                    <p className="font-semibold">{t("event.label.totalSales", "Total Sales")}</p>
                     <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
                   </div>
                   <div className="justify-items-end">
-                    <p className="font-semibold">Total Revenue</p>
+                    <p className="font-semibold">{t("event.label.totalRevenue", "Total Revenue")}</p>
                     <p className="font-semibold text-green-600">NPR {totalRevenue.toLocaleString()}</p>
                   </div>
                 </div>
@@ -389,8 +392,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
 
               {/* Promo Codes */}
               <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-lg font-semibold">Promo/Discount Codes</h3>
-                <p className="text-gray-500 text-sm">No promo codes configured for this event.</p>
+                <h3 className="text-lg font-semibold">{t("event.section.promoCodes", "Promo/Discount Codes")}</h3>
+                <p className="text-gray-500 text-sm">{t("event.text.noPromoCodes", "No promo codes configured for this event.")}</p>
               </div>
             </div>
           </div>
@@ -401,18 +404,17 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Event</DialogTitle>
+            <DialogTitle>{t("event.dialog.cancelEvent.title", "Cancel Event")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel this event? This action cannot be undone.
-              All ticket holders will be notified.
+              {t("event.dialog.cancelEvent.description", "Are you sure you want to cancel this event? This action cannot be undone. All ticket holders will be notified.")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="cancel-reason">Reason for cancellation (minimum 10 characters)</Label>
+              <Label htmlFor="cancel-reason">{t("event.label.cancellationReason", "Reason for cancellation (minimum 10 characters)")}</Label>
               <Textarea
                 id="cancel-reason"
-                placeholder="Please provide a reason for cancelling this event..."
+                placeholder={t("event.placeholder.cancellationReason", "Please provide a reason for cancelling this event...")}
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 className="min-h-[100px]"
@@ -422,7 +424,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
-              Keep Event
+              {t("event.button.keepEvent", "Keep Event")}
             </Button>
             <Button
               variant="destructive"
@@ -435,7 +437,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   Cancelling...
                 </>
               ) : (
-                'Cancel Event'
+                t("event.button.cancelEvent", "Cancel Event")
               )}
             </Button>
           </DialogFooter>
@@ -446,18 +448,17 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
       <Dialog open={salesDialogOpen} onOpenChange={setSalesDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Stop Event Sales</DialogTitle>
+            <DialogTitle>{t("event.dialog.stopSales.title", "Stop Event Sales")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to stop sales for this event?
-              This will prevent any new ticket purchases.
+              {t("event.dialog.stopSales.description", "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases.")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="sales-reason">Reason (optional)</Label>
+              <Label htmlFor="sales-reason">{t("event.label.stopSalesReason", "Reason (optional)")}</Label>
               <Textarea
                 id="sales-reason"
-                placeholder="Provide a reason for stopping sales..."
+                placeholder={t("event.placeholder.stopSalesReason", "Provide a reason for stopping sales...")}
                 value={salesReason}
                 onChange={(e) => setSalesReason(e.target.value)}
               />
@@ -465,7 +466,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSalesDialogOpen(false)}>
-              Cancel
+              {t("common.button.cancel", "Cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -478,7 +479,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   Processing...
                 </>
               ) : (
-                'Stop Sales'
+                t("event.button.stopSales", "Stop Sales")
               )}
             </Button>
           </DialogFooter>

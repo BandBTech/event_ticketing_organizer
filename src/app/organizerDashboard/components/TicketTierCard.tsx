@@ -14,6 +14,7 @@ import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TierNameSelector from "./TierNameSelector";
 import { TierTemplate } from "@/types/event";
 import { EventFormData } from "@/lib/validation";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface TicketTierCardProps {
 	index: number;
@@ -21,7 +22,7 @@ interface TicketTierCardProps {
 	tierTemplates: TierTemplate[];
 	showDelete: boolean;
 	onDelete: () => void;
-  onCreateNew: () => void;
+	onCreateNew: () => void;
 }
 
 const TicketTierCard = ({
@@ -30,23 +31,25 @@ const TicketTierCard = ({
 	tierTemplates,
 	showDelete,
 	onDelete,
-  onCreateNew,
+	onCreateNew,
 }: TicketTierCardProps) => {
+	const { t } = useTranslation();
+
 	return (
 		<div className="grid md:grid-cols-3 gap-5 border border-gray-200 rounded-lg p-4 relative">
 			<FormField
 				control={control}
 				name={`tickets.${index}.name`}
-        render={({ field, fieldState }) => (
+				render={({ field, fieldState }) => (
 					<FormItem>
-						<FormLabel className="inline-block">Tier Name</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.tierName", "Tier Name")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
 							<TierNameSelector
 								value={field.value}
 								onChange={field.onChange}
 								templates={tierTemplates}
-                error={!!fieldState.error}
-                onCreateNew={onCreateNew}
+								error={!!fieldState.error}
+								onCreateNew={onCreateNew}
 							/>
 						</FormControl>
 						<FormMessage />
@@ -59,7 +62,7 @@ const TicketTierCard = ({
 				name={`tickets.${index}.price`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel className="inline-block">Price</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.ticketPrice", "Price")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
 							<Input
 								className="h-13 md:text-md"
@@ -79,12 +82,12 @@ const TicketTierCard = ({
 				name={`tickets.${index}.quantity`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel className="inline-block">Quantity</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.ticketQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
 							<Input
 								className="h-13 md:text-md"
 								type="number"
-								placeholder="Enter number of quantity"
+								placeholder={t("event.placeholder.quantity", "Enter number of quantity")}
 								{...field}
 								onChange={(e) => field.onChange(e.target.valueAsNumber)}
 							/>
@@ -99,12 +102,12 @@ const TicketTierCard = ({
 				name={`tickets.${index}.gst`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel className="inline-block">GST(%)</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.gst", "GST(%)")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
 							<Input
 								className="h-13 md:text-md"
 								type="number"
-								placeholder="Enter GST in percentage"
+								placeholder={t("event.placeholder.gst", "Enter GST in percentage")}
 								{...field}
 								onChange={(e) => field.onChange(e.target.valueAsNumber)}
 							/>
@@ -119,16 +122,16 @@ const TicketTierCard = ({
 				name={`tickets.${index}.salesStart`}
 				render={({ field, fieldState }) => (
 					<FormItem>
-            <FormLabel className="inline-block">Sales Start Date</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.salesStart", "Sales Start Date")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
-              <ShadcnDateTimePicker
-                value={field.value ? new Date(field.value) : null}
+							<ShadcnDateTimePicker
+								value={field.value ? new Date(field.value) : null}
 								onChange={(date) => {
-                  if (!date) field.onChange("");
+									if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-                format="yyyy-mm-dd hh:mm aa"
-                clearable
+								format="yyyy-mm-dd hh:mm aa"
+								clearable
 							/>
 						</FormControl>
 						<FormMessage />
@@ -141,16 +144,16 @@ const TicketTierCard = ({
 				name={`tickets.${index}.salesEnd`}
 				render={({ field, fieldState }) => (
 					<FormItem>
-            <FormLabel className="inline-block">Sales End Date</FormLabel>
+						<FormLabel className="inline-block">{t("event.field.salesEnd", "Sales End Date")} <span className="text-red-500">*</span></FormLabel>
 						<FormControl>
-              <ShadcnDateTimePicker
-                value={field.value ? new Date(field.value) : null}
+							<ShadcnDateTimePicker
+								value={field.value ? new Date(field.value) : null}
 								onChange={(date) => {
-                  if (!date) field.onChange("");
+									if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-                format="yyyy-mm-dd hh:mm aa"
-                clearable
+								format="yyyy-mm-dd hh:mm aa"
+								clearable
 							/>
 						</FormControl>
 						<FormMessage />

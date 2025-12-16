@@ -3,6 +3,7 @@
 import { useState, useRef, KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CategoryTagsSelectorProps {
   value: string[];
@@ -16,11 +17,15 @@ interface CategoryTagsSelectorProps {
 const CategoryTagsSelector = ({
   value = [],
   onChange,
-  placeholder = "Type and press Enter to add...",
+  placeholder,
   maxTags = 5,
   className,
   error = false,
 }: CategoryTagsSelectorProps) => {
+  const { t } = useTranslation();
+  const defaultPlaceholder = t("event.placeholder.tags", "Type and press Enter to add...");
+  const effectivePlaceholder = placeholder || defaultPlaceholder;
+
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,7 +105,7 @@ const CategoryTagsSelector = ({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleAddTag}
-          placeholder={value.length === 0 ? placeholder : "Add more..."}
+          placeholder={value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more...")}
           className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
         />
       )}
@@ -108,7 +113,7 @@ const CategoryTagsSelector = ({
       {/* Max reached message */}
       {isMaxReached && value.length > 0 && (
         <span className="text-xs text-muted-foreground">
-          Max {maxTags} tags
+          {t("event.validation.maxTags", "Max {max} tags").replace('{max}', maxTags.toString())}
         </span>
       )}
     </div>

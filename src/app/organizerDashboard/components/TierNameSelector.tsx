@@ -19,6 +19,8 @@ import { TierTemplate } from "@/services/tierService";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useState } from "react";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface TierNameSelectorProps {
   value: string;
   onChange: (val: string) => void;
@@ -34,6 +36,7 @@ const TierNameSelector = ({
   error = false,
   onCreateNew,
 }: TierNameSelectorProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -50,7 +53,7 @@ const TierNameSelector = ({
           )}
         >
           <span className={cn(!value && "text-muted-foreground")}>
-            {value || "Select or type tier name..."}
+            {value || t("event.placeholder.selectTier", "Select or type tier name...")}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -58,14 +61,14 @@ const TierNameSelector = ({
       <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
           <CommandInput
-            placeholder="Search or create tier..."
+            placeholder={t("event.placeholder.searchTier", "Search or create tier...")}
             onValueChange={setInputValue}
           />
           <CommandList>
             <CommandEmpty>
               <div className="p-2">
                 <p className="text-sm text-muted-foreground mb-2">
-                  No tier found.
+                  {t("event.text.noTierFound", "No tier found.")}
                 </p>
                 <Button
                   variant="outline"
@@ -77,7 +80,7 @@ const TierNameSelector = ({
                   }}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Create &quot;{inputValue}&quot;
+                  {t("event.button.create", "Create")} &quot;{inputValue}&quot;
                 </Button>
               </div>
             </CommandEmpty>
@@ -91,10 +94,10 @@ const TierNameSelector = ({
                 className="text-blue-600 font-medium cursor-pointer"
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Create New Tier
+                {t("event.button.createNewTier", "Create New Tier")}
               </CommandItem>
             </CommandGroup>
-            <CommandGroup heading="Templates">
+            <CommandGroup heading={t("event.section.templates", "Templates")}>
               {templates.map((template) => (
                 <CommandItem
                   key={template.id}

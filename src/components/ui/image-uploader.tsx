@@ -23,6 +23,7 @@ interface ImageUploaderProps {
   aspectRatio?: number; // Target aspect ratio (width/height)
   aspectRatioTolerance?: number; // Default 0.1
   checkAspectRatio?: boolean; // Whether to validate aspect ratio
+  required?: boolean; // Whether to show required asterisk
 }
 
 export function ImageUploader({
@@ -44,6 +45,7 @@ export function ImageUploader({
   aspectRatio,
   aspectRatioTolerance = 0.1,
   checkAspectRatio = false,
+  required = false,
 }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [internalError, setInternalError] = useState<string>("");
@@ -67,14 +69,14 @@ export function ImageUploader({
         const maxAspectRatio = aspectRatio + aspectRatioTolerance;
 
         if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
-           // We might want to just warn or fail. 
-           // For now, let's treat it as an error passed to parent or internal error.
-           // However, blocking onChange might be too aggressive if we want to let parent handle it.
-           // But checking requirements "Validation such as Invalid media file... missing", implies we should block or show error.
-           const msg = `Image aspect ratio must be approximately ${aspectRatio.toFixed(2)}.`;
-           setInternalError(msg);
-           // If strict, we might want to call onChange(null) but usually we let the user see the preview and the error.
-           // Let's call onChange(file) but keep the error.
+          // We might want to just warn or fail. 
+          // For now, let's treat it as an error passed to parent or internal error.
+          // However, blocking onChange might be too aggressive if we want to let parent handle it.
+          // But checking requirements "Validation such as Invalid media file... missing", implies we should block or show error.
+          const msg = `Image aspect ratio must be approximately ${aspectRatio.toFixed(2)}.`;
+          setInternalError(msg);
+          // If strict, we might want to call onChange(null) but usually we let the user see the preview and the error.
+          // Let's call onChange(file) but keep the error.
         }
       };
 
@@ -82,7 +84,7 @@ export function ImageUploader({
         URL.revokeObjectURL(objectUrl);
         setInternalError("Failed to load image for validation.");
       };
-      
+
       img.src = objectUrl;
     }
   };
@@ -97,7 +99,7 @@ export function ImageUploader({
       if (file) {
         setInternalError("");
         if (checkAspectRatio) {
-             validateImage(file);
+          validateImage(file);
         }
         onChange(file);
       }
@@ -107,16 +109,16 @@ export function ImageUploader({
       if (rejection) {
         const err = rejection.errors[0];
         if (err.code === "file-too-large") {
-             const msg = `File size exceeds ${maxSizeMB}MB.`;
-             setInternalError(msg);
-             toast.error(msg);
+          const msg = `File size exceeds ${maxSizeMB}MB.`;
+          setInternalError(msg);
+          toast.error(msg);
         } else if (err.code === "file-invalid-type") {
-             const msg = "Invalid file type. Please upload a valid image.";
-             setInternalError(msg);
-             toast.error(msg);
+          const msg = "Invalid file type. Please upload a valid image.";
+          setInternalError(msg);
+          toast.error(msg);
         } else {
-             setInternalError(err.message);
-             toast.error(err.message);
+          setInternalError(err.message);
+          toast.error(err.message);
         }
       }
     },
@@ -130,16 +132,16 @@ export function ImageUploader({
     e.stopPropagation();
     setInternalError("");
     if (onRemove) {
-        onRemove();
+      onRemove();
     } else {
-        onChange(null);
+      onChange(null);
     }
   };
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {label && <Label className={hasError ? "text-red-500" : ""}>{label}</Label>}
-      
+      {label && <Label className={hasError ? "text-red-500" : ""}>{label}{required && <span className="text-red-500"> *</span>}</Label>}
+
       <div
         {...getRootProps()}
         onClick={!value ? handleClick : undefined}
@@ -149,22 +151,22 @@ export function ImageUploader({
           hasError
             ? "border-red-500 bg-red-50/50"
             : isDragActive
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300 hover:bg-gray-50"
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:bg-gray-50"
         )}
       >
         <input {...getInputProps()} ref={fileInputRef} />
-        
+
         {value ? (
           <div className="relative w-full h-full group min-h-[200px]">
             {/* Using img tag directly for flexibility with blob URLs and simplicity, optimized next/image requires width/height or fill */}
             <img
               src={value}
               alt="Preview"
-              className="w-full h-full object-contain rounded-lg p-1" 
-             // used object-contain to ensure whole image is seen if aspect ratio differs from container
+              className="w-full h-full object-contain rounded-lg p-1"
+            // used object-contain to ensure whole image is seen if aspect ratio differs from container
             />
-            
+
             {/* Remove Button */}
             <div
               onClick={handleRemove}
@@ -178,8 +180,8 @@ export function ImageUploader({
             <div
               className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer rounded-lg"
               onClick={(e) => {
-                  e.stopPropagation();
-                  handleClick();
+                e.stopPropagation();
+                handleClick();
               }}
             >
               <div className="text-white space-y-2 text-center">
@@ -191,7 +193,7 @@ export function ImageUploader({
         ) : (
           <div className="p-6 flex flex-col items-center justify-center">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 group-hover:scale-110 transition-transform">
-                <ImageIcon className="w-6 h-6" />
+              <ImageIcon className="w-6 h-6" />
             </div>
             {isDragActive ? (
               <p className="text-blue-600 font-medium">Drop the image here...</p>

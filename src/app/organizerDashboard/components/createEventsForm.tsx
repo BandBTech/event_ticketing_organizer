@@ -382,7 +382,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (_error: any) => {
-    // Error toast is already shown by apiClient (showErrorToast=true by default)
+      // Error toast is already shown by apiClient (showErrorToast=true by default)
     },
   });
 
@@ -507,7 +507,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
         saveEventMutation.mutate({ eventData: changedFields, isUpdate: true, id: initialData.id });
       } else {
-      // For new events, send all data
+        // For new events, send all data
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const eventData: any = {
           title: data.name,
@@ -630,6 +630,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   onRemove={handleRemoveImage}
                   error={imageError}
                   browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
+                  required
                 />
 
                 <div className="flex flex-col gap-5">
@@ -639,7 +640,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="inline-block">
-                          {t("event.field.eventTitle", "Event Title")}
+                          {t("event.field.eventTitle", "Event Title")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input className="h-13 md:text-md" placeholder="Enter Title" {...field} />
@@ -654,7 +655,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name="tags"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="inline-block">Category Tags</FormLabel>
+                        <FormLabel className="inline-block">{t("event.field.categoryTags", "Category Tags")} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <CategoryTagsSelector
                             value={field.value}
@@ -680,7 +681,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     form.formState.errors.description && "text-red-500"
                   )}
                 >
-                  Event Description <span className="text-red-500">*</span>
+                  {t("event.field.eventDescription", "Event Description")} <span className="text-red-500">*</span>
                 </Label>
                 <div
                   className={cn(
@@ -714,14 +715,14 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Venue & Schedule Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
+              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.venueSchedule", "Venue & Schedule")}</h2>
               <div className="grid md:grid-cols-3 gap-5">
                 <FormField
                   control={form.control}
                   name="venue"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Venue Name</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.venueName", "Venue Name")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input className="h-13 md:text-md" placeholder="Venue name" {...field} />
                       </FormControl>
@@ -735,7 +736,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="venueAddress"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Venue Address</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.venueAddress", "Venue Address")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <AddressAutocomplete
                           value={field.value}
@@ -755,7 +756,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="capacity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Capacity</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.capacity", "Capacity")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
                           className="h-13 md:text-md"
@@ -775,7 +776,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="timezone"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Timezone</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.timezone", "Timezone")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <TimezoneSelector
                           value={field.value}
@@ -793,7 +794,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="startDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Event Start Date</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.startDateTime", "Event Start Date")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <ShadcnDateTimePicker
                           value={field.value ? new Date(field.value) : null}
@@ -815,7 +816,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="endDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Event End Date</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.endDateTime", "Event End Date")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <ShadcnDateTimePicker
                           value={field.value ? new Date(field.value) : null}
@@ -838,7 +839,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Ticketing Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
+              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.ticketing", "Ticketing")}</h2>
 
               {ticketFields.map((field, index) => (
                 <TicketTierCard
@@ -871,7 +872,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
-                Add ticket tier
+                {t("event.button.addTicketTier", "Add ticket tier")}
               </Button>
             </div>
           </div>
@@ -879,7 +880,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Discounts & Promo Codes Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
+              <h2 className="text-lg font-semibold text-blue-600">{t("event.section.discountsPromo", "Discounts & Promo Codes")}</h2>
 
               {promoFields.map((field, index) => (
                 <PromoCodeCard
@@ -904,7 +905,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                 className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
-                Add promo code
+                {t("event.button.addPromoCode", "Add promo code")}
               </Button>
             </div>
           </div>
@@ -916,7 +917,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
               variant="outline"
               onClick={() => handleNavigateAway(() => router.push('/organizerDashboard/pages/events'))}
             >
-              Cancel
+              {t("common.button.cancel", "Cancel")}
             </Button>
             <div className="flex gap-3">
               {/* <Button
@@ -933,10 +934,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
               >
                 <Plus className="w-5 h-5 mr-2" />
                 {saveEventMutation.isPending
-                  ? "Saving..."
+                  ? t("common.status.saving", "Saving...")
                   : isEditing
-                    ? "Update Event"
-                    : "Create Event"}
+                    ? t("event.button.updateEvent", "Update Event")
+                    : t("event.button.createEvent", "Create Event")}
               </Button>
             </div>
           </div>
@@ -947,16 +948,15 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t("common.dialog.unsavedChanges.title", "Unsaved Changes")}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? All your progress will be
-              lost.
+              {t("common.dialog.unsavedChanges.description", "You have unsaved changes. Are you sure you want to leave? All your progress will be lost.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelLeave}>Stay on Page</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelLeave}>{t("common.button.stay", "Stay on Page")}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLeave} className="bg-red-600 hover:bg-red-700">
-              Leave Page
+              {t("common.button.leave", "Leave Page")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
