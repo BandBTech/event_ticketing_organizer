@@ -130,7 +130,7 @@ const TicketTierCard = ({
 									if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-								format="yyyy-mm-dd hh:mm aa"
+                format="yyyy-MM-dd hh:mm aa"
 								clearable
                 error={!!fieldState.error}
 							/>
@@ -153,7 +153,7 @@ const TicketTierCard = ({
 									if (!date) field.onChange("");
 									else field.onChange(date.toISOString());
 								}}
-								format="yyyy-mm-dd hh:mm aa"
+                format="yyyy-MM-dd hh:mm aa"
 								clearable
                 error={!!fieldState.error}
 							/>

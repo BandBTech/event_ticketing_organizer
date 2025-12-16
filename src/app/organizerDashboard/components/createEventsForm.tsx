@@ -59,7 +59,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const [imageRemoved, setImageRemoved] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
-  const [formModified, setFormModified] = useState(false);
+
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
   const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(null);
   const lastInitializedEventId = React.useRef<string | null>(null);
@@ -142,9 +142,11 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     name: "promoCodes",
   });
 
+  const { isDirty } = form.formState;
+
   const hasUnsavedChanges = useCallback(() => {
-    return formModified || imageFile !== null;
-  }, [formModified, imageFile]);
+    return isDirty || imageFile !== null;
+  }, [isDirty, imageFile]);
 
   // Track if we initialized with tierTemplates available
   const lastInitializedWithTemplates = React.useRef<boolean>(false);
@@ -213,23 +215,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           setImagePreview(initialData.banner_image);
         }
       }
-      // Reset form modified state after setting initial data
-      setFormModified(false);
     }
   }, [initialData, isEditing, form, tierTemplates]);
 
-  // Track form modifications - watch for any value changes
-  const watchCallCount = React.useRef(0);
-  useEffect(() => {
-    const subscription = form.watch(() => {
-      // Skip first few callbacks (initial form setup triggers watch)
-      watchCallCount.current++;
-      if (watchCallCount.current > 2) {
-        setFormModified(true);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+
 
   // Handle browser refresh/close
   useEffect(() => {
@@ -330,7 +319,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
   const confirmLeave = () => {
     // Reset form state to prevent popstate handler from blocking navigation
-    setFormModified(false);
+    form.reset(form.getValues());
     setImageFile(null);
     setShowLeaveDialog(false);
     if (pendingNavigation) {
@@ -383,7 +372,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         isEditing ? "Event Updated" : "Event Created",
         `Event has been successfully ${isEditing ? "updated" : "created"}.`
       );
-      setFormModified(false);
+
+      // setFormModified(false); // No need to manually set false, navigation will unmount or form.reset in initialData effect handles it
       // lastInitializedEventId.current = null; // Clear tracking to prevent re-initializing
       router.push("/organizerDashboard/pages/events");
     },
@@ -548,7 +538,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     const clearImageState = () => {
       setImageFile(null);
       setImagePreview("");
-      form.setValue("image", "");
+      form.setValue("image", "", { shouldDirty: true, shouldValidate: true });
       setImageRemoved(true);
     };
 
@@ -599,7 +589,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setImagePreview(result);
-        form.setValue("image", result);
+        form.setValue("image", result, { shouldDirty: true, shouldValidate: true });
         form.clearErrors("image");
         setImageError("");
         setImageRemoved(false);
@@ -619,7 +609,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const handleRemoveImage = () => {
     setImageFile(null);
     setImagePreview("");
-    form.setValue("image", "");
+    form.setValue("image", "", { shouldDirty: true, shouldValidate: true });
     setImageError("");
     setImageRemoved(true);
   };
@@ -819,7 +809,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                             if (!date) field.onChange("");
                             else field.onChange(date.toISOString());
                           }}
-                          format="yyyy-mm-dd hh:mm aa"
+                          format="yyyy-MM-dd hh:mm aa"
                           clearable
                           error={!!fieldState.error}
                         />
@@ -842,7 +832,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                             if (!date) field.onChange("");
                             else field.onChange(date.toISOString());
                           }}
-                          format="yyyy-mm-dd hh:mm aa"
+                          format="yyyy-MM-dd hh:mm aa"
                           clearable
                           error={!!fieldState.error}
                         />
