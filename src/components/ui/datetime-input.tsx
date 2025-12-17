@@ -292,48 +292,45 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const showError = options.error || hasError || formError;
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'flex h-9 w-full min-w-0 items-center justify-start rounded-md border bg-white ps-3 pe-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm',
-        'border-input',
-        'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground',
-        'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-        isFocused && !showError && 'border-ring ring-ring/50 ring-[3px]',
-        showError && 'ring-destructive/20 dark:ring-destructive/40 border-destructive',
-        options.hideCalendarIcon && 'pe-3',
-        options.className
-      )}
-    >
-      <input
-        ref={mergeRefs(inputRef)}
-        className={cn("grow min-w-0 bg-transparent py-1 pe-2 md:text-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-50", inputValue ? "text-gray-900" : "text-muted-foreground")}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onClick={onClick}
-        onKeyDown={onKeyDown}
-        value={inputStr}
-        placeholder={formatStr}
-        onChange={() => { }}
-        disabled={options.disabled}
-        spellCheck={false}
-      />
+    <div className={options.className}>
+      <div
+        ref={ref}
+        className={cn(
+          'flex h-13 w-full min-w-0 items-center justify-start rounded-md border bg-white ps-3 pe-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-md',
+          'border-input',
+          'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground',
+          'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+          isFocused && !showError && 'border-ring ring-ring/50 ring-[3px]',
+          showError && 'ring-destructive/20 dark:ring-destructive/40 border-destructive',
+          options.hideCalendarIcon && 'pe-3'
+        )}
+      >
+        <input
+          ref={mergeRefs(inputRef)}
+          className={cn("grow min-w-0 bg-transparent py-1 pe-2 md:text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50", inputValue ? "text-foreground" : "text-foreground")}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onClick={onClick}
+          onKeyDown={onKeyDown}
+          value={inputStr}
+          placeholder={formatStr}
+          onChange={() => { }}
+          disabled={options.disabled}
+          spellCheck={false}
+        />
 
-      {!options.hideCalendarIcon && (
-        <Button type="button" variant="ghost" size="icon" onClick={options.onCalendarClick}>
-          <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
-        </Button>
-      )}
-      <div className="me-3">
-        {inputValue ? (
-          <CircleCheck className="size-4 text-green-500" />
-        ) : (
-            <div className="text-red-500 text-xs flex items-center gap-1">
-              <CircleAlert className={cn('size-4', !areAllSegmentsEmpty && 'text-red-500')} />
-              <span>Invalid Format</span>
-            </div>
+        {!options.hideCalendarIcon && (
+          <Button type="button" variant="ghost" size="icon" onClick={options.onCalendarClick}>
+            <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
+          </Button>
         )}
       </div>
+      {/* Error Message Below */}
+      {hasError ? (
+        <div className="text-red-500 text-xs flex items-center gap-1 font-medium mt-1">
+          <span>Invalid date time</span>
+        </div>
+      ) : null}
     </div>
   );
 });

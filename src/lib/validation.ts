@@ -21,6 +21,17 @@ const createRequiredDateSchema = (t: (key: string, fallback?: string) => string,
         code: z.ZodIssueCode.custom,
         message: t('common.validation.yearLimit', 'Year cannot be more than 4 digits.'),
       });
+      return;
+    }
+
+    // Check for past date (previous date validation)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.pastDate', 'Date cannot be in the past.'),
+      });
     }
   });
 
@@ -82,9 +93,9 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
   })
   .refine((data) => {
     if (!data.salesEnd || !data.salesStart) return true;
-    return new Date(data.salesEnd) >= new Date(data.salesStart);
+    return new Date(data.salesEnd) > new Date(data.salesStart);
   }, {
-    message: t('event.validation.salesEndAfterStart', "Sales end date must be after or equal to Sales start date."),
+    message: t('event.validation.salesEndAfterStart', "Sales end date must be after Sales start date."),
     path: ["salesEnd"],
   });
 
