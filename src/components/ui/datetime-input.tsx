@@ -133,10 +133,10 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const inputValue = useMemo(() => {
     const allHasValue = !validSegments.some((s) => !s.value);
     if (!allHasValue) return undefined;
-    const date = parse(inputStr, formatStr, value || new TZDate(new Date(), timezone));
+    const date = parse(inputStr, formatStr, value ? new Date(value) : new Date());
     const year = getYear(date);
     // console.log('inputValue', {allHasValue, validSegments, inputStr, formatStr, date, year});
-    if (isValid(date) && year > 1000 && year <= 9999) {
+    if (year >= 1000 && year <= 9999) {
       return date;
     }
     return undefined;
@@ -358,7 +358,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
       </div>
       {/* Error Message Below */}
       {hasError ? (
-        <div className="text-red-500 text-xs flex items-center gap-1 font-medium mt-1">
+        <div className="text-destructive text-xs flex items-center gap-1 font-medium mt-1">
           <span>Invalid date time</span>
         </div>
       ) : null}
