@@ -73,8 +73,21 @@ const mergeRefs = (...refs: (React.MutableRefObject<any> | React.RefCallback<any
   };
 };
 const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((options: DateTimeInputProps, ref) => {
-  const { format: formatProp, value: _value, timezone, onChange, ...rest } = options;
-  const value = useMemo(() => _value ? new TZDate(_value, timezone) : undefined, [_value, timezone]);
+  const {
+    className,
+    format: formatProp,
+    value: _value,
+    timezone,
+    onChange,
+    disabled,
+    clearable,
+    hideCalendarIcon,
+    onCalendarClick,
+    error,
+    ...rest
+  } = options;
+  const timestamp = _value?.getTime();
+  const value = useMemo(() => timestamp !== undefined ? new TZDate(timestamp, timezone) : undefined, [timestamp, timezone]);
   const form = useFormContext();
   const formatStr = React.useMemo(() => formatProp || 'dd/MM/yyyy-hh:mm aa', [formatProp]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -82,14 +95,19 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const [segments, setSegments] = useState<Segment[]>([]);
   const [selectedSegmentAt, setSelectedSegmentAt] = useState<number | undefined>(undefined);
 
+  // Track whether segment updates are from external value changes (parent) vs user input
+  const isExternalUpdateRef = useRef(false);
+
   useEffect(() => {
     if (form?.formState.isSubmitted) {
+      isExternalUpdateRef.current = true;
       setSegments(parseFormat(formatStr, value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form?.formState.isSubmitted]);
   useEffect(() => {
     // console.error('valueChanged', {formatStr, inputStr, value});
+    isExternalUpdateRef.current = true;
     setSegments(parseFormat(formatStr, value));
   }, [formatStr, value]);
 
@@ -125,6 +143,11 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   }, [validSegments, inputStr, formatStr, value, timezone]);
 
   useEffect(() => {
+    // Skip if this update came from external value changes (parent prop)
+    if (isExternalUpdateRef.current) {
+      isExternalUpdateRef.current = false;
+      return;
+    }
     if (!inputValue) return;
     if (value?.getTime() !== inputValue.getTime()) {
       // console.log('inputValueChanged', {formatStr, inputStr, value, inputValue, });
@@ -296,10 +319,10 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
     // Not inside a form context
   }
 
-  const showError = options.error || hasError || formError;
+  const showError = error || hasError || formError;
 
   return (
-    <div className={options.className}>
+    <div className={className}>
       <div
         ref={ref}
         className={cn(
@@ -309,7 +332,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
           isFocused && !showError && 'border-ring ring-ring/50 ring-[3px]',
           showError && 'ring-destructive/20 dark:ring-destructive/40 border-destructive',
-          options.hideCalendarIcon && 'pe-3'
+          hideCalendarIcon && 'pe-3'
         )}
       >
         <input
@@ -322,13 +345,13 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           value={inputStr}
           placeholder={formatStr}
           onChange={() => { }}
-          disabled={options.disabled}
+          disabled={disabled}
           spellCheck={false}
           {...rest}
         />
 
-        {!options.hideCalendarIcon && (
-          <Button type="button" variant="ghost" size="icon" onClick={options.onCalendarClick}>
+        {!hideCalendarIcon && (
+          <Button type="button" variant="ghost" size="icon" onClick={onCalendarClick}>
             <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
           </Button>
         )}
