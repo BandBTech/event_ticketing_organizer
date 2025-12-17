@@ -128,12 +128,19 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
 
 export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
-    name: z.string().min(1, t('event.validation.titleRequired', "Event title is required.")),
-    description: z.string().min(1, t('event.validation.descriptionRequired', "Event description is required.")),
+    name: z.string()
+      .min(1, t('event.validation.titleRequired', "Event title is required."))
+      .max(200, t('event.validation.titleMaxLength', "Event title must be under 200 characters.")),
+    description: z.string()
+      .min(1, t('event.validation.descriptionRequired', "Event description is required.")),
     tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
     image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
-    venue: z.string().min(1, t('event.validation.venueRequired', "Venue name is required.")),
-    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue address is required.")),
+    venue: z.string()
+      .min(1, t('event.validation.venueRequired', "Venue name is required."))
+      .max(200, t('event.validation.venueMaxLength', "Venue name must be under 200 characters.")),
+    venueAddress: z.string()
+      .min(1, t('event.validation.venueAddressRequired', "Venue address is required."))
+      .max(500, t('event.validation.venueAddressMaxLength', "Venue address must be under 500 characters.")),
     capacity: createRequiredNumberSchema(
       t,
       t('event.field.capacity', 'Capacity'),

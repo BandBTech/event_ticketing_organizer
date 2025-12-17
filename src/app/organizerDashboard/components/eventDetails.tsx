@@ -64,6 +64,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', event.id] });
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
       setSalesDialogOpen(false);
       setSalesReason("");
       setSalesAction(null);
@@ -76,6 +77,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', event.id] });
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
       setCancelDialogOpen(false);
       setCancelReason("");
     },

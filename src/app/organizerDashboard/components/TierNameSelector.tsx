@@ -60,7 +60,7 @@ const TierNameSelector = ({
           {isLoading ? (
             <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
           ) : (
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           )}
         </Button>
       </PopoverTrigger>
@@ -112,6 +112,7 @@ const TierNameSelector = ({
                     onChange(template.template_name);
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
                   <Check
                     className={cn(

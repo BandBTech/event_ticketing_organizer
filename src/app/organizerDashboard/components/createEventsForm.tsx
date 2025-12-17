@@ -369,6 +369,11 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         await queryClient.invalidateQueries({ queryKey: ["events"] });
       }
 
+      // If updating, also invalidate the specific event cache so re-editing fetches fresh data
+      if (isEditing && initialData?.id) {
+        await queryClient.invalidateQueries({ queryKey: ["event", initialData.id] });
+      }
+
       toast.success(
         isEditing ? "Event Updated" : "Event Created",
         `Event has been successfully ${isEditing ? "updated" : "created"}.`
@@ -434,7 +439,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
             tier.quantity !== initialTier.quantity ||
             tier.gst !== (initialTier.gst || 0) ||
             tier.sales_start !== (initialTier.sales_start || "") ||
-            tier.sales_end !== (initialTier.sales_end || "")
+            tier.sales_end !== (initialTier.sales_end || "") ||
+            tier.tier_template_id !== initialTier.tier_template_id
           );
         });
 
@@ -650,7 +656,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           {t("event.field.eventTitle", "Event Title")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input className="h-13 md:text-md" placeholder={t("event.placeholder.eventTitle", "Enter event title")} {...field} />
+                          <div className="relative">
+                            <Input
+                              className="h-13 md:text-md pr-16" // Added padding for counter
+                              placeholder={t("event.placeholder.eventTitle", "Enter event title")}
+                              maxLength={200}
+                              {...field}
+                            />
+                            <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
+                              {field.value?.length || 0}/200 characters
+                            </div>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -702,16 +718,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     key={isEditing ? `editor-${initialData?.id}` : "editor-new"}
                     initialHtml={isEditing ? initialData?.description || "" : ""}
                     onHtmlChange={useCallback((html: string) => {
-                      form.setValue("description", html);
-                      if (html && html.trim()) {
-                        form.clearErrors("description");
-                      }
+                      // Strip HTML tags to check for real content
+                      const textContent = html.replace(/<[^>]*>/g, '').trim();
+                      const valueToSet = textContent ? html : "";
+
+                      form.setValue("description", valueToSet, { shouldDirty: true, shouldValidate: true });
                     }, [form])}
                     placeholder={t("event.placeholder.eventDescription", "Write about your event...")}
                   />
                 </div>
                 {form.formState.errors.description && (
-                  <p className="text-red-500 text-[0.8rem] mt-1 flex items-center gap-1">
+                  <p className="text-xs font-medium text-destructive mt-1 flex items-center gap-1">
                     {form.formState.errors.description.message}
                   </p>
                 )}
@@ -731,7 +748,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     <FormItem>
                       <FormLabel className="inline-block">{t("event.field.venueName", "Venue Name")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input className="h-13 md:text-md" placeholder={t("event.placeholder.venueName", "Enter venue name")} {...field} />
+                        <div className="relative">
+                          <Input
+                            className="h-13 md:text-md pr-16"
+                            placeholder={t("event.placeholder.venue", "Enter venue name")}
+                            maxLength={200}
+                            {...field}
+                          />
+                          <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
+                            {field.value?.length || 0}/200 characters
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -745,13 +772,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     <FormItem>
                       <FormLabel className="inline-block">{t("event.field.venueAddress", "Venue Address")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <AddressAutocomplete
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder={t("event.placeholder.venueAddress", "Search for venue address")}
-                          className="h-13 md:text-md"
-                          error={!!fieldState.error}
-                        />
+                        <div className="relative">
+                          <AddressAutocomplete
+                            value={field.value}
+                            onChange={field.onChange}
+                            className="h-13 md:text-md pr-16"
+                            placeholder={t("event.placeholder.venueAddress", "Enter venue address")}
+                            maxLength={500}
+                          />
+                          <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
+                            {field.value?.length || 0}/500 characters
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -990,7 +1022,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
           // If we have an active ticket index, select the new template
           if (activeTicketIndex !== null) {
-            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name);
+            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name, { shouldDirty: true, shouldValidate: true });
           }
         }}
         initialData={null}
