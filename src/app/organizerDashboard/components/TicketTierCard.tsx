@@ -38,133 +38,135 @@ const TicketTierCard = ({
 	const { t } = useTranslation();
 
 	return (
-		<div className="grid md:grid-cols-3 gap-5 border border-gray-200 rounded-lg p-4 relative">
-			<FormField
-				control={control}
-				name={`tickets.${index}.name`}
-				render={({ field, fieldState }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.tierName", "Tier Name")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<TierNameSelector
-								value={field.value}
-								onChange={field.onChange}
-								templates={tierTemplates}
-								error={!!fieldState.error}
-								onCreateNew={onCreateNew}
-                isLoading={isLoading}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+    <div className="border border-gray-200 rounded-lg p-4 relative">
+      <div className="grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-5">
+        <FormField
+          control={control}
+          name={`tickets.${index}.name`}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.tierName", "Tier Name")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <TierNameSelector
+                  value={field.value}
+                  onChange={field.onChange}
+                  templates={tierTemplates}
+                  error={!!fieldState.error}
+                  onCreateNew={onCreateNew}
+                  isLoading={isLoading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`tickets.${index}.price`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.ticketPrice", "Price")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								type="number"
-								placeholder="e.g. 100"
-								{...field}
-								onChange={(e) => field.onChange(e.target.valueAsNumber)}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`tickets.${index}.price`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.ticketPrice", "Price")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  type="number"
+                  placeholder="e.g. 100"
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`tickets.${index}.quantity`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.ticketQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								type="number"
-								placeholder={t("event.placeholder.quantity", "Enter number of quantity")}
-								{...field}
-								onChange={(e) => field.onChange(e.target.valueAsNumber)}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`tickets.${index}.quantity`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.ticketQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  type="number"
+                  placeholder={t("event.placeholder.quantity", "Enter number of quantity")}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`tickets.${index}.gst`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.gst", "GST(%)")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								type="number"
-								placeholder={t("event.placeholder.gst", "Enter GST in percentage")}
-								{...field}
-								onChange={(e) => field.onChange(e.target.valueAsNumber)}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`tickets.${index}.gst`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.gst", "GST(%)")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  type="number"
+                  placeholder={t("event.placeholder.gst", "Enter GST in percentage")}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`tickets.${index}.salesStart`}
-				render={({ field, fieldState }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.salesStart", "Sales Start Date")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<ShadcnDateTimePicker
-								value={field.value ? new Date(field.value) : null}
-								onChange={(date) => {
-									if (!date) field.onChange("");
-									else field.onChange(date.toISOString());
-								}}
-                format="yyyy-MM-dd hh:mm aa"
-								clearable
-                error={!!fieldState.error}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`tickets.${index}.salesStart`}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.salesStart", "Sales Start Date")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <ShadcnDateTimePicker
+                  value={field.value ? new Date(field.value) : null}
+                  onChange={(date) => {
+                    if (!date) field.onChange("");
+                    else field.onChange(date.toISOString());
+                  }}
+                  format="yyyy-MM-dd hh:mm aa"
+                  clearable
+                  error={!!fieldState.error}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`tickets.${index}.salesEnd`}
-				render={({ field, fieldState }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.salesEnd", "Sales End Date")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<ShadcnDateTimePicker
-								value={field.value ? new Date(field.value) : null}
-								onChange={(date) => {
-									if (!date) field.onChange("");
-									else field.onChange(date.toISOString());
-								}}
-                format="yyyy-MM-dd hh:mm aa"
-								clearable
-                error={!!fieldState.error}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`tickets.${index}.salesEnd`}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.salesEnd", "Sales End Date")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <ShadcnDateTimePicker
+                  value={field.value ? new Date(field.value) : null}
+                  onChange={(date) => {
+                    if (!date) field.onChange("");
+                    else field.onChange(date.toISOString());
+                  }}
+                  format="yyyy-MM-dd hh:mm aa"
+                  clearable
+                  error={!!fieldState.error}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
 			{showDelete && (
 				<Trash2

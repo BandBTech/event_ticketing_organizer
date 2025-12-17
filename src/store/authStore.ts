@@ -91,7 +91,8 @@ export const useAuthStore = create<AuthStore>()(
             isOrganizerComplete: true,
           });
           return result;
-        } catch (error) {
+        } catch {
+          set({ isLoading: false });
           set({
             user: null,
             organizerProfile: null,
@@ -179,7 +180,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const status = await authService.getOrganizerStatus();
           set({ isOrganizerComplete: status.is_complete });
-        } catch (error) {
+        } catch {
           // If check fails, assume complete to avoid blocking user
           set({ isOrganizerComplete: true });
         }

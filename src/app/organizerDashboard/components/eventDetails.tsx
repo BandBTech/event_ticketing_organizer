@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Footer from "@/components/layout/footer";
 import {
   MapPin,
@@ -26,6 +26,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { stopSalesSchema, type StopSalesFormData, cancelEventSchema, type CancelEventFormData } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -44,10 +55,10 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
+  // const [cancelReason, setCancelReason] = useState(""); // Removed in favor of hook form
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
   const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
-  const [salesReason, setSalesReason] = useState("");
+  // const [salesReason, setSalesReason] = useState(""); // Removed in favor of hook form
 
   // Use analytics data if available, otherwise fall back to event tiers
   const totalTicketsSold = analytics?.sold_seats ??
@@ -66,7 +77,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
       setSalesDialogOpen(false);
-      setSalesReason("");
+      form.reset();
       setSalesAction(null);
     },
   });
@@ -79,9 +90,37 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
       setCancelDialogOpen(false);
-      setCancelReason("");
+      cancelForm.reset();
     },
   });
+
+  const salesSchema = useMemo(() => stopSalesSchema(t), [t]);
+  const form = useForm<StopSalesFormData>({
+    resolver: zodResolver(salesSchema),
+    defaultValues: {
+      reason: "",
+    },
+    mode: "onChange",
+  });
+
+  const cancelSchema = useMemo(() => cancelEventSchema(t), [t]);
+  const cancelForm = useForm<CancelEventFormData>({
+    resolver: zodResolver(cancelSchema),
+    defaultValues: {
+      reason: "",
+    },
+    mode: "onChange",
+  });
+
+  const onSubmitCancel = (data: CancelEventFormData) => {
+    cancelEventMutation.mutate(data.reason);
+  };
+
+  const onSubmitSales = (data: StopSalesFormData) => {
+    if (salesAction) {
+      salesControlMutation.mutate({ action: salesAction, reason: data.reason });
+    }
+  };
 
   const handleSalesAction = (action: SalesAction) => {
     setSalesAction(action);
@@ -94,17 +133,17 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     }
   };
 
-  const confirmSalesAction = () => {
-    if (salesAction) {
-      salesControlMutation.mutate({ action: salesAction, reason: salesReason });
-    }
-  };
+  // const confirmSalesAction = () => { // Removed as we use form submit now
+  //   if (salesAction) {
+  //     salesControlMutation.mutate({ action: salesAction, reason: salesReason });
+  //   }
+  // };
 
-  const handleCancelEvent = () => {
-    if (cancelReason.length >= 10) {
-      cancelEventMutation.mutate(cancelReason);
-    }
-  };
+  // const handleCancelEvent = () => { // Removed in favor of form
+  //   if (cancelReason.length >= 10) {
+  //     cancelEventMutation.mutate(cancelReason);
+  //   }
+  // };
 
   // Determine sales status for button display
   const salesStatus = analytics?.sales_status || 'active';
@@ -124,7 +163,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <div className="flex-grow p-6 space-y-6">
+        <div className="grow p-6 space-y-6">
           {/* Event Title + Actions */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
@@ -404,88 +443,126 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
       </div>
 
       {/* Cancel Event Dialog */}
-      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+      <Dialog open={cancelDialogOpen} onOpenChange={(open) => {
+        setCancelDialogOpen(open);
+        if (open) cancelForm.reset();
+      }}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("event.dialog.cancelEvent.title", "Cancel Event")}</DialogTitle>
-            <DialogDescription>
-              {t("event.dialog.cancelEvent.description", "Are you sure you want to cancel this event? This action cannot be undone. All ticket holders will be notified.")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="cancel-reason">{t("event.label.cancellationReason", "Reason for cancellation (minimum 10 characters)")}</Label>
-              <Textarea
-                id="cancel-reason"
-                placeholder={t("event.placeholder.cancellationReason", "Please provide a reason for cancelling this event...")}
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                className="min-h-[100px]"
-              />
-              <p className="text-sm text-gray-500">{cancelReason.length}/500 characters</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
-              {t("event.button.keepEvent", "Keep Event")}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleCancelEvent}
-              disabled={cancelReason.length < 10 || cancelEventMutation.isPending}
-            >
-              {cancelEventMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Cancelling...
-                </>
-              ) : (
-                t("event.button.cancelEvent", "Cancel Event")
-              )}
-            </Button>
-          </DialogFooter>
+          <Form {...cancelForm}>
+            <form onSubmit={cancelForm.handleSubmit(onSubmitCancel)}>
+              <DialogHeader>
+                <DialogTitle>{t("event.dialog.cancelEvent.title", "Cancel Event")}</DialogTitle>
+                <DialogDescription>
+                  {t("event.dialog.cancelEvent.description", "Are you sure you want to cancel this event? This action cannot be undone. All ticket holders will be notified.")}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <FormField
+                  control={cancelForm.control}
+                  name="reason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("event.label.cancellationReason", "Reason for cancellation (minimum 10 characters)")}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("event.placeholder.cancellationReason", "Please provide a reason for cancelling this event...")}
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <div className="flex justify-between items-start mt-1">
+                        <FormMessage />
+                        <div className="text-xs text-gray-500 text-right grow">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setCancelDialogOpen(false)}>
+                  {t("event.button.keepEvent", "Keep Event")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={cancelEventMutation.isPending}
+                >
+                  {cancelEventMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Cancelling...
+                    </>
+                  ) : (
+                    t("event.button.cancelEvent", "Cancel Event")
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 
       {/* Stop Sales Confirmation Dialog */}
-      <Dialog open={salesDialogOpen} onOpenChange={setSalesDialogOpen}>
+      <Dialog open={salesDialogOpen} onOpenChange={(open) => {
+        setSalesDialogOpen(open);
+        if (open) form.reset();
+      }}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("event.dialog.stopSales.title", "Stop Event Sales")}</DialogTitle>
-            <DialogDescription>
-              {t("event.dialog.stopSales.description", "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases.")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="sales-reason">{t("event.label.stopSalesReason", "Reason (optional)")}</Label>
-              <Textarea
-                id="sales-reason"
-                placeholder={t("event.placeholder.stopSalesReason", "Provide a reason for stopping sales...")}
-                value={salesReason}
-                onChange={(e) => setSalesReason(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSalesDialogOpen(false)}>
-              {t("common.button.cancel", "Cancel")}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmSalesAction}
-              disabled={salesControlMutation.isPending}
-            >
-              {salesControlMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                t("event.button.stopSales", "Stop Sales")
-              )}
-            </Button>
-          </DialogFooter>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmitSales)}>
+              <DialogHeader>
+                <DialogTitle>{t("event.dialog.stopSales.title", "Stop Event Sales")}</DialogTitle>
+                <DialogDescription>
+                  {t("event.dialog.stopSales.description", "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases.")}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <FormField
+                  control={form.control}
+                  name="reason"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("event.label.stopSalesReason", "Reason (optional)")}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("event.placeholder.stopSalesReason", "Provide a reason for stopping sales...")}
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <div className="flex justify-between items-start mt-1">
+                        <FormMessage />
+                        <div className="text-xs text-gray-500 text-right grow">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setSalesDialogOpen(false)}>
+                  {t("common.button.cancel", "Cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={salesControlMutation.isPending}
+                >
+                  {salesControlMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    t("event.button.stopSales", "Stop Sales")
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 

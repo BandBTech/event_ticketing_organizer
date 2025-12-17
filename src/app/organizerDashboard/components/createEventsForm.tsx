@@ -626,12 +626,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event Details Section */}
-          <div className="mb-6">
+          <div className="@container mb-6">
             <div className="p-6 space-y-5 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary mb-2!">
                 {t("event.eventDetails", "Event Details")}
               </h2>
-              <div className="grid md:grid-cols-2 gap-5">
+              <div className="grid @2xl:grid-cols-2 gap-5">
                 <ImageUploader
                   label={t("event.field.uploadBanner", "Upload Banner")}
                   helperText={t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
@@ -685,7 +685,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                             onChange={field.onChange}
                             placeholder="Select or type categories..."
                             maxTags={5}
-                            className="h-13 md:text-md"
+                            className="min-h-13 md:text-md"
                             error={!!fieldState.error}
                           />
                         </FormControl>
@@ -737,10 +737,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Venue & Schedule Section */}
-          <div className="mb-6">
+          <div className="@container mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.venueSchedule", "Venue & Schedule")}</h2>
-              <div className="grid md:grid-cols-3 gap-5">
+              <div className="grid @2xl:grid-cols-2 @4xl:grid-cols-3 gap-5">
                 <FormField
                   control={form.control}
                   name="venue"
@@ -879,7 +879,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Ticketing Section */}
-          <div className="mb-6">
+          <div className="@container mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.ticketing", "Ticketing")}</h2>
 
@@ -921,7 +921,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           </div>
 
           {/* Discounts & Promo Codes Section */}
-          <div className="mb-6">
+          <div className="@container mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
               <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.discountsPromo", "Discounts & Promo Codes")}</h2>
 
@@ -1022,7 +1022,8 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
           // If we have an active ticket index, select the new template
           if (activeTicketIndex !== null) {
-            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name, { shouldDirty: true, shouldValidate: true });
+            const templateName = newTemplate.template_name || (newTemplate as { name?: string }).name || "";
+            form.setValue(`tickets.${activeTicketIndex}.name`, templateName, { shouldDirty: true, shouldValidate: true });
           }
         }}
         initialData={null}

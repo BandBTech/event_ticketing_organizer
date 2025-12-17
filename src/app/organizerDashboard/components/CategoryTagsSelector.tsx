@@ -79,7 +79,7 @@ const CategoryTagsSelector = ({
       {value.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 break-all whitespace-normal max-w-full"
         >
           {tag}
           <button

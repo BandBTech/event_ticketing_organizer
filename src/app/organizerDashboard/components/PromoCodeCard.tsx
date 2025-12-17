@@ -31,86 +31,88 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<div className="grid md:grid-cols-4 gap-4 border border-gray-200 rounded-lg p-4 relative">
-			<FormField
-				control={control}
-				name={`promoCodes.${index}.code`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.promoCode", "Promo code")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								placeholder="e.g EARLYBIRD"
-								{...field}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+    <div className="border border-gray-200 rounded-lg p-4 relative">
+      <div className="grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-5">
+        <FormField
+          control={control}
+          name={`promoCodes.${index}.code`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.promoCode", "Promo code")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  placeholder="e.g EARLYBIRD"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`promoCodes.${index}.discountType`}
-        render={({ field, fieldState }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.discountType", "Discount Type")} <span className="text-red-500">*</span></FormLabel>
-						<Select value={field.value} onValueChange={field.onChange}>
-							<FormControl>
-                <SelectTrigger className={cn("h-13 md:text-md", !!fieldState.error && "border-red-500 focus:ring-red-500/20")}>
-									<SelectValue placeholder={t("common.placeholder.select", "Select Type")} />
-								</SelectTrigger>
-							</FormControl>
-							<SelectContent>
-								<SelectItem value="amount">{t("event.option.amountFixed", "Amount (Fixed)")}</SelectItem>
-								<SelectItem value="percentage">{t("event.option.percentage", "Percentage (%)")}</SelectItem>
-							</SelectContent>
-						</Select>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`promoCodes.${index}.discountType`}
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.discountType", "Discount Type")} <span className="text-red-500">*</span></FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger className={cn("h-13 md:text-md", !!fieldState.error && "border-red-500 focus:ring-red-500/20")}>
+                    <SelectValue placeholder={t("common.placeholder.select", "Select Type")} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="amount">{t("event.option.amountFixed", "Amount (Fixed)")}</SelectItem>
+                  <SelectItem value="percentage">{t("event.option.percentage", "Percentage (%)")}</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`promoCodes.${index}.amount`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.discountAmount", "Amount")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								type="number"
-								placeholder={t("event.placeholder.amount", "Enter amount")}
-								{...field}
-								onChange={(e) => field.onChange(e.target.valueAsNumber)}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`promoCodes.${index}.amount`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.discountAmount", "Amount")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  type="number"
+                  placeholder={t("event.placeholder.amount", "Enter amount")}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-			<FormField
-				control={control}
-				name={`promoCodes.${index}.quantity`}
-				render={({ field }) => (
-					<FormItem>
-						<FormLabel className="inline-block">{t("event.field.discountQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
-						<FormControl>
-							<Input
-								className="h-13 md:text-md"
-								type="number"
-								placeholder={t("event.placeholder.quantity", "Enter quantity")}
-								{...field}
-								onChange={(e) => field.onChange(e.target.valueAsNumber)}
-							/>
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+        <FormField
+          control={control}
+          name={`promoCodes.${index}.quantity`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="inline-block">{t("event.field.discountQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
+              <FormControl>
+                <Input
+                  className="h-13 md:text-md"
+                  type="number"
+                  placeholder={t("event.placeholder.quantity", "Enter quantity")}
+                  {...field}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
 			<Trash2
 				onClick={onDelete}

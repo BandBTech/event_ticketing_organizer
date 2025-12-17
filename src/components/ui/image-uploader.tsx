@@ -226,7 +226,7 @@ export function ImageUploader({
       </div>
 
       {effectiveError && (
-        <p className="text-[0.8rem] font-medium text-destructive">
+        <p className="text-xs font-medium text-destructive">
           {effectiveError}
         </p>
       )}

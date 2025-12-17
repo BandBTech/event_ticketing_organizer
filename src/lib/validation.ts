@@ -243,6 +243,23 @@ export const updateOrgUserSchema = (t: (key: string, fallback?: string) => strin
 export type CreateOrgUserFormData = z.infer<ReturnType<typeof createOrgUserSchema>>;
 export type UpdateOrgUserFormData = z.infer<ReturnType<typeof updateOrgUserSchema>>;
 
+export const stopSalesSchema = (t: (key: string, fallback?: string) => string) => z.object({
+  reason: z.string()
+    .max(500, t('event.validation.stopSalesReasonMaxLength', "Reason cannot exceed 500 characters."))
+    .optional(),
+});
+
+export type StopSalesFormData = z.infer<ReturnType<typeof stopSalesSchema>>;
+
+export const cancelEventSchema = (t: (key: string, fallback?: string) => string) => z.object({
+  reason: z.string()
+    .min(1, t('event.validation.cancelReasonRequired', "Reason is required."))
+    .min(10, t('event.validation.cancelReasonMinLength', "Reason must be at least 10 characters."))
+    .max(500, t('event.validation.cancelReasonMaxLength', "Reason cannot exceed 500 characters.")),
+});
+
+export type CancelEventFormData = z.infer<ReturnType<typeof cancelEventSchema>>;
+
 /**
  * Validation helper utility
  * Uses common validation messages with field substitution

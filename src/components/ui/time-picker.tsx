@@ -173,26 +173,26 @@ export function SimpleTimePicker({
             }
             setHour(v.value);
         },
-        [setHour, use12HourFormat, value, formatStr, minute, second, ampm]
+      [setHour, use12HourFormat, value, formatStr, minute, second, ampm, min, max]
     );
 
     const onMinuteChange = useCallback(
         (v: SimpleTimeOption) => {
             if (min) {
-              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute: v.value, second, ampm });
                 if (newTime < min) {
                     setSecond(min.getSeconds());
                 }
             }
             if (max) {
-              const newTime = buildTime({ use12HourFormat, value, formatStr, hour: v.value, minute, second, ampm });
+              const newTime = buildTime({ use12HourFormat, value, formatStr, hour, minute: v.value, second, ampm });
                 if (newTime > max) {
                     setSecond(newTime.getSeconds());
                 }
             }
             setMinute(v.value);
         },
-        [setMinute, use12HourFormat, value, formatStr, hour, second, ampm]
+      [setMinute, use12HourFormat, value, formatStr, hour, second, ampm, min, max]
     );
 
     const onAmpmChange = useCallback(
@@ -230,6 +230,7 @@ export function SimpleTimePicker({
                 <div
                     role="combobox"
                     aria-expanded={open}
+            aria-controls="time-picker-content"
                     className={cn(
                         'flex h-9 px-3 items-center justify-between cursor-pointer font-normal border border-input rounded-md text-sm shadow-sm',
                         disabled && 'opacity-50 cursor-not-allowed'
@@ -241,10 +242,10 @@ export function SimpleTimePicker({
                     <ChevronDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="p-0" side="top">
+        <PopoverContent id="time-picker-content" className="p-0" side="top">
                 <div className="flex-col gap-2 p-2">
                     <div className="flex h-56 grow">
-                        <ScrollArea className="h-full flex-grow">
+              <ScrollArea className="h-full grow">
                             <div className="flex grow flex-col items-stretch overflow-y-auto pe-2 pb-48">
                                 {hours.map((v) => (
                                     <div ref={v.value === hour ? hourRef : undefined} key={v.value}>
@@ -259,7 +260,7 @@ export function SimpleTimePicker({
                                 ))}
                             </div>
                         </ScrollArea>
-                        <ScrollArea className="h-full flex-grow">
+              <ScrollArea className="h-full grow">
                             <div className="flex grow flex-col items-stretch overflow-y-auto pe-2 pb-48">
                                 {minutes.map((v) => (
                                     <div ref={v.value === minute ? minuteRef : undefined} key={v.value}>
@@ -274,7 +275,7 @@ export function SimpleTimePicker({
                                 ))}
                             </div>
                         </ScrollArea>
-                        <ScrollArea className="h-full flex-grow">
+              <ScrollArea className="h-full grow">
                             <div className="flex grow flex-col items-stretch overflow-y-auto pe-2 pb-48">
                                 {seconds.map((v) => (
                                     <div ref={v.value === second ? secondRef : undefined} key={v.value}>
@@ -290,7 +291,7 @@ export function SimpleTimePicker({
                             </div>
                         </ScrollArea>
                         {use12HourFormat && (
-                            <ScrollArea className="h-full flex-grow">
+                <ScrollArea className="h-full grow">
                                 <div className="flex grow flex-col items-stretch overflow-y-auto pe-2">
                                     {ampmOptions.map((v) => (
                                         <TimeItem

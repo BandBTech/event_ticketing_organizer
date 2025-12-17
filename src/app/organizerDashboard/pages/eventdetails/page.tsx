@@ -12,7 +12,7 @@ export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
 
-  const { data: event, isLoading: eventLoading, refetch: refetchEvent } = useQuery({
+  const { data: event, isLoading: eventLoading, isFetching: eventFetching, refetch: refetchEvent } = useQuery({
     queryKey: ['event', eventId],
     queryFn: () => eventService.getEvent(eventId!),
     enabled: !!eventId,
@@ -20,7 +20,7 @@ export default function EventDetailsRoute() {
     staleTime: 0, // Always refetch when returning to page
   });
 
-  const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading, isFetching: analyticsFetching, refetch: refetchAnalytics } = useQuery({
     queryKey: ['eventAnalytics', eventId],
     queryFn: () => eventService.getEventAnalytics(eventId!),
     enabled: !!eventId,
@@ -32,7 +32,7 @@ export default function EventDetailsRoute() {
     return <div className="p-8 text-center text-gray-500">Event ID missing</div>;
   }
 
-  if (eventLoading || analyticsLoading) {
+  if (eventLoading || analyticsLoading || eventFetching || analyticsFetching) {
     return (
       <div className="flex justify-center items-center h-96">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />

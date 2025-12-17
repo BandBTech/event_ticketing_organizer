@@ -3,7 +3,6 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { format, parse, isValid, getYear } from 'date-fns';
 import { useRef, useState, useMemo, useEffect, useLayoutEffect, useCallback } from 'react';
-import { CircleAlert, CircleCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFormContext } from 'react-hook-form';
 
@@ -74,7 +73,7 @@ const mergeRefs = (...refs: (React.MutableRefObject<any> | React.RefCallback<any
   };
 };
 const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((options: DateTimeInputProps, ref) => {
-  const { format: formatProp, value: _value, timezone, ...rest } = options;
+  const { format: formatProp, value: _value, timezone, onChange, ...rest } = options;
   const value = useMemo(() => _value ? new TZDate(_value, timezone) : undefined, [_value, timezone]);
   const form = useFormContext();
   const formatStr = React.useMemo(() => formatProp || 'dd/MM/yyyy-hh:mm aa', [formatProp]);
@@ -87,6 +86,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
     if (form?.formState.isSubmitted) {
       setSegments(parseFormat(formatStr, value));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form?.formState.isSubmitted]);
   useEffect(() => {
     // console.error('valueChanged', {formatStr, inputStr, value});
@@ -101,7 +101,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const setCurrentSegment = useCallback(
     (segment: Segment | undefined) => {
       const at = segments?.findIndex((s) => s.index === segment?.index);
-      at !== -1 && setSelectedSegmentAt(at);
+      if (at !== -1) setSelectedSegmentAt(at);
     },
     [segments, setSelectedSegmentAt]
   );
@@ -114,20 +114,23 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
 
   const inputValue = useMemo(() => {
     const allHasValue = !validSegments.some((s) => !s.value);
-    if (!allHasValue) return;
+    if (!allHasValue) return undefined;
     const date = parse(inputStr, formatStr, value || new TZDate(new Date(), timezone));
     const year = getYear(date);
     // console.log('inputValue', {allHasValue, validSegments, inputStr, formatStr, date, year});
-    if (isValid(date) && year > 1900 && year < 2100) {
+    if (isValid(date) && year > 1000 && year <= 9999) {
       return date;
     }
-  }, [validSegments, inputStr, formatStr]);
+    return undefined;
+  }, [validSegments, inputStr, formatStr, value, timezone]);
+
   useEffect(() => {
     if (!inputValue) return;
     if (value?.getTime() !== inputValue.getTime()) {
       // console.log('inputValueChanged', {formatStr, inputStr, value, inputValue, });
-      options.onChange?.(inputValue);
+      onChange?.(inputValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue]);
 
 
@@ -141,13 +144,13 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         let segment = validSegments.find(
           (s) => s.index <= selectionStart && s.index + s.symbols.length >= selectionStart
         );
-        !segment && (segment = [...validSegments].reverse().find((s) => s.index <= selectionStart));
-        !segment && (segment = validSegments.find((s) => s.index >= selectionStart));
+        if (!segment) segment = [...validSegments].reverse().find((s) => s.index <= selectionStart);
+        if (!segment) segment = validSegments.find((s) => s.index >= selectionStart);
         setCurrentSegment(segment);
         setSelection(inputRef, segment);
       }
     },
-    [segments]
+    [segments, setCurrentSegment]
   );
 
   const onSegmentChange = useEventCallback(
@@ -163,7 +166,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         setSelection(inputRef, segment);
       }
     },
-    [segments, curSegment]
+    [segments, curSegment, setCurrentSegment]
   );
 
   const onSegmentNumberValueChange = useEventCallback(
@@ -204,9 +207,13 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           }
         }
       }
-      shouldNext ? onSegmentChange('right') : setSelection(inputRef, segment);
+      if (shouldNext) {
+        onSegmentChange('right');
+      } else {
+        setSelection(inputRef, segment);
+      }
     },
-    [segments, curSegment]
+    [segments, curSegment, timezone, onSegmentChange]
   );
 
   const onSegmentPeriodValueChange = useEventCallback(
@@ -242,7 +249,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
     } else {
       onSegmentChange('left');
     }
-  }, [segments, curSegment]);
+  }, [segments, curSegment, onSegmentChange]);
 
   const onKeyDown = useEventCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     const key = event.key;
@@ -273,7 +280,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         event.preventDefault();
         break;
     }
-  }, []);
+  }, [curSegment, onSegmentChange, onSegmentNumberValueChange, onSegmentPeriodValueChange, onSegmentValueRemove]);
 
   const [isFocused, setIsFocused] = useState(false);
   const hasError = !inputValue && !areAllSegmentsEmpty;
@@ -317,6 +324,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           onChange={() => { }}
           disabled={options.disabled}
           spellCheck={false}
+          {...rest}
         />
 
         {!options.hideCalendarIcon && (
@@ -355,13 +363,14 @@ function parseFormat(formatStr: string, value?: Date) {
     const pattern = segmentConfigs.find((p) => p.symbols.includes(c))!;
     if (!pattern) continue;
     if (pattern.type !== lastPattern) {
-      symbols &&
+      if (symbols) {
         views.push({
           type: lastPattern as SegmentType,
           symbols,
           index: patternIndex,
           value: value ? format(value, symbols) : '',
         });
+      }
       lastPattern = pattern?.type || '';
       symbols = c;
       patternIndex = index;
@@ -370,13 +379,14 @@ function parseFormat(formatStr: string, value?: Date) {
     }
     index++;
   }
-  symbols &&
+  if (symbols) {
     views.push({
       type: lastPattern as SegmentType,
       symbols,
       index: patternIndex,
       value: value ? format(value, symbols) : '',
     });
+  }
   return views;
 }
 
@@ -412,6 +422,7 @@ export function useEventCallback<T extends (...args: any[]) => any>(fn: T, deps:
   });
   return useCallback((...args: Parameters<T>) => {
     return ref.current?.(...args);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
 

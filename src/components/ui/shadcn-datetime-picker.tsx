@@ -1,8 +1,7 @@
 "use client";
 
-import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
-import React, { useEffect } from "react";
+import React from "react";
 import { DateTimeInput } from "@/components/ui/datetime-input";
 
 import { cn } from "@/lib/utils";
@@ -35,7 +34,7 @@ export function ShadcnDateTimePicker({
   clearable = true,
   format: formatStr,
   error = false,
-  minDate,
+  // minDate, // Removed unused prop usage
 }: ShadcnDateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 

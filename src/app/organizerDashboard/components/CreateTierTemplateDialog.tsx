@@ -83,11 +83,8 @@ export function CreateTierTemplateDialog({
         toast.success("Tier template created successfully");
       }
       
-      onSuccess(result);
+      onSuccess({ ...result, template_name: data.template_name });
       onOpenChange(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(isEditing ? "Failed to update template" : "Failed to create template");
     } finally {
       setIsSubmitting(false);
     }

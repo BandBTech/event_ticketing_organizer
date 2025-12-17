@@ -29,7 +29,7 @@ export function useTranslation(localeOverride?: Locale) {
       try {
         const msgs = await translations[locale]();
         setMessages(msgs);
-      } catch (error) {
+      } catch {
         // Fallback to English
         const fallback = await translations.en();
         setMessages(fallback);

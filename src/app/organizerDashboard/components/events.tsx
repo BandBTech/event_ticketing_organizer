@@ -22,6 +22,7 @@ export default function Events() {
   const {
     data: queryData,
     isLoading,
+    isFetching,
     isError,
   } = useQuery({
     queryKey: ["events"],
@@ -50,7 +51,7 @@ export default function Events() {
     setCurrentPage(1);
   }, [debouncedSearch]);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className="flex-1 px-6 py-4">
         <div className="flex items-center justify-between mb-6">

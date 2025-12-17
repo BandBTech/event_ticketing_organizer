@@ -275,7 +275,7 @@ export function DateTimePicker({
       }
       setDate(d);
     },
-    [setDate, setMonth]
+    [setDate, date, min, max]
   );
   const onSubmit = useCallback(() => {
     // Convert to UTC ISO string format (e.g., "2025-12-11T15:04:05Z")
@@ -408,7 +408,7 @@ export function DateTimePicker({
               button_next: 'hidden',
               month_grid: 'w-full border-collapse',
               weekdays: 'flex justify-between mt-2',
-              weekday: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+              weekday: 'text-muted-foreground rounded-md w-9 font-normal text-xs',
               week: 'flex w-full justify-between mt-2',
               day: 'h-9 w-9 text-center text-sm p-0 relative flex items-center justify-center [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 rounded-1',
               day_button: cn(
