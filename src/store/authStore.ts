@@ -241,8 +241,11 @@ export const useAuthStore = create<AuthStore>()(
           const rememberMe = tokenManager.isRememberMeEnabled();
           tokenManager.setTokens(accessToken, refreshToken, rememberMe);
 
-          // Set loading while fetching profile
-          set({ isLoading: true });
+          // Only set isLoading if we don't have a user yet (initial load)
+          // This prevents redundant loading states when checkAuth is called on already-authenticated pages
+          if (!get().user) {
+            set({ isLoading: true });
+          }
 
           // Try to fetch profile, organizer profile, and check completion
           get().fetchProfile()

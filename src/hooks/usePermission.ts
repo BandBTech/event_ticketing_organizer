@@ -1,5 +1,4 @@
-'use client';
-
+import { useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { Permission } from '@/lib/permissions';
 
@@ -10,39 +9,45 @@ import { Permission } from '@/lib/permissions';
 export function usePermission() {
     const { hasPermission, hasRole, user, isAuthenticated } = useAuthStore();
 
-    return {
+  const can = useCallback((permission: Permission | string) => hasPermission(permission), [hasPermission]);
+  const canAll = useCallback((permissions: (Permission | string)[]) =>
+    permissions.every(p => hasPermission(p)), [hasPermission]);
+  const canAny = useCallback((permissions: (Permission | string)[]) =>
+    permissions.some(p => hasPermission(p)), [hasPermission]);
+  const is = useCallback((role: string) => hasRole(role), [hasRole]);
+  const isAny = useCallback((roles: string[]) => roles.some(r => hasRole(r)), [hasRole]);
+
+  return useMemo(() => ({
         /**
          * Check if user has a specific permission.
          * Automatically handles 'admin:full' override.
          */
-        can: (permission: Permission | string) => hasPermission(permission),
+      can,
 
         /**
          * Check if user has all of the specified permissions.
          */
-        canAll: (permissions: (Permission | string)[]) =>
-            permissions.every(p => hasPermission(p)),
+      canAll,
 
         /**
          * Check if user has any of the specified permissions.
          */
-        canAny: (permissions: (Permission | string)[]) =>
-            permissions.some(p => hasPermission(p)),
+      canAny,
 
         /**
          * Check if user has a specific role.
          */
-        is: (role: string) => hasRole(role),
+      is,
 
         /**
          * Check if user has any of the specified roles.
          */
-        isAny: (roles: string[]) => roles.some(r => hasRole(r)),
+      isAny,
 
         /**
          * User profile and auth status.
          */
         user,
         isAuthenticated,
-    };
+    }), [can, canAll, canAny, is, isAny, user, isAuthenticated]);
 }

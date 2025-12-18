@@ -25,12 +25,8 @@ export function ProtectedRoute({
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(true);
 
-  useEffect(() => {
-    // Only run checkAuth after hydration is complete
-    if (_hasHydrated) {
-      checkAuth();
-    }
-  }, [_hasHydrated, checkAuth]);
+  // No need for checkAuth here, it's handled by AuthProvider at the root level.
+  // Calling it here causes infinite loops when nested ProtectedRoutes toggle isLoading status.
 
   useEffect(() => {
     // Only proceed after:
