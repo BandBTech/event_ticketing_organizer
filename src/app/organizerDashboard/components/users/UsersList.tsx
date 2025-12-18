@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/app/contexts/UserContext";
 import { useState, useMemo, useCallback } from "react";
@@ -208,18 +210,24 @@ export default function UsersList() {
         header: "",
         cell: (info) => (
           <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => handleEdit(info.row.original)}
-              className="text-gray-400 hover:text-blue-600 transition-colors"
-            >
-              <Pencil className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setDeleteUser(info.row.original)}
-              className="text-gray-400 hover:text-red-600 transition-colors"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+            <PermissionGuard permission={PERMISSIONS.USER_UPDATE}>
+              <button
+                onClick={() => handleEdit(info.row.original)}
+                className="text-gray-400 hover:text-blue-600 transition-colors"
+                title={t('common.edit', "Edit")}
+              >
+                <Pencil className="w-5 h-5" />
+              </button>
+            </PermissionGuard>
+            <PermissionGuard permission={PERMISSIONS.USER_DELETE}>
+              <button
+                onClick={() => setDeleteUser(info.row.original)}
+                className="text-gray-400 hover:text-red-600 transition-colors"
+                title={t('common.delete', "Remove")}
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            </PermissionGuard>
           </div>
         ),
         meta: {
@@ -308,45 +316,47 @@ export default function UsersList() {
               ))}
             </TableHeader>
             <TableBody>
-                {isLoading ? (
-                  <UsersTableSkeleton columns={columns.length} />
-                ) : table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} className="hover:bg-gray-50/50 transition-colors group border-gray-100">
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="py-4">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      <div className="flex flex-col items-center justify-center text-gray-500 py-12">
-                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                          <Users className="h-6 w-6 text-gray-400" />
-                        </div>
-                        <p className="text-lg font-medium mb-1">
-                          {users.length === 0 ? "No team members yet" : "No users found"}
-                        </p>
-                        <p className="text-sm text-muted-foreground max-w-sm">
-                          {users.length === 0
-                            ? "Add your first team member by clicking the 'Add User' button above."
-                            : "Try adjusting your search or filters."}
-                        </p>
-                        {users.length === 0 && (
+              {isLoading ? (
+                <UsersTableSkeleton columns={columns.length} />
+              ) : table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="hover:bg-gray-50/50 transition-colors group border-gray-100">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="py-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <div className="flex flex-col items-center justify-center text-gray-500 py-12">
+                      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                        <Users className="h-6 w-6 text-gray-400" />
+                      </div>
+                      <p className="text-lg font-medium mb-1">
+                        {users.length === 0 ? "No team members yet" : "No users found"}
+                      </p>
+                      <p className="text-sm text-muted-foreground max-w-sm">
+                        {users.length === 0
+                          ? "Add your first team member by clicking the 'Add User' button above."
+                          : "Try adjusting your search or filters."}
+                      </p>
+                      {users.length === 0 && (
+                        <PermissionGuard permission={PERMISSIONS.USER_CREATE}>
                           <Button onClick={openCreateUserModal} className="mt-4">
                             Add Team Member
                           </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        </PermissionGuard>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {/* Pagination */}

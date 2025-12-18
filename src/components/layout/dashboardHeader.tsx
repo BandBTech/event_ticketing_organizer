@@ -8,6 +8,8 @@ import { useUser } from "@/app/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
 import { useAuthStore } from "@/store/authStore";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
 
 /**
  * Get time-based greeting message
@@ -82,15 +84,17 @@ export default function DashboardHeader() {
       <h2 className="text-lg text-gray-900 font-semibold">{headerText}</h2>
 
       <div className="flex items-center gap-3">
-        {showCreateButton && (
-          <Button
-            onClick={handleCreateButton}
-            className="flex items-center gap-2 h-9 px-4"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">{createButtonLabel}</span>
-          </Button>
-        )}
+        <PermissionGuard permission={PERMISSIONS.EVENT_CREATE}>
+          {showCreateButton && (
+            <Button
+              onClick={handleCreateButton}
+              className="flex items-center gap-2 h-9 px-4"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">{createButtonLabel}</span>
+            </Button>
+          )}
+        </PermissionGuard>
 
         <LanguageSelector />
 

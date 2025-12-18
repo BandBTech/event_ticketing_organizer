@@ -7,6 +7,8 @@ import { Loader2 } from "lucide-react";
 import CreateEventsForm from "../../components/createEventsForm";
 import { eventService } from "@/services/eventService";
 import { Suspense } from "react";
+import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
+import { PERMISSIONS } from "@/lib/permissions";
 
 function CreateEventsContent() {
   const searchParams = useSearchParams();
@@ -34,15 +36,20 @@ function CreateEventsContent() {
   return (
     <CreateEventsForm
       initialData={event}
-      isEditing={isEditing} 
+      isEditing={isEditing}
     />
   );
 }
 
 export default function CreateEventsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full min-h-[400px]"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
-      <CreateEventsContent />
-    </Suspense>
+    <ProtectedRoute
+      permission={[PERMISSIONS.EVENT_CREATE, PERMISSIONS.EVENT_UPDATE]}
+      requireAll={false}
+    >
+      <Suspense fallback={<div className="flex items-center justify-center h-full min-h-[400px]"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+        <CreateEventsContent />
+      </Suspense>
+    </ProtectedRoute>
   );
 }

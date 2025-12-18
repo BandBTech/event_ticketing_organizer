@@ -2237,6 +2237,98 @@
         }
       }
     },
+    "/api/v1/admin/permissions/initialize-roles": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Initialize predefined system roles and assign permissions WITHOUT clearing existing assignments",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin Permissions"
+        ],
+        "summary": "Initialize system roles safely (Admin Only)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/permissions/initialize-system": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Initialize both permissions and roles WITHOUT clearing existing role-permission assignments",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin Permissions"
+        ],
+        "summary": "Initialize complete system permissions and roles safely (Admin Only)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/permissions/{id}": {
       "put": {
         "security": [
@@ -6723,6 +6815,16 @@
             "description": "Search by email, first name, or last name",
             "name": "search",
             "in": "query"
+          },
+          {
+            "enum": [
+              "staff",
+              "manager"
+            ],
+            "type": "string",
+            "description": "Filter by role (staff, manager)",
+            "name": "role",
+            "in": "query"
           }
         ],
         "responses": {
@@ -9088,6 +9190,9 @@
         "price": {
           "type": "number"
         },
+        "sales_status": {
+          "type": "string"
+        },
         "start_date": {
           "type": "string"
         },
@@ -9657,6 +9762,17 @@
           "type": "string"
         },
         "website_url": {
+          "type": "string"
+        }
+      }
+    },
+    "models.OrganizationInfoResponse": {
+      "type": "object",
+      "properties": {
+        "business_name": {
+          "type": "string"
+        },
+        "id": {
           "type": "string"
         }
       }
@@ -10704,8 +10820,29 @@
         "organization_id": {
           "type": "string"
         },
+        "organization_info": {
+          "description": "For staff/manager: {id, business_name}",
+          "allOf": [
+            {
+              "$ref": "#/definitions/models.OrganizationInfoResponse"
+            }
+          ]
+        },
+        "permissions": {
+          "description": "Array of permission names for UI adjustments",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "phone": {
           "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "updated_at": {
           "type": "string"

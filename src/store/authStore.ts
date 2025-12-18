@@ -25,6 +25,7 @@ interface AuthStore {
   checkOrganizerCompletion: () => Promise<void>;
   updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
   hasRole: (role: string) => boolean;
+  hasPermission: (permission: string) => boolean;
   getOrganizationId: () => string | undefined;
   setHasHydrated: (state: boolean) => void;
 }
@@ -126,7 +127,9 @@ export const useAuthStore = create<AuthStore>()(
             // Organization ID will come from organizer profile (organizer_id)
             organizationId: profile.organization?.id || profile.organization_id,
             organization: profile.organization,
+            organizationInfo: profile.organization_info,
             roles: profile.roles || [],
+            permissions: profile.permissions || [],
           };
 
           set({
@@ -202,9 +205,15 @@ export const useAuthStore = create<AuthStore>()(
       hasRole: (role: string) => {
         const { user } = get();
         if (!user || !user.roles) return false;
-        return user.roles.some((r: string | { name: string }) =>
-          typeof r === 'string' ? r === role : r.name === role
-        );
+        return user.roles.includes(role);
+      },
+
+      // Check if user has a specific permission
+      hasPermission: (permission: string) => {
+        const { user } = get();
+        if (!user || !user.permissions) return false;
+        // admin:full overrides everything
+        return user.permissions.includes('admin:full') || user.permissions.includes(permission);
       },
 
       // Get organization ID (primarily from organizer profile's organizer_id)

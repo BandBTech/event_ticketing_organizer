@@ -8,6 +8,8 @@ import { Event } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
 import { CalendarDotIcon, CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
 
 interface EventStatus {
 	label: string;
@@ -116,14 +118,14 @@ export default function EventCard({ event }: EventCardProps) {
 	const status = getEventStatus(event);
 
 	// Parse categories
-  const categories: string[] = (Array.isArray(event.category)
+	const categories: string[] = (Array.isArray(event.category)
 		? (event.category as string[])
 		: typeof event.category === "string"
-      ? (event.category as string).split(",")
-      : []
-  )
-    .map((tag: string) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
-    .filter(Boolean);
+			? (event.category as string).split(",")
+			: []
+	)
+		.map((tag: string) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
+		.filter(Boolean);
 
 	return (
 		<div className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full">
@@ -135,22 +137,22 @@ export default function EventCard({ event }: EventCardProps) {
 					fill={true}
 					className="w-full h-full object-cover"
 				/>
-        {/* Event Status Badge */}
-        {event.status && (
-          <Badge
-            className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
-              event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
-                event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
-                  event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
-                    event.status === 'live' ? 'bg-green-500 hover:bg-green-500' :
-                      event.status === 'ended' ? 'bg-gray-500 hover:bg-gray-500' :
-                        event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
-                          'bg-gray-500 hover:bg-gray-500'
-              }`}
-          >
-            {event.status}
-          </Badge>
-        )}
+				{/* Event Status Badge */}
+				{event.status && (
+					<Badge
+						className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
+							event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
+								event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
+									event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
+										event.status === 'live' ? 'bg-green-500 hover:bg-green-500' :
+											event.status === 'ended' ? 'bg-gray-500 hover:bg-gray-500' :
+												event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
+													'bg-gray-500 hover:bg-gray-500'
+							}`}
+					>
+						{event.status}
+					</Badge>
+				)}
 			</div>
 
 			{/* Content */}
@@ -189,14 +191,16 @@ export default function EventCard({ event }: EventCardProps) {
 						>
 							View Detail <ArrowRight className="w-4 h-4" />
 						</Link>
-            {(event.status === 'pending' || event.status === 'draft') && (
-              <Link
-                href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
-                className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
-              >
-                <PencilLine className="w-4 h-4" />
-              </Link>
-            )}
+						<PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
+							{(event.status === 'pending' || event.status === 'draft') && (
+								<Link
+									href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
+									className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+								>
+									<PencilLine className="w-4 h-4" />
+								</Link>
+							)}
+						</PermissionGuard>
 					</div>
 				</div>
 			</div>
