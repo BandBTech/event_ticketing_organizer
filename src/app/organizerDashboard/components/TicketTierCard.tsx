@@ -34,7 +34,8 @@ const TicketTierCard = ({
   onDelete,
   onCreateNew,
   isLoading = false,
-}: TicketTierCardProps) => {
+  usedTierNames = [],
+}: TicketTierCardProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
 
   return (
@@ -54,6 +55,7 @@ const TicketTierCard = ({
                   error={!!fieldState.error}
                   onCreateNew={onCreateNew}
                   isLoading={isLoading}
+                  usedTierNames={usedTierNames}
                 />
               </FormControl>
               <FormMessage />

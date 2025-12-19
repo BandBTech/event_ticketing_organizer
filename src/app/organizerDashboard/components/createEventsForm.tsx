@@ -945,6 +945,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     setActiveTicketIndex(index);
                     setOpenTemplateDialog(true);
                   }}
+                  usedTierNames={form.watch("tickets").map((t) => t.name).filter(Boolean)}
                 />
               ))}
 

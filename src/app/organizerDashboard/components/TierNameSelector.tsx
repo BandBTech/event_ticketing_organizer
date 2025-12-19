@@ -38,10 +38,17 @@ const TierNameSelector = ({
   error = false,
   onCreateNew,
   isLoading = false,
-}: TierNameSelectorProps) => {
+  usedTierNames = [],
+}: TierNameSelectorProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  const filteredTemplates = templates.filter(
+    (t) => !usedTierNames.includes(t.template_name) || t.template_name === value
+  );
+
+  const isNameUsed = usedTierNames.includes(inputValue) && inputValue !== value;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -81,18 +88,21 @@ const TierNameSelector = ({
             <CommandGroup>
               <CommandItem
                 value="create-new-tier-option"
+                disabled={isNameUsed}
                 onSelect={() => {
-                  setOpen(false);
-                  onCreateNew?.();
+                  if (!isNameUsed) {
+                    setOpen(false);
+                    onCreateNew?.();
+                  }
                 }}
-                className="text-blue-600 font-medium cursor-pointer"
+                className={cn("font-medium cursor-pointer", isNameUsed ? "opacity-50 cursor-not-allowed" : "text-blue-600")}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {t("event.button.createNewTier", "Create New Tier")}
+                {isNameUsed ? t("event.text.tierNameUsed", "Name already used") : t("event.button.createNewTier", "Create New Tier")}
               </CommandItem>
             </CommandGroup>
             <CommandGroup heading={t("event.section.templates", "Templates")}>
-              {templates.map((template) => (
+              {filteredTemplates.map((template) => (
                 <CommandItem
                   key={template.id}
                   value={template.template_name}

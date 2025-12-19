@@ -216,6 +216,44 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
         }
       }
     });
+
+    // Check for duplicate promo codes
+    if (data.promoCodes && data.promoCodes.length > 0) {
+      const codes = data.promoCodes.map((p, i) => ({ code: p.code, index: i }));
+      const seen = new Set();
+
+      codes.forEach(({ code, index }) => {
+        if (!code) return;
+        const normalizedCode = code.trim().toUpperCase();
+        if (seen.has(normalizedCode)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('event.validation.duplicatePromoCode', "Promo code must be unique."),
+            path: ["promoCodes", index, "code"],
+          });
+        }
+        seen.add(normalizedCode);
+      });
+    }
+
+    // Check for duplicate tier names
+    if (data.tickets && data.tickets.length > 0) {
+      const names = data.tickets.map((t, i) => ({ name: t.name, index: i }));
+      const seenNames = new Set();
+
+      names.forEach(({ name, index }) => {
+        if (!name) return;
+        const normalizedName = name.trim().toLowerCase();
+        if (seenNames.has(normalizedName)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('event.validation.duplicateTierName', "Tier name must be unique."),
+            path: ["tickets", index, "name"],
+          });
+        }
+        seenNames.add(normalizedName);
+      });
+    }
   });
 
 export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
