@@ -28,6 +28,7 @@ export interface Event {
   capacity: number;
   price: number;
   status: string;
+  sales_status?: string;
   admin_remark?: string;
   tiers: EventTier[];
   organizer_id: string;

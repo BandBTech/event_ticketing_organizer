@@ -43,6 +43,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
+import { SalesStatusBadge } from "./SalesStatusBadge";
 
 interface EventDetailsProps {
   event: Event;
@@ -183,15 +184,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   <CircleDot className="w-3 h-3" />
                   {t(`event.status.${event.status}`, event.status)}
                 </Badge>
-                {event.status === 'approved' && analytics?.sales_status && (
-                  <Badge
-                    className={`capitalize ${analytics.sales_status === 'active' ? 'bg-green-500 hover:bg-green-500' :
-                      analytics.sales_status === 'paused' ? 'bg-amber-500 hover:bg-amber-500' :
-                        'bg-red-500 hover:bg-red-500'
-                      }`}
-                  >
-                    {t("event.salesStatus", "Sales: {status}").replace('{status}', analytics.sales_status)}
-                  </Badge>
+                {event.status === 'approved' && (
+                  <SalesStatusBadge status={analytics?.sales_status || 'active'} />
                 )}
                 <div className="flex items-center gap-1 text-gray-700 ">
                   <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
@@ -420,7 +414,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     );
                   })
                 )}
-                <div className="grid grid-cols-2 border-t-1 p-2">
+                <div className="grid grid-cols-2 border-t p-2">
                   <div>
                     <p className="font-semibold">{t("event.label.totalSales", "Total Sales")}</p>
                     <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>

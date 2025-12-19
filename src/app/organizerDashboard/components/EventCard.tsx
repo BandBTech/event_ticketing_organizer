@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { Event } from "@/types/event";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, cn } from "@/lib/utils";
 import { CalendarDotIcon, CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
+import { SalesStatusBadge } from "./SalesStatusBadge";
 
 interface EventStatus {
 	label: string;
@@ -20,6 +21,7 @@ interface EventStatus {
 /**
  * Calculate event status based on dates and ticket availability
  */
+
 export function getEventStatus(event: Event): EventStatus {
 	const now = new Date();
 	const eventDate = event.start_date ? new Date(event.start_date) : null;
@@ -107,15 +109,13 @@ export function getEventStatus(event: Event): EventStatus {
 	};
 }
 
+
 interface EventCardProps {
 	event: Event;
 }
 
 export default function EventCard({ event }: EventCardProps) {
-	const eventDate = event.start_date ? new Date(event.start_date) : null;
-	const formattedDate = eventDate ? format(eventDate, "MMM dd, yyyy") : "TBA";
-	const formattedTime = eventDate ? format(eventDate, "hh:mm a") : "";
-	const status = getEventStatus(event);
+  const eventDate = event.start_date ? new Date(event.start_date) : null;
 
 	// Parse categories
 	const categories: string[] = (Array.isArray(event.category)
@@ -130,7 +130,7 @@ export default function EventCard({ event }: EventCardProps) {
 	return (
 		<div className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full">
 			{/* Image */}
-			<div className="relative aspect-[16/10]">
+      <div className="relative aspect-16/10">
 				<Image
 					src={event.banner_image || "/placeholder.png"}
 					alt={event.title}
@@ -153,6 +153,13 @@ export default function EventCard({ event }: EventCardProps) {
 						{event.status}
 					</Badge>
 				)}
+        {/* Sales Status Badge */}
+        {event.status === "approved" && (
+          <SalesStatusBadge
+            status={event.sales_status}
+            className="absolute top-2 right-2"
+          />
+        )}
 			</div>
 
 			{/* Content */}
