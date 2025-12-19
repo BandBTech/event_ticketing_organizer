@@ -18,7 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useTranslation } from "@/hooks/useTranslation";
-import { EventFormData } from "@/lib/validation";
+import { EventFormData, PROMO_CODE_NAME_MAX } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 interface PromoCodeCardProps {
@@ -43,11 +43,18 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 <Input
                   className="h-13 md:text-md"
                   placeholder="e.g EARLYBIRD"
+                  maxLength={PROMO_CODE_NAME_MAX}
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e.target.value.toUpperCase());
+                  }}
                 />
               </FormControl>
-              <div className="flex justify-between items-center -mt-1">
+              <div className="flex justify-between items-center -mt-1 min-h-[20px]">
                 <FormMessage className="mt-0" />
+                <div className="text-xs text-muted-foreground ml-auto">
+                  {field.value?.length || 0}/{PROMO_CODE_NAME_MAX} characters
+                </div>
               </div>
             </FormItem>
           )}

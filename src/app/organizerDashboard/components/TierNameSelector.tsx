@@ -120,7 +120,9 @@ const TierNameSelector = ({
                         : "opacity-0"
                     )}
                   />
-                  {template.template_name}
+                  <span className="truncate flex-1 text-left">
+                    {template.template_name}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -51,6 +51,7 @@ export const CANCEL_REASON_MAX = 500;
 export const MAX_CAPACITY = 100000;
 export const MAX_PRICE = 100000;
 export const MAX_QUANTITY = 100000;
+export const PROMO_CODE_NAME_MAX = 50;
 export const PROMO_CODE_AMOUNT_MAX = 100000;
 export const PROMO_CODE_QUANTITY_MAX = 100000;
 
@@ -129,6 +130,7 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
   code: z
     .string()
     .min(1, t('event.validation.promoCodeRequired', "Promo code is required."))
+    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo code must be under {max} characters.").replace('{max}', PROMO_CODE_NAME_MAX.toString()))
     .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo code may only contain A-Z , 0-9, _ or -")),
   discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount type is required.")),
   amount: createRequiredNumberSchema(
