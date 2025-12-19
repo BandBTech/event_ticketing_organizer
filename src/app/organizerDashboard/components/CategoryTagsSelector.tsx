@@ -10,6 +10,7 @@ interface CategoryTagsSelectorProps {
   onChange: (value: string[]) => void;
   placeholder?: string;
   maxTags?: number;
+  maxChars?: number;
   className?: string;
   error?: boolean;
 }
@@ -19,6 +20,7 @@ const CategoryTagsSelector = ({
   onChange,
   placeholder,
   maxTags = 5,
+  maxChars = 50,
   className,
   error = false,
 }: CategoryTagsSelectorProps) => {
@@ -106,15 +108,9 @@ const CategoryTagsSelector = ({
           onKeyDown={handleKeyDown}
           onBlur={handleAddTag}
           placeholder={value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more...")}
+          maxLength={maxChars}
           className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
         />
-      )}
-
-      {/* Max reached message */}
-      {isMaxReached && value.length > 0 && (
-        <span className="text-xs text-muted-foreground">
-          {t("event.validation.maxTags", "Max {max} tags").replace('{max}', maxTags.toString())}
-        </span>
       )}
     </div>
   );

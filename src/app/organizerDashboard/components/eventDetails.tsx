@@ -43,6 +43,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
+import StatusHistorySidebar from "./StatusHistorySidebar";
+import { useQuery } from "@tanstack/react-query";
 import { SalesStatusBadge } from "./SalesStatusBadge";
 
 interface EventDetailsProps {
@@ -55,6 +57,13 @@ import { useTranslation } from "@/hooks/useTranslation";
 export default function EventDetailsPage({ event, analytics }: EventDetailsProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+
+  // Fetch status history
+  const { data: history = [], isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['eventStatusHistory', event.id],
+    queryFn: () => eventService.getStatusHistory(event.id),
+  });
+
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   // const [cancelReason, setCancelReason] = useState(""); // Removed in favor of hook form
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
@@ -76,6 +85,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', event.id] });
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['eventStatusHistory', event.id] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
       setSalesDialogOpen(false);
       form.reset();
@@ -89,6 +99,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', event.id] });
       queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: ['eventStatusHistory', event.id] });
       queryClient.invalidateQueries({ queryKey: ['events'] });
       setCancelDialogOpen(false);
       cancelForm.reset();
@@ -261,7 +272,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           {/* Admin Remark Section */}
           {event.admin_remark && (
             <div className={`p-4 rounded-xl ${event.status === 'approved' ? 'bg-green-50 border border-green-200' : event.status === 'rejected' ? 'bg-red-50 border border-red-200' : 'bg-gray-50 border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-2 ${event.status === 'approved' ? 'text-green-700' : event.status === 'rejected' ? 'text-red-700' : 'text-gray-700'}`}>
+              <h3 className={`font-semibold mb-0 ${event.status === 'approved' ? 'text-green-700' : event.status === 'rejected' ? 'text-red-700' : 'text-gray-700'}`}>
                 {t("event.section.adminNotes", "Admin Notes")}
               </h3>
               <p className="text-gray-600">{event.admin_remark}</p>
@@ -431,6 +442,9 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 <h3 className="text-lg font-semibold">{t("event.section.promoCodes", "Promo/Discount Codes")}</h3>
                 <p className="text-gray-500 text-sm">{t("event.text.noPromoCodes", "No promo codes configured for this event.")}</p>
               </div>
+
+              {/* Status History */}
+              <StatusHistorySidebar history={history} isLoading={isLoadingHistory} />
             </div>
           </div>
         </div>

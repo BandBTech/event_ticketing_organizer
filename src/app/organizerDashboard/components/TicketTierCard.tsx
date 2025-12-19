@@ -4,40 +4,41 @@ import { Control, FieldErrors } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TierNameSelector from "./TierNameSelector";
 import { TierTemplate } from "@/types/event";
-import { EventFormData } from "@/lib/validation";
+import { EventFormData, MAX_PRICE, MAX_QUANTITY } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface TicketTierCardProps {
-	index: number;
-	control: Control<EventFormData>;
-	tierTemplates: TierTemplate[];
-	showDelete: boolean;
-	onDelete: () => void;
-	onCreateNew: () => void;
+  index: number;
+  control: Control<EventFormData>;
+  tierTemplates: TierTemplate[];
+  showDelete: boolean;
+  onDelete: () => void;
+  onCreateNew: () => void;
   isLoading?: boolean;
 }
 
 const TicketTierCard = ({
-	index,
-	control,
-	tierTemplates,
-	showDelete,
-	onDelete,
-	onCreateNew,
+  index,
+  control,
+  tierTemplates,
+  showDelete,
+  onDelete,
+  onCreateNew,
   isLoading = false,
-}: TicketTierCardProps) => {
-	const { t } = useTranslation();
+  usedTierNames = [],
+}: TicketTierCardProps & { usedTierNames?: string[] }) => {
+  const { t } = useTranslation();
 
-	return (
+  return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
       <div className="grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3 gap-5">
         <FormField
@@ -54,6 +55,7 @@ const TicketTierCard = ({
                   error={!!fieldState.error}
                   onCreateNew={onCreateNew}
                   isLoading={isLoading}
+                  usedTierNames={usedTierNames}
                 />
               </FormControl>
               <FormMessage />
@@ -73,10 +75,21 @@ const TicketTierCard = ({
                   type="number"
                   placeholder="e.g. 100"
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      field.onChange("");
+                      return;
+                    }
+                    const num = Number(val);
+                    if (isNaN(num)) return;
+                    field.onChange(num);
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
@@ -93,10 +106,21 @@ const TicketTierCard = ({
                   type="number"
                   placeholder={t("event.placeholder.quantity", "Enter number of quantity")}
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      field.onChange("");
+                      return;
+                    }
+                    const num = Number(val);
+                    if (isNaN(num)) return;
+                    field.onChange(num);
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
@@ -113,10 +137,21 @@ const TicketTierCard = ({
                   type="number"
                   placeholder={t("event.placeholder.gst", "Enter GST in percentage")}
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      field.onChange("");
+                      return;
+                    }
+                    const num = Number(val);
+                    if (isNaN(num)) return;
+                    field.onChange(num);
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
@@ -168,14 +203,14 @@ const TicketTierCard = ({
         />
       </div>
 
-			{showDelete && (
-				<Trash2
-					onClick={onDelete}
-					className="absolute right-4 top-4 text-red-400 w-5 h-5 hover:bg-red-200 cursor-pointer"
-				/>
-			)}
-		</div>
-	);
+      {showDelete && (
+        <Trash2
+          onClick={onDelete}
+          className="absolute right-4 top-4 text-red-400 w-5 h-5 hover:bg-red-200 cursor-pointer"
+        />
+      )}
+    </div>
+  );
 };
 
 export default TicketTierCard;

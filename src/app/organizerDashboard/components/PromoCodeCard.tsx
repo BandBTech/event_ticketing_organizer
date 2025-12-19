@@ -4,33 +4,33 @@ import { Control } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { useTranslation } from "@/hooks/useTranslation";
-import { EventFormData } from "@/lib/validation";
+import { EventFormData, PROMO_CODE_NAME_MAX } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 interface PromoCodeCardProps {
-	index: number;
-	control: Control<EventFormData>;
-	onDelete: () => void;
+  index: number;
+  control: Control<EventFormData>;
+  onDelete: () => void;
 }
 
 const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	return (
+  return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
       <div className="grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-5">
         <FormField
@@ -43,10 +43,19 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 <Input
                   className="h-13 md:text-md"
                   placeholder="e.g EARLYBIRD"
+                  maxLength={PROMO_CODE_NAME_MAX}
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e.target.value.toUpperCase());
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1 min-h-[20px]">
+                <FormMessage className="mt-0" />
+                <div className="text-xs text-muted-foreground ml-auto">
+                  {field.value?.length || 0}/{PROMO_CODE_NAME_MAX} characters
+                </div>
+              </div>
             </FormItem>
           )}
         />
@@ -68,7 +77,9 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                   <SelectItem value="percentage">{t("event.option.percentage", "Percentage (%)")}</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
@@ -85,10 +96,21 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                   type="number"
                   placeholder={t("event.placeholder.amount", "Enter amount")}
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      field.onChange("");
+                      return;
+                    }
+                    const num = Number(val);
+                    if (isNaN(num)) return;
+                    field.onChange(num);
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
@@ -105,21 +127,32 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                   type="number"
                   placeholder={t("event.placeholder.quantity", "Enter quantity")}
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      field.onChange("");
+                      return;
+                    }
+                    const num = Number(val);
+                    if (isNaN(num)) return;
+                    field.onChange(num);
+                  }}
                 />
               </FormControl>
-              <FormMessage />
+              <div className="flex justify-between items-center -mt-1">
+                <FormMessage className="mt-0" />
+              </div>
             </FormItem>
           )}
         />
       </div>
 
-			<Trash2
-				onClick={onDelete}
-				className="absolute right-4 top-4 text-red-400 w-5 h-5 p-1 rounded-md hover:bg-red-200 cursor-pointer"
-			/>
-		</div>
-	);
+      <Trash2
+        onClick={onDelete}
+        className="absolute right-4 top-4 text-red-400 w-5 h-5 p-1 rounded-md hover:bg-red-200 cursor-pointer"
+      />
+    </div>
+  );
 };
 
 export default PromoCodeCard;

@@ -8,6 +8,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { TZDate } from 'react-day-picker';
 import { CalendarDotsIcon } from '@phosphor-icons/react';
+import { X } from 'lucide-react';
 
 type DateTimeInputProps = {
   className?: string;
@@ -349,6 +350,22 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           spellCheck={false}
           {...rest}
         />
+
+        {clearable && _value && !disabled && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onChange?.(undefined);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
 
         {!hideCalendarIcon && (
           <Button type="button" variant="ghost" size="icon" onClick={onCalendarClick}>
