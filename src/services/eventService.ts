@@ -1,13 +1,16 @@
 import { api } from '@/lib/apiClient';
 import {
-    Event,
-    CreateEventData,
-    UpdateEventRequest,
-    TierTemplate,
+  Event,
+  CreateEventData,
+  UpdateEventRequest,
+  TierTemplate,
   CreateTierTemplateRequest,
   EventAnalyticsResponse,
   EventSalesControlRequest,
-  EventCancellationRequest
+  EventCancellationRequest,
+  EventStatusHistory,
+  EventListResponse,
+  EventSearchParams
 } from '@/types/event';
 
 
@@ -51,31 +54,46 @@ function createEventFormData(data: CreateEventData | UpdateEventRequest): FormDa
 }
 
 export const eventService = {
-    getEvents: async () => {
-        return api.get<Event[]>('/organizer/events', { requiresAuth: true });
-    },
+  getEvents: async (params?: EventSearchParams) => {
+    let endpoint = '/organizer/events';
 
-    getEvent: async (id: string) => {
-        return api.get<Event>(`/organizer/events/${id}`, { requiresAuth: true });
-    },
+    if (params) {
+      const searchParams = new URLSearchParams();
+      if (params.page !== undefined) searchParams.append('page', params.page.toString());
+      if (params.limit !== undefined) searchParams.append('limit', params.limit.toString());
+      if (params.search) searchParams.append('search', params.search);
+      if (params.status) searchParams.append('status', params.status);
 
-    createEvent: async (data: CreateEventData) => {
-      const formData = createEventFormData(data);
-        return api.postFormData<Event>('/organizer/events', formData, { requiresAuth: true });
-    },
+      const queryString = searchParams.toString();
+      if (queryString) {
+        endpoint += `?${queryString}`;
+      }
+    }
 
-    updateEvent: async (id: string, data: UpdateEventRequest) => {
-      const formData = createEventFormData(data);
-      return api.putFormData<Event>(`/organizer/events/${id}`, formData, { requiresAuth: true });
-    },
+    return api.get<EventListResponse>(endpoint, { requiresAuth: true });
+  },
 
-    getTierTemplates: async () => {
-        return api.get<TierTemplate[]>('/organizer/events/tier-templates', { requiresAuth: true });
-    },
+  getEvent: async (id: string) => {
+    return api.get<Event>(`/organizer/events/${id}`, { requiresAuth: true });
+  },
 
-    createTierTemplate: async (data: CreateTierTemplateRequest) => {
-        return api.post<TierTemplate>('/organizer/events/tier-templates', data, { requiresAuth: true });
-    },
+  createEvent: async (data: CreateEventData) => {
+    const formData = createEventFormData(data);
+    return api.postFormData<Event>('/organizer/events', formData, { requiresAuth: true });
+  },
+
+  updateEvent: async (id: string, data: UpdateEventRequest) => {
+    const formData = createEventFormData(data);
+    return api.putFormData<Event>(`/organizer/events/${id}`, formData, { requiresAuth: true });
+  },
+
+  getTierTemplates: async () => {
+    return api.get<TierTemplate[]>('/organizer/events/tier-templates', { requiresAuth: true });
+  },
+
+  createTierTemplate: async (data: CreateTierTemplateRequest) => {
+    return api.post<TierTemplate>('/organizer/events/tier-templates', data, { requiresAuth: true });
+  },
 
   // Event Analytics - Get comprehensive analytics for an event including tier breakdown
   getEventAnalytics: async (id: string) => {
@@ -98,5 +116,22 @@ export const eventService = {
       showSuccessToast: true,
       successMessage: 'Event cancelled successfully'
     });
+  },
+
+  // Get event status change history
+  getStatusHistory: async (id: string): Promise<EventStatusHistory[]> => {
+    const response = await api.get<Record<string, unknown>>(`/organizer/events/${id}/status-history`, { requiresAuth: true });
+
+    // API might return raw array or wrapped in an object
+    if (Array.isArray(response)) return response;
+
+    if (response && typeof response === 'object') {
+      // Check for common wrappers
+      return (response.history as EventStatusHistory[]) ||
+        (response.items as EventStatusHistory[]) ||
+        (response.data as EventStatusHistory[]) || [];
+    }
+
+    return [];
   },
 };

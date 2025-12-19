@@ -133,3 +133,48 @@ export interface EventSalesControlRequest {
 export interface EventCancellationRequest {
   reason: string;
 }
+// Event History Types
+export interface EventStatusHistory {
+  id: string;
+  event_id: string;
+  old_status: string;
+  new_status: string;
+  remark?: string;
+  status_type: 'approval' | 'sales';
+  changed_by: string;
+  changed_by_name: string;
+  created_at: string;
+}
+
+export interface EventMinimal {
+  id: string;
+  title: string;
+  banner_image?: string;
+  category: string | string[]; // API might return string or string[]
+  venue_name: string;
+  address: string;
+  start_date: string;
+  end_date: string;
+  price: number;
+  status: string;
+  sales_status?: string;
+  available?: number;
+  capacity?: number;
+}
+
+export interface EventListResponse {
+  events: EventMinimal[];
+  has_next: boolean;
+  has_previous: boolean;
+  limit: number;
+  page: number;
+  total: number;
+  total_pages: number;
+}
+
+export interface EventSearchParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}

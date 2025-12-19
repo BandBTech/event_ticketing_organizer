@@ -4,7 +4,15 @@ import { Plus } from "lucide-react";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 import { useRouter } from "next/navigation";
-import { EventFormData, createEventSchema } from "@/lib/validation";
+import {
+  EventFormData,
+  createEventSchema,
+  EVENT_TITLE_MAX,
+  VENUE_NAME_MAX,
+  EVENT_DESC_MAX,
+  MAX_CAPACITY,
+  VENUE_ADDRESS_MAX
+} from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { eventService } from "@/services/eventService";
@@ -658,17 +666,19 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         <FormControl>
                           <div className="relative">
                             <Input
-                              className="h-13 md:text-md pr-16" // Added padding for counter
+                              className="h-13 md:text-md"
                               placeholder={t("event.placeholder.eventTitle", "Enter event title")}
-                              maxLength={200}
+                              maxLength={EVENT_TITLE_MAX}
                               {...field}
                             />
-                            <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
-                              {field.value?.length || 0}/200 characters
+                            <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                              <FormMessage className="mt-0" />
+                              <div className="text-xs text-muted-foreground ml-auto">
+                                {field.value?.length || 0}/{EVENT_TITLE_MAX} characters
+                              </div>
                             </div>
                           </div>
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -685,11 +695,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                             onChange={field.onChange}
                             placeholder="Select or type categories..."
                             maxTags={5}
+                            maxChars={50}
                             className="min-h-13 md:text-md"
                             error={!!fieldState.error}
                           />
                         </FormControl>
-                        <FormMessage />
+                        {/* 
+                          CategoryTagsSelector has internal helper text for limits. 
+                          We just need to ensure FormMessage aligns with our new pattern if needed.
+                          But since the selector has its own footer, maybe we just put FormMessage below it.
+                          Standardizing:
+                        */}
+                        <div className="flex justify-between items-start -mt-1 min-h-[20px]">
+                          <FormMessage className="mt-0" />
+                          <div className="text-xs text-muted-foreground ml-auto">
+                            {field.value?.length || 0}/5 tags | Max 50 chars/tag
+                          </div>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -727,11 +749,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     placeholder={t("event.placeholder.eventDescription", "Write about your event...")}
                   />
                 </div>
-                {form.formState.errors.description && (
-                  <p className="text-xs font-medium text-destructive mt-1 flex items-center gap-1">
-                    {form.formState.errors.description.message}
-                  </p>
-                )}
+                <div className="flex justify-between items-center -mt-1 min-h-[20px]">
+                  {form.formState.errors.description ? (
+                    <p className="text-xs font-medium text-destructive mt-0 flex items-center gap-1">
+                      {form.formState.errors.description.message}
+                    </p>
+                  ) : <div />}
+                  {/* Note: Character count for HTML content is tricky. We'll estimate based on text content if needed, 
+                      but for now user just asked for limit display. We can strip tags for count. 
+                  */}
+                  <div className="text-xs text-muted-foreground ml-auto">
+                    {(() => {
+                      const desc = form.getValues("description") || "";
+                      const textLen = desc.replace(/<[^>]*>/g, '').length;
+                      return `${textLen}/${EVENT_DESC_MAX} characters`;
+                    })()}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -750,17 +784,19 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                       <FormControl>
                         <div className="relative">
                           <Input
-                            className="h-13 md:text-md pr-16"
+                            className="h-13 md:text-md"
                             placeholder={t("event.placeholder.venue", "Enter venue name")}
-                            maxLength={200}
+                            maxLength={VENUE_NAME_MAX}
                             {...field}
                           />
-                          <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
-                            {field.value?.length || 0}/200 characters
+                          <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                            <FormMessage className="mt-0" />
+                            <div className="text-xs text-muted-foreground ml-auto">
+                              {field.value?.length || 0}/{VENUE_NAME_MAX} characters
+                            </div>
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -776,16 +812,18 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                           <AddressAutocomplete
                             value={field.value}
                             onChange={field.onChange}
-                            className="h-13 md:text-md pr-16"
+                            className="h-13 md:text-md"
                             placeholder={t("event.placeholder.venueAddress", "Enter venue address")}
-                            maxLength={500}
+                            maxLength={VENUE_ADDRESS_MAX}
                           />
-                          <div className="absolute bottom-0.5 right-2 text-[10px] text-gray-400 pointer-events-none">
-                            {field.value?.length || 0}/500 characters
+                          <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                            <FormMessage className="mt-0" />
+                            <div className="text-xs text-muted-foreground ml-auto">
+                              {field.value?.length || 0}/{VENUE_ADDRESS_MAX} characters
+                            </div>
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -800,12 +838,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         <Input
                           className="h-13 md:text-md"
                           type="number"
-                          placeholder={t("event.placeholder.capacity", "e.g 5000")}
+                          placeholder={t("event.placeholder.capacity", "Enter maximum capacity")}
                           {...field}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "") {
+                              field.onChange("");
+                              return;
+                            }
+                            const num = Number(val);
+                            if (isNaN(num)) return;
+                            field.onChange(num);
+                          }}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <div className="flex justify-between items-center -mt-1">
+                        <FormMessage className="mt-0" />
+                      </div>
                     </FormItem>
                   )}
                 />

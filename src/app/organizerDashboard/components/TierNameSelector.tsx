@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { TierTemplate } from "@/services/tierService";
 import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { TIER_NAME_MAX } from "@/lib/validation";
 
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -54,7 +55,7 @@ const TierNameSelector = ({
             error && "border-red-500 focus:ring-red-500/20"
           )}
         >
-          <span className={cn(!value && "text-muted-foreground")}>
+          <span className={cn("truncate flex-1 text-left", !value && "text-muted-foreground")}>
             {value || t("event.placeholder.selectTier", "Select or type tier name...")}
           </span>
           {isLoading ? (
@@ -69,25 +70,12 @@ const TierNameSelector = ({
           <CommandInput
             placeholder={t("event.placeholder.searchTier", "Search or create tier...")}
             onValueChange={setInputValue}
+            maxLength={TIER_NAME_MAX}
           />
           <CommandList>
             <CommandEmpty>
-              <div className="p-2">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {t("event.text.noTierFound", "No tier found.")}
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    onChange(inputValue);
-                    setOpen(false);
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("event.button.create", "Create")} &quot;{inputValue}&quot;
-                </Button>
+              <div className="p-4 text-sm text-muted-foreground text-center">
+                {t("event.text.noTierFound", "No tier found.")}
               </div>
             </CommandEmpty>
             <CommandGroup>
