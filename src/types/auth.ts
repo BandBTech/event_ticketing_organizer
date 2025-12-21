@@ -94,7 +94,8 @@ export interface UserProfileResponse {
   is_email_verified: boolean;
   organization_id?: string;
   organization?: Organization;
-  organization_info?: OrganizationInfoResponse;
+  organizer_status: 'pending' | 'approved' | 'rejected' | 'inactive';
+  organizer_info?: OrganizationInfoResponse;
   roles?: string[];
   permissions?: string[];
   created_at: string;
@@ -134,6 +135,7 @@ export interface AuthUser {
   isEmailVerified: boolean;
   organizationId?: string;
   organization?: Organization;
+  organizerStatus: 'pending' | 'approved' | 'rejected' | 'inactive';
   organizationInfo?: OrganizationInfoResponse;
   roles: string[];
   permissions: string[];

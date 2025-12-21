@@ -129,7 +129,8 @@ export const useAuthStore = create<AuthStore>()(
             // Organization ID will come from organizer profile (organizer_id)
             organizationId: profile.organization?.id || profile.organization_id,
             organization: profile.organization,
-            organizationInfo: profile.organization_info,
+            organizerStatus: profile.organizer_status,
+            organizationInfo: profile.organizer_info,
             roles: profile.roles || [],
             permissions: profile.permissions || [],
           };
