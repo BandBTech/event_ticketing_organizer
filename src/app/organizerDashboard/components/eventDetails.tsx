@@ -175,14 +175,14 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <div className="grow p-6 space-y-6">
+        <div className="grow p-6 space-y-6 @container">
           {/* Event Title + Actions */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col flex-wrap gap-4 md:items-start md:justify-between @min-4xl:flex-row">
             <div className="space-y-2">
               <h2 className="text-3xl text-gray-700 font-bold">
                 {event.title}
               </h2>
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
                 <Badge
                   className={`flex items-center gap-1 capitalize ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
                     event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
@@ -198,23 +198,25 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 {event.status === 'approved' && (
                   <SalesStatusBadge status={analytics?.sales_status || 'active'} />
                 )}
-                <div className="flex items-center gap-1 text-gray-700 ">
-                  <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
-                </div>
-                <div className="flex items-center gap-1 text-gray-700 ">
-                  <MapPin size={14} />{event.address}
+                <div className="flex gap-2 flex-wrap">
+                  <div className="flex items-center gap-1 text-gray-700 ">
+                    <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
+                  </div>
+                  <div className="flex items-center gap-1 text-gray-700 ">
+                    <MapPin size={14} />{event.address}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-3 mt-4 md:mt-0">
+            <div className="flex flex-col md:flex-row gap-3">
               {canControlSales && (
                 <>
                   {salesStatus === 'active' && (
                     <button
                       onClick={() => handleSalesAction('pause')}
                       disabled={salesControlMutation.isPending}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
                     >
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
@@ -228,7 +230,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     <button
                       onClick={() => handleSalesAction('resume')}
                       disabled={salesControlMutation.isPending}
-                      className="flex items-center gap-2 px-4 py-2 border border-green-400 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50"
+                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-green-400 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50"
                     >
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
@@ -242,7 +244,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     <button
                       onClick={() => handleSalesAction('stop')}
                       disabled={salesControlMutation.isPending}
-                      className="flex items-center gap-2 px-4 py-2 border border-orange-400 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 disabled:opacity-50"
+                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-orange-400 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 disabled:opacity-50"
                     >
                       <StopCircle size={16} />
                       {t("event.button.stopSales", "Stop Sales")}
@@ -280,9 +282,9 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           )}
 
           {/* Main Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid @3xl:grid-cols-3 gap-6">
             {/* Banner */}
-            <div className="md:col-span-2 space-y-6">
+            <div className="@3xl:col-span-2 space-y-6">
               <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
                 <Image
                   src={event.banner_image || "/placeholder.png"}
@@ -359,7 +361,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
             {/* Right - Ticket Sales */}
             <div className="space-y-6 text-gray-700">
               {/* Ticket Tiers */}
-              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
+              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4 @container">
                 <h3 className="text-lg font-semibold">{t("event.section.ticketTiers", "Ticket Tiers")}</h3>
                 {/* Use analytics tiers if available, otherwise fall back to event tiers */}
                 {analytics?.tiers ? (
@@ -377,7 +379,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
 
                     return (
                       <div key={tier.tier_id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
                           <p className={`font-semibold ${color.labelClass}`}>{tier.tier_name}</p>
                           <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/{t("event.text.ticket", "ticket")}</p>
                         </div>
@@ -387,7 +389,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                             style={{ width: `${Math.min(soldPercent, 100)}%` }}
                           />
                         </div>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
                           <span>{tier.sold_seats}/{tier.total_seats} {t("event.text.sold", "sold")}</span>
                           <span className="text-green-600 font-medium">
                             {tier.currency || 'NPR'} {tier.revenue.toLocaleString()}
@@ -410,7 +412,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
 
                     return (
                       <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
                           <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
                           <p className="text-gray-600">NPR {ticket.price}/{t("event.text.ticket", "ticket")}</p>
                         </div>
@@ -425,12 +427,12 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     );
                   })
                 )}
-                <div className="grid grid-cols-2 border-t p-2">
+                <div className="grid @sm:grid-cols-2 border-t p-2 gap-2">
                   <div>
                     <p className="font-semibold">{t("event.label.totalSales", "Total Sales")}</p>
                     <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
                   </div>
-                  <div className="justify-items-end">
+                  <div className="@sm:justify-items-end">
                     <p className="font-semibold">{t("event.label.totalRevenue", "Total Revenue")}</p>
                     <p className="font-semibold text-green-600">NPR {totalRevenue.toLocaleString()}</p>
                   </div>

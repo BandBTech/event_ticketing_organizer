@@ -15,19 +15,17 @@ import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-
-const organizerProfileSchema = z.object({
-  business_name: z.string().min(3, "Business name must be at least 3 characters."),
-  business_description: z.string().optional(),
-});
-
-type OrganizerProfileFormValues = z.infer<typeof organizerProfileSchema>;
+import { RejectionNotice } from "@/components/organizer/RejectionNotice";
+import { useAuthStore } from "@/store/authStore";
+import { organizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
 
 export default function OrganizerProfileSettings() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  const { isOrganizerRejected } = useAuthStore();
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ["organizerProfile"],
@@ -159,6 +157,8 @@ export default function OrganizerProfileSettings() {
         )}
       </div>
 
+      {isOrganizerRejected() && <RejectionNotice />}
+
       <div className="glass-card rounded-xl p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
@@ -222,6 +222,7 @@ export default function OrganizerProfileSettings() {
                 id="business_name"
                 {...register("business_name")}
                 disabled={!isEditing}
+                maxLength={50}
                 className={cn(
                   "pl-10",
                   !isEditing && "bg-gray-50 cursor-not-allowed",
@@ -229,9 +230,18 @@ export default function OrganizerProfileSettings() {
                 )}
               />
             </div>
-            {errors.business_name && (
-              <p className="text-sm text-red-500">{errors.business_name.message}</p>
-            )}
+            <div className="flex justify-between mt-1">
+              {errors.business_name ? (
+                <p className="text-sm text-red-500">{errors.business_name.message}</p>
+              ) : (
+                <span />
+              )}
+              {isEditing && (
+                <p className="text-xs text-gray-400">
+                  {form.watch("business_name")?.length || 0}/50
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Description */}
@@ -243,12 +253,18 @@ export default function OrganizerProfileSettings() {
               id="business_description"
               {...register("business_description")}
               disabled={!isEditing}
+              maxLength={500}
               className={cn(
                 "min-h-[100px]",
                 !isEditing && "bg-gray-50 cursor-not-allowed"
               )}
               placeholder="Tell us about your organization..."
             />
+            {isEditing && (
+              <p className="text-xs text-gray-400 text-right">
+                {form.watch("business_description")?.length || 0}/500
+              </p>
+            )}
           </div>
 
           {/* Action Buttons */}

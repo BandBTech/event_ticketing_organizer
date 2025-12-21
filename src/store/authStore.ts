@@ -26,6 +26,8 @@ interface AuthStore {
   updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
   hasRole: (role: string) => boolean;
   hasPermission: (permission: string) => boolean;
+  isOrganizerRejected: () => boolean;
+  isOrganizerPending: () => boolean;
   getOrganizationId: () => string | undefined;
   setHasHydrated: (state: boolean) => void;
 }
@@ -214,6 +216,32 @@ export const useAuthStore = create<AuthStore>()(
         if (!user || !user.permissions) return false;
         // admin:full overrides everything
         return user.permissions.includes('admin:full') || user.permissions.includes(permission);
+      },
+
+      // Check if organizer is rejected
+      isOrganizerRejected: () => {
+        const { user } = get();
+        // Check organization info status first (from /auth/profile)
+        if (user?.organizationInfo?.status === 'rejected') {
+          return true;
+        }
+        // Fallback to organizer profile if needed (though organizationInfo should be primary)
+        // const { organizerProfile } = get();
+        // return organizerProfile?.organizer_status === 'rejected';
+        return false;
+      },
+
+      // Check if organizer is pending
+      isOrganizerPending: () => {
+        const { user } = get();
+        // Check organization info status first (from /auth/profile)
+        if (user?.organizationInfo?.status === 'pending') {
+          return true;
+        }
+        // Fallback to organizer profile if needed
+        // const { organizerProfile } = get();
+        // return organizerProfile?.organizer_status === 'pending';
+        return false;
       },
 
       // Get organization ID (primarily from organizer profile's organizer_id)

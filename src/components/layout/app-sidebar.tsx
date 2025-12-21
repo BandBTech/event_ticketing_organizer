@@ -77,6 +77,11 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   ];
 
   const filteredNavLinks = navLinks.filter(link => {
+    // If user is rejected or pending, only allow dashboard and settings
+    if (user && (useAuthStore.getState().isOrganizerRejected() || useAuthStore.getState().isOrganizerPending())) {
+      return ['/organizerDashboard', '/organizerDashboard/settings'].includes(link.href);
+    }
+
     if (!link.permission) return true;
     if (Array.isArray(link.permission)) {
       return canAny(link.permission);

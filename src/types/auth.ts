@@ -63,6 +63,10 @@ export interface Role {
 export interface OrganizationInfoResponse {
   id: string;
   business_name: string;
+  status: 'pending' | 'approved' | 'rejected' | 'inactive';
+  remark?: string;
+  approved_at?: string | null;
+  rejected_at?: string | null;
 }
 
 export interface UserResponse {

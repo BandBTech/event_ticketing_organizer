@@ -38,7 +38,7 @@ export default function DashboardHeader() {
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
   // const { openCreateUserModal } = useUser();
-  const { user } = useAuthStore();
+  const { user, isOrganizerRejected } = useAuthStore();
 
   // Get user's first name or fallback
   const userName = user?.firstName || "there";
@@ -72,7 +72,7 @@ export default function DashboardHeader() {
   const isDashboard = pathname === "/organizerDashboard";
 
   // Don't show create button when editing an event, or if no organization
-  const showCreateButton = (isEventsPage || isDashboard) && !isEditMode && !!orgId;
+  const showCreateButton = !isOrganizerRejected && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
   const createButtonLabel = "Create New Event";
 
   const handleCreateButton = () => {

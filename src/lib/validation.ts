@@ -495,3 +495,17 @@ export const createValidationHelpers = (
  *     .regex(/[0-9]/, v.passwordNumber())
  * });
  */
+
+export const organizerProfileSchema = z.object({
+  business_name: z
+    .string()
+    .min(3, "Business name must be at least 3 characters.")
+    .max(50, "Business name must be less than 50 characters.")
+    .min(1, "Business name is required."),
+  business_description: z
+    .string()
+    .max(500, "Description must be less than 500 characters.")
+    .optional(),
+});
+
+export type OrganizerProfileFormValues = z.infer<typeof organizerProfileSchema>;

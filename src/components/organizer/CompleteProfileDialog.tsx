@@ -21,13 +21,7 @@ import { useAuthStore } from "@/store/authStore";
 import { BuildingOfficeIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { ImageUploader } from "@/components/ui/image-uploader";
-
-const profileSchema = z.object({
-  business_name: z.string().min(3, "Business name must be at least 3 characters."),
-  business_description: z.string().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
+import { organizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
 
 export function CompleteProfileDialog() {
   const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile } = useAuthStore();
@@ -37,9 +31,10 @@ export function CompleteProfileDialog() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+  } = useForm<OrganizerProfileFormValues>({
+    resolver: zodResolver(organizerProfileSchema),
     mode: "onChange",
   });
 
@@ -53,7 +48,7 @@ export function CompleteProfileDialog() {
   }, [isOrganizerComplete, isAuthenticated]);
 
   const mutation = useMutation({
-    mutationFn: async (data: ProfileFormValues) => {
+    mutationFn: async (data: OrganizerProfileFormValues) => {
       await updateOrganizerProfile({
         business_name: data.business_name,
         business_description: data.business_description,
@@ -71,7 +66,7 @@ export function CompleteProfileDialog() {
     },
   });
 
-  const onSubmit = (data: ProfileFormValues) => {
+  const onSubmit = (data: OrganizerProfileFormValues) => {
     mutation.mutate(data);
   };
 
@@ -108,7 +103,7 @@ export function CompleteProfileDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-4">
           {/* Business Name Field */}
           <div className="space-y-2">
             <label
@@ -135,14 +130,22 @@ export function CompleteProfileDialog() {
                   "h-12 pl-16 pr-4",
                   errors.business_name && "border-destructive"
                 )}
+                maxLength={50}
                 {...register("business_name")}
               />
             </div>
-            {errors.business_name && (
-              <p className="text-sm text-destructive font-medium" role="alert">
-                {errors.business_name.message}
+            <div className="flex justify-between -mt-1">
+              {errors.business_name ? (
+                <p className="text-sm text-destructive font-medium" role="alert">
+                  {errors.business_name.message}
+                </p>
+              ) : (
+                <span />
+              )}
+              <p className="text-xs text-gray-400">
+                {watch("business_name")?.length || 0}/50
               </p>
-            )}
+            </div>
           </div>
 
           {/* Description Field */}
@@ -154,28 +157,26 @@ export function CompleteProfileDialog() {
               Description
             </label>
             <div className="relative">
-              {/* <div
-                className="absolute left-3 top-4 flex items-center justify-center w-10 h-6 rounded-full"
-                aria-hidden="true"
-              >
-                <FileTextIcon
-                  weight="duotone"
-                  size={24}
-                  className="text-gray-600"
-                />
-              </div> */}
               <Textarea
                 id="business_description"
                 className="min-h-[100px] pl-4 pr-4 py-3"
                 placeholder="Tell us about your business"
+                maxLength={500}
                 {...register("business_description")}
               />
             </div>
-            {errors.business_description && (
-              <p className="text-sm text-destructive font-medium" role="alert">
-                {errors.business_description.message}
+            <div className="flex justify-between -mt-1">
+              {errors.business_description ? (
+                <p className="text-sm text-destructive font-medium" role="alert">
+                  {errors.business_description.message}
+                </p>
+              ) : (
+                <span />
+              )}
+              <p className="text-xs text-gray-400">
+                {watch("business_description")?.length || 0}/500
               </p>
-            )}
+            </div>
           </div>
 
           {/* Logo Upload Field */}
@@ -197,13 +198,13 @@ export function CompleteProfileDialog() {
             />
           </div>
 
-          <DialogFooter className="mt-6 flex-col sm:flex-row gap-2">
+          <DialogFooter className="mt-6 flex-col sm:flex-row gap-4">
             <Button
               type="button"
               variant="outline"
               onClick={handleSkip}
               disabled={mutation.isPending}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto h-12"
             >
               Skip for now
             </Button>

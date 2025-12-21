@@ -115,7 +115,7 @@ export default function StatusHistorySidebar({ history, isLoading }: StatusHisto
 	}
 
 	return (
-		<div className="rounded-xl bg-white p-6 shadow-sm space-y-4">
+    <div className="rounded-xl bg-white p-6 shadow-sm space-y-4 @container">
 			<h3 className="text-lg font-semibold flex items-center gap-2 pb-2 z-20">
 				{t("event.section.statusHistory", "Status History")}
 			</h3>
@@ -147,7 +147,7 @@ export default function StatusHistorySidebar({ history, isLoading }: StatusHisto
 							</div>
 
 							<div className="flex flex-col gap-1">
-								<div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1 @sm:flex-row @sm:items-center @sm:justify-between">
 									<Badge
 										variant="outline"
 										className={`capitalize text-[10px] px-1.5 py-0 ${historyItem.new_status === 'approved' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' :

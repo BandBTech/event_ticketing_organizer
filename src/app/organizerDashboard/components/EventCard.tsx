@@ -168,7 +168,7 @@ export default function EventCard({ event }: EventCardProps) {
 				{categories.length > 0 && (
 					<div className="flex text-gray-700 flex-wrap gap-2">
 						{categories.map((tag) => (
-							<span key={tag} className="text-xs bg-gray-200 px-2 py-1 rounded-lg">
+              <span key={tag} className="text-xs bg-gray-200 px-2 py-1 rounded-lg break-all">
 								{tag}
 							</span>
 						))}

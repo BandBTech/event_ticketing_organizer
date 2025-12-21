@@ -7,11 +7,31 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useUser } from "@/app/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { Plus, Users } from "lucide-react";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
+import { RejectionNotice } from "@/components/organizer/RejectionNotice";
+import { PendingNotice } from "@/components/organizer/PendingNotice";
 
 export default function UsersPage() {
-  const { isLoading: isAuthLoading } = useAuthStore();
+  const { isLoading: isAuthLoading, isOrganizerRejected, isOrganizerPending } = useAuthStore();
   const { t } = useTranslation();
-  const { openCreateUserModal, isUserModalOpen, closeUserModal, editingUser } = useUser();
+  const { isUserModalOpen, closeUserModal, editingUser, openCreateUserModal } = useUser();
+
+  if (isOrganizerRejected()) {
+    return (
+      <div className="p-6">
+        <RejectionNotice />
+      </div>
+    );
+  }
+
+  if (isOrganizerPending()) {
+    return (
+      <div className="p-6">
+        <PendingNotice />
+      </div>
+    );
+  }
 
   if (isAuthLoading) {
     return <div className="flex-1 p-8 pt-6 flex justify-center items-center">Loading...</div>;
@@ -27,10 +47,12 @@ export default function UsersPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={openCreateUserModal}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t('users.create.button', "Add User")}
-          </Button>
+          <PermissionGuard permission={PERMISSIONS.USER_CREATE}>
+            <Button onClick={openCreateUserModal}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t('users.create.button', "Add User")}
+            </Button>
+          </PermissionGuard>
         </div>
       </div>
 

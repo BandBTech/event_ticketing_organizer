@@ -90,7 +90,7 @@ const CategoryTagsSelector = ({
               e.stopPropagation();
               handleRemove(tag);
             }}
-            className="p-0.5 rounded-full hover:bg-blue-200 transition-colors"
+            className="p-0.5 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
             aria-label={`Remove ${tag}`}
           >
             <X className="h-3.5 w-3.5" />

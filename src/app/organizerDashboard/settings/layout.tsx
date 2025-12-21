@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 
+import { useAuthStore } from "@/store/authStore";
+
 const menuItems = [
   {
     href: "/organizerDashboard/settings/profile",
@@ -38,6 +40,14 @@ export default function SettingsLayout({
   const pathname = usePathname();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { isOrganizerRejected, isOrganizerPending } = useAuthStore();
+
+  const filteredMenuItems = menuItems.filter(item => {
+    if (isOrganizerRejected() || isOrganizerPending()) {
+      return ["/organizerDashboard/settings/profile", "/organizerDashboard/settings/organizer", "/organizerDashboard/settings/security"].includes(item.href);
+    }
+    return true;
+  });
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
@@ -50,9 +60,9 @@ export default function SettingsLayout({
               {t('settings.title', 'Settings')}
             </h2>
             <nav className="space-y-1">
-              {menuItems.map((item) => {
+              {filteredMenuItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === `${item.href}/`;
+                const isActive = pathname === `${item.href}/` || pathname === item.href;
 
                 return (
                   <Link
