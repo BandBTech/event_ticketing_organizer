@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import CreateEventsForm from "../../components/createEventsForm";
 import { eventService } from "@/services/eventService";
 import { Suspense } from "react";
+import { queryKeys } from "@/lib/queryKeys";
 
 function CreateEventsContent() {
   const searchParams = useSearchParams();
@@ -14,7 +15,7 @@ function CreateEventsContent() {
   const isEditing = searchParams.get("edit") === "true";
 
   const { data: event, isLoading } = useQuery({
-    queryKey: ["event", id],
+    queryKey: queryKeys.events.detail(id!),
     queryFn: () => eventService.getEvent(id!),
     enabled: !!id && isEditing,
   });
@@ -34,7 +35,7 @@ function CreateEventsContent() {
   return (
     <CreateEventsForm
       initialData={event}
-      isEditing={isEditing} 
+      isEditing={isEditing}
     />
   );
 }

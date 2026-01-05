@@ -42,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface CreateEventFormProps {
   initialData?: Event;
@@ -62,7 +63,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
   // Fetch tier templates using TanStack Query
   const { data: tierTemplates = [] } = useQuery({
-    queryKey: ["tierTemplates"],
+    queryKey: queryKeys.tierTemplates.all,
     queryFn: () => eventService.getTierTemplates(),
   });
 
@@ -267,7 +268,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const createTierTemplateMutation = useMutation({
     mutationFn: eventService.createTierTemplate,
     onSuccess: (newTemplate) => {
-      queryClient.setQueryData(["tierTemplates"], (old: TierTemplate[] | undefined) =>
+      queryClient.setQueryData(queryKeys.tierTemplates.all, (old: TierTemplate[] | undefined) =>
         old ? [...old, newTemplate] : [newTemplate]
       );
     },
@@ -418,7 +419,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         console.log("Sending only changed fields:", changedFields);
         saveEventMutation.mutate({ eventData: changedFields, isUpdate: true, id: initialData.id });
       } else {
-      // For new events, send all data
+        // For new events, send all data
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const eventData: any = {
           title: data.name,

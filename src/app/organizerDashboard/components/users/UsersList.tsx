@@ -38,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface UsersListProps {
   orgId: string;
@@ -57,7 +58,7 @@ export default function UsersList({ orgId }: UsersListProps) {
   });
 
   const { data: users = [], isLoading, isError } = useQuery({
-    queryKey: ["orgUsers", orgId],
+    queryKey: queryKeys.orgUsers.all(orgId),
     queryFn: () => organizerUserService.getUsers(orgId),
     enabled: !!orgId,
   });
@@ -66,7 +67,7 @@ export default function UsersList({ orgId }: UsersListProps) {
     mutationFn: (userId: string) => organizerUserService.deleteUser(orgId, userId),
     onSuccess: () => {
       toast.success(t('users.delete.success', "User removed successfully"));
-      queryClient.invalidateQueries({ queryKey: ["orgUsers", orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
       setDeleteUser(null);
     },
     onError: (error: Error) => {

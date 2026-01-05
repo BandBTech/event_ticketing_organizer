@@ -4,21 +4,23 @@
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
+import { EventAnalyticsResponse } from "@/types/event";
 import EventDetailsPage from "../../components/eventDetails";
 import { Loader2 } from "lucide-react";
+import { queryKeys } from "@/lib/queryKeys";
 
 export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
 
   const { data: event, isLoading: eventLoading } = useQuery({
-    queryKey: ['event', eventId],
+    queryKey: queryKeys.events.detail(eventId!),
     queryFn: () => eventService.getEvent(eventId!),
     enabled: !!eventId,
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: ['eventAnalytics', eventId],
+    queryKey: queryKeys.events.analytics(eventId!),
     queryFn: () => eventService.getEventAnalytics(eventId!),
     enabled: !!eventId,
   });
@@ -40,5 +42,5 @@ export default function EventDetailsRoute() {
   }
 
   // Cast analytics if needed, or assume strictly matches
-  return <EventDetailsPage event={event} analytics={analytics as any} />;
+  return <EventDetailsPage event={event} analytics={analytics as EventAnalyticsResponse | undefined} />;
 }
