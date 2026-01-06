@@ -32,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface EventDetailsProps {
   event: Event;
@@ -59,8 +60,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     mutationFn: ({ action, reason }: { action: SalesAction; reason?: string }) =>
       eventService.controlEventSales(event.id, { action, reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', event.id] });
-      queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(event.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.analytics(event.id) });
       setSalesDialogOpen(false);
       setSalesReason("");
       setSalesAction(null);
@@ -71,8 +72,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   const cancelEventMutation = useMutation({
     mutationFn: (reason: string) => eventService.cancelEvent(event.id, { reason }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['event', event.id] });
-      queryClient.invalidateQueries({ queryKey: ['eventAnalytics', event.id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(event.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.analytics(event.id) });
       setCancelDialogOpen(false);
       setCancelReason("");
     },

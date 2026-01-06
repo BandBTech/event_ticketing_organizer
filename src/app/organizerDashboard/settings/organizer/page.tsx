@@ -15,6 +15,7 @@ import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { queryKeys } from "@/lib/queryKeys";
 
 const organizerProfileSchema = z.object({
   business_name: z.string().min(3, "Business name must be at least 3 characters"),
@@ -30,7 +31,7 @@ export default function OrganizerProfileSettings() {
   const queryClient = useQueryClient();
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ["organizerProfile"],
+    queryKey: queryKeys.organizerProfile.all,
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();
       return res as unknown; // Casting as unknown for now since we know the structure roughly
@@ -87,7 +88,7 @@ export default function OrganizerProfileSettings() {
     onSuccess: () => {
       toast.success("Organizer profile updated successfully");
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["organizerProfile"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.organizerProfile.all });
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {

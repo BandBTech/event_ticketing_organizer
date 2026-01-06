@@ -12,6 +12,7 @@ import EventCard from "./EventCard";
 import EventCardSkeleton from "./EventCardSkeleton";
 import EventPagination from "./EventPagination";
 import { CalendarXIcon } from "@phosphor-icons/react";
+import { queryKeys } from "@/lib/queryKeys";
 
 export default function Events() {
   // Use debounced state: searchInput for display, debouncedSearch for filtering
@@ -24,7 +25,7 @@ export default function Events() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["events"],
+    queryKey: queryKeys.events.all,
     queryFn: () => eventService.getEvents(),
   });
 

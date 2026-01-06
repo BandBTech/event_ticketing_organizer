@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { PencilSimpleIcon, TrashIcon, PlusIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +28,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
+import { Loader2 } from "lucide-react";
 
 function TierTemplateSkeleton() {
   return (
@@ -55,9 +58,7 @@ function TierTemplateSkeleton() {
 
 export default function TierTemplatesPage() {
   const { t } = useTranslation();
-  const [templates, setTemplates] = useState<TierTemplate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<TierTemplate | null>(null);
@@ -72,22 +73,52 @@ export default function TierTemplatesPage() {
     },
   });
 
-  const fetchTemplates = async () => {
-    try {
-      setIsLoading(true);
-      const data = await tierService.getTierTemplates();
-      setTemplates(data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch tier templates");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Fetch tier templates using TanStack Query
+  const { data: templates = [], isLoading } = useQuery({
+    queryKey: queryKeys.tierTemplates.all,
+    queryFn: () => tierService.getTierTemplates(),
+  });
 
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
+  // Create tier template mutation
+  const createMutation = useMutation({
+    mutationFn: (data: TierTemplateFormData) => tierService.createTierTemplate(data),
+    onSuccess: () => {
+      toast.success("Tier template created successfully");
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+      setIsDialogOpen(false);
+    },
+    onError: () => {
+      toast.error("Failed to create template");
+    },
+  });
+
+  // Update tier template mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: TierTemplateFormData }) =>
+      tierService.updateTierTemplate(id, data),
+    onSuccess: () => {
+      toast.success("Tier template updated successfully");
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+      setIsDialogOpen(false);
+    },
+    onError: () => {
+      toast.error("Failed to update template");
+    },
+  });
+
+  // Delete tier template mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => tierService.deleteTierTemplate(id),
+    onSuccess: () => {
+      toast.success("Tier template deleted successfully");
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+    },
+    onError: () => {
+      toast.error("Failed to delete template");
+    },
+  });
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const handleOpenDialog = (template?: TierTemplate) => {
     if (template) {
@@ -108,36 +139,17 @@ export default function TierTemplatesPage() {
     setIsDialogOpen(true);
   };
 
-  const onSubmit = async (data: TierTemplateFormData) => {
-    try {
-      setIsSubmitting(true);
-      if (isEditing && currentTemplate) {
-        await tierService.updateTierTemplate(currentTemplate.id, data);
-        toast.success("Tier template updated successfully");
-      } else {
-        await tierService.createTierTemplate(data);
-        toast.success("Tier template created successfully");
-      }
-      setIsDialogOpen(false);
-      fetchTemplates();
-    } catch (error) {
-      console.error(error);
-      toast.error(isEditing ? "Failed to update template" : "Failed to create template");
-    } finally {
-      setIsSubmitting(false);
+  const onSubmit = (data: TierTemplateFormData) => {
+    if (isEditing && currentTemplate) {
+      updateMutation.mutate({ id: currentTemplate.id, data });
+    } else {
+      createMutation.mutate(data);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this template?")) {
-      try {
-        await tierService.deleteTierTemplate(id);
-        toast.success("Tier template deleted successfully");
-        fetchTemplates();
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to delete template");
-      }
+      deleteMutation.mutate(id);
     }
   };
 
@@ -187,9 +199,14 @@ export default function TierTemplatesPage() {
                     variant="outline"
                     size="icon"
                     onClick={() => handleDelete(template.id)}
+                    disabled={deleteMutation.isPending}
                     className="rounded-l-none h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   >
-                    <TrashIcon weight="duotone" size={16} />
+                    {deleteMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <TrashIcon weight="duotone" size={16} />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -252,7 +269,7 @@ export default function TierTemplatesPage() {
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>
-                      <span className="animate-spin mr-2">⏳</span>
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       {isEditing ? "Updating..." : "Creating..."}
                     </>
                   ) : (

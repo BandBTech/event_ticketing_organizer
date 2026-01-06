@@ -54,6 +54,7 @@ import {
 import { OrgUser } from "@/types/organizerUser";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface UserFormDialogProps {
   open: boolean;
@@ -204,7 +205,7 @@ export default function UserFormDialog({
       }),
     onSuccess: () => {
       toast.success(t('users.create.success', "User created successfully"));
-      queryClient.invalidateQueries({ queryKey: ["orgUsers", orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -220,7 +221,7 @@ export default function UserFormDialog({
       }),
     onSuccess: () => {
       toast.success(t('users.update.success', "User updated successfully"));
-      queryClient.invalidateQueries({ queryKey: ["orgUsers", orgId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
       onOpenChange(false);
     },
     onError: (error: Error) => {
