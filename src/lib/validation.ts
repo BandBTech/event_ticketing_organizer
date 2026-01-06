@@ -29,7 +29,7 @@ const createRequiredDateSchema = (t: (key: string, fallback?: string) => string,
     today.setHours(0, 0, 0, 0);
     if (date < today) {
       const message = fieldName
-        ? t('event.validation.fieldPastDate', '{field} cannot be in past.').replace('{field}', fieldName)
+        ? t('event.validation.fieldPastDate', '{field} cannot be in the past.').replace('{field}', fieldName)
         : t('event.validation.pastDate', 'Date cannot be in the past.');
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -84,13 +84,13 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
     id: z.string().optional(),
     name: z
       .string()
-      .min(1, t('event.validation.ticketNameRequired', "Ticket name is required."))
-      .max(TIER_NAME_MAX, t('event.validation.ticketNameLength', "Ticket name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
+      .min(1, t('event.validation.tierNameRequired', "Tier Name is required."))
+      .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
     price: createRequiredNumberSchema(
       t,
       t('event.field.ticketPrice', 'Price'),
       1,
-      t('event.validation.priceRequired', "Price is required and must be at least 1."),
+      t('event.validation.priceRequired', "Price must be at least 1."),
       MAX_PRICE,
       t('event.validation.priceMax', "Price cannot exceed {max}.").replace('{max}', MAX_PRICE.toString())
     ),
@@ -129,15 +129,15 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
 export const createPromoCodeSchema = (t: (key: string, fallback?: string) => string) => z.object({
   code: z
     .string()
-    .min(1, t('event.validation.promoCodeRequired', "Promo code is required."))
-    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo code must be under {max} characters.").replace('{max}', PROMO_CODE_NAME_MAX.toString()))
-    .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo code may only contain A-Z , 0-9, _ or -")),
-  discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount type is required.")),
+    .min(1, t('event.validation.promoCodeRequired', "Promo Code is required."))
+    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo Code must be under {max} characters.").replace('{max}', PROMO_CODE_NAME_MAX.toString()))
+    .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo Code may only contain A-Z , 0-9, _ or -")),
+  discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount Type is required.")),
   amount: createRequiredNumberSchema(
     t,
     t('event.field.discountAmount', 'Amount'),
     1,
-    t('event.validation.amountRequired', "Amount is required and must be at least 1."),
+    t('event.validation.amountRequired', "Amount must be at least 1."),
     PROMO_CODE_AMOUNT_MAX,
     t('event.validation.amountMax', "Amount cannot exceed {max}.").replace('{max}', PROMO_CODE_AMOUNT_MAX.toLocaleString())
   ),
@@ -158,8 +158,8 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
       .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event Title must be under {max} characters.").replace('{max}', EVENT_TITLE_MAX.toString())),
     description: z.string()
       .min(1, t('event.validation.descriptionRequired', "Event Description is required."))
-      .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Description must be under {max} characters.").replace('{max}', EVENT_DESC_MAX.toString())),
-    tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
+      .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Event Description must be under {max} characters.").replace('{max}', EVENT_DESC_MAX.toString())),
+    tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one Tag is required.")),
     image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
     venue: z.string()
       .min(1, t('event.validation.venueRequired', "Venue Name is required."))
@@ -178,7 +178,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
     startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Event Start Date')),
     endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'Event End Date')),
-    tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one ticket is required.")),
+    tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one Ticket is required.")),
     promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })
   .refine((data) => {
@@ -230,7 +230,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
         if (seen.has(normalizedCode)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('event.validation.duplicatePromoCode', "Promo code must be unique."),
+            message: t('event.validation.duplicatePromoCode', "Promo Code must be unique."),
             path: ["promoCodes", index, "code"],
           });
         }
@@ -263,7 +263,7 @@ export const createTierTemplateSchema = (t: (key: string, fallback?: string) => 
     .min(1, t('event.validation.tierNameRequired', "Tier Template Name is required."))
     .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Template Name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
   description: z.string()
-    .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Description must be under {max} characters.").replace('{max}', TIER_DESC_MAX.toString()))
+    .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Event Description must be under {max} characters.").replace('{max}', TIER_DESC_MAX.toString()))
     .optional(),
 });
 

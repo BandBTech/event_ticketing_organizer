@@ -38,7 +38,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
           name={`promoCodes.${index}.code`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.promoCode", "Promo code")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">{t("event.field.promoCode", "Promo Code")} <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input
                   className="h-13 md:text-md"
