@@ -312,7 +312,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                     .map((tag) => (
                       <span
                         key={tag}
-                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm"
+                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm break-all"
                       >
                         {tag}
                       </span>

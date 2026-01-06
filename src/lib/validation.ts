@@ -122,7 +122,7 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
     if (!data.salesEnd || !data.salesStart) return true;
     return new Date(data.salesEnd) > new Date(data.salesStart);
   }, {
-    message: t('event.validation.salesEndAfterStart', "Sales end date must be after Sales start date."),
+    message: t('event.validation.salesEndAfterStart', "Sales End Date must be after Sales Start Date."),
     path: ["salesEnd"],
   });
 
@@ -154,19 +154,19 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
 export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
     name: z.string()
-      .min(1, t('event.validation.titleRequired', "Event title is required."))
-      .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event title must be under {max} characters.").replace('{max}', EVENT_TITLE_MAX.toString())),
+      .min(1, t('event.validation.titleRequired', "Event Title is required."))
+      .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event Title must be under {max} characters.").replace('{max}', EVENT_TITLE_MAX.toString())),
     description: z.string()
-      .min(1, t('event.validation.descriptionRequired', "Event description is required."))
+      .min(1, t('event.validation.descriptionRequired', "Event Description is required."))
       .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Description must be under {max} characters.").replace('{max}', EVENT_DESC_MAX.toString())),
     tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
     image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
     venue: z.string()
-      .min(1, t('event.validation.venueRequired', "Venue name is required."))
-      .max(VENUE_NAME_MAX, t('event.validation.venueMaxLength', "Venue name must be under {max} characters.").replace('{max}', VENUE_NAME_MAX.toString())),
+      .min(1, t('event.validation.venueRequired', "Venue Name is required."))
+      .max(VENUE_NAME_MAX, t('event.validation.venueMaxLength', "Venue Name must be under {max} characters.").replace('{max}', VENUE_NAME_MAX.toString())),
     venueAddress: z.string()
-      .min(1, t('event.validation.venueAddressRequired', "Venue address is required."))
-      .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue address must be under {max} characters.").replace('{max}', VENUE_ADDRESS_MAX.toString())),
+      .min(1, t('event.validation.venueAddressRequired', "Venue Address is required."))
+      .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue Address must be under {max} characters.").replace('{max}', VENUE_ADDRESS_MAX.toString())),
     capacity: createRequiredNumberSchema(
       t,
       t('event.field.capacity', 'Capacity'),
@@ -185,7 +185,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     if (!data.endDate || !data.startDate) return true;
     return new Date(data.endDate) > new Date(data.startDate);
   }, {
-    message: t('event.validation.endDateAfterStart', "Event end date must be after Event start date."),
+    message: t('event.validation.endDateAfterStart', "Event End Date must be after Event Start Date."),
     path: ["endDate"],
   })
   .superRefine((data, ctx) => {
@@ -200,7 +200,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
         if (salesStartDate > eventStartDate) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('event.validation.salesStartBeforeEventStart', "Sales start date cannot be after event start date."),
+            message: t('event.validation.salesStartBeforeEventStart', "Sales Start Date cannot be after Event Start Date."),
             path: ["tickets", index, "salesStart"],
           });
         }
@@ -212,7 +212,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
         if (salesEndDate > eventStartDate) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('event.validation.salesEndBeforeEventStart', "Sales end date cannot be after event start date."),
+            message: t('event.validation.salesEndBeforeEventStart', "Sales End Date cannot be after Event Start Date."),
             path: ["tickets", index, "salesEnd"],
           });
         }
@@ -249,7 +249,7 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
         if (seenNames.has(normalizedName)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t('event.validation.duplicateTierName', "Tier name must be unique."),
+            message: t('event.validation.duplicateTierName', "Tier Name must be unique."),
             path: ["tickets", index, "name"],
           });
         }
@@ -260,8 +260,8 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
 
 export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
   template_name: z.string()
-    .min(1, t('event.validation.tierNameRequired', "Tier template name is required."))
-    .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier template name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
+    .min(1, t('event.validation.tierNameRequired', "Tier Template Name is required."))
+    .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Template Name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
   description: z.string()
     .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Description must be under {max} characters.").replace('{max}', TIER_DESC_MAX.toString()))
     .optional(),
@@ -278,14 +278,14 @@ export const createOrgUserSchema = (t: (key: string, fallback?: string) => strin
   return z.object({
     first_name: z.string()
       .trim()
-      .min(1, v.required("First name"))
-      .min(2, t('common.validation.firstNameMin', "First name must be at least 2 characters."))
-      .max(50, t('common.validation.firstNameMax', "First name must not exceed 50 characters.")),
+      .min(1, v.required("First Name"))
+      .min(2, t('common.validation.firstNameMin', "First Name must be at least 2 characters."))
+      .max(50, t('common.validation.firstNameMax', "First Name must not exceed 50 characters.")),
     last_name: z.string()
       .trim()
-      .min(1, v.required("Last name"))
-      .min(2, t('common.validation.lastNameMin', "Last name must be at least 2 characters."))
-      .max(50, t('common.validation.lastNameMax', "Last name must not exceed 50 characters.")),
+      .min(1, v.required("Last Name"))
+      .min(2, t('common.validation.lastNameMin', "Last Name must be at least 2 characters."))
+      .max(50, t('common.validation.lastNameMax', "Last Name must not exceed 50 characters.")),
     email: z.string()
       .min(1, t('common.validation.emailRequired', "Email is required."))
       .email(t('common.validation.emailInvalid', "Invalid email address.")),

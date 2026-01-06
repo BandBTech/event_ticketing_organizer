@@ -166,6 +166,62 @@ const FormMessage = React.forwardRef<
 })
 FormMessage.displayName = "FormMessage"
 
+/**
+ * TranslatedFormMessage - Displays form error messages with dynamic translation
+ * 
+ * Error messages in Zod schemas should be stored as translation keys (e.g., "auth.validation.emailRequired")
+ * This component translates them at render time, ensuring messages update when locale changes.
+ * 
+ * Usage:
+ * 1. In Zod schema: z.string().min(1, "auth.validation.emailRequired")
+ * 2. In component: <TranslatedFormMessage t={t} fallback="Email is required" />
+ */
+interface TranslatedFormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  /** Translation function from useTranslation hook */
+  t: (key: string, fallback?: string) => string
+  /** Fallback text if translation key is not found */
+  fallback?: string
+}
+
+const TranslatedFormMessage = React.forwardRef<
+  HTMLParagraphElement,
+  TranslatedFormMessageProps
+>(({ className, t, fallback, children, ...props }, ref) => {
+  const { error, formMessageId } = useFormField()
+
+  // If no error and no children, render nothing
+  if (!error && !children) {
+    return null
+  }
+
+  // Get the message - either from error or children
+  let body: React.ReactNode
+  if (error?.message) {
+    const messageKey = String(error.message)
+    // Translate the key - if it looks like a translation key (contains dots), translate it
+    // Otherwise, use it as-is (for backwards compatibility with already-translated messages)
+    body = messageKey.includes('.') ? t(messageKey, fallback || messageKey) : messageKey
+  } else {
+    body = children
+  }
+
+  if (!body) {
+    return null
+  }
+
+  return (
+    <p
+      ref={ref}
+      id={formMessageId}
+      className={cn("text-xs font-medium text-destructive", className)}
+      {...props}
+    >
+      {body}
+    </p>
+  )
+})
+TranslatedFormMessage.displayName = "TranslatedFormMessage"
+
 export {
   useFormField,
   Form,
@@ -174,5 +230,6 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
+  TranslatedFormMessage,
   FormField,
 }

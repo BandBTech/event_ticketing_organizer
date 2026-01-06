@@ -10,6 +10,8 @@ import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSe
 import { useAuthStore } from "@/store/authStore";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 /**
  * Get time-based greeting message
@@ -37,6 +39,8 @@ export default function DashboardHeader() {
   const pathname = rawPath.replace(/\/+$/, "") || "/";
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation();
   // const { openCreateUserModal } = useUser();
   const { user, isOrganizerRejected, isOrganizerPending } = useAuthStore();
 
@@ -73,7 +77,7 @@ export default function DashboardHeader() {
 
   // Don't show create button when editing an event, or if no organization
   const showCreateButton = (!isOrganizerRejected() || !isOrganizerPending()) && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
-  const createButtonLabel = "Create New Event";
+  const createButtonLabel = t('event.field.create', 'Create New Event');
 
   const handleCreateButton = () => {
     router.push("/organizerDashboard/pages/createevents");
