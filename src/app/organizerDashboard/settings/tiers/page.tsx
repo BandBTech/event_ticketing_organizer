@@ -37,7 +37,6 @@ function TierTemplateSkeleton() {
 }
 
 export default function TierTemplatesPage() {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<TierTemplate | null>(null);
