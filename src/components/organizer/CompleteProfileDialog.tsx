@@ -20,10 +20,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/store/authStore";
 import { BuildingOfficeIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/ui/shadcn-io/dropzone";
+import { ImageUploader } from "@/components/ui/image-uploader";
 
 const profileSchema = z.object({
-  business_name: z.string().min(3, "Business name must be at least 3 characters"),
+  business_name: z.string().min(3, "Business name must be at least 3 characters."),
   business_description: z.string().optional(),
 });
 
@@ -180,23 +180,21 @@ export function CompleteProfileDialog() {
 
           {/* Logo Upload Field */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-900 block">
-              Logo
-            </label>
-            <Dropzone
-              src={selectedFile ? [selectedFile] : undefined}
-              onDrop={handleDrop}
-              accept={{ "image/*": [] }}
-              maxSize={2 * 1024 * 1024}
-              maxFiles={1}
-              className="min-h-[120px]"
-            >
-              <DropzoneContent />
-              <DropzoneEmptyState />
-            </Dropzone>
-            <p className="text-xs text-gray-500">
-              Recommended size: 500x500px. Max size: 2MB.
-            </p>
+            <ImageUploader
+              label="Logo"
+              value={selectedFile ? URL.createObjectURL(selectedFile) : ""}
+              onChange={(file) => {
+                if (file) {
+                  setSelectedFile(file);
+                } else {
+                  setSelectedFile(null);
+                }
+              }}
+              onRemove={() => setSelectedFile(null)}
+              maxSizeMB={2}
+              helperText="Recommended size: 500x500px."
+              helperTextSize="Max size: 2MB."
+            />
           </div>
 
           <DialogFooter className="mt-6 flex-col sm:flex-row gap-2">

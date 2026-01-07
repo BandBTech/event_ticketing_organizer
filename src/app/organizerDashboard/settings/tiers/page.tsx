@@ -1,36 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { PencilSimpleIcon, TrashIcon, PlusIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { tierService, TierTemplate } from "@/services/tierService";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createTierTemplateSchema, TierTemplateFormData } from "@/lib/validation";
-import { useTranslation } from "@/hooks/useTranslation";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CreateTierTemplateDialog } from "../../components/CreateTierTemplateDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { Loader2 } from "lucide-react";
+import { TierTemplateFormData } from "@/lib/validation";
 
 function TierTemplateSkeleton() {
   return (
@@ -60,18 +40,7 @@ export default function TierTemplatesPage() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<TierTemplate | null>(null);
-
-  const tierTemplateSchema = useMemo(() => createTierTemplateSchema(t), [t]);
-
-  const form = useForm<TierTemplateFormData>({
-    resolver: zodResolver(tierTemplateSchema),
-    defaultValues: {
-      template_name: "",
-      description: "",
-    },
-  });
 
   // Fetch tier templates using TanStack Query
   const { data: templates = [], isLoading } = useQuery({
@@ -121,30 +90,8 @@ export default function TierTemplatesPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const handleOpenDialog = (template?: TierTemplate) => {
-    if (template) {
-      setIsEditing(true);
-      setCurrentTemplate(template);
-      form.reset({
-        template_name: template.template_name,
-        description: template.description || "",
-      });
-    } else {
-      setIsEditing(false);
-      setCurrentTemplate(null);
-      form.reset({
-        template_name: "",
-        description: "",
-      });
-    }
+    setCurrentTemplate(template || null);
     setIsDialogOpen(true);
-  };
-
-  const onSubmit = (data: TierTemplateFormData) => {
-    if (isEditing && currentTemplate) {
-      updateMutation.mutate({ id: currentTemplate.id, data });
-    } else {
-      createMutation.mutate(data);
-    }
   };
 
   const handleDelete = (id: string) => {
@@ -221,66 +168,14 @@ export default function TierTemplatesPage() {
         </div>
       )}
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {isEditing ? "Edit Tier Template" : "Create Tier Template"}
-            </DialogTitle>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="template_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Template Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., VIP, Early Bird" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe this tier..."
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {isEditing ? "Updating..." : "Creating..."}
-                    </>
-                  ) : (
-                    isEditing ? "Update" : "Create"
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+      <CreateTierTemplateDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+        }}
+        initialData={currentTemplate}
+      />
     </div>
   );
 }

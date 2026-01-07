@@ -24,26 +24,26 @@ const createRequiredDateSchema = (t: (key: string, fallback?: string) => string,
     }
   });
 
-// Helper for optional date string (allows empty string)
-const createOptionalDateSchema = (t: (key: string, fallback?: string) => string) =>
-  z.string().superRefine((val, ctx) => {
-    if (!val) return;
-    const date = new Date(val);
-    if (isNaN(date.getTime())) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('common.validation.invalidDatetime', 'Enter valid datetime.'),
-      });
-      return;
-    }
-    if (date.getFullYear() > 9999) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('common.validation.yearLimit', 'Year cannot be more than 4 digits.'),
-      });
-    }
-  });
-
+// Helper to create a required number schema with proper "is required" message
+const createRequiredNumberSchema = (
+  t: (key: string, fallback?: string) => string,
+  fieldName: string,
+  minValue: number = 1,
+  minMessage?: string
+) =>
+  z.preprocess(
+    (val) => {
+      // Convert empty string or NaN to undefined so z.number() treats it as missing
+      if (val === '' || val === null || val === undefined) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    },
+    z
+      .number({
+        error: t('common.validation.required', '{field} is required.').replace('{field}', fieldName),
+      })
+      .min(minValue, minMessage || t('common.validation.min', '{field} must be at least {value}.').replace('{field}', fieldName).replace('{value}', minValue.toString()))
+  );
 
 export const createTicketSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
@@ -52,20 +52,39 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
       .string()
       .min(1, t('event.validation.ticketNameRequired', "Ticket name is required."))
       .max(100, t('event.validation.ticketNameLength', "Ticket name must be under 100 characters.")),
-    price: z.coerce.number().min(1, t('event.validation.priceRequired', "Price is required and must be at least 1.")),
-    quantity: z.coerce.number().min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
-    gst: z.coerce
-      .number()
-      .min(0, t('event.validation.gstPositive', "GST must be positive."))
-      .max(100, t('event.validation.gstMax', "GST cannot exceed 100%.")),
-    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales start')),
-    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales end')),
+    price: createRequiredNumberSchema(
+      t,
+      t('event.field.ticketPrice', 'Price'),
+      1,
+      t('event.validation.priceRequired', "Price is required and must be at least 1.")
+    ),
+    quantity: createRequiredNumberSchema(
+      t,
+      t('event.field.ticketQuantity', 'Quantity'),
+      1,
+      t('event.validation.quantityMin', "Quantity must be at least 1.")
+    ),
+    gst: z.preprocess(
+      (val) => {
+        if (val === '' || val === null || val === undefined) return undefined;
+        const num = Number(val);
+        return isNaN(num) ? undefined : num;
+      },
+      z
+        .number({
+          error: t('event.validation.gstRequired', "GST is required. Set to 0 if not applicable."),
+        })
+        .min(0, t('event.validation.gstPositive', "GST must be positive."))
+        .max(100, t('event.validation.gstMax', "GST cannot exceed 100%."))
+    ),
+    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales Start Date')),
+    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales End Date')),
   })
   .refine((data) => {
     if (!data.salesEnd || !data.salesStart) return true;
     return new Date(data.salesEnd) >= new Date(data.salesStart);
   }, {
-    message: t('event.validation.salesEndAfterStart', "Sales end date must be after sales start date."),
+    message: t('event.validation.salesEndAfterStart', "Sales end date must be after or equal to Sales start date."),
     path: ["salesEnd"],
   });
 
@@ -75,25 +94,44 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
     .min(1, t('event.validation.promoCodeRequired', "Promo code is required."))
     .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo code may only contain A-Z , 0-9, _ or -")),
   discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount type is required.")),
-  amount: z.coerce.number().min(1, t('event.validation.amountRequired', "Amount is required and must be at least 1.")),
-  quantity: z.coerce
-    .number()
-    .int(t('event.validation.quantityInteger', "Quantity must be integer."))
-    .min(1, t('event.validation.quantityMin', "Quantity must be at least 1.")),
+  amount: createRequiredNumberSchema(
+    t,
+    t('event.field.discountAmount', 'Amount'),
+    1,
+    t('event.validation.amountRequired', "Amount is required and must be at least 1.")
+  ),
+  quantity: z.preprocess(
+    (val) => {
+      if (val === '' || val === null || val === undefined) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    },
+    z
+      .number({
+        error: t('common.validation.required', '{field} is required.').replace('{field}', t('event.field.discountQuantity', 'Quantity')),
+      })
+      .int(t('event.validation.quantityInteger', "Quantity must be integer."))
+      .min(1, t('event.validation.quantityMin', "Quantity must be at least 1."))
+  ),
 });
 
 export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
   .object({
-    name: z.string().min(1, t('event.validation.titleRequired', "Event Title is required.")),
-    description: z.string().min(1, t('event.validation.descriptionRequired', "Event Description is required.")),
+    name: z.string().min(1, t('event.validation.titleRequired', "Event title is required.")),
+    description: z.string().min(1, t('event.validation.descriptionRequired', "Event description is required.")),
     tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one tag is required.")),
     image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
-    venue: z.string().min(1, t('event.validation.venueRequired', "Venue Name is required.")),
-    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue Address is required.")),
-    capacity: z.coerce.number().min(1, t('event.validation.capacityMin', "Capacity must be at least 1.")),
+    venue: z.string().min(1, t('event.validation.venueRequired', "Venue name is required.")),
+    venueAddress: z.string().min(1, t('event.validation.venueAddressRequired', "Venue address is required.")),
+    capacity: createRequiredNumberSchema(
+      t,
+      t('event.field.capacity', 'Capacity'),
+      1,
+      t('event.validation.capacityMin', "Capacity must be at least 1.")
+    ),
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
-    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Start date & time')),
-    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'End date & time')),
+    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Event Start Date')),
+    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'Event End Date')),
     tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one ticket is required.")),
     promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })
@@ -101,12 +139,43 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     if (!data.endDate || !data.startDate) return true;
     return new Date(data.endDate) > new Date(data.startDate);
   }, {
-    message: t('event.validation.endDateAfterStart', "Event end date must be after start date."),
+    message: t('event.validation.endDateAfterStart', "Event end date must be after Event start date."),
     path: ["endDate"],
+  })
+  .superRefine((data, ctx) => {
+    // Validate that each ticket's sales dates are not after the event start date
+    if (!data.startDate) return;
+    const eventStartDate = new Date(data.startDate);
+
+    data.tickets.forEach((ticket, index) => {
+      // Sales start date should not be after event start date
+      if (ticket.salesStart) {
+        const salesStartDate = new Date(ticket.salesStart);
+        if (salesStartDate > eventStartDate) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('event.validation.salesStartBeforeEventStart', "Sales start date cannot be after event start date."),
+            path: ["tickets", index, "salesStart"],
+          });
+        }
+      }
+
+      // Sales end date should not be after event start date
+      if (ticket.salesEnd) {
+        const salesEndDate = new Date(ticket.salesEnd);
+        if (salesEndDate > eventStartDate) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('event.validation.salesEndBeforeEventStart', "Sales end date cannot be after event start date."),
+            path: ["tickets", index, "salesEnd"],
+          });
+        }
+      }
+    });
   });
 
 export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
-  template_name: z.string().min(1, t('event.validation.tierNameRequired', "Tier Template Name is required.")),
+  template_name: z.string().min(1, t('event.validation.tierNameRequired', "Tier template name is required.")),
   description: z.string().optional(),
 });
 

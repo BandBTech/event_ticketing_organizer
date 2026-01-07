@@ -15,6 +15,20 @@
       "invalidDatetime": "有効な日時を入力してください。"
     }
   },
+  "navigation": {
+    "events": "イベント",
+    "dashboard": "ダッシュボード",
+    "reports": "レポート",
+    "users": "ユーザー",
+    "settings": "設定",
+    "categories": "カテゴリー",
+    "about": "約",
+    "contact": "連絡先",
+    "signIn": "サインイン",
+    "organizeEvent": "イベントを開催",
+    "profile": "プロフィール",
+    "logout": "ログアウト"
+  },
   "auth": {
     "login": {
       "title": "ログイン",
@@ -75,12 +89,31 @@
   "event": {
     "field": {
       "bannerImage": "バナー画像",
-      "eventTitle": "イベントタイトル"
+      "eventTitle": "イベントタイトル",
+      "eventDescription": "イベントの説明",
+      "venueName": "会場名",
+      "venueAddress": "会場住所",
+      "capacity": "容量",
+      "timezone": "タイムゾーン"
     },
     "helperText": {
       "bannerImage": "バナー画像をアップロードまたはドラッグ",
       "bannerImageSize": "1920x1200px、サイズ最大5MBのPNG/JPGファイル",
       "bannerImageBrowse": "ファイルの参照"
+    },
+    "error": {
+      "invalidImageType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。"
+    },
+    "placeholder": {
+      "eventDescription": "イベントについて書いてください...",
+      "venueName": "会場名を入力してください",
+      "venueAddress": "会場の住所を検索する",
+      "capacity": "例: 5000",
+      "timezone": "タイムゾーンの選択",
+      "eventTitle": "イベントタイトルを入力してください"
+    },
+    "section": {
+      "venueSchedule": "会場"
     }
   }
 }

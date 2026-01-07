@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useDropzone } from "react-dropzone";
-import { ImageIcon } from "@phosphor-icons/react";
+import { ImageIcon, X } from "lucide-react"; // Using lucide-react for consistency with other components if available, checking imports
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ interface BannerImageUploaderProps {
 	helperText?: string;
 	helperTextSize?: string;
 	browseButtonText?: string;
+  onRemove?: () => void;
 }
 
 const BannerImageUploader = ({
@@ -29,6 +30,7 @@ const BannerImageUploader = ({
 	helperText = "Upload banner image or drag & drop",
 	helperTextSize = "PNG/JPG file of 1920x1200px with size up to 5MB",
 	browseButtonText = "Browse File",
+  onRemove,
 }: BannerImageUploaderProps) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const hasError = !!(imageError || formError);
@@ -72,9 +74,10 @@ const BannerImageUploader = ({
 			<Label className={hasError ? "text-red-500" : ""}>{label}</Label>
 			<div
 				{...getRootProps()}
-				onClick={handleClick}
+        onClick={!imagePreview ? handleClick : undefined}
 				className={cn(
-					"border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 cursor-pointer transition-colors relative overflow-hidden",
+          "border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden min-h-[100px]",
+          !imagePreview && "cursor-pointer",
 					hasError
 						? "border-red-500 bg-red-50/50"
 						: isDragActive
@@ -90,22 +93,39 @@ const BannerImageUploader = ({
 							alt="Banner preview"
 							className="w-full h-full object-cover rounded-lg"
 						/>
-						<div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            {/* Remove Button */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove?.();
+              }}
+              className="absolute top-2 right-2 p-1.5 bg-red-100 hover:bg-red-200 rounded-full cursor-pointer shadow-sm transition-colors z-20"
+            >
+              <X className="w-4 h-4 text-red-600" />
+            </div>
+
+            {/* Overlay for "Change Image" */}
+            <div
+              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer z-10"
+              onClick={handleClick}
+            >
 							<div className="text-white space-y-2">
 								<p className="font-medium">Change Image</p>
-								<p className="text-xs">Click or drag to update</p>
+                <p className="text-xs">Click to update</p>
 							</div>
 						</div>
 					</div>
 				) : (
-					<>
-						<ImageIcon weight="duotone" className="w-6 h-6 mb-2" />
+            <div className="flex flex-col items-center justify-center p-6">
+              <ImageIcon className="w-10 h-10 mb-4 opacity-50" />
 						{isDragActive ? (
 							<p className="text-blue-600 font-medium">Drop the image here...</p>
 						) : (
 							<>
-								<p>{helperText}</p>
-								<span className="text-xs">{helperTextSize}</span>
+                    <p className="font-medium text-sm mb-1">{helperText}</p>
+                    <span className="text-xs text-muted-foreground mb-4 block max-w-[250px] mx-auto leading-relaxed">
+                      {helperTextSize}
+                    </span>
 								<Button
 									type="button"
 									variant="outline"
@@ -113,21 +133,21 @@ const BannerImageUploader = ({
 									onClick={(e) => {
 										e.stopPropagation();
 										fileInputRef.current?.click();
-									}}
-									className="mt-2"
+                  }}
 								>
 									{browseButtonText}
 								</Button>
 							</>
 						)}
-					</>
+            </div>
 				)}
-				{hasError && (
-					<p className="text-red-500 text-xs mt-1 absolute bottom-2 left-0 right-0">
-						{imageError || formError}
-					</p>
-				)}
-			</div>
+      </div>
+      {/* Error Message */}
+      {hasError && (
+        <p className="text-red-500 text-sm mt-1 font-medium bg-red-50 p-2 rounded-md border border-red-100">
+          {imageError || formError}
+        </p>
+      )}
 		</div>
 	);
 };

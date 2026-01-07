@@ -23,14 +23,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import { DateTimePicker } from "@/components/ui/datetime-picker";
-import { DateTimeInput } from "@/components/ui/datetime-input";
+import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import CategoryTagsSelector from "./CategoryTagsSelector";
 import TimezoneSelector from "./TimezoneSelector";
-import BannerImageUploader from "./BannerImageUploader";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import TicketTierCard from "./TicketTierCard";
 import PromoCodeCard from "./PromoCodeCard";
+import { CreateTierTemplateDialog } from "./CreateTierTemplateDialog";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -56,10 +57,29 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const [imagePreview, setImagePreview] = useState<string>(initialData?.banner_image || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageError, setImageError] = useState<string>("");
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [formModified, setFormModified] = useState(false);
+  const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
+  const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(null);
   const lastInitializedEventId = React.useRef<string | null>(null);
+
+  // Helper to parse category which might be a comma-separated string from backend despite type definition
+  // Helper to parse category which might be a comma-separated string from backend despite type definition
+  const parseCategory = useCallback((category: string | string[] | undefined): string[] => {
+    if (!category) return [];
+    if (Array.isArray(category)) {
+      return category.map((c) => c.trim().replace(/^[{"]+|[}"]+$/g, ""));
+    }
+    if (typeof category === "string") {
+      return (category as string)
+        .split(",")
+        .map((c) => c.trim().replace(/^[{"]+|[}"]+$/g, ""))
+        .filter(Boolean);
+    }
+    return [];
+  }, []);
 
   // Fetch tier templates using TanStack Query
   const { data: tierTemplates = [] } = useQuery({
@@ -74,7 +94,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     defaultValues: {
       name: initialData?.title || "",
       description: initialData?.description || "",
-      tags: initialData?.category || [],
+      tags: parseCategory(initialData?.category),
       image: initialData?.banner_image || "",
       venue: initialData?.venue_name || "",
       venueAddress: initialData?.address || "",
@@ -159,7 +179,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       form.reset({
         name: initialData.title || "",
         description: initialData.description || "",
-        tags: initialData.category || [],
+        tags: parseCategory(initialData.category),
         image: initialData.banner_image || "",
         venue: initialData.venue_name || "",
         venueAddress: initialData.address || "",
@@ -260,6 +280,43 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
     };
   }, [hasUnsavedChanges]);
 
+  // Handle sidebar/route navigation clicks
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!hasUnsavedChanges()) return;
+
+      const target = e.target as HTMLElement;
+      const anchor = target.closest("a");
+
+      if (anchor) {
+        // Build the URL to check if it's a navigation
+        const href = anchor.getAttribute("href");
+
+        // Ignore non-navigation links
+        if (
+          !href ||
+          href.startsWith("#") ||
+          href.startsWith("mailto:") ||
+          href.startsWith("tel:") ||
+          anchor.target === "_blank"
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        setPendingNavigation(() => () => {
+          router.push(href);
+        });
+        setShowLeaveDialog(true);
+      }
+    };
+
+    window.addEventListener("click", handleClick, true); // Capture phase to intervene early
+    return () => window.removeEventListener("click", handleClick, true);
+  }, [hasUnsavedChanges, router]);
+
   const handleNavigateAway = useCallback(
     (navigationAction: () => void) => {
       if (hasUnsavedChanges()) {
@@ -273,6 +330,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   );
 
   const confirmLeave = () => {
+    // Reset form state to prevent popstate handler from blocking navigation
+    setFormModified(false);
+    setImageFile(null);
     setShowLeaveDialog(false);
     if (pendingNavigation) {
       pendingNavigation();
@@ -305,14 +365,32 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         return eventService.createEvent(data.eventData);
       }
     },
-    onSuccess: () => {
-      toast.success("Success", isEditing ? "Event updated successfully" : "Event created successfully");
+    onSuccess: async () => {
+      // Force fetch the latest events data to update cache before navigation
+      // This ensures we don't show stale data (old name) on the list page
+      try {
+        await queryClient.fetchQuery({
+          queryKey: ["events"],
+          queryFn: () => eventService.getEvents(),
+          staleTime: 0,
+        });
+      } catch (error) {
+        console.error("Failed to pre-fetch events:", error);
+        // Fallback to invalidation/reset if fetch fails, so at least we try to get fresh data on mount
+        await queryClient.invalidateQueries({ queryKey: ["events"] });
+      }
+
+      toast.success(
+        isEditing ? "Event Updated" : "Event Created",
+        `Event has been successfully ${isEditing ? "updated" : "created"}.`
+      );
       setFormModified(false);
+      // lastInitializedEventId.current = null; // Clear tracking to prevent re-initializing
       router.push("/organizerDashboard/pages/events");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (_error: any) => {
-    // Error toast is already shown by apiClient (showErrorToast=true by default)
+      // Error toast is already shown by apiClient (showErrorToast=true by default)
     },
   });
 
@@ -332,7 +410,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       if (currentData.description !== initialData.description) {
         changedFields.description = currentData.description;
       }
-      if (JSON.stringify(currentData.tags) !== JSON.stringify(initialData.category || [])) {
+      if (JSON.stringify(currentData.tags) !== JSON.stringify(parseCategory(initialData.category))) {
         changedFields.category = currentData.tags;
       }
       if (currentData.venue !== initialData.venue_name) {
@@ -410,7 +488,6 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
             });
             tierId = newTemplate.id;
           } catch (err) {
-            console.error("Failed to create tier template", err);
             toast.error("Error", `Failed to create tier template for ${ticket.name}`);
             return;
           }
@@ -418,9 +495,9 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
 
         tiersData.push({
           tier_template_id: tierId,
-          price: ticket.price,
-          quantity: ticket.quantity,
-          gst: ticket.gst,
+          price: ticket.price || 0,
+          quantity: ticket.quantity || 0,
+          gst: isNaN(ticket.gst) ? 0 : (ticket.gst || 0),
           sales_start: ticket.salesStart || undefined,
           sales_end: ticket.salesEnd || undefined,
           sort_order: i,
@@ -436,7 +513,6 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           return;
         }
 
-        console.log("Sending only changed fields:", changedFields);
         saveEventMutation.mutate({ eventData: changedFields, isUpdate: true, id: initialData.id });
       } else {
         // For new events, send all data
@@ -469,13 +545,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
   const validateAndProcessImage = (file: File) => {
     setImageError("");
 
+    // Helper to clear image state
+    const clearImageState = () => {
+      setImageFile(null);
+      setImagePreview("");
+      form.setValue("image", "");
+      setImageRemoved(true);
+    };
+
     if (!file.type.startsWith("image/")) {
-      setImageError("Invalid file type. Please upload an image (PNG/JPG).");
+      clearImageState();
+      setImageError(t("event.error.invalidImageType", "Invalid file type. Please upload an image (PNG/JPG)."));
       return;
     }
 
     const maxSizeInBytes = 5 * 1024 * 1024;
     if (file.size > maxSizeInBytes) {
+      clearImageState();
       setImageError("File size exceeds 5MB. Please upload a smaller image.");
       return;
     }
@@ -490,22 +576,24 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       const height = img.height;
       const maxWidth = 1920;
       const maxHeight = 1200;
-      const aspectRatio = 1920 / 1200;
+      // const aspectRatio = 1920 / 1200;
 
       if (width > maxWidth || height > maxHeight) {
-        setImageError(`Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`);
+        // Optional: We can relax this to just a warning or remove it if "recommended" means no max limit.
+        // For now, assuming we still want to prevent massive images but maybe the user just cares about aspect ratio.
+        // Let's keep max dimensions for performance/storage reasons as it was existing logic, unless user complains.
+        clearImageState();
+        setImageError(
+          t(
+            "event.error.invalidImageSize",
+            `Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`,
+            { maxWidth, maxHeight }
+          )
+        );
         return;
       }
 
-      const imageAspectRatio = width / height;
-      const tolerance = 0.1;
-      const minAspectRatio = aspectRatio - tolerance;
-      const maxAspectRatio = aspectRatio + tolerance;
-
-      if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
-        setImageError(`Image aspect ratio must be approximately ${aspectRatio.toFixed(2)} (16:10).`);
-        return;
-      }
+      // Aspect ratio check removed as per requirement.
 
       setImageFile(file);
       const reader = new FileReader();
@@ -515,16 +603,26 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         form.setValue("image", result);
         form.clearErrors("image");
         setImageError("");
+        setImageRemoved(false);
       };
       reader.readAsDataURL(file);
     };
 
     img.onerror = () => {
       URL.revokeObjectURL(objectUrl);
+      clearImageState();
       setImageError("Failed to load image. Please try another file.");
     };
 
     img.src = objectUrl;
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    form.setValue("image", "");
+    setImageError("");
+    setImageRemoved(true);
   };
 
   return (
@@ -533,24 +631,23 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Event Details Section */}
           <div className="mb-6">
-            <div className="p-6 space-y-2 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-md font-semibold text-primary">
+            <div className="p-6 space-y-5 shadow-blur-subtle-md bg-white/60 rounded-xl">
+              <h2 className="text-md font-semibold text-primary mb-2!">
                 {t("event.eventDetails", "Event Details")}
               </h2>
               <div className="grid md:grid-cols-2 gap-5">
-                <BannerImageUploader
-                  imagePreview={imagePreview}
-                  imageError={imageError}
-                  formError={form.formState.errors.image?.message}
-                  onImageSelect={validateAndProcessImage}
-                  onError={setImageError}
-                  label={t("event.field.bannerImage", "Banner Image")}
+                <ImageUploader
+                  label={t("event.field.uploadBanner", "Upload Banner")}
                   helperText={t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
-                  helperTextSize={t(
-                    "event.helperText.bannerImageSize",
-                    "PNG/JPG file of 1920x1200px with size up to 5MB"
-                  )}
+                  helperTextSize={t("event.helperText.bannerImageSize", "Recommended: PNG/JPG file of 1920x1200px with size up to 5MB")}
+                  value={imageRemoved ? "" : (imagePreview || initialData?.banner_image || "")}
+                  onChange={(file) => {
+                    if (file) validateAndProcessImage(file);
+                  }}
+                  onRemove={handleRemoveImage}
+                  error={imageError || form.formState.errors.image?.message}
                   browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
+                  required
                 />
 
                 <div className="flex flex-col gap-5">
@@ -560,10 +657,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="inline-block">
-                          {t("event.field.eventTitle", "Event Title")}
+                          {t("event.field.eventTitle", "Event Title")} <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input className="h-13 md:text-md" placeholder="Enter Title" {...field} />
+                          <Input className="h-13 md:text-md" placeholder={t("event.placeholder.eventTitle", "Enter event title")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -575,7 +672,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     name="tags"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="inline-block">Category Tags</FormLabel>
+                        <FormLabel className="inline-block">{t("event.field.categoryTags", "Category Tags")} <span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <CategoryTagsSelector
                             value={field.value}
@@ -601,7 +698,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     form.formState.errors.description && "text-red-500"
                   )}
                 >
-                  Event Description <span className="text-red-500">*</span>
+                  {t("event.field.eventDescription", "Event Description")} <span className="text-red-500">*</span>
                 </Label>
                 <div
                   className={cn(
@@ -620,11 +717,11 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                         form.clearErrors("description");
                       }
                     }, [form])}
-                    placeholder={t("event.field.eventDescription", "Write about your event")}
+                    placeholder={t("event.placeholder.eventDescription", "Write about your event...")}
                   />
                 </div>
                 {form.formState.errors.description && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                  <p className="text-red-500 text-[0.8rem] mt-1 flex items-center gap-1">
                     {form.formState.errors.description.message}
                   </p>
                 )}
@@ -635,16 +732,16 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Venue & Schedule Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Venue & Schedule</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.venueSchedule", "Venue & Schedule")}</h2>
               <div className="grid md:grid-cols-3 gap-5">
                 <FormField
                   control={form.control}
                   name="venue"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Venue Name</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.venueName", "Venue Name")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input className="h-13 md:text-md" placeholder="Venue name" {...field} />
+                        <Input className="h-13 md:text-md" placeholder={t("event.placeholder.venueName", "Enter venue name")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -656,12 +753,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="venueAddress"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Venue Address</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.venueAddress", "Venue Address")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <AddressAutocomplete
                           value={field.value}
                           onChange={field.onChange}
-                          placeholder="Search for venue address"
+                          placeholder={t("event.placeholder.venueAddress", "Search for venue address")}
                           className="h-13 md:text-md"
                           error={!!fieldState.error}
                         />
@@ -676,12 +773,12 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="capacity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Capacity</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.capacity", "Capacity")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input
                           className="h-13 md:text-md"
                           type="number"
-                          placeholder="e.g 5000"
+                          placeholder={t("event.placeholder.capacity", "e.g 5000")}
                           {...field}
                           onChange={(e) => field.onChange(e.target.valueAsNumber)}
                         />
@@ -696,12 +793,13 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="timezone"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Timezone</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.timezone", "Timezone")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <TimezoneSelector
                           value={field.value}
                           onChange={field.onChange}
                           error={!!fieldState.error}
+                          placeholder={t("event.placeholder.timezone", "Select timezone")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -714,34 +812,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="startDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">Start Date & Time</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.startDateTime", "Event Start Date")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <DateTimePicker
-                          classNames={{
-                            trigger: "h-13 md:text-md",
-                          }}
-                          value={field.value ? new Date(field.value) : undefined}
+                        <ShadcnDateTimePicker
+                          value={field.value ? new Date(field.value) : null}
                           onChange={(date) => {
                             if (!date) field.onChange("");
-                            else if (typeof date === "string") field.onChange(date);
                             else field.onChange(date.toISOString());
                           }}
-                          use12HourFormat
-                          timePicker={{
-                            hour: true,
-                            minute: true,
-                          }}
-                          renderTrigger={({ open, value, setOpen }) => (
-                            <DateTimeInput
-                              value={value}
-                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
-                              format="dd/MM/yyyy hh:mm aa"
-                              disabled={open}
-                              onCalendarClick={() => setOpen(!open)}
-                              error={!!fieldState.error}
-                              className="h-13 md:text-md placeholder:text-gray-300"
-                            />
-                          )}
+                          format="yyyy-mm-dd hh:mm aa"
+                          clearable
+                          error={!!fieldState.error}
                         />
                       </FormControl>
                       <FormMessage />
@@ -754,31 +835,17 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   name="endDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="inline-block">End Date & Time</FormLabel>
+                      <FormLabel className="inline-block">{t("event.field.endDateTime", "Event End Date")} <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <DateTimePicker
-                          value={field.value ? new Date(field.value) : undefined}
+                        <ShadcnDateTimePicker
+                          value={field.value ? new Date(field.value) : null}
                           onChange={(date) => {
                             if (!date) field.onChange("");
-                            else if (typeof date === "string") field.onChange(date);
                             else field.onChange(date.toISOString());
                           }}
-                          use12HourFormat
-                          timePicker={{
-                            hour: true,
-                            minute: true,
-                          }}
-                          renderTrigger={({ open, value, setOpen }) => (
-                            <DateTimeInput
-                              value={value}
-                              onChange={(x) => !open && field.onChange(x ? x.toISOString() : "")}
-                              format="dd/MM/yyyy hh:mm aa"
-                              disabled={open}
-                              onCalendarClick={() => setOpen(!open)}
-                              error={!!fieldState.error}
-                              className="h-13 md:text-md"
-                            />
-                          )}
+                          format="yyyy-mm-dd hh:mm aa"
+                          clearable
+                          error={!!fieldState.error}
                         />
                       </FormControl>
                       <FormMessage />
@@ -792,7 +859,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Ticketing Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Ticketing</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.ticketing", "Ticketing")}</h2>
 
               {ticketFields.map((field, index) => (
                 <TicketTierCard
@@ -802,6 +869,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                   tierTemplates={tierTemplates}
                   showDelete={ticketFields.length > 1}
                   onDelete={() => removeTicket(index)}
+                  onCreateNew={() => {
+                    setActiveTicketIndex(index);
+                    setOpenTemplateDialog(true);
+                  }}
                 />
               ))}
 
@@ -818,10 +889,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     salesEnd: "",
                   })
                 }
-                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                className="flex items-center gap-2 text-primary border-primary hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
-                Add ticket tier
+                {t("event.button.addTicketTier", "Add ticket tier")}
               </Button>
             </div>
           </div>
@@ -829,7 +900,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
           {/* Discounts & Promo Codes Section */}
           <div className="mb-6">
             <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-              <h2 className="text-lg font-semibold text-blue-600">Discounts & Promo Codes</h2>
+              <h2 className="text-md font-semibold text-primary mb-2!">{t("event.section.discountsPromo", "Discounts & Promo Codes")}</h2>
 
               {promoFields.map((field, index) => (
                 <PromoCodeCard
@@ -851,10 +922,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
                     quantity: 0,
                   })
                 }
-                className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-50"
+                className="flex items-center gap-2 text-primary border-primary hover:bg-blue-50"
               >
                 <Plus className="w-4 h-4" />
-                Add promo code
+                {t("event.button.addPromoCode", "Add promo code")}
               </Button>
             </div>
           </div>
@@ -866,7 +937,7 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
               variant="outline"
               onClick={() => handleNavigateAway(() => router.push('/organizerDashboard/pages/events'))}
             >
-              Cancel
+              {t("common.button.cancel", "Cancel")}
             </Button>
             <div className="flex gap-3">
               {/* <Button
@@ -883,10 +954,10 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
               >
                 <Plus className="w-5 h-5 mr-2" />
                 {saveEventMutation.isPending
-                  ? "Saving..."
+                  ? t("common.status.saving", "Saving...")
                   : isEditing
-                    ? "Update Event"
-                    : "Create Event"}
+                    ? t("event.button.updateEvent", "Update Event")
+                    : t("event.button.createEvent", "Create Event")}
               </Button>
             </div>
           </div>
@@ -897,20 +968,42 @@ export default function CreateEventPage({ initialData, isEditing = false }: Crea
       <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t("common.dialog.unsavedChanges.title", "Unsaved Changes")}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave? All your progress will be
-              lost.
+              {t("common.dialog.unsavedChanges.description", "You have unsaved changes. Are you sure you want to leave? All your progress will be lost.")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelLeave}>Stay on Page</AlertDialogCancel>
+            <AlertDialogCancel onClick={cancelLeave}>{t("common.button.stay", "Stay on Page")}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmLeave} className="bg-red-600 hover:bg-red-700">
-              Leave Page
+              {t("common.button.leave", "Leave Page")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CreateTierTemplateDialog
+        open={openTemplateDialog}
+        onOpenChange={(open) => {
+          setOpenTemplateDialog(open);
+          if (!open) setActiveTicketIndex(null);
+        }}
+        onSuccess={async (newTemplate) => {
+          // Add new template to cache immediately for optimistic UI
+          queryClient.setQueryData(["tierTemplates"], (old: TierTemplate[] | undefined) =>
+            old ? [...old, newTemplate] : [newTemplate]
+          );
+
+          // Invalidate to ensure consistency with backend
+          await queryClient.invalidateQueries({ queryKey: ["tierTemplates"] });
+
+          // If we have an active ticket index, select the new template
+          if (activeTicketIndex !== null) {
+            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name);
+          }
+        }}
+        initialData={null}
+      />
     </div>
   );
 }
