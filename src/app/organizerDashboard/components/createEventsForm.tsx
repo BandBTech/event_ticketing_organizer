@@ -125,17 +125,6 @@ export default function CreateEventPage({
     }
   }, [initialData, isEditing, form, tierTemplates, setImagePreview]);
 
-  // Create Tier Template Mutation
-  const createTierTemplateMutation = useMutation({
-    mutationFn: eventService.createTierTemplate,
-    onSuccess: (newTemplate) => {
-      queryClient.setQueryData(
-        queryKeys.tierTemplates.all,
-        (old: TierTemplate[] | undefined) => (old ? [...old, newTemplate] : [newTemplate])
-      );
-    },
-  });
-
   // Create/Update Event Mutation
   const saveEventMutation = useMutation({
     mutationFn: async (data: {
@@ -191,16 +180,8 @@ export default function CreateEventPage({
         if (existingTemplate) {
           tierId = existingTemplate.id;
         } else {
-          try {
-            const newTemplate = await createTierTemplateMutation.mutateAsync({
-              template_name: ticket.name,
-              description: `Template for ${ticket.name}`,
-            });
-            tierId = newTemplate.id;
-          } catch {
-            toast.error("Error", `Failed to create tier template for ${ticket.name}`);
-            return;
-          }
+          toast.error("Error", `Tier template '${ticket.name}' not found. Please select a valid tier.`);
+          return;
         }
 
         tiersData.push({
@@ -328,17 +309,22 @@ export default function CreateEventPage({
           setOpenTemplateDialog(open);
           if (!open) setActiveTicketIndex(null);
         }}
-        onSuccess={async (newTemplate) => {
+        onSuccess={(newTemplate) => {
+        // Instant local update for immediate UI feedback (non-blocking)
           queryClient.setQueryData(
-            ["tierTemplates"],
-            (old: TierTemplate[] | undefined) => (old ? [...old, newTemplate] : [newTemplate])
+            queryKeys.tierTemplates.all,
+            (old: TierTemplate[] | undefined) => (old ? [newTemplate, ...old] : [newTemplate])
           );
 
-          await queryClient.invalidateQueries({ queryKey: ["tierTemplates"] });
+          // Fire-and-forget invalidation to ensure consistency in background
+          queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
 
           if (activeTicketIndex !== null) {
             const templateName = newTemplate.template_name || (newTemplate as { name?: string }).name || "";
-            form.setValue(`tickets.${activeTicketIndex}.name`, templateName, { shouldDirty: true, shouldValidate: true });
+            // Use setTimeout to ensure the selection happens after the local state has settled
+            setTimeout(() => {
+              form.setValue(`tickets.${activeTicketIndex}.name`, templateName, { shouldDirty: true, shouldValidate: true });
+            }, 0);
           }
         }}
         initialData={null}

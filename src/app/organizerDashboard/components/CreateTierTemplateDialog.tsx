@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -26,11 +26,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface CreateTierTemplateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: (template: TierTemplate) => void;
+  onSuccess?: (template: TierTemplate) => void;
   initialData?: TierTemplate | null;
 }
 
@@ -41,7 +44,7 @@ export function CreateTierTemplateDialog({
   initialData,
 }: CreateTierTemplateDialogProps) {
   const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
   const isEditing = !!initialData;
 
   const tierTemplateSchema = useMemo(() => createTierTemplateSchema(t), [t]);
@@ -70,23 +73,81 @@ export function CreateTierTemplateDialog({
     }
   }, [open, initialData, form]);
 
-  const onSubmit = async (data: TierTemplateFormData) => {
-    try {
-      setIsSubmitting(true);
-      let result: TierTemplate;
+  // Create mutation with optimistic update
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: (data: TierTemplateFormData) => tierService.createTierTemplate(data),
+    onSuccess: (result) => {
+      // Update cache immediately with server result (pseudo-optimistic / fast-update)
+      // Merge with form values to ensure we have data to show even if server response is partial
+      const fullTemplate = {
+        ...result,
+        template_name: form.getValues("template_name") || result.template_name,
+        description: form.getValues("description") || result.description
+      };
 
-      if (isEditing && initialData) {
-        result = await tierService.updateTierTemplate(initialData.id, data);
-        toast.success("Tier template updated successfully");
-      } else {
-        result = await tierService.createTierTemplate(data);
-        toast.success("Tier template created successfully");
-      }
+      queryClient.setQueryData<TierTemplate[]>(queryKeys.tierTemplates.all, (old) =>
+        old ? [fullTemplate, ...old] : [fullTemplate]
+      );
 
-      onSuccess({ ...result, template_name: data.template_name });
+      // Invalidate to ensure consistency in background
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+
+      onSuccess?.(fullTemplate);
       onOpenChange(false);
-    } finally {
-      setIsSubmitting(false);
+    },
+  });
+
+  // Update mutation with optimistic update
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: TierTemplateFormData }) =>
+      tierService.updateTierTemplate(id, data),
+    onSuccess: (result, variables) => {
+      // Update cache immediately using the variables (what was sent)
+      // because the server response might not contain the full object or updated fields
+      queryClient.setQueryData<TierTemplate[]>(queryKeys.tierTemplates.all, (old) =>
+        old?.map((template) =>
+          template.id === variables.id
+            ? {
+              ...template,
+              ...variables.data,
+              // Ensure updated_at is refreshed locally
+              updated_at: new Date().toISOString()
+            }
+            : template
+        ) ?? []
+      );
+
+      // Invalidate to ensure consistency in background
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+
+      // Pass the constructed full object to onSuccess callback if needed
+      // We reconstruct it from variables since result might be partial
+      const fullTemplate = {
+        id: variables.id,
+        ...variables.data,
+        is_active: true, // assumption for typings, though usually strictly read from cache
+        organizer_id: "", // placeholder, not critical for form selection
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as TierTemplate;
+
+      onSuccess?.(fullTemplate);
+      onOpenChange(false);
+    },
+    onError: () => {
+      toast.error("Failed to update template");
+    },
+  });
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
+  const onSubmit = (data: TierTemplateFormData) => {
+    if (isEditing && initialData) {
+      updateMutation.mutate({ id: initialData.id, data });
+    } else {
+      createMutation.mutate(data);
     }
   };
 
@@ -150,7 +211,7 @@ export function CreateTierTemplateDialog({
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <span className="animate-spin mr-2">⏳</span>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     {isEditing ? "Updating..." : "Creating..."}
                   </>
                 ) : (

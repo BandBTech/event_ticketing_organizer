@@ -31,12 +31,14 @@ class TierService {
   async createTierTemplate(data: CreateTierTemplateRequest): Promise<TierTemplate> {
     return await api.post<TierTemplate>('/organizer/events/tier-templates', data, {
       requiresAuth: true,
+      showSuccessToast: true,
     });
   }
 
   async updateTierTemplate(id: string, data: UpdateTierTemplateRequest): Promise<TierTemplate> {
     return await api.put<TierTemplate>(`/organizer/events/tier-templates/${id}`, data, {
       requiresAuth: true,
+      showSuccessToast: true,
     });
   }
 

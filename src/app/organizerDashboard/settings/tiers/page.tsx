@@ -10,17 +10,27 @@ import { CreateTierTemplateDialog } from "../../components/CreateTierTemplateDia
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { Loader2 } from "lucide-react";
-import { TierTemplateFormData } from "@/lib/validation";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function TierTemplateSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 @2xl:grid-cols-2">
       {[1, 2, 3, 4, 5, 6].map((i) => (
         <div
           key={i}
           className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
         >
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-4 gap-2">
             <Skeleton className="h-6 w-32" />
             <div className="flex gap-2">
               <Skeleton className="h-8 w-8" />
@@ -40,6 +50,7 @@ export default function TierTemplatesPage() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<TierTemplate | null>(null);
+  const [templateToDelete, setTemplateToDelete] = useState<TierTemplate | null>(null);
 
   // Fetch tier templates using TanStack Query
   const { data: templates = [], isLoading } = useQuery({
@@ -47,60 +58,41 @@ export default function TierTemplatesPage() {
     queryFn: () => tierService.getTierTemplates(),
   });
 
-  // Create tier template mutation
-  const createMutation = useMutation({
-    mutationFn: (data: TierTemplateFormData) => tierService.createTierTemplate(data),
-    onSuccess: () => {
-      toast.success("Tier template created successfully");
-      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
-      setIsDialogOpen(false);
-    },
-    onError: () => {
-      toast.error("Failed to create template");
-    },
-  });
-
-  // Update tier template mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TierTemplateFormData }) =>
-      tierService.updateTierTemplate(id, data),
-    onSuccess: () => {
-      toast.success("Tier template updated successfully");
-      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
-      setIsDialogOpen(false);
-    },
-    onError: () => {
-      toast.error("Failed to update template");
-    },
-  });
-
-  // Delete tier template mutation
+  // Delete tier template mutation with optimistic update
   const deleteMutation = useMutation({
     mutationFn: (id: string) => tierService.deleteTierTemplate(id),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Eagerly update cache: remove the deleted item immediately
+      queryClient.setQueryData<TierTemplate[]>(queryKeys.tierTemplates.all, (old) =>
+        old ? old.filter((template) => template.id !== variables) : []
+      );
+
       toast.success("Tier template deleted successfully");
       queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
+      setTemplateToDelete(null);
     },
-    onError: () => {
-      toast.error("Failed to delete template");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
     },
   });
-
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   const handleOpenDialog = (template?: TierTemplate) => {
     setCurrentTemplate(template || null);
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this template?")) {
-      deleteMutation.mutate(id);
+  const handleDeleteClick = (template: TierTemplate) => {
+    setTemplateToDelete(template);
+  };
+
+  const handleConfirmDelete = () => {
+    if (templateToDelete) {
+      deleteMutation.mutate(templateToDelete.id);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 @container">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tier Templates</h1>
@@ -122,14 +114,14 @@ export default function TierTemplatesPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 @2xl:grid-cols-2">
           {templates.map((template) => (
             <div
               key={template.id}
               className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="font-semibold text-lg text-gray-900">
+              <div className="flex justify-between items-start mb-4 gap-2">
+                <h3 className="font-semibold text-lg text-gray-900 break-all line-clamp-2">
                   {template.template_name}
                 </h3>
                 <div className="flex items-center rounded-md" role="group">
@@ -144,15 +136,10 @@ export default function TierTemplatesPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => handleDelete(template.id)}
-                    disabled={deleteMutation.isPending}
+                    onClick={() => handleDeleteClick(template)}
                     className="rounded-l-none h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   >
-                    {deleteMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <TrashIcon weight="duotone" size={16} />
-                    )}
+                    <TrashIcon weight="duotone" size={16} />
                   </Button>
                 </div>
               </div>
@@ -175,6 +162,37 @@ export default function TierTemplatesPage() {
         }}
         initialData={currentTemplate}
       />
+
+      <AlertDialog open={!!templateToDelete} onOpenChange={(open) => !open && setTemplateToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Tier Template</AlertDialogTitle>
+            <AlertDialogDescription className="break-all">
+              Are you sure you want to delete <span className="font-semibold">&quot;{templateToDelete?.template_name}&quot;</span>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              onClick={(e) => {
+                e.preventDefault();
+                handleConfirmDelete();
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
