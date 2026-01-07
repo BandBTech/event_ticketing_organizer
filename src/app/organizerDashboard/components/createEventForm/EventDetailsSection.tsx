@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback } from "react";
-import { Control } from "react-hook-form";
-import { EventFormData } from "@/lib/validation";
+import { Control, useWatch } from "react-hook-form";
+import { EventFormData, EVENT_TITLE_MAX, EVENT_DESC_MAX } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Label } from "@/components/ui/label";
 import {
@@ -54,10 +54,17 @@ export function EventDetailsSection({
 }: EventDetailsSectionProps) {
   const { t } = useTranslation();
 
+  // Watch description for character count
+  const description = useWatch({ control, name: "description" }) || "";
+  const descriptionTextLength = description.replace(/<[^>]*>/g, '').length;
+
   const handleHtmlChange = useCallback(
     (html: string) => {
-      onDescriptionChange(html);
-      if (html && html.trim()) {
+      // Strip HTML tags to check for real content
+      const textContent = html.replace(/<[^>]*>/g, '').trim();
+      const valueToSet = textContent ? html : "";
+      onDescriptionChange(valueToSet);
+      if (valueToSet) {
         onDescriptionClearError();
       }
     },
@@ -65,12 +72,12 @@ export function EventDetailsSection({
   );
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 @container">
       <div className="p-6 space-y-5 shadow-blur-subtle-md bg-white/60 rounded-xl">
         <h2 className="text-md font-semibold text-primary mb-2!">
           {t("event.eventDetails", "Event Details")}
         </h2>
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid @2xl:grid-cols-2 gap-5">
           <ImageUploader
             label={t("event.field.uploadBanner", "Upload Banner")}
             helperText={t("event.helperText.bannerImage", "Upload banner image or drag & drop")}
@@ -99,13 +106,21 @@ export function EventDetailsSection({
                     <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      className="h-13 md:text-md"
-                      placeholder={t("event.placeholder.eventTitle", "Enter event title")}
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        className="h-13 md:text-md"
+                        placeholder={t("event.placeholder.eventTitle", "Enter event title")}
+                        maxLength={EVENT_TITLE_MAX}
+                        {...field}
+                      />
+                      <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                        <FormMessage className="mt-0" />
+                        <div className="text-xs text-muted-foreground ml-auto">
+                          {field.value?.length || 0}/{EVENT_TITLE_MAX} characters
+                        </div>
+                      </div>
+                    </div>
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -125,11 +140,17 @@ export function EventDetailsSection({
                       onChange={field.onChange}
                       placeholder="Select or type categories..."
                       maxTags={5}
-                      className="h-13 md:text-md"
+                      maxChars={50}
+                      className="min-h-13 md:text-md"
                       error={!!fieldState.error}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between items-start -mt-1 min-h-[20px]">
+                    <FormMessage className="mt-0" />
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {field.value?.length || 0}/5 tags | Max 50 chars/tag
+                    </div>
+                  </div>
                 </FormItem>
               )}
             />
@@ -162,11 +183,16 @@ export function EventDetailsSection({
               )}
             />
           </div>
-          {descriptionError && (
-            <p className="text-red-500 text-[0.8rem] mt-1 flex items-center gap-1">
-              {descriptionError}
-            </p>
-          )}
+          <div className="flex justify-between items-center mt-1 min-h-[20px]">
+            {descriptionError ? (
+              <p className="text-xs font-medium text-destructive mt-0 flex items-center gap-1">
+                {descriptionError}
+              </p>
+            ) : <div />}
+            <div className="text-xs text-muted-foreground ml-auto">
+              {descriptionTextLength}/{EVENT_DESC_MAX} characters
+            </div>
+          </div>
         </div>
       </div>
     </div>

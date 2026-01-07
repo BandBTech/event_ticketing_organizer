@@ -31,7 +31,7 @@ export function TicketingSection({
   });
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 @container">
       <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
         <h2 className="text-md font-semibold text-primary mb-2!">
           {t("event.section.ticketing", "Ticketing")}

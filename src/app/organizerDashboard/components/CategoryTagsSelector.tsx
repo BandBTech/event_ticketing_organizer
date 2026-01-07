@@ -51,13 +51,48 @@ const CategoryTagsSelector = ({
     if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
-    } else if (e.key === "," || e.key === "Tab") {
+    } else if (e.key === "Tab") {
       if (inputValue.trim()) {
         e.preventDefault();
         handleAddTag();
       }
     } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
       handleRemove(value[value.length - 1]);
+    }
+    // Note: comma is now handled in handleInputChange to work even at maxLength
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // Check if the input ends with comma (user pressed comma)
+    if (newValue.endsWith(",")) {
+      // Extract the text before the comma
+      const tagValue = newValue.slice(0, -1).trim();
+
+      if (!tagValue) {
+        // Empty input, just remove the comma
+        setInputValue("");
+        return;
+      }
+
+      const isDuplicate = value.some((tag) => tag.toLowerCase() === tagValue.toLowerCase());
+      const isMaxTagsReached = value.length >= maxTags;
+
+      if (!isDuplicate && !isMaxTagsReached) {
+        // Successfully add the tag
+        onChange([...value, tagValue]);
+        setInputValue("");
+      } else {
+        // Remove the comma but keep the text so user knows it wasn't added
+        setInputValue(tagValue);
+      }
+      return;
+    }
+
+    // Regular input - enforce maxChars
+    if (newValue.length <= maxChars) {
+      setInputValue(newValue);
     }
   };
 
@@ -104,11 +139,10 @@ const CategoryTagsSelector = ({
           ref={inputRef}
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onBlur={handleAddTag}
           placeholder={value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more...")}
-          maxLength={maxChars}
           className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
         />
       )}
