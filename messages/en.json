@@ -245,17 +245,25 @@
   "event": {
     "eventDetails": "Event Details",
     "field": {
-      "bannerImage": "Banner image",
+      "bannerImage": "Banner Image",
       "eventTitle": "Event Title",
       "eventDescription": "Event Description",
-      "startDateTime": "Event start date",
-      "endDateTime": "Event end date",
-      "salesStart": "Sales start date",
-      "salesEnd": "Sales end date",
+      "startDateTime": "Event Start Date",
+      "endDateTime": "Event End Date",
+      "salesStart": "Sales Start Date",
+      "salesEnd": "Sales End Date",
       "venueName": "Venue Name",
       "venueAddress": "Venue Address",
       "capacity": "Capacity",
-      "timezone": "Timezone"
+      "timezone": "Timezone",
+      "tierName": "Tier Name",
+      "ticketPrice": "Price",
+      "ticketQuantity": "Quantity",
+      "gst": "GST(%)",
+      "promoCode": "Promo Code",
+      "discountType": "Discount Type",
+      "discountAmount": "Amount",
+      "discountQuantity": "Quantity"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
@@ -264,7 +272,10 @@
     },
     "error": {
       "invalidImageType": "Invalid file type. Please upload an image (PNG/JPG).",
-      "invalidImageSize": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px."
+      "invalidImageSize": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.",
+      "invalidDatetime": "Enter valid datetime.",
+      "pastDate": "Date cannot be in the past.",
+      "fieldPastDate": "{field} cannot be in the past."
     },
     "placeholder": {
       "eventDescription": "Write about your event...",

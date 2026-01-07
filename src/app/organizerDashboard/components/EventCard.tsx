@@ -5,9 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { Event } from "@/types/event";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, cn } from "@/lib/utils";
 import { CalendarDotIcon, CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
+import { SalesStatusBadge } from "./SalesStatusBadge";
 
 interface EventStatus {
 	label: string;
@@ -18,6 +21,7 @@ interface EventStatus {
 /**
  * Calculate event status based on dates and ticket availability
  */
+
 export function getEventStatus(event: Event): EventStatus {
 	const now = new Date();
 	const eventDate = event.start_date ? new Date(event.start_date) : null;
@@ -105,51 +109,56 @@ export function getEventStatus(event: Event): EventStatus {
 	};
 }
 
+
 interface EventCardProps {
 	event: Event;
 }
 
 export default function EventCard({ event }: EventCardProps) {
-	const eventDate = event.start_date ? new Date(event.start_date) : null;
-	const formattedDate = eventDate ? format(eventDate, "MMM dd, yyyy") : "TBA";
-	const formattedTime = eventDate ? format(eventDate, "hh:mm a") : "";
-	const status = getEventStatus(event);
+  const eventDate = event.start_date ? new Date(event.start_date) : null;
 
 	// Parse categories
-  const categories: string[] = (Array.isArray(event.category)
+	const categories: string[] = (Array.isArray(event.category)
 		? (event.category as string[])
 		: typeof event.category === "string"
-      ? (event.category as string).split(",")
-      : []
-  )
-    .map((tag: string) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
-    .filter(Boolean);
+			? (event.category as string).split(",")
+			: []
+	)
+		.map((tag: string) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
+		.filter(Boolean);
 
 	return (
 		<div className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full">
 			{/* Image */}
-			<div className="relative aspect-[16/10]">
+      <div className="relative aspect-16/10">
 				<Image
 					src={event.banner_image || "/placeholder.png"}
 					alt={event.title}
 					fill={true}
 					className="w-full h-full object-cover"
 				/>
-        {/* Event Status Badge */}
-        {event.status && (
-          <Badge
-            className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
-              event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
-                event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
-                  event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
-                    event.status === 'live' ? 'bg-green-500 hover:bg-green-500' :
-                      event.status === 'ended' ? 'bg-gray-500 hover:bg-gray-500' :
-                        event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
-                          'bg-gray-500 hover:bg-gray-500'
-              }`}
-          >
-            {event.status}
-          </Badge>
+				{/* Event Status Badge */}
+				{event.status && (
+					<Badge
+						className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
+							event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
+								event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
+									event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
+										event.status === 'live' ? 'bg-green-500 hover:bg-green-500' :
+											event.status === 'ended' ? 'bg-gray-500 hover:bg-gray-500' :
+												event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
+													'bg-gray-500 hover:bg-gray-500'
+							}`}
+					>
+						{event.status}
+					</Badge>
+				)}
+        {/* Sales Status Badge */}
+        {event.status === "approved" && (
+          <SalesStatusBadge
+            status={event.sales_status}
+            className="absolute top-2 right-2"
+          />
         )}
 			</div>
 
@@ -159,7 +168,7 @@ export default function EventCard({ event }: EventCardProps) {
 				{categories.length > 0 && (
 					<div className="flex text-gray-700 flex-wrap gap-2">
 						{categories.map((tag) => (
-							<span key={tag} className="text-xs bg-gray-200 px-2 py-1 rounded-lg">
+              <span key={tag} className="text-xs bg-gray-200 px-2 py-1 rounded-lg break-all">
 								{tag}
 							</span>
 						))}
@@ -189,14 +198,16 @@ export default function EventCard({ event }: EventCardProps) {
 						>
 							View Detail <ArrowRight className="w-4 h-4" />
 						</Link>
-            {(event.status === 'pending' || event.status === 'draft') && (
-              <Link
-                href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
-                className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
-              >
-                <PencilLine className="w-4 h-4" />
-              </Link>
-            )}
+						<PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
+							{(event.status === 'pending' || event.status === 'draft') && (
+								<Link
+									href={`/organizerDashboard/pages/createevents?id=${event.id}&edit=true`}
+									className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+								>
+									<PencilLine className="w-4 h-4" />
+								</Link>
+							)}
+						</PermissionGuard>
 					</div>
 				</div>
 			</div>

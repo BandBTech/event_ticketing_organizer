@@ -60,6 +60,15 @@ export interface Role {
   permissions: Permission[];
 }
 
+export interface OrganizationInfoResponse {
+  id: string;
+  business_name: string;
+  status: 'pending' | 'approved' | 'rejected' | 'inactive';
+  remark?: string;
+  approved_at?: string | null;
+  rejected_at?: string | null;
+}
+
 export interface UserResponse {
   id: string;
   email: string;
@@ -85,7 +94,10 @@ export interface UserProfileResponse {
   is_email_verified: boolean;
   organization_id?: string;
   organization?: Organization;
-  roles?: Role[];
+  organizer_status: 'pending' | 'approved' | 'rejected' | 'inactive';
+  organizer_info?: OrganizationInfoResponse;
+  roles?: string[];
+  permissions?: string[];
   created_at: string;
   updated_at: string;
   created_by?: string;
@@ -123,7 +135,10 @@ export interface AuthUser {
   isEmailVerified: boolean;
   organizationId?: string;
   organization?: Organization;
-  roles: Role[];
+  organizerStatus: 'pending' | 'approved' | 'rejected' | 'inactive';
+  organizationInfo?: OrganizationInfoResponse;
+  roles: string[];
+  permissions: string[];
 }
 
 // Organizer Profile from /organizer/profile endpoint

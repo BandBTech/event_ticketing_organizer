@@ -3,12 +3,12 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { format, parse, isValid, getYear } from 'date-fns';
 import { useRef, useState, useMemo, useEffect, useLayoutEffect, useCallback } from 'react';
-import { CircleAlert, CircleCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFormContext } from 'react-hook-form';
 
 import { TZDate } from 'react-day-picker';
 import { CalendarDotsIcon } from '@phosphor-icons/react';
+import { X } from 'lucide-react';
 
 type DateTimeInputProps = {
   className?: string;
@@ -74,8 +74,21 @@ const mergeRefs = (...refs: (React.MutableRefObject<any> | React.RefCallback<any
   };
 };
 const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((options: DateTimeInputProps, ref) => {
-  const { format: formatProp, value: _value, timezone, ...rest } = options;
-  const value = useMemo(() => _value ? new TZDate(_value, timezone) : undefined, [_value, timezone]);
+  const {
+    className,
+    format: formatProp,
+    value: _value,
+    timezone,
+    onChange,
+    disabled,
+    clearable,
+    hideCalendarIcon,
+    onCalendarClick,
+    error,
+    ...rest
+  } = options;
+  const timestamp = _value?.getTime();
+  const value = useMemo(() => timestamp !== undefined ? new TZDate(timestamp, timezone) : undefined, [timestamp, timezone]);
   const form = useFormContext();
   const formatStr = React.useMemo(() => formatProp || 'dd/MM/yyyy-hh:mm aa', [formatProp]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -83,13 +96,19 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const [segments, setSegments] = useState<Segment[]>([]);
   const [selectedSegmentAt, setSelectedSegmentAt] = useState<number | undefined>(undefined);
 
+  // Track whether segment updates are from external value changes (parent) vs user input
+  const isExternalUpdateRef = useRef(false);
+
   useEffect(() => {
     if (form?.formState.isSubmitted) {
+      isExternalUpdateRef.current = true;
       setSegments(parseFormat(formatStr, value));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form?.formState.isSubmitted]);
   useEffect(() => {
     // console.error('valueChanged', {formatStr, inputStr, value});
+    isExternalUpdateRef.current = true;
     setSegments(parseFormat(formatStr, value));
   }, [formatStr, value]);
 
@@ -101,7 +120,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const setCurrentSegment = useCallback(
     (segment: Segment | undefined) => {
       const at = segments?.findIndex((s) => s.index === segment?.index);
-      at !== -1 && setSelectedSegmentAt(at);
+      if (at !== -1) setSelectedSegmentAt(at);
     },
     [segments, setSelectedSegmentAt]
   );
@@ -114,20 +133,28 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
 
   const inputValue = useMemo(() => {
     const allHasValue = !validSegments.some((s) => !s.value);
-    if (!allHasValue) return;
-    const date = parse(inputStr, formatStr, value || new TZDate(new Date(), timezone));
+    if (!allHasValue) return undefined;
+    const date = parse(inputStr, formatStr, value ? new Date(value) : new Date());
     const year = getYear(date);
     // console.log('inputValue', {allHasValue, validSegments, inputStr, formatStr, date, year});
-    if (isValid(date) && year > 1900 && year < 2100) {
+    if (year >= 1000 && year <= 9999) {
       return date;
     }
-  }, [validSegments, inputStr, formatStr]);
+    return undefined;
+  }, [validSegments, inputStr, formatStr, value, timezone]);
+
   useEffect(() => {
+    // Skip if this update came from external value changes (parent prop)
+    if (isExternalUpdateRef.current) {
+      isExternalUpdateRef.current = false;
+      return;
+    }
     if (!inputValue) return;
     if (value?.getTime() !== inputValue.getTime()) {
       // console.log('inputValueChanged', {formatStr, inputStr, value, inputValue, });
-      options.onChange?.(inputValue);
+      onChange?.(inputValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue]);
 
 
@@ -141,13 +168,13 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         let segment = validSegments.find(
           (s) => s.index <= selectionStart && s.index + s.symbols.length >= selectionStart
         );
-        !segment && (segment = [...validSegments].reverse().find((s) => s.index <= selectionStart));
-        !segment && (segment = validSegments.find((s) => s.index >= selectionStart));
+        if (!segment) segment = [...validSegments].reverse().find((s) => s.index <= selectionStart);
+        if (!segment) segment = validSegments.find((s) => s.index >= selectionStart);
         setCurrentSegment(segment);
         setSelection(inputRef, segment);
       }
     },
-    [segments]
+    [segments, setCurrentSegment]
   );
 
   const onSegmentChange = useEventCallback(
@@ -163,7 +190,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         setSelection(inputRef, segment);
       }
     },
-    [segments, curSegment]
+    [segments, curSegment, setCurrentSegment]
   );
 
   const onSegmentNumberValueChange = useEventCallback(
@@ -204,9 +231,13 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
           }
         }
       }
-      shouldNext ? onSegmentChange('right') : setSelection(inputRef, segment);
+      if (shouldNext) {
+        onSegmentChange('right');
+      } else {
+        setSelection(inputRef, segment);
+      }
     },
-    [segments, curSegment]
+    [segments, curSegment, timezone, onSegmentChange]
   );
 
   const onSegmentPeriodValueChange = useEventCallback(
@@ -242,7 +273,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
     } else {
       onSegmentChange('left');
     }
-  }, [segments, curSegment]);
+  }, [segments, curSegment, onSegmentChange]);
 
   const onKeyDown = useEventCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     const key = event.key;
@@ -273,7 +304,7 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
         event.preventDefault();
         break;
     }
-  }, []);
+  }, [curSegment, onSegmentChange, onSegmentNumberValueChange, onSegmentPeriodValueChange, onSegmentValueRemove]);
 
   const [isFocused, setIsFocused] = useState(false);
   const hasError = !inputValue && !areAllSegmentsEmpty;
@@ -289,51 +320,65 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
     // Not inside a form context
   }
 
-  const showError = options.error || hasError || formError;
+  const showError = error || hasError || formError;
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'flex h-9 w-full min-w-0 items-center justify-start rounded-md border bg-white ps-3 pe-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm',
-        'border-input',
-        'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground',
-        'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
-        isFocused && !showError && 'border-ring ring-ring/50 ring-[3px]',
-        showError && 'ring-destructive/20 dark:ring-destructive/40 border-destructive',
-        options.hideCalendarIcon && 'pe-3',
-        options.className
-      )}
-    >
-      <input
-        ref={mergeRefs(inputRef)}
-        className={cn("grow min-w-0 bg-transparent py-1 pe-2 md:text-md focus:outline-none disabled:cursor-not-allowed disabled:opacity-50", inputValue ? "text-gray-900" : "text-muted-foreground")}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onClick={onClick}
-        onKeyDown={onKeyDown}
-        value={inputStr}
-        placeholder={formatStr}
-        onChange={() => { }}
-        disabled={options.disabled}
-        spellCheck={false}
-      />
+    <div className={className}>
+      <div
+        ref={ref}
+        className={cn(
+          'flex h-13 w-full min-w-0 items-center justify-start rounded-md border bg-white ps-3 pe-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-md',
+          'border-input',
+          'placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground',
+          'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+          isFocused && !showError && 'border-ring ring-ring/50 ring-[3px]',
+          showError && 'ring-destructive/20 dark:ring-destructive/40 border-destructive',
+          hideCalendarIcon && 'pe-3'
+        )}
+      >
+        <input
+          ref={mergeRefs(inputRef)}
+          className={cn("grow min-w-0 bg-transparent py-1 pe-2 md:text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50", inputValue ? "text-foreground" : "text-foreground")}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onClick={onClick}
+          onKeyDown={onKeyDown}
+          value={inputStr}
+          placeholder={formatStr}
+          onChange={() => { }}
+          disabled={disabled}
+          spellCheck={false}
+          {...rest}
+        />
 
-      {!options.hideCalendarIcon && (
-        <Button type="button" variant="ghost" size="icon" onClick={options.onCalendarClick}>
-          <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
-        </Button>
-      )}
-      <div className="me-3">
-        {inputValue ? (
-          <CircleCheck className="size-4 text-green-500" />
-        ) : (
-            <div className="text-red-500 text-xs flex items-center gap-1">
-              <CircleAlert className={cn('size-4', !areAllSegmentsEmpty && 'text-red-500')} />
-              <span>Invalid Format</span>
-            </div>
+        {clearable && _value && !disabled && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onChange?.(undefined);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+
+        {!hideCalendarIcon && (
+          <Button type="button" variant="ghost" size="icon" onClick={onCalendarClick}>
+            <CalendarDotsIcon weight='duotone' className="size-5 text-muted-foreground" />
+          </Button>
         )}
       </div>
+      {/* Error Message Below */}
+      {hasError ? (
+        <div className="text-destructive text-xs flex items-center gap-1 font-medium mt-1">
+          <span>Invalid date time</span>
+        </div>
+      ) : null}
     </div>
   );
 });
@@ -358,13 +403,14 @@ function parseFormat(formatStr: string, value?: Date) {
     const pattern = segmentConfigs.find((p) => p.symbols.includes(c))!;
     if (!pattern) continue;
     if (pattern.type !== lastPattern) {
-      symbols &&
+      if (symbols) {
         views.push({
           type: lastPattern as SegmentType,
           symbols,
           index: patternIndex,
           value: value ? format(value, symbols) : '',
         });
+      }
       lastPattern = pattern?.type || '';
       symbols = c;
       patternIndex = index;
@@ -373,13 +419,14 @@ function parseFormat(formatStr: string, value?: Date) {
     }
     index++;
   }
-  symbols &&
+  if (symbols) {
     views.push({
       type: lastPattern as SegmentType,
       symbols,
       index: patternIndex,
       value: value ? format(value, symbols) : '',
     });
+  }
   return views;
 }
 
@@ -415,6 +462,7 @@ export function useEventCallback<T extends (...args: any[]) => any>(fn: T, deps:
   });
   return useCallback((...args: Parameters<T>) => {
     return ref.current?.(...args);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
 

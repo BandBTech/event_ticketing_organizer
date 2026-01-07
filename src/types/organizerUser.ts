@@ -67,15 +67,11 @@ export interface UpdateUserRoleRequest {
   role_name: 'staff' | 'manager';
 }
 
-// Paginated response for users list (if needed in future)
+// Response matches the flattened structure from the API
 export interface OrgUsersListResponse {
   users: OrgUser[];
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
+  total: number;
+  page: number;
+  limit: number;
 }
+

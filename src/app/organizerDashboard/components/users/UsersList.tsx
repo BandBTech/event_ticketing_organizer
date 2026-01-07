@@ -1,13 +1,15 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/app/contexts/UserContext";
 import { useState, useMemo, useCallback } from "react";
 import { organizerUserService } from "@/services/organizerUserService";
 import { OrgUser } from "@/types/organizerUser";
 import { toast } from "sonner";
-import { Search, Pencil, Trash2, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Search, Pencil, Trash2, ChevronLeft, ChevronRight, Users, /* ArrowUpDown, ArrowUp, ArrowDown */ } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +30,7 @@ import {
   getPaginationRowModel,
   useReactTable,
   PaginationState,
+  // SortingState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -38,13 +41,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { queryKeys } from "@/lib/queryKeys";
 
-interface UsersListProps {
-  orgId: string;
-}
-
-export default function UsersList({ orgId }: UsersListProps) {
+export default function UsersList() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { openEditUserModal, openCreateUserModal } = useUser();
@@ -56,18 +54,27 @@ export default function UsersList({ orgId }: UsersListProps) {
     pageIndex: 0,
     pageSize: 10,
   });
+  // const [sorting, setSorting] = useState<SortingState>([]);
 
-  const { data: users = [], isLoading, isError } = useQuery({
-    queryKey: queryKeys.orgUsers.all(orgId),
-    queryFn: () => organizerUserService.getUsers(orgId),
-    enabled: !!orgId,
+  const { data: usersResponse, isLoading, isError } = useQuery({
+    queryKey: ["orgUsers", pagination.pageIndex + 1, pagination.pageSize, globalFilter, roleFilter],
+    queryFn: () => organizerUserService.getUsers(
+      pagination.pageIndex + 1,
+      pagination.pageSize,
+      globalFilter || undefined,
+      roleFilter !== "all" ? roleFilter : undefined
+    ),
   });
 
+  // Extract data from paginated response
+  const users = usersResponse?.users || [];
+  const totalPages = usersResponse ? Math.ceil(usersResponse.total / usersResponse.limit) : 0;
+
   const deleteMutation = useMutation({
-    mutationFn: (userId: string) => organizerUserService.deleteUser(orgId, userId),
+    mutationFn: (userId: string) => organizerUserService.deleteUser(userId),
     onSuccess: () => {
       toast.success(t('users.delete.success', "User removed successfully"));
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
+      queryClient.invalidateQueries({ queryKey: ["orgUsers"] });
       setDeleteUser(null);
     },
     onError: (error: Error) => {
@@ -98,18 +105,57 @@ export default function UsersList({ orgId }: UsersListProps) {
         accessorFn: (row) => `${row.first_name} ${row.last_name}`,
         id: "name",
         header: t('common.name', "Name"),
+        /* header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              className="-ml-4 h-8 data-[state=open]:bg-accent"
+            >
+              {t('common.name', "Name")}
+              {column.getIsSorted() === "asc" ? (
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
+            </Button>
+          )
+        }, */
         cell: (info) => <span className="font-medium text-gray-900">{info.getValue<string>()}</span>,
+        // enableSorting: true,
       },
       {
         accessorKey: "email",
         header: t('common.email', "Email"),
         cell: (info) => <span className="text-gray-600 font-medium">{info.getValue<string>()}</span>,
+        // enableSorting: false,
       },
       {
         accessorFn: (row) => row.roles?.[0]?.name || "-",
-        id: "role",
+        id: "role_name", // Match backend field
         header: t('common.role', "Role"),
+        /* header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              className="-ml-4 h-8 data-[state=open]:bg-accent"
+            >
+              {t('common.role', "Role")}
+              {column.getIsSorted() === "asc" ? (
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
+            </Button>
+          )
+        }, */
         cell: (info) => <span className="font-medium capitalize text-gray-900">{info.getValue<string>()}</span>,
+        // enableSorting: true,
       },
       {
         accessorKey: "phone",
@@ -119,10 +165,30 @@ export default function UsersList({ orgId }: UsersListProps) {
           const code = info.row.original.country_code;
           return phone ? <span className="font-medium text-gray-900">{code ? `${code} ` : ""}{phone}</span> : "-";
         },
+        // enableSorting: false,
       },
       {
         accessorKey: "account_status",
+        id: "account_status",
         header: t('common.status', "Status"),
+        /* header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              className="-ml-4 h-8 data-[state=open]:bg-accent"
+            >
+              {t('common.status', "Status")}
+              {column.getIsSorted() === "asc" ? (
+                <ArrowUp className="ml-2 h-4 w-4" />
+              ) : column.getIsSorted() === "desc" ? (
+                <ArrowDown className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+              )}
+            </Button>
+          )
+        }, */
         cell: (info) => {
           const status = info.getValue<string>();
           const isActive = status === "active";
@@ -135,24 +201,31 @@ export default function UsersList({ orgId }: UsersListProps) {
             </span>
           );
         },
+        // enableSorting: true,
       },
       {
         id: "actions",
         header: "",
         cell: (info) => (
           <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => handleEdit(info.row.original)}
-              className="text-gray-400 hover:text-blue-600 transition-colors"
-            >
-              <Pencil className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setDeleteUser(info.row.original)}
-              className="text-gray-400 hover:text-red-600 transition-colors"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+            <PermissionGuard permission={PERMISSIONS.USER_UPDATE}>
+              <button
+                onClick={() => handleEdit(info.row.original)}
+                className="text-gray-400 hover:text-blue-600 transition-colors"
+                title={t('common.edit', "Edit")}
+              >
+                <Pencil className="w-5 h-5" />
+              </button>
+            </PermissionGuard>
+            <PermissionGuard permission={PERMISSIONS.USER_DELETE}>
+              <button
+                onClick={() => setDeleteUser(info.row.original)}
+                className="text-gray-400 hover:text-red-600 transition-colors"
+                title={t('common.delete', "Remove")}
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            </PermissionGuard>
           </div>
         ),
         meta: {
@@ -164,65 +237,51 @@ export default function UsersList({ orgId }: UsersListProps) {
   );
 
   // --- Filtering & Table Data ---
-  const filteredData = useMemo(() => {
-    if (!users) return [];
-    let data = users;
-
-    // Filter by role
-    if (roleFilter !== "all") {
-      data = data.filter((user) => user.roles?.[0]?.name?.toLowerCase() === roleFilter);
-    }
-
-    // Search filter
-    if (globalFilter) {
-      const lower = globalFilter.toLowerCase();
-      data = data.filter(u =>
-        u.first_name.toLowerCase().includes(lower) ||
-        u.last_name.toLowerCase().includes(lower) ||
-        u.email.toLowerCase().includes(lower)
-      )
-    }
-
-    return data;
-  }, [users, roleFilter, globalFilter]);
+  // Filtering is now handled by the backend (search and role)
 
   const table = useReactTable({
-    data: filteredData,
+    data: users,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
-      pagination
+      pagination,
+      // sorting
     },
     onPaginationChange: setPagination,
-    manualFiltering: false,
-    pageCount: Math.ceil(filteredData.length / pagination.pageSize),
+    // onSortingChange: setSorting,
+    manualFiltering: true, // Filtering is handled by the backend
+    manualPagination: true,
+    // manualSorting: true,
+    pageCount: totalPages,
   });
 
-  if (isLoading) {
-    return <UsersTableSkeleton />;
-  }
+  const handleSearch = (value: string) => {
+    setGlobalFilter(value);
+    setPagination(prev => ({ ...prev, pageIndex: 0 })); // Reset to first page on search
+  };
 
-  if (isError) {
-    return <div className="text-center p-8 text-red-500">{t('common.error', "An error occurred while loading users.")}</div>;
-  }
+  const handleRoleChange = (value: string) => {
+    setRoleFilter(value);
+    setPagination(prev => ({ ...prev, pageIndex: 0 })); // Reset to first page on filter
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50 p-2 rounded-lg">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder={t('users.search', "Search users...")}
             value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-9 bg-white border-gray-200"
           />
         </div>
 
         <div className="w-full sm:w-48">
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
+          <Select value={roleFilter} onValueChange={handleRoleChange}>
             <SelectTrigger className="bg-white border-gray-200">
               <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
@@ -235,60 +294,68 @@ export default function UsersList({ orgId }: UsersListProps) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-gray-50/50">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="text-gray-500 font-medium whitespace-nowrap">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} className="hover:bg-gray-50/50 transition-colors group border-gray-100">
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-4">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      {/* Table Content */}
+      {isError ? (
+        <div className="text-center p-8 text-red-500">{t('common.error', "An error occurred while loading users.")}</div>
+      ) : (
+        <div className="rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader className="bg-gray-50/50">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="text-gray-500 font-medium whitespace-nowrap">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <div className="flex flex-col items-center justify-center text-gray-500 py-12">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                      <Users className="h-6 w-6 text-gray-400" />
+              ))}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <UsersTableSkeleton columns={columns.length} />
+              ) : table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id} className="hover:bg-gray-50/50 transition-colors group border-gray-100">
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="py-4">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <div className="flex flex-col items-center justify-center text-gray-500 py-12">
+                      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                        <Users className="h-6 w-6 text-gray-400" />
+                      </div>
+                      <p className="text-lg font-medium mb-1">
+                        {users.length === 0 ? "No team members yet" : "No users found"}
+                      </p>
+                      <p className="text-sm text-muted-foreground max-w-sm">
+                        {users.length === 0
+                          ? "Add your first team member by clicking the 'Add User' button above."
+                          : "Try adjusting your search or filters."}
+                      </p>
+                      {users.length === 0 && (
+                        <PermissionGuard permission={PERMISSIONS.USER_CREATE}>
+                          <Button onClick={openCreateUserModal} className="mt-4">
+                            Add Team Member
+                          </Button>
+                        </PermissionGuard>
+                      )}
                     </div>
-                    <p className="text-lg font-medium mb-1">
-                      {users.length === 0 ? "No team members yet" : "No users found"}
-                    </p>
-                    <p className="text-sm text-muted-foreground max-w-sm">
-                      {users.length === 0
-                        ? "Add your first team member by clicking the 'Add User' button above."
-                        : "Try adjusting your search or filters."}
-                    </p>
-                    {users.length === 0 && (
-                      <Button onClick={openCreateUserModal} className="mt-4">
-                        Add Team Member
-                      </Button>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Pagination */}
       {table.getPageCount() > 1 && (
@@ -355,26 +422,19 @@ export default function UsersList({ orgId }: UsersListProps) {
   );
 }
 
-function UsersTableSkeleton() {
+
+function UsersTableSkeleton({ columns }: { columns: number }) {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center bg-gray-50/50 p-2 rounded-lg">
-        <Skeleton className="h-10 w-80 bg-white" />
-        <Skeleton className="h-10 w-48 bg-white" />
-      </div>
-      <div className="rounded-md border border-gray-200">
-        <div className="h-12 bg-gray-50/50 border-b" />
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex items-center p-4 border-b last:border-0 gap-4">
-            <Skeleton className="h-4 w-8" />
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-4 w-40" />
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-        ))}
-      </div>
-    </div>
+    <>
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+        <TableRow key={i} className="hover:bg-transparent">
+          {Array.from({ length: columns }).map((_, j) => (
+            <TableCell key={j} className="py-4">
+              <Skeleton className="h-4 w-full" />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
   );
 }

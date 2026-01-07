@@ -1,8 +1,8 @@
 "use client";
 
-import { CalendarIcon, X } from "lucide-react";
 import { format } from "date-fns";
-import React, { useEffect } from "react";
+import React from "react";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,13 +34,26 @@ export function ShadcnDateTimePicker({
   clearable = true,
   format: formatStr,
   error = false,
+  // minDate, // Removed unused prop usage
 }: ShadcnDateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
+  // Default to disabling dates before today (or specific minDate if provided)
+  // user request: "Disable previous date from calendar based on local time"
+  // We'll disable days before today for the calendar view.
+  const disabledDays = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
+  /**
+   * When user selects a date from the Calendar
+   */
   function handleDateSelect(date: Date | undefined) {
     if (date) {
       const newDate = new Date(date);
-      // Preserve time from current value or default to 12:00 PM if no value
+      // Preserve time from current value or default to current time
       const currentTime = value || new Date();
       newDate.setHours(currentTime.getHours());
       newDate.setMinutes(currentTime.getMinutes());
@@ -48,6 +61,9 @@ export function ShadcnDateTimePicker({
     }
   }
 
+  /**
+   * When user changes time using the scroll areas
+   */
   function handleTimeChange(type: "hour" | "minute" | "ampm", val: string) {
     const currentDate = value || new Date();
     const newDate = new Date(currentDate);
@@ -81,37 +97,15 @@ export function ShadcnDateTimePicker({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div className={cn("relative", className)}>
-          <Button
-            type="button"
-            variant={"outline"}
-            className={cn(
-              "w-full h-13 pl-3 text-left font-normal border-input bg-background md:text-md",
-              "focus:ring-2 focus:ring-ring focus:ring-offset-2", // Add focus styles
-              error && "border-red-500 focus-visible:ring-red-500", // Add error styles
-              !value && "text-muted-foreground",
-              disabled && "cursor-not-allowed opacity-50"
-            )}
+          <DateTimeInput
+            value={value || undefined}
+            onChange={(date) => onChange?.(date || null)}
+            format={formatStr}
             disabled={disabled}
-            onClick={() => !disabled && setIsOpen(true)}
-          >
-            {value ? (
-              format(value, formatStr || "yyyy-MM-dd hh:mm aa")
-            ) : (
-              <span>{formatStr || "yyyy-MM-dd hh:mm aa"}</span>
-            )}
-            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-          </Button>
-          {clearable && value && !disabled && (
-            <div
-              className="absolute right-10 top-1/2 -translate-y-1/2 cursor-pointer p-1 hover:bg-accent hover:text-accent-foreground rounded-full transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                onChange?.(null);
-              }}
-            >
-              <X className="h-4 w-4 opacity-50" />
-            </div>
-          )}
+            clearable={clearable}
+            error={error}
+            onCalendarClick={() => setIsOpen(true)}
+          />
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -123,8 +117,9 @@ export function ShadcnDateTimePicker({
             initialFocus
             className="rounded-md border-r-0 sm:border-r"
             captionLayout="dropdown"
-            fromYear={1960}
-            toYear={2030}
+            fromYear={new Date().getFullYear()}
+            toYear={new Date().getFullYear() + 5}
+            disabled={disabledDays}
           />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
@@ -204,6 +199,14 @@ export function ShadcnDateTimePicker({
               </div>
             </ScrollArea>
           </div>
+        </div>
+        <div className="p-3 border-t">
+          <Button
+            className="w-full"
+            onClick={() => setIsOpen(false)}
+          >
+            Done
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

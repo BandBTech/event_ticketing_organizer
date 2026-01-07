@@ -15,23 +15,23 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute role={["organizer", "manager", "staff"]} requireAll={false}>
       <UserProvider>
         <div className=" flex h-screen overflow-hidden bg-gray-50/50">
-        {/* Sidebar */}
-        <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+          {/* Sidebar */}
+          <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col">
-          <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6">
-            <Suspense fallback={<div className="flex-1" />}>
-              <DashboardHeader />
-            </Suspense>
-          </header>
-          <main className="flex-1 overflow-y-auto">{children}</main>
-        </div>
+          {/* Main Content Area */}
+          <div className="flex flex-1 flex-col">
+            <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6">
+              <Suspense fallback={<div className="flex-1" />}>
+                <DashboardHeader />
+              </Suspense>
+            </header>
+            <main className="flex-1 overflow-y-auto">{children}</main>
+          </div>
 
-        <CompleteProfileDialog />
+          <CompleteProfileDialog />
         </div>
       </UserProvider>
     </ProtectedRoute>

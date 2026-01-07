@@ -16,19 +16,17 @@ import { AuthError } from "@/lib/errors";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { queryKeys } from "@/lib/queryKeys";
-
-const organizerProfileSchema = z.object({
-  business_name: z.string().min(3, "Business name must be at least 3 characters."),
-  business_description: z.string().optional(),
-});
-
-type OrganizerProfileFormValues = z.infer<typeof organizerProfileSchema>;
+import { RejectionNotice } from "@/components/organizer/RejectionNotice";
+import { useAuthStore } from "@/store/authStore";
+import { organizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
 
 export default function OrganizerProfileSettings() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  const { isOrganizerRejected } = useAuthStore();
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: queryKeys.organizerProfile.all,
@@ -160,6 +158,8 @@ export default function OrganizerProfileSettings() {
         )}
       </div>
 
+      {isOrganizerRejected() && <RejectionNotice />}
+
       <div className="glass-card rounded-xl p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
@@ -190,22 +190,22 @@ export default function OrganizerProfileSettings() {
               // Let's keep it simple as per requirement "Validation such as Invalid media file, limit exceed missing"
               />
             ) : (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-900 block">
-                    Business Logo
-                  </label>
-                  <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                    {previewUrl ? (
-                      <Image
-                        src={previewUrl}
-                        alt="Business Logo"
-                        fill
-                        className="object-contain"
-                      />
-                    ) : (
-                      <BuildingOfficeIcon size={48} className="text-gray-300" />
-                    )}
-                  </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900 block">
+                  Business Logo
+                </label>
+                <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                  {previewUrl ? (
+                    <Image
+                      src={previewUrl}
+                      alt="Business Logo"
+                      fill
+                      className="object-contain"
+                    />
+                  ) : (
+                    <BuildingOfficeIcon size={48} className="text-gray-300" />
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -223,6 +223,7 @@ export default function OrganizerProfileSettings() {
                 id="business_name"
                 {...register("business_name")}
                 disabled={!isEditing}
+                maxLength={50}
                 className={cn(
                   "pl-10",
                   !isEditing && "bg-gray-50 cursor-not-allowed",
@@ -230,9 +231,18 @@ export default function OrganizerProfileSettings() {
                 )}
               />
             </div>
-            {errors.business_name && (
-              <p className="text-sm text-red-500">{errors.business_name.message}</p>
-            )}
+            <div className="flex justify-between mt-1">
+              {errors.business_name ? (
+                <p className="text-sm text-red-500">{errors.business_name.message}</p>
+              ) : (
+                <span />
+              )}
+              {isEditing && (
+                <p className="text-xs text-gray-400">
+                  {form.watch("business_name")?.length || 0}/50
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Description */}
@@ -244,12 +254,18 @@ export default function OrganizerProfileSettings() {
               id="business_description"
               {...register("business_description")}
               disabled={!isEditing}
+              maxLength={500}
               className={cn(
                 "min-h-[100px]",
                 !isEditing && "bg-gray-50 cursor-not-allowed"
               )}
               placeholder="Tell us about your organization..."
             />
+            {isEditing && (
+              <p className="text-xs text-gray-400 text-right">
+                {form.watch("business_description")?.length || 0}/500
+              </p>
+            )}
           </div>
 
           {/* Action Buttons */}

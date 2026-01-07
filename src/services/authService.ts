@@ -185,7 +185,7 @@ class AuthService {
         }
       );
       return { message: response?.message };
-    } catch (error) {
+    } catch {
       // Continue with local logout even if API call fails
       return { message: undefined };
     } finally {

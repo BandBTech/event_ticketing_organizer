@@ -42,10 +42,6 @@ export default function CreateEventPage({
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  // Form modification tracking
-  const [formModified, setFormModified] = useState(false);
-  const watchCallCount = React.useRef(0);
-
   // Tier template dialog state
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
   const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(null);
@@ -62,29 +58,9 @@ export default function CreateEventPage({
     imageRemoved,
     validateAndProcessImage,
     handleRemoveImage,
-    resetImage,
     setImagePreview,
   } = useImageUpload({
     initialPreview: initialData?.banner_image || "",
-  });
-
-  // Check for unsaved changes
-  const hasUnsavedChanges = useCallback(() => {
-    return formModified || imageFile !== null;
-  }, [formModified, imageFile]);
-
-  // Navigation guard hook
-  const {
-    showLeaveDialog,
-    setShowLeaveDialog,
-    confirmLeave,
-    cancelLeave,
-    handleNavigateAway,
-  } = useNavigationGuard({
-    hasUnsavedChanges,
-    onBeforeLeave: () => {
-      setFormModified(false);
-    },
   });
 
   // Fetch tier templates
@@ -101,6 +77,29 @@ export default function CreateEventPage({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
     defaultValues: getEventFormDefaults(initialData, tierTemplates),
     mode: "onChange",
+  });
+
+  // Use isDirty from form state to track unsaved changes
+  const { isDirty } = form.formState;
+
+  // Check for unsaved changes
+  const hasUnsavedChanges = useCallback(() => {
+    return isDirty || imageFile !== null;
+  }, [isDirty, imageFile]);
+
+  // Navigation guard hook
+  const {
+    showLeaveDialog,
+    setShowLeaveDialog,
+    confirmLeave,
+    cancelLeave,
+    handleNavigateAway,
+  } = useNavigationGuard({
+    hasUnsavedChanges,
+    onBeforeLeave: () => {
+      // Reset form to prevent popstate handler from blocking navigation
+      form.reset(form.getValues());
+    },
   });
 
   // Reset form when initialData or tierTemplates change (for edit mode)
@@ -123,22 +122,8 @@ export default function CreateEventPage({
       if (initialData.banner_image && typeof initialData.banner_image === "string") {
         setImagePreview(initialData.banner_image);
       }
-
-      // Reset form modified state
-      setFormModified(false);
     }
   }, [initialData, isEditing, form, tierTemplates, setImagePreview]);
-
-  // Track form modifications
-  useEffect(() => {
-    const subscription = form.watch(() => {
-      watchCallCount.current++;
-      if (watchCallCount.current > 2) {
-        setFormModified(true);
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
 
   // Create Tier Template Mutation
   const createTierTemplateMutation = useMutation({
@@ -177,11 +162,15 @@ export default function CreateEventPage({
         await queryClient.invalidateQueries({ queryKey: ["events"] });
       }
 
+      // If updating, also invalidate the specific event cache so re-editing fetches fresh data
+      if (isEditing && initialData?.id) {
+        await queryClient.invalidateQueries({ queryKey: ["event", initialData.id] });
+      }
+
       toast.success(
         isEditing ? "Event Updated" : "Event Created",
         `Event has been successfully ${isEditing ? "updated" : "created"}.`
       );
-      setFormModified(false);
       router.push("/organizerDashboard/pages/events");
     },
   });
@@ -254,7 +243,7 @@ export default function CreateEventPage({
   // Handlers for EventDetailsSection
   const handleDescriptionChange = useCallback(
     (html: string) => {
-      form.setValue("description", html);
+      form.setValue("description", html, { shouldDirty: true, shouldValidate: true });
     },
     [form]
   );
@@ -266,7 +255,7 @@ export default function CreateEventPage({
   const handleImageChange = useCallback(
     (file: File) => {
       validateAndProcessImage(file);
-      form.setValue("image", "pending");
+      form.setValue("image", "pending", { shouldDirty: true });
       form.clearErrors("image");
     },
     [validateAndProcessImage, form]
@@ -274,7 +263,7 @@ export default function CreateEventPage({
 
   const handleImageRemove = useCallback(() => {
     handleRemoveImage();
-    form.setValue("image", "");
+    form.setValue("image", "", { shouldDirty: true, shouldValidate: true });
   }, [handleRemoveImage, form]);
 
   // Handler for creating new tier
@@ -348,7 +337,8 @@ export default function CreateEventPage({
           await queryClient.invalidateQueries({ queryKey: ["tierTemplates"] });
 
           if (activeTicketIndex !== null) {
-            form.setValue(`tickets.${activeTicketIndex}.name`, newTemplate.template_name);
+            const templateName = newTemplate.template_name || (newTemplate as { name?: string }).name || "";
+            form.setValue(`tickets.${activeTicketIndex}.name`, templateName, { shouldDirty: true, shouldValidate: true });
           }
         }}
         initialData={null}

@@ -59,7 +59,6 @@ import { queryKeys } from "@/lib/queryKeys";
 interface UserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  orgId: string;
   userToEdit?: OrgUser | null;
 }
 
@@ -103,7 +102,6 @@ function generateStrongPassword(): string {
 export default function UserFormDialog({
   open,
   onOpenChange,
-  orgId,
   userToEdit,
 }: UserFormDialogProps) {
   const { t } = useTranslation();
@@ -195,7 +193,7 @@ export default function UserFormDialog({
 
   const createMutation = useMutation({
     mutationFn: (data: CreateOrgUserFormData) =>
-      organizerUserService.createUser(orgId, {
+      organizerUserService.createUser({
         email: data.email,
         first_name: data.first_name,
         last_name: data.last_name,
@@ -205,7 +203,7 @@ export default function UserFormDialog({
       }),
     onSuccess: () => {
       toast.success(t('users.create.success', "User created successfully"));
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
+      queryClient.invalidateQueries({ queryKey: ["orgUsers"] });
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -215,13 +213,13 @@ export default function UserFormDialog({
 
   const updateMutation = useMutation({
     mutationFn: (data: UpdateOrgUserFormData) =>
-      organizerUserService.updateUser(orgId, userToEdit!.id, {
+      organizerUserService.updateUser(userToEdit!.id, {
         role_type: data.role_type,
         active: data.active
       }),
     onSuccess: () => {
       toast.success(t('users.update.success', "User updated successfully"));
-      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all(orgId) });
+      queryClient.invalidateQueries({ queryKey: ["orgUsers"] });
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -459,13 +457,13 @@ export default function UserFormDialog({
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="staff">
-                              <div className="flex flex-col">
+                              <div className="flex flex-col items-start">
                                 <span className="font-medium">Staff</span>
                                 <span className="text-xs text-muted-foreground">Can check-in tickets and view events</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="manager">
-                              <div className="flex flex-col">
+                              <div className="flex flex-col items-start">
                                 <span className="font-medium">Manager</span>
                                 <span className="text-xs text-muted-foreground">Full access to manage events and team</span>
                               </div>
@@ -528,13 +526,13 @@ export default function UserFormDialog({
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="staff">
-                              <div className="flex flex-col">
+                              <div className="flex flex-col items-start">
                                 <span className="font-medium">Staff</span>
                                 <span className="text-xs text-muted-foreground">Can check-in tickets and view events</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="manager">
-                              <div className="flex flex-col">
+                              <div className="flex flex-col items-start">
                                 <span className="font-medium">Manager</span>
                                 <span className="text-xs text-muted-foreground">Full access to manage events and team</span>
                               </div>
@@ -573,7 +571,7 @@ export default function UserFormDialog({
               </>
             )}
 
-            <DialogFooter className="gap-2 sm:gap-0">
+            <DialogFooter className="gap-2">
               <Button
                 variant="outline"
                 type="button"

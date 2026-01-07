@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "@/hooks/useTranslation";
-import { createTierTemplateSchema, TierTemplateFormData } from "@/lib/validation";
+import { createTierTemplateSchema, TierTemplateFormData, TIER_NAME_MAX, TIER_DESC_MAX } from "@/lib/validation";
 import { tierService, TierTemplate } from "@/services/tierService";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ export function CreateTierTemplateDialog({
     try {
       setIsSubmitting(true);
       let result: TierTemplate;
-      
+
       if (isEditing && initialData) {
         result = await tierService.updateTierTemplate(initialData.id, data);
         toast.success("Tier template updated successfully");
@@ -82,12 +82,9 @@ export function CreateTierTemplateDialog({
         result = await tierService.createTierTemplate(data);
         toast.success("Tier template created successfully");
       }
-      
-      onSuccess(result);
+
+      onSuccess({ ...result, template_name: data.template_name });
       onOpenChange(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(isEditing ? "Failed to update template" : "Failed to create template");
     } finally {
       setIsSubmitting(false);
     }
@@ -110,9 +107,14 @@ export function CreateTierTemplateDialog({
                 <FormItem>
                   <FormLabel>Template Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., VIP, Early Bird" {...field} />
+                    <Input placeholder="e.g., VIP, Early Bird" maxLength={TIER_NAME_MAX} {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between items-center -mt-1 min-h-[20px]">
+                    <FormMessage className="mt-0" />
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {field.value?.length || 0}/{TIER_NAME_MAX} characters
+                    </div>
+                  </div>
                 </FormItem>
               )}
             />
@@ -126,10 +128,16 @@ export function CreateTierTemplateDialog({
                     <Textarea
                       placeholder="Describe this tier..."
                       rows={3}
+                      maxLength={TIER_DESC_MAX}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex justify-between items-center -mt-1 min-h-[20px]">
+                    <FormMessage className="mt-0" />
+                    <div className="text-xs text-muted-foreground ml-auto">
+                      {field.value?.length || 0}/{TIER_DESC_MAX} characters
+                    </div>
+                  </div>
                 </FormItem>
               )}
             />

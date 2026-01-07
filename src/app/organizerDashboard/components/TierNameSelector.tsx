@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { TierTemplate } from "@/services/tierService";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+import { TIER_NAME_MAX } from "@/lib/validation";
 
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -27,6 +28,7 @@ interface TierNameSelectorProps {
   templates: TierTemplate[];
   error?: boolean;
   onCreateNew?: () => void;
+  isLoading?: boolean;
 }
 
 const TierNameSelector = ({
@@ -35,10 +37,18 @@ const TierNameSelector = ({
   templates,
   error = false,
   onCreateNew,
-}: TierNameSelectorProps) => {
+  isLoading = false,
+  usedTierNames = [],
+}: TierNameSelectorProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  const filteredTemplates = templates.filter(
+    (t) => !usedTierNames.includes(t.template_name) || t.template_name === value
+  );
+
+  const isNameUsed = usedTierNames.includes(inputValue) && inputValue !== value;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,10 +62,14 @@ const TierNameSelector = ({
             error && "border-red-500 focus:ring-red-500/20"
           )}
         >
-          <span className={cn(!value && "text-muted-foreground")}>
+          <span className={cn("truncate flex-1 text-left", !value && "text-muted-foreground")}>
             {value || t("event.placeholder.selectTier", "Select or type tier name...")}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {isLoading ? (
+            <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+          ) : (
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0" align="start">
@@ -63,42 +77,32 @@ const TierNameSelector = ({
           <CommandInput
             placeholder={t("event.placeholder.searchTier", "Search or create tier...")}
             onValueChange={setInputValue}
+            maxLength={TIER_NAME_MAX}
           />
           <CommandList>
             <CommandEmpty>
-              <div className="p-2">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {t("event.text.noTierFound", "No tier found.")}
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    onChange(inputValue);
-                    setOpen(false);
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  {t("event.button.create", "Create")} &quot;{inputValue}&quot;
-                </Button>
+              <div className="p-4 text-sm text-muted-foreground text-center">
+                {t("event.text.noTierFound", "No tier found.")}
               </div>
             </CommandEmpty>
             <CommandGroup>
               <CommandItem
                 value="create-new-tier-option"
+                disabled={isNameUsed}
                 onSelect={() => {
-                  setOpen(false);
-                  onCreateNew?.();
+                  if (!isNameUsed) {
+                    setOpen(false);
+                    onCreateNew?.();
+                  }
                 }}
-                className="text-blue-600 font-medium cursor-pointer"
+                className={cn("font-medium cursor-pointer", isNameUsed ? "opacity-50 cursor-not-allowed" : "text-blue-600")}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                {t("event.button.createNewTier", "Create New Tier")}
+                {isNameUsed ? t("event.text.tierNameUsed", "Name already used") : t("event.button.createNewTier", "Create New Tier")}
               </CommandItem>
             </CommandGroup>
             <CommandGroup heading={t("event.section.templates", "Templates")}>
-              {templates.map((template) => (
+              {filteredTemplates.map((template) => (
                 <CommandItem
                   key={template.id}
                   value={template.template_name}
@@ -106,6 +110,7 @@ const TierNameSelector = ({
                     onChange(template.template_name);
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
                   <Check
                     className={cn(
@@ -115,7 +120,9 @@ const TierNameSelector = ({
                         : "opacity-0"
                     )}
                   />
-                  {template.template_name}
+                  <span className="truncate flex-1 text-left">
+                    {template.template_name}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -25,6 +25,9 @@ interface AuthStore {
   checkOrganizerCompletion: () => Promise<void>;
   updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
   hasRole: (role: string) => boolean;
+  hasPermission: (permission: string) => boolean;
+  isOrganizerRejected: () => boolean;
+  isOrganizerPending: () => boolean;
   getOrganizationId: () => string | undefined;
   setHasHydrated: (state: boolean) => void;
 }
@@ -91,7 +94,8 @@ export const useAuthStore = create<AuthStore>()(
             isOrganizerComplete: true,
           });
           return result;
-        } catch (error) {
+        } catch {
+          set({ isLoading: false });
           set({
             user: null,
             organizerProfile: null,
@@ -125,7 +129,10 @@ export const useAuthStore = create<AuthStore>()(
             // Organization ID will come from organizer profile (organizer_id)
             organizationId: profile.organization?.id || profile.organization_id,
             organization: profile.organization,
+            organizerStatus: profile.organizer_status,
+            organizationInfo: profile.organizer_info,
             roles: profile.roles || [],
+            permissions: profile.permissions || [],
           };
 
           set({
@@ -179,7 +186,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const status = await authService.getOrganizerStatus();
           set({ isOrganizerComplete: status.is_complete });
-        } catch (error) {
+        } catch {
           // If check fails, assume complete to avoid blocking user
           set({ isOrganizerComplete: true });
         }
@@ -201,9 +208,41 @@ export const useAuthStore = create<AuthStore>()(
       hasRole: (role: string) => {
         const { user } = get();
         if (!user || !user.roles) return false;
-        return user.roles.some((r: string | { name: string }) =>
-          typeof r === 'string' ? r === role : r.name === role
-        );
+        return user.roles.includes(role);
+      },
+
+      // Check if user has a specific permission
+      hasPermission: (permission: string) => {
+        const { user } = get();
+        if (!user || !user.permissions) return false;
+        // admin:full overrides everything
+        return user.permissions.includes('admin:full') || user.permissions.includes(permission);
+      },
+
+      // Check if organizer is rejected
+      isOrganizerRejected: () => {
+        const { user } = get();
+        // Check organization info status first (from /auth/profile)
+        if (user?.organizationInfo?.status === 'rejected') {
+          return true;
+        }
+        // Fallback to organizer profile if needed (though organizationInfo should be primary)
+        // const { organizerProfile } = get();
+        // return organizerProfile?.organizer_status === 'rejected';
+        return false;
+      },
+
+      // Check if organizer is pending
+      isOrganizerPending: () => {
+        const { user } = get();
+        // Check organization info status first (from /auth/profile)
+        if (user?.organizationInfo?.status === 'pending') {
+          return true;
+        }
+        // Fallback to organizer profile if needed
+        // const { organizerProfile } = get();
+        // return organizerProfile?.organizer_status === 'pending';
+        return false;
       },
 
       // Get organization ID (primarily from organizer profile's organizer_id)
@@ -231,8 +270,11 @@ export const useAuthStore = create<AuthStore>()(
           const rememberMe = tokenManager.isRememberMeEnabled();
           tokenManager.setTokens(accessToken, refreshToken, rememberMe);
 
-          // Set loading while fetching profile
-          set({ isLoading: true });
+          // Only set isLoading if we don't have a user yet (initial load)
+          // This prevents redundant loading states when checkAuth is called on already-authenticated pages
+          if (!get().user) {
+            set({ isLoading: true });
+          }
 
           // Try to fetch profile, organizer profile, and check completion
           get().fetchProfile()

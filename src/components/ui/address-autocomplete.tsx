@@ -15,6 +15,7 @@ interface AddressAutocompleteProps {
   className?: string;
   disabled?: boolean;
   error?: boolean;
+  maxLength?: number;
 }
 
 export function AddressAutocomplete({
@@ -25,6 +26,7 @@ export function AddressAutocomplete({
   className,
   disabled = false,
   error = false,
+  maxLength,
 }: AddressAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -79,6 +81,7 @@ export function AddressAutocomplete({
           onChange={handleInputChange}
           placeholder={placeholder}
           disabled={disabled}
+          maxLength={maxLength}
           className={cn(
             "w-full px-3 pr-10 rounded-md border border-input bg-background text-sm shadow-sm transition-colors",
             "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
@@ -105,6 +108,7 @@ export function AddressAutocomplete({
           onChange={handleInputChange}
           placeholder={placeholder}
           disabled={disabled}
+          maxLength={maxLength}
           className={cn(
             "w-full px-3 pr-10 rounded-md border border-input bg-background text-sm shadow-sm transition-colors",
             "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
@@ -135,6 +139,7 @@ export function AddressAutocomplete({
           onChange={handleInputChange}
           placeholder={placeholder}
           disabled={disabled}
+          maxLength={maxLength}
           className={cn(
             "w-full px-3 pr-16 rounded-md border border-input bg-background text-sm shadow-sm transition-colors",
             "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",

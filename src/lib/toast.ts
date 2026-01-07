@@ -33,8 +33,8 @@ const getTranslation = (key: string, locale: string, fallback?: string): string 
     }
     
     return (typeof value === 'string' ? value : undefined) || fallback || key;
-  } catch (error) {
-    return fallback || key;
+  } catch {
+    return 'Something went wrong. Please try again.';
   }
 };
 

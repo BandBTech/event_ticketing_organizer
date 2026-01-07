@@ -131,6 +131,12 @@ export function ImageUploader({
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     setInternalError("");
+
+    // Reset file input value to allow re-uploading the same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
     if (onRemove) {
       onRemove();
     } else {
@@ -191,8 +197,8 @@ export function ImageUploader({
             </div>
           </div>
         ) : (
-            <div className="p-4 flex flex-col items-center justify-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2 text-gray-400 group-hover:scale-110 transition-transform">
+          <div className="p-4 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2 text-gray-400 group-hover:scale-110 transition-transform">
               <ImageIcon className="w-6 h-6" />
             </div>
             {isDragActive ? (
@@ -200,7 +206,7 @@ export function ImageUploader({
             ) : (
               <>
                 <p className="font-medium text-gray-900 mb-1">{helperText}</p>
-                    {helperTextSize && <p className="text-xs text-gray-500 mb-2">{helperTextSize}</p>}
+                {helperTextSize && <p className="text-xs text-gray-500 mb-2">{helperTextSize}</p>}
                 <Button
                   type="button"
                   variant="outline"
@@ -220,7 +226,7 @@ export function ImageUploader({
       </div>
 
       {effectiveError && (
-        <p className="text-[0.8rem] font-medium text-destructive">
+        <p className="text-xs font-medium text-destructive">
           {effectiveError}
         </p>
       )}

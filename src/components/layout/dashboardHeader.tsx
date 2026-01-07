@@ -8,6 +8,10 @@ import { useUser } from "@/app/contexts/UserContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
 import { useAuthStore } from "@/store/authStore";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 /**
  * Get time-based greeting message
@@ -35,8 +39,10 @@ export default function DashboardHeader() {
   const pathname = rawPath.replace(/\/+$/, "") || "/";
   const searchParams = useSearchParams();
   const isEditMode = searchParams.get("edit") === "true";
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation();
   // const { openCreateUserModal } = useUser();
-  const { user } = useAuthStore();
+  const { user, isOrganizerRejected, isOrganizerPending } = useAuthStore();
 
   // Get user's first name or fallback
   const userName = user?.firstName || "there";
@@ -70,8 +76,8 @@ export default function DashboardHeader() {
   const isDashboard = pathname === "/organizerDashboard";
 
   // Don't show create button when editing an event, or if no organization
-  const showCreateButton = (isEventsPage || isDashboard) && !isEditMode && !!orgId;
-  const createButtonLabel = "Create New Event";
+  const showCreateButton = (!isOrganizerRejected() || !isOrganizerPending()) && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
+  const createButtonLabel = t('event.field.create', 'Create New Event');
 
   const handleCreateButton = () => {
     router.push("/organizerDashboard/pages/createevents");
@@ -82,15 +88,17 @@ export default function DashboardHeader() {
       <h2 className="text-lg text-gray-900 font-semibold">{headerText}</h2>
 
       <div className="flex items-center gap-3">
-        {showCreateButton && (
-          <Button
-            onClick={handleCreateButton}
-            className="flex items-center gap-2 h-9 px-4"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">{createButtonLabel}</span>
-          </Button>
-        )}
+        <PermissionGuard permission={PERMISSIONS.EVENT_CREATE}>
+          {showCreateButton && (
+            <Button
+              onClick={handleCreateButton}
+              className="flex items-center gap-2 h-9 px-4"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">{createButtonLabel}</span>
+            </Button>
+          )}
+        </PermissionGuard>
 
         <LanguageSelector />
 

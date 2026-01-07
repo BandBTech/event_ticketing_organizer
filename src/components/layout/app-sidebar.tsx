@@ -19,6 +19,8 @@ import {
 import { useState } from "react";
 
 import { useAuthStore } from "@/store/authStore";
+import { usePermission } from "@/hooks/usePermission";
+import { PERMISSIONS } from "@/lib/permissions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,23 +40,54 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { can, canAny } = usePermission();
   const { t } = useTranslation();
 
   const navLinks = [
-    { href: "/organizerDashboard", label: t("navigation.dashboard", "Dashboard"), icon: SpeedometerIcon },
+    {
+      href: "/organizerDashboard",
+      label: t("navigation.dashboard", "Dashboard"),
+      icon: SpeedometerIcon,
+      permission: PERMISSIONS.PROFILE_VIEW
+    },
     {
       href: "/organizerDashboard/pages/events",
       label: t("navigation.events", "Events"),
       icon: CalendarStarIcon,
+      permission: PERMISSIONS.EVENT_READ
     },
     {
       href: "/organizerDashboard/reports",
       label: t("navigation.reports", "Reports"),
       icon: ChartLineIcon,
+      permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY]
     },
-    { href: "/organizerDashboard/pages/users", label: t("navigation.users", "Users"), icon: UsersIcon },
-    { href: "/organizerDashboard/settings", label: t("navigation.settings", "Settings"), icon: GearIcon },
+    {
+      href: "/organizerDashboard/pages/users",
+      label: t("navigation.users", "Users"),
+      icon: UsersIcon,
+      permission: PERMISSIONS.USER_READ
+    },
+    {
+      href: "/organizerDashboard/settings",
+      label: t("navigation.settings", "Settings"),
+      icon: GearIcon,
+      permission: PERMISSIONS.PROFILE_VIEW
+    },
   ];
+
+  const filteredNavLinks = navLinks.filter(link => {
+    // If user is rejected or pending, only allow dashboard and settings
+    if (user && (useAuthStore.getState().isOrganizerRejected() || useAuthStore.getState().isOrganizerPending())) {
+      return ['/organizerDashboard', '/organizerDashboard/settings'].includes(link.href);
+    }
+
+    if (!link.permission) return true;
+    if (Array.isArray(link.permission)) {
+      return canAny(link.permission);
+    }
+    return can(link.permission);
+  });
 
   const handleLogout = async () => {
     try {
@@ -104,7 +137,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 py-4 px-2 space-y-1">
-        {navLinks.map(({ href, label, icon: Icon }) => {
+        {filteredNavLinks.map(({ href, label, icon: Icon }) => {
           // Check if current path matches or starts with the nav item path
           const isActive = pathname === `${href}/` || (href !== "/organizerDashboard" && pathname.startsWith(href));
 

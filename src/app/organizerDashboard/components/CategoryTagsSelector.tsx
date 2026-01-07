@@ -10,6 +10,7 @@ interface CategoryTagsSelectorProps {
   onChange: (value: string[]) => void;
   placeholder?: string;
   maxTags?: number;
+  maxChars?: number;
   className?: string;
   error?: boolean;
 }
@@ -19,6 +20,7 @@ const CategoryTagsSelector = ({
   onChange,
   placeholder,
   maxTags = 5,
+  maxChars = 50,
   className,
   error = false,
 }: CategoryTagsSelectorProps) => {
@@ -79,7 +81,7 @@ const CategoryTagsSelector = ({
       {value.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 break-all whitespace-normal max-w-full"
         >
           {tag}
           <button
@@ -88,7 +90,7 @@ const CategoryTagsSelector = ({
               e.stopPropagation();
               handleRemove(tag);
             }}
-            className="p-0.5 rounded-full hover:bg-blue-200 transition-colors"
+            className="p-0.5 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
             aria-label={`Remove ${tag}`}
           >
             <X className="h-3.5 w-3.5" />
@@ -106,15 +108,9 @@ const CategoryTagsSelector = ({
           onKeyDown={handleKeyDown}
           onBlur={handleAddTag}
           placeholder={value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more...")}
+          maxLength={maxChars}
           className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
         />
-      )}
-
-      {/* Max reached message */}
-      {isMaxReached && value.length > 0 && (
-        <span className="text-xs text-muted-foreground">
-          {t("event.validation.maxTags", "Max {max} tags").replace('{max}', maxTags.toString())}
-        </span>
       )}
     </div>
   );
