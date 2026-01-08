@@ -139,27 +139,26 @@ export default function CreateEventPage({
       }
     },
     onSuccess: async () => {
-      // Pre-fetch events to update cache before navigation
-      try {
-        await queryClient.fetchQuery({
-          queryKey: ["events"],
-          queryFn: () => eventService.getEvents(),
-          staleTime: 0,
-        });
-      } catch (error) {
-        console.error("Failed to pre-fetch events:", error);
-        await queryClient.invalidateQueries({ queryKey: ["events"] });
+      // Await all invalidations before navigation
+      const invalidations = [
+        queryClient.invalidateQueries({ queryKey: queryKeys.events.all }),
+      ];
+
+      if (isEditing && initialData?.id) {
+        invalidations.push(
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.events.detail(initialData.id),
+          })
+        );
       }
 
-      // If updating, also invalidate the specific event cache so re-editing fetches fresh data
-      if (isEditing && initialData?.id) {
-        await queryClient.invalidateQueries({ queryKey: ["event", initialData.id] });
-      }
+      await Promise.all(invalidations);
 
       toast.success(
         isEditing ? "Event Updated" : "Event Created",
         `Event has been successfully ${isEditing ? "updated" : "created"}.`
       );
+      // Navigate only after all invalidations complete
       router.push("/organizerDashboard/pages/events");
     },
   });

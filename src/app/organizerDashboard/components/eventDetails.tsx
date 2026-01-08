@@ -61,7 +61,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
 
   // Fetch status history
   const { data: history = [], isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['eventStatusHistory', event.id],
+    queryKey: queryKeys.events.statusHistory(event.id),
     queryFn: () => eventService.getStatusHistory(event.id),
   });
 
@@ -86,8 +86,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(event.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.analytics(event.id) });
-      queryClient.invalidateQueries({ queryKey: ['eventStatusHistory', event.id] });
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.statusHistory(event.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
       setSalesDialogOpen(false);
       form.reset();
       setSalesAction(null);
@@ -100,8 +100,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.events.detail(event.id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.analytics(event.id) });
-      queryClient.invalidateQueries({ queryKey: ['eventStatusHistory', event.id] });
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.statusHistory(event.id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
       setCancelDialogOpen(false);
       cancelForm.reset();
     },
