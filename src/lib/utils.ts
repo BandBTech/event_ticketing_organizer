@@ -131,3 +131,39 @@ export function formatRelativeTime(date: Date | string | number | null | undefin
     return "";
   }
 }
+
+/**
+ * Safely parse JSON from a string
+ * @param data - JSON string to parse
+ * @returns Parsed object or null if invalid
+ */
+export function safeParseJSON<T>(data: string | null): T | null {
+  if (!data) return null;
+  try {
+    return JSON.parse(data) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Validate registration data structure
+ * @param data - Object to validate
+ * @returns True if data matches the expected registration data structure
+ */
+export function isValidRegistrationData(data: any): data is {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  countryCode?: string;
+} {
+  return (
+    data &&
+    typeof data === "object" &&
+    typeof data.email === "string" &&
+    typeof data.firstName === "string" &&
+    typeof data.lastName === "string" &&
+    typeof data.phone === "string"
+  );
+}

@@ -29,7 +29,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
-import { cn } from "@/lib/utils";
+import { cn, isValidRegistrationData, safeParseJSON } from "@/lib/utils";
 import { createValidationHelpers } from "@/lib/validation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -118,13 +118,26 @@ export default function MultiStepRegister() {
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const stepParam = params.get("step");
-    const savedData = sessionStorage.getItem("registration_data");
+    const savedDataStr = sessionStorage.getItem("registration_data");
 
-    if (stepParam && savedData) {
+    if (stepParam) {
       const step = parseInt(stepParam) as RegistrationStep;
-      if (step >= 1 && step <= 3) {
-        setCurrentStep(step);
-        setRegistrationData(JSON.parse(savedData));
+      const isValidStep = step >= 1 && step <= 3;
+
+      if (isValidStep) {
+        if (savedDataStr) {
+          const parsedData = safeParseJSON(savedDataStr);
+
+          if (isValidRegistrationData(parsedData)) {
+            setRegistrationData(parsedData);
+            setCurrentStep(step);
+          } else {
+            sessionStorage.removeItem("registration_data");
+            setCurrentStep(1);
+          }
+        } else if (step === 1) {
+          setCurrentStep(1);
+        }
       }
     }
   }, []);
@@ -365,7 +378,7 @@ export default function MultiStepRegister() {
       sessionStorage.removeItem("registration_data");
 
       // Redirect to login
-      router.push(`/auth/pages/login`);
+      router.push(`/login`);
     } catch (error) {
       if (error instanceof AuthError) {
         toast.error(
@@ -635,7 +648,7 @@ export default function MultiStepRegister() {
                     <p className="text-gray-600">
                       {t(
                         "auth.verifyOTP.otpValidity",
-                        "The code will automaticaly expire after 10 minutes."
+                        "The code will automatically expire after 10 minutes."
                       )}
                     </p>
                   </div>
@@ -896,7 +909,7 @@ export default function MultiStepRegister() {
                         "Already have an account?"
                       )}{" "}
                       <Link
-                        href="/auth/pages/login"
+                        href="/login"
                         className="cursor-pointer font-medium text-blue-600 hover:text-blue-700"
                       >
                         {t(

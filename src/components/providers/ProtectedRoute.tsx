@@ -38,7 +38,7 @@ export function ProtectedRoute({
 
       if (!isAuthenticated && !hasUserData) {
         // No auth and no persisted user - redirect to login
-        router.replace('/auth/pages/login');
+        router.replace('/login');
       } else {
         // Check authorization if permission or role is required
         let allowed = true;

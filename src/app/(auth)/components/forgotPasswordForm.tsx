@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
 
       // Redirect immediately to OTP verification page
       router.push(
-        `/auth/pages/verify-otp?email=${encodeURIComponent(
+        `/verify-otp?email=${encodeURIComponent(
           data.email
         )}&type=password_reset`
       );
@@ -102,7 +102,7 @@ export default function ForgotPasswordPage() {
             <div className="space-y-8 p-2 sm:p-3">
               {/* Back Button */}
               {/* <Link
-                href="/auth/pages/login"
+                href="/login"
                 className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <ArrowLeftIcon size={16} />
@@ -204,7 +204,7 @@ export default function ForgotPasswordPage() {
                         "Remember your password?"
                       )}{" "}
                       <Link
-                        href="/auth/pages/login"
+                        href="/login"
                         className="font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                       >
                         {t("auth.forgotPassword.loginHere", "Login here")}

@@ -92,9 +92,9 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/auth/pages/login");
+      router.push("/login");
     } catch (error) {
-      router.push("/auth/pages/login");
+      router.push("/login");
     }
   };
 

@@ -210,7 +210,7 @@
 //           </div>
 
 //           <Link
-//             href="/auth/pages/forgotpassword"
+//             href="/auth/forgotpassword"
 //             className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
 //           >
 //             {"Forgot Password"}
@@ -239,7 +239,7 @@
 //       <div className="text-center text-sm text-gray-600 ">
 //         Don&apos;t have an account?{" "}
 //         <LinkLoader
-//           href="/auth/pages/signup"
+//           href="/auth/signup"
 //           isLoading={isSigningUp}
 //           onClick={handleSignupClick}
 //           loadingText="Processing..."
@@ -296,8 +296,6 @@ export default function LoginPage() {
   const { t } = useTranslation(locale);
   const { login, isLoading, clearError, isAuthenticated } = useAuthStore();
 
-  const [loginError, setLoginError] = useState("");
-
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/organizerDashboard");
@@ -328,7 +326,6 @@ export default function LoginPage() {
   const rememberMe = watch("rememberMe") ?? false;
 
   const onSubmit = async (data: LoginFormData) => {
-    setLoginError("");
     clearError();
 
     try {
@@ -392,15 +389,6 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-
-              {/* Login Error */}
-              {loginError && (
-                <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
-                  <p className="text-sm text-destructive font-medium">
-                    {loginError} Error text
-                  </p>
-                </div>
-              )}
 
               {/* Form */}
               <form
@@ -533,10 +521,10 @@ export default function LoginPage() {
                   </div>
 
                   <Link
-                    href="/auth/pages/forgotpassword"
+                    href="/forgotpassword"
                     className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                   >
-                    {t("auth.login.forgotPassword")}
+                    {t("auth.login.forgotPassword")}1
                   </Link>
                 </div>
 
@@ -565,7 +553,7 @@ export default function LoginPage() {
                 <p className="text-sm text-gray-600">
                   {t("auth.login.noAccount")}{" "}
                   <Link
-                    href="/auth/pages/register"
+                    href="/register"
                     className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
                     {t("auth.login.signUpHere")}

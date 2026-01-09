@@ -57,11 +57,11 @@ export default function Sidebar({
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/auth/pages/login");
+      router.push("/login");
     } catch (error) {
       console.error("Logout error", error);
       // Force redirect even if API fails
-      router.push("/auth/pages/login");
+      router.push("/login");
     }
   };
 
@@ -84,9 +84,8 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`relative transition-all duration-300 ${
-        showSidebar ? "w-56" : "w-20"
-      }  min-h-screen bg-white  border-r border-gray-200 flex flex-col`}
+      className={`relative transition-all duration-300 ${showSidebar ? "w-56" : "w-20"
+        }  min-h-screen bg-white  border-r border-gray-200 flex flex-col`}
     >
       <div className="flex justify-between items-center px-4 py-6">
         {showSidebar ? (
@@ -123,11 +122,10 @@ export default function Sidebar({
             >
               <div
                 className={`group flex items-center gap-3 px-4 py-2 cursor-pointer transition-all
-                ${
-                  isActive
+                ${isActive
                     ? "border-l-2 border-blue-500 bg-blue-50 "
                     : "border-l-2 border-transparent hover:border-blue-600 hover:bg-blue-50 "
-                }`}
+                  }`}
               >
                 <Icon className="text-blue-600" size={25} />
                 {showSidebar && <span className="text-gray-700 ">{label}</span>}

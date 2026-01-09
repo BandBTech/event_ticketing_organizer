@@ -16,6 +16,9 @@ export const queryKeys = {
   events: {
     /** Key for fetching all events list */
     all: ['events'] as const,
+    /** Key for fetching events with search/filter params */
+    list: (params: { page?: number; limit?: number; search?: string; status?: string }) =>
+      ['events', 'list', params] as const,
     /** Key for fetching a single event by ID */
     detail: (id: string) => ['event', id] as const,
     /** Key for fetching event analytics by ID */

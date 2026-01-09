@@ -14,7 +14,7 @@ export default function EventCardSkeleton({ count = 6 }: EventCardSkeletonProps)
 					key={i}
 					className="rounded-xl shadow-md overflow-hidden flex flex-col h-full bg-white"
 				>
-					<Skeleton className="h-40 w-full" />
+          <Skeleton className="w-full aspect-16/10" />
 					<div className="p-4 space-y-1 flex flex-col flex-1">
 						<div className="flex gap-2">
 							<Skeleton className="h-6 w-16 rounded-lg" />

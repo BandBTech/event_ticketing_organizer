@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { createValidationHelpers } from '@/lib/validation';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
-import { PasswordRequirements } from '@/app/auth/components/PasswordRequirements';
+import { PasswordRequirements } from '@/app/(auth)/components/PasswordRequirements';
 
 // Validation schema
 const createChangePasswordSchema = (
@@ -96,7 +96,7 @@ export default function SecuritySettingsPage() {
       // Use setTimeout to ensure toast is shown before logout
       setTimeout(async () => {
         await logout();
-        router.push('/auth/pages/login');
+        router.push('/auth/login');
       }, 500);
 
     } catch (error) {

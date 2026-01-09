@@ -36,13 +36,14 @@ export function PasswordRequirements({ password = "" }: PasswordRequirementsProp
       {requirements.map((req, index) => (
         <div key={index} className="flex items-center gap-2 text-xs">
           {req.met ? (
-            <CheckIcon size={14} weight="bold" className="text-green-600 shrink-0" />
+            <CheckIcon size={14} weight="bold" className="text-green-600 shrink-0" aria-label="Requirement met" />
           ) : hasStartedTyping ? (
-            <XIcon size={14} weight="bold" className="text-red-600 shrink-0" />
+              <XIcon size={14} weight="bold" className="text-red-600 shrink-0" aria-label="Requirement not met" />
           ) : (
-                <CircleIcon size={14} weight="fill" className="text-gray-300 shrink-0" />
+                <CircleIcon size={14} weight="fill" className="text-gray-300 shrink-0" aria-label="Not evaluated" />
           )}
           <span
+            aria-live="polite"
             className={cn(
               "transition-colors",
               req.met

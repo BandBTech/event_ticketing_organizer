@@ -39,7 +39,7 @@ function VerifyOTPContent() {
     const typeParam = searchParams.get("type") || "registration";
 
     if (!emailParam) {
-      router.push("/auth/pages/register");
+      router.push("/register");
       return;
     }
 
@@ -87,7 +87,7 @@ function VerifyOTPContent() {
       if (otpType === "password_reset") {
         // For password reset, redirect to reset password page
         router.push(
-          `/auth/pages/resetpassword?email=${encodeURIComponent(
+          `/resetpassword?email=${encodeURIComponent(
             email
           )}&otp=${encodeURIComponent(otp)}`
         );
