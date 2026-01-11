@@ -1,11 +1,16 @@
 import { CheckIcon, CircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface PasswordRequirementsProps {
   password?: string;
 }
 
 export function PasswordRequirements({ password = "" }: PasswordRequirementsProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+
   const hasStartedTyping = password.length > 0;
   const hasLength = password.length >= 8;
   const hasUpperLower = /(?=.*[a-z])(?=.*[A-Z])/.test(password);
@@ -14,19 +19,19 @@ export function PasswordRequirements({ password = "" }: PasswordRequirementsProp
 
   const requirements = [
     {
-      label: "Must consist of at least 8 characters",
+      label: t("auth.passwordRequirements.minLength", "Must consist of at least 8 characters"),
       met: hasLength,
     },
     {
-      label: "Must contain at least one uppercase and one lowercase letter",
+      label: t("auth.passwordRequirements.upperLower", "Must contain at least one uppercase and one lowercase letter"),
       met: hasUpperLower,
     },
     {
-      label: "Must contain at least one special character",
+      label: t("auth.passwordRequirements.specialChar", "Must contain at least one special character"),
       met: hasSpecialChar,
     },
     {
-      label: "Must contain at least one numeric digit",
+      label: t("auth.passwordRequirements.number", "Must contain at least one numeric digit"),
       met: hasNumber,
     },
   ];

@@ -244,6 +244,12 @@
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again.",
       "passwordChangedLogin": "Please login with your new password."
+    },
+    "passwordRequirements": {
+      "minLength": "Must consist of at least 8 characters",
+      "upperLower": "Must contain at least one uppercase and one lowercase letter",
+      "specialChar": "Must contain at least one special character",
+      "number": "Must contain at least one numeric digit"
     }
   },
   "settings": {
@@ -259,7 +265,18 @@
       "confirmPassword": "Confirm New Password",
       "confirmPasswordPlaceholder": "Enter new password again",
       "updating": "Updating...",
-      "updateButton": "Update Password"
+      "updateButton": "Update Password",
+      "validation": {
+        "currentPasswordRequired": "Current password is required.",
+        "newPasswordRequired": "New password is required.",
+        "confirmPasswordRequired": "Confirm password is required.",
+        "passwordMinLength": "Password must be at least 8 characters.",
+        "passwordMaxLength": "Password cannot exceed 100 characters.",
+        "passwordUpperLower": "Must contain at least one uppercase and one lowercase letter.",
+        "passwordSpecialChar": "Must contain at least one special character.",
+        "passwordNumber": "Must contain at least one number.",
+        "passwordMismatch": "Passwords do not match."
+      }
     },
     "title": "Settings",
     "menu": {

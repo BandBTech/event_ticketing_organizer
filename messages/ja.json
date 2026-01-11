@@ -96,6 +96,12 @@
     },
     "toast": {
       "passwordChangedLogin": "新しいパスワードでログインしてください。"
+    },
+    "passwordRequirements": {
+      "minLength": "8文字以上で構成する必要があります",
+      "upperLower": "大文字と小文字をそれぞれ少なくとも1つ含める必要があります",
+      "specialChar": "少なくとも1つの特殊文字を含める必要があります",
+      "number": "少なくとも1つの数字を含める必要があります"
     }
   },
   "event": {
@@ -163,7 +169,33 @@
       "businessName": "商号",
       "about": "について",
       "businessNamePlaceholder": "あなたのビジネス名を入力してください",
-      "aboutPlaceholder": "あなたの組織について書いてください..."
+      "aboutPlaceholder": "あなたの組織について書いてください...",
+      "description": "組織の詳細とブランディングを管理します」"
+    },
+    "security": {
+      "title": "セキュリティ設定",
+      "subtitle": "パスワードと認証を管理する",
+      "changePassword": "パスワードを変更",
+      "changePasswordDesc": "アカウントを安全に保つために、定期的にパスワードを更新してください",
+      "currentPassword": "現在のパスワード",
+      "currentPasswordPlaceholder": "現在のパスワードを入力",
+      "newPassword": "新しいパスワード",
+      "newPasswordPlaceholder": "新しいパスワードを入力",
+      "confirmPassword": "新しいパスワードの確認",
+      "confirmPasswordPlaceholder": "新しいパスワードを再度入力",
+      "updating": "更新中...",
+      "updateButton": "パスワードを更新",
+      "validation": {
+        "currentPasswordRequired": "現在のパスワードは必須です。",
+        "newPasswordRequired": "新しいパスワードは必須です。",
+        "confirmPasswordRequired": "パスワードの確認は必須です。",
+        "passwordMinLength": "パスワードは8文字以上である必要があります。",
+        "passwordMaxLength": "パスワードは100文字を超えることはできません。",
+        "passwordUpperLower": "大文字と小文字を少なくとも1つずつ含める必要があります。",
+        "passwordSpecialChar": "特殊文字を少なくとも1つ含める必要があります。",
+        "passwordNumber": "数字を少なくとも1つ含める必要があります。",
+        "passwordMismatch": "パスワードが一致しません。"
+      }
     }
   },
   "profile": {

@@ -96,6 +96,12 @@
     },
     "toast": {
       "passwordChangedLogin": "Effettua il login con la tua nuova password."
+    },
+    "passwordRequirements": {
+      "minLength": "Deve essere composto da almeno 8 caratteri",
+      "upperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
+      "specialChar": "Deve contenere almeno un carattere speciale",
+      "number": "Deve contenere almeno un numero"
     }
   },
   "event": {
@@ -165,6 +171,31 @@
       "about": "Di",
       "businessNamePlaceholder": "Inserisci il nome della tua attività",
       "aboutPlaceholder": "Scrivi della tua organizzazione..."
+    },
+    "security": {
+      "title": "Impostazioni di sicurezza",
+      "subtitle": "Gestisci la tua password e l'autenticazione",
+      "changePassword": "Cambia password",
+      "changePasswordDesc": "Aggiorna regolarmente la tua password per mantenere il tuo account al sicuro",
+      "currentPassword": "Password attuale",
+      "currentPasswordPlaceholder": "Inserisci la password attuale",
+      "newPassword": "Nuova password",
+      "newPasswordPlaceholder": "Inserisci la nuova password",
+      "confirmPassword": "Conferma nuova password",
+      "confirmPasswordPlaceholder": "Inserisci di nuovo la nuova password",
+      "updating": "Aggiornamento...",
+      "updateButton": "Aggiorna password",
+      "validation": {
+        "currentPasswordRequired": "La password attuale è obbligatoria.",
+        "newPasswordRequired": "La nuova password è obbligatoria.",
+        "confirmPasswordRequired": "La conferma della password è obbligatoria.",
+        "passwordMinLength": "La password deve contenere almeno 8 caratteri.",
+        "passwordMaxLength": "La password non può superare i 100 caratteri.",
+        "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola.",
+        "passwordSpecialChar": "Deve contenere almeno un carattere speciale.",
+        "passwordNumber": "Deve contenere almeno un numero.",
+        "passwordMismatch": "Le password non corrispondono."
+      }
     }
   },
   "profile": {

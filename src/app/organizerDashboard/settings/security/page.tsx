@@ -1,62 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { EyeIcon, EyeClosedIcon, KeyIcon } from '@phosphor-icons/react/dist/ssr';
+import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  TranslatedFormMessage,
+} from '@/components/ui/form';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { authService } from '@/services/authService';
 import { AuthError } from '@/lib/errors';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
-import { createValidationHelpers } from '@/lib/validation';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { PasswordRequirements } from '@/app/(auth)/components/PasswordRequirements';
 
-// Validation schema
-const createChangePasswordSchema = (
-  t: (key: string, fallback?: string) => string
-) => {
-  const v = createValidationHelpers(t);
-
+// Validation schema - returns translation keys for TranslatedFormMessage
+const createChangePasswordSchema = () => {
   return z
     .object({
       currentPassword: z
         .string()
-        .min(1, v.required('Current Password')),
+        .min(1, 'settings.security.validation.currentPasswordRequired'),
       newPassword: z
         .string()
-        .min(1, v.required('Password'))
-        .min(8, v.minLength('Password', 8))
-        .max(100, v.maxLength('Password', 100))
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/)
-        .regex(/[^A-Za-z0-9]/)
-        .regex(/[0-9]/),
-      confirmPassword: z.string().min(1, v.required('Confirm Password')),
+        .min(1, 'settings.security.validation.newPasswordRequired')
+        .min(8, 'settings.security.validation.passwordMinLength')
+        .max(100, 'settings.security.validation.passwordMaxLength')
+        .regex(/(?=.*[a-z])(?=.*[A-Z])/, 'settings.security.validation.passwordUpperLower')
+        .regex(/[^A-Za-z0-9]/, 'settings.security.validation.passwordSpecialChar')
+        .regex(/[0-9]/, 'settings.security.validation.passwordNumber'),
+      confirmPassword: z.string().min(1, 'settings.security.validation.confirmPasswordRequired'),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-      message: v.passwordMatch(),
+      message: 'settings.security.validation.passwordMismatch',
       path: ['confirmPassword'],
     });
 };
+
+type ChangePasswordFormData = z.infer<ReturnType<typeof createChangePasswordSchema>>;
 
 export default function SecuritySettingsPage() {
   const router = useRouter();
   const { logout } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const [isLoading, setIsLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const schema = createChangePasswordSchema(t);
-  type ChangePasswordFormData = z.infer<typeof schema>;
+  // Create schema once - it returns translation keys, not translated strings
+  const schema = useMemo(() => createChangePasswordSchema(), []);
 
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(schema),
@@ -68,47 +74,52 @@ export default function SecuritySettingsPage() {
     mode: 'onChange',
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = form;
-
-
-  const onSubmit = async (data: ChangePasswordFormData) => {
-    setIsLoading(true);
-
-    try {
+  // Use TanStack Query mutation for password change
+  const mutation = useMutation({
+    mutationFn: async (data: ChangePasswordFormData) => {
       await authService.changePassword({
         current_password: data.currentPassword,
         new_password: data.newPassword,
         confirm_password: data.confirmPassword,
       });
-
-      // Password changed successfully, now logout and redirect
+    },
+    onSuccess: () => {
       toast.success(
         "auth.toast.passwordChanged",
         'Password changed successfully',
         t("auth.toast.passwordChangedLogin")
       );
 
-      // Use setTimeout to ensure toast is shown before logout
+      // Logout and redirect after a short delay to show toast
       setTimeout(async () => {
         await logout();
-        router.push('/auth/login');
+        router.push('/login');
       }, 500);
-
-    } catch (error) {
-      setIsLoading(false);
+    },
+    onError: (error: Error) => {
       if (error instanceof AuthError) {
         toast.error('', error.message || 'Failed to change password', error.details);
       } else {
         toast.error('auth.toast.passwordChangeFailed', 'Failed to change password');
       }
-    }
+    },
+  });
+
+  const onSubmit = (data: ChangePasswordFormData) => {
+    mutation.mutate(data);
   };
 
+  // Check if the error message is related to password requirements (which are shown separately)
+  const isPasswordRequirementError = (message?: string) => {
+    if (!message) return false;
+    const requirementKeys = [
+      'settings.security.validation.passwordMinLength',
+      'settings.security.validation.passwordUpperLower',
+      'settings.security.validation.passwordSpecialChar',
+      'settings.security.validation.passwordNumber',
+    ];
+    return requirementKeys.includes(message);
+  };
 
   return (
     <div className="space-y-4">
@@ -135,143 +146,151 @@ export default function SecuritySettingsPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Current Password */}
-          <div className="space-y-1.5">
-            <label htmlFor="currentPassword" className="text-sm font-medium text-gray-900 block">
-              {t('settings.security.currentPassword', 'Current Password')}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <KeyIcon weight='duotone' size={18} className="text-gray-600" />
-              </div>
-              <Input
-                id="currentPassword"
-                type={showCurrentPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder={t('settings.security.currentPasswordPlaceholder', 'Enter current password')}
-                className={cn(
-                  "h-11 pl-11 pr-12",
-                  errors.currentPassword && "border-destructive"
-                )}
-                {...register('currentPassword')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-              >
-                {showCurrentPassword ? (
-                  <EyeIcon size={18} className="text-gray-600" weight="duotone" />
-                ) : (
-                  <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
-                )}
-              </button>
-            </div>
-            {errors.currentPassword && (
-              <p className="text-xs text-destructive">{errors.currentPassword.message}</p>
-            )}
-          </div>
-
-          {/* New Password */}
-          <div className="space-y-1.5">
-            <label htmlFor="newPassword" className="text-sm font-medium text-gray-900 block">
-              {t('settings.security.newPassword', 'New Password')}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <KeyIcon weight='duotone' size={18} className="text-gray-600" />
-              </div>
-              <Input
-                id="newPassword"
-                type={showNewPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder={t('settings.security.newPasswordPlaceholder', 'Enter new password')}
-                className={cn(
-                  "h-11 pl-11 pr-12",
-                  errors.newPassword && "border-destructive"
-                )}
-                {...register('newPassword')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-              >
-                {showNewPassword ? (
-                  <EyeIcon size={18} className="text-gray-600" weight="duotone" />
-                ) : (
-                  <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
-                )}
-              </button>
-            </div>
-            {errors.newPassword &&
-              errors.newPassword.message !== "Invalid input" &&
-              // Filter out messages that are already covered by PasswordRequirements
-              !errors.newPassword.message?.includes("must be at least 8 characters") &&
-              !errors.newPassword.message?.includes("uppercase and one lowercase") &&
-              !errors.newPassword.message?.includes("special character") &&
-              !errors.newPassword.message?.includes("numeric digit") && (
-                <p className="text-xs text-destructive">{errors.newPassword.message}</p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Current Password */}
+            <FormField
+              control={form.control}
+              name="currentPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-900">
+                    {t('settings.security.currentPassword', 'Current Password')}
+                  </FormLabel>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                      <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type={showCurrentPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        placeholder={t('settings.security.currentPasswordPlaceholder', 'Enter current password')}
+                        className="h-11 pl-11 pr-12"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    >
+                      {showCurrentPassword ? (
+                        <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                      ) : (
+                        <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                      )}
+                    </button>
+                  </div>
+                  <TranslatedFormMessage t={t} />
+                </FormItem>
               )}
-            <PasswordRequirements password={form.watch('newPassword')} />
-          </div>
+            />
 
-          {/* Confirm Password */}
-          <div className="space-y-1.5">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900 block">
-              {t('settings.security.confirmPassword', 'Confirm New Password')}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <KeyIcon weight='duotone' size={18} className="text-gray-600" />
-              </div>
-              <Input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder={t('settings.security.confirmPasswordPlaceholder', 'Enter new password again')}
-                className={cn(
-                  "h-11 pl-11 pr-12",
-                  errors.confirmPassword && "border-destructive"
-                )}
-                {...register('confirmPassword')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+            {/* New Password */}
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-900">
+                    {t('settings.security.newPassword', 'New Password')}
+                  </FormLabel>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                      <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type={showNewPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder={t('settings.security.newPasswordPlaceholder', 'Enter new password')}
+                        className="h-11 pl-11 pr-12"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    >
+                      {showNewPassword ? (
+                        <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                      ) : (
+                        <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                      )}
+                    </button>
+                  </div>
+                  {/* Only show TranslatedFormMessage for non-requirement errors */}
+                  {fieldState.error && !isPasswordRequirementError(fieldState.error.message) && (
+                    <TranslatedFormMessage t={t} />
+                  )}
+                  <PasswordRequirements password={field.value} />
+                </FormItem>
+              )}
+            />
+
+            {/* Confirm Password */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-900">
+                    {t('settings.security.confirmPassword', 'Confirm New Password')}
+                  </FormLabel>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                      <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type={showConfirmPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder={t('settings.security.confirmPasswordPlaceholder', 'Enter new password again')}
+                        className="h-11 pl-11 pr-12"
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                      ) : (
+                        <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                      )}
+                    </button>
+                  </div>
+                  <TranslatedFormMessage t={t} />
+                </FormItem>
+              )}
+            />
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-gray-200">
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {showConfirmPassword ? (
-                  <EyeIcon size={18} className="text-gray-600" weight="duotone" />
-                ) : (
-                  <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
-                )}
-              </button>
+                {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {mutation.isPending
+                  ? t('settings.security.updating', 'Updating...')
+                  : t('settings.security.updateButton', 'Update Password')}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => form.reset()}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-600"
+              >
+                {t('common.cancel', 'Cancel')}
+              </Button>
             </div>
-            {errors.confirmPassword && (
-              <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {isLoading ? t('settings.security.updating', 'Updating...') : t('settings.security.updateButton', 'Update Password')}
-            </Button>
-            <Button
-              type="button"
-              onClick={() => reset()}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-            >
-              {t('common.cancelButton', 'Cancel')}
-            </Button>
-          </div>
-        </form>
+          </form>
+        </Form>
       </div>
     </div>
   );
