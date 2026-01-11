@@ -127,9 +127,9 @@ export default function ProfileSettingsPage() {
     } catch (error) {
       console.error('Profile update failed:', error);
       if (error instanceof AuthError) {
-        toast.error('settings.toast.updateFailed', error.message || 'Failed to update profile');
+        toast.error('settings.toast.updateFailed', error.message || 'Failed to update profile.');
       } else {
-        toast.error('settings.toast.updateFailed', 'Failed to update profile');
+        toast.error('settings.toast.updateFailed', 'Failed to update profile.');
       }
     } finally {
       setIsLoading(false);

@@ -53,7 +53,10 @@
     "saving": "Saving...",
     "toast": {
       "updateSuccess": "Profile updated successfully!",
-      "updateError": "Failed to update profile"
+      "updateError": "Failed to update profile.",
+      "fileTooLarge": "File size must be less than 2MB.",
+      "invalidMedia": "Invalid media file. Please upload a valid image (PNG/JPG).",
+      "limitExceeded": "File size exceeds the maximum limit."
     }
   },
   "languages": {

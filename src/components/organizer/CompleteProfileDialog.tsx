@@ -61,7 +61,7 @@ export function CompleteProfileDialog() {
     },
     onError: (error: unknown) => {
       console.error("Failed to update profile", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile.";
       toast.error("profile.updateError", errorMessage);
     },
   });
@@ -76,7 +76,7 @@ export function CompleteProfileDialog() {
 
       // Validate file size (2MB max)
       if (file.size > 2 * 1024 * 1024) {
-        toast.error("profile.fileTooLarge", "File size must be less than 2MB");
+        toast.error("profile.fileTooLarge", "File size must be less than 2MB.");
         return;
       }
 

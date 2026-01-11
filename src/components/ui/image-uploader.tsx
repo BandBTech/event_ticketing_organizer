@@ -109,16 +109,18 @@ export function ImageUploader({
       if (rejection) {
         const err = rejection.errors[0];
         if (err.code === "file-too-large") {
-          const msg = `File size exceeds ${maxSizeMB}MB.`;
+          const msg = `File size exceeds the maximum limit of ${maxSizeMB}MB.`;
           setInternalError(msg);
           toast.error(msg);
         } else if (err.code === "file-invalid-type") {
-          const msg = "Invalid file type. Please upload a valid image.";
+          const msg = "Invalid media file. Please upload a valid image (PNG/JPG).";
           setInternalError(msg);
           toast.error(msg);
         } else {
-          setInternalError(err.message);
-          toast.error(err.message);
+          // Ensure default error message has a period
+          const msg = err.message.endsWith(".") ? err.message : `${err.message}.`;
+          setInternalError(msg);
+          toast.error(msg);
         }
       }
     },

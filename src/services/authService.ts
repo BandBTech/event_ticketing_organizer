@@ -121,7 +121,7 @@ class AuthService {
   async updateOrganizerProfile(data: {
     business_name: string;
     business_description?: string;
-    business_logo?: File;
+    business_logo?: File | null;
     role?: string;
   }): Promise<Record<string, unknown>> {
     const formData = new FormData();
@@ -129,9 +129,13 @@ class AuthService {
     if (data.business_description) {
       formData.append('business_description', data.business_description);
     }
-    if (data.business_logo) {
+
+    if (data.business_logo === null) {
+      formData.append('remove_logo', 'true');
+    } else if (data.business_logo) {
       formData.append('business_logo', data.business_logo);
     }
+
     if (data.role) {
       formData.append('role', data.role);
     }

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { BuildingOfficeIcon, PencilIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,15 +76,18 @@ export default function OrganizerProfileSettings() {
 
   const mutation = useMutation({
     mutationFn: async (data: OrganizerProfileFormValues) => {
+      // If we have no selected file and previewUrl is null, it means the user explicitly removed the logo
+      const businessLogo = selectedFile ? selectedFile : (previewUrl ? undefined : null);
+
       await authService.updateOrganizerProfile({
         business_name: data.business_name,
         business_description: data.business_description,
-        business_logo: selectedFile || undefined,
+        business_logo: businessLogo,
         role: 'organizer',
       });
     },
     onSuccess: () => {
-      toast.success("Organizer profile updated successfully");
+      toast.success("profile.toast.updateSuccess", "Organizer profile updated successfully.");
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: queryKeys.organizerProfile.all });
     },
@@ -92,7 +95,7 @@ export default function OrganizerProfileSettings() {
       if (error instanceof AuthError) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to update organizer profile");
+        toast.error("Failed to update organizer profile.");
       }
     },
   });
@@ -105,7 +108,7 @@ export default function OrganizerProfileSettings() {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
       if (file.size > 2 * 1024 * 1024) {
-        toast.error("File size must be less than 2MB");
+        toast.error("File size must be less than 2MB.");
         return;
       }
       setSelectedFile(file);
