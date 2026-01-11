@@ -23,7 +23,9 @@
       "loading": "削除中...",
       "confirm": "消去"
     },
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "saving": "保存中...",
+    "saveChanges": "変更を保存"
   },
   "navigation": {
     "events": "イベント",
@@ -153,6 +155,24 @@
       "tiers": "階層テンプレート",
       "profile": "プロフィール",
       "security": "セキュリティ"
+    },
+    "organizerProfile": {
+      "logoHelperText": "推奨サイズ: 500x500px。",
+      "logoHelperTextSize": "最大サイズ: 2MB。",
+      "businessLogo": "ビジネスロゴ",
+      "businessName": "商号",
+      "about": "について",
+      "businessNamePlaceholder": "あなたのビジネス名を入力してください",
+      "aboutPlaceholder": "あなたの組織について書いてください..."
     }
+  },
+  "profile": {
+    "validation": {
+      "businessNameRequired": "法人名は必須です。",
+      "businessNameMinLength": "会社名は 3 文字以上である必要があります。",
+      "businessNameMaxLength": "会社名は 50 文字未満にする必要があります。",
+      "descriptionMaxLength": "説明は 500 文字未満にする必要があります。"
+    },
+    "editButton": "プロフィールの編集"
   }
 }

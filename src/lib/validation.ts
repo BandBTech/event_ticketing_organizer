@@ -496,16 +496,16 @@ export const createValidationHelpers = (
  * });
  */
 
-export const organizerProfileSchema = z.object({
+export const createOrganizerProfileSchema = (t: (key: string, fallback?: string) => string) => z.object({
   business_name: z
     .string()
-    .min(3, "Business name must be at least 3 characters.")
-    .max(50, "Business name must be less than 50 characters.")
-    .min(1, "Business name is required."),
+    .min(1, t('profile.validation.businessNameRequired', 'Business name is required.'))
+    .min(3, t('profile.validation.businessNameMinLength', 'Business name must be at least 3 characters.'))
+    .max(50, t('profile.validation.businessNameMaxLength', 'Business name must be less than 50 characters.')),
   business_description: z
     .string()
-    .max(500, "Description must be less than 500 characters.")
+    .max(500, t('profile.validation.descriptionMaxLength', 'Description must be less than 500 characters.'))
     .optional(),
 });
 
-export type OrganizerProfileFormValues = z.infer<typeof organizerProfileSchema>;
+export type OrganizerProfileFormValues = z.infer<ReturnType<typeof createOrganizerProfileSchema>>;

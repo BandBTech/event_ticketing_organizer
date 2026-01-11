@@ -31,7 +31,9 @@
       "loading": "Deleting...",
       "confirm": "Delete"
     },
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes"
   },
   "navigation": {
     "events": "Events",
@@ -67,6 +69,12 @@
       "fileTooLarge": "File size must be less than 2MB.",
       "invalidMedia": "Invalid media file. Please upload a valid image (PNG/JPG).",
       "limitExceeded": "File size exceeds the maximum limit."
+    },
+    "validation": {
+      "businessNameRequired": "Business name is required.",
+      "businessNameMinLength": "Business name must be at least 3 characters.",
+      "businessNameMaxLength": "Business name must be less than 50 characters.",
+      "descriptionMaxLength": "Description must be less than 500 characters."
     }
   },
   "languages": {
@@ -259,6 +267,16 @@
       "tiers": "Tier Templates",
       "profile": "Profile",
       "security": "Security"
+    },
+    "organizerProfile": {
+      "description": "Manage your organization details and branding\"",
+      "logoHelperText": "Recommended size: 500x500px.",
+      "logoHelperTextSize": "Max size: 2MB.",
+      "businessLogo": "Business Logo",
+      "businessName": "Business Name",
+      "about": "About",
+      "businessNamePlaceholder": "Enter your business name",
+      "aboutPlaceholder": "Write about your organization..."
     }
   },
   "event": {

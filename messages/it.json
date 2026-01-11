@@ -23,7 +23,9 @@
       "loading": "Eliminazione...",
       "confirm": "Eliminare"
     },
-    "cancel": "Cancellare"
+    "cancel": "Cancellare",
+    "saving": "Risparmio...",
+    "saveChanges": "Salva modifiche"
   },
   "navigation": {
     "events": "Eventi",
@@ -153,6 +155,25 @@
       "tiers": "Modelli di livello",
       "profile": "Profilo",
       "security": "Sicurezza"
+    },
+    "organizerProfile": {
+      "description": "Gestisci i dettagli e il marchio della tua organizzazione\"",
+      "logoHelperText": "Dimensione consigliata: 500x500px.",
+      "logoHelperTextSize": "Dimensione massima: 2 MB.",
+      "businessLogo": "Logo aziendale",
+      "businessName": "Nome dell'azienda",
+      "about": "Di",
+      "businessNamePlaceholder": "Inserisci il nome della tua attività",
+      "aboutPlaceholder": "Scrivi della tua organizzazione..."
     }
+  },
+  "profile": {
+    "validation": {
+      "businessNameRequired": "Il nome dell'azienda è obbligatorio.",
+      "businessNameMinLength": "Il nome dell'azienda deve contenere almeno 3 caratteri.",
+      "businessNameMaxLength": "Il nome dell'azienda deve contenere meno di 50 caratteri.",
+      "descriptionMaxLength": "La descrizione deve contenere meno di 500 caratteri."
+    },
+    "editButton": "Modifica profilo"
   }
 }

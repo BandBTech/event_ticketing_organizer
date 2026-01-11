@@ -1,88 +1,64 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/lib/toast";
-import { BuildingOfficeIcon, PencilIcon } from "@phosphor-icons/react";
+import { PencilIcon, BuildingOfficeIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ImageUploader } from "@/components/ui/image-uploader";
 import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { queryKeys } from "@/lib/queryKeys";
 import { RejectionNotice } from "@/components/organizer/RejectionNotice";
+import { OrganizerProfileForm } from "@/components/organizer/OrganizerProfileForm";
 import { useAuthStore } from "@/store/authStore";
-import { organizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { OrganizerProfileFormValues } from "@/lib/validation";
+
+// Define proper types for the organization data
+interface OrganizationData {
+  business_name?: string;
+  business_description?: string;
+  business_logo_url?: string;
+}
+
+interface ProfileData {
+  data?: unknown;
+  organization?: OrganizationData;
+  organizer?: { organization?: OrganizationData };
+  user?: { organizer?: { organization?: OrganizationData } };
+}
 
 export default function OrganizerProfileSettings() {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const { isOrganizerRejected } = useAuthStore();
 
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: queryKeys.organizerProfile.all,
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();
-      return res as unknown; // Casting as unknown for now since we know the structure roughly
+      return res as unknown;
     },
-    retry: false, // Don't retry on permission errors
+    retry: false,
   });
 
-  // Define proper types for the organization data
-  interface OrganizationData {
-    business_name?: string;
-    business_description?: string;
-    business_logo_url?: string;
-  }
-
-  interface ProfileData {
-    data?: unknown;
-    organization?: OrganizationData;
-    organizer?: { organization?: OrganizationData };
-    user?: { organizer?: { organization?: OrganizationData } };
-  }
-
   const rawData = (profile as ProfileData)?.data || profile;
-
   const org: OrganizationData = (rawData as ProfileData)?.organization ||
     (rawData as ProfileData)?.organizer?.organization ||
     (rawData as ProfileData)?.user?.organizer?.organization ||
     (rawData as OrganizationData) || {};
 
-  const form = useForm<OrganizerProfileFormValues>({
-    resolver: zodResolver(organizerProfileSchema),
-    values: {
-      business_name: org?.business_name || "",
-      business_description: org?.business_description || "",
-    },
-  });
-
-  const { register, handleSubmit, formState: { errors }, reset } = form;
-
-  useEffect(() => {
-    if (org?.business_logo_url) {
-      setPreviewUrl(org.business_logo_url);
-    }
-  }, [org?.business_logo_url]);
-
   const mutation = useMutation({
-    mutationFn: async (data: OrganizerProfileFormValues) => {
-      // If we have no selected file and previewUrl is null, it means the user explicitly removed the logo
-      const businessLogo = selectedFile ? selectedFile : (previewUrl ? undefined : null);
-
+    mutationFn: async ({ data, logo }: { data: OrganizerProfileFormValues; logo: File | null | undefined }) => {
       await authService.updateOrganizerProfile({
         business_name: data.business_name,
         business_description: data.business_description,
-        business_logo: businessLogo,
+        business_logo: logo,
         role: 'organizer',
       });
     },
@@ -95,46 +71,21 @@ export default function OrganizerProfileSettings() {
       if (error instanceof AuthError) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to update organizer profile.");
+        toast.error("profile.toast.updateError", "Failed to update organizer profile.");
       }
     },
   });
 
-  const onSubmit = (data: OrganizerProfileFormValues) => {
-    mutation.mutate(data);
-  };
-
-  const handleDrop = (acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("File size must be less than 2MB.");
-        return;
-      }
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
+  const handleSubmit = (data: OrganizerProfileFormValues, logo: File | null | undefined) => {
+    mutation.mutate({ data, logo });
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setSelectedFile(null);
-    if (profile) {
-      const rawData = (profile as ProfileData)?.data || profile;
-      const org: OrganizationData = (rawData as ProfileData)?.organization ||
-        (rawData as ProfileData)?.organizer?.organization ||
-        (rawData as ProfileData)?.user?.organizer?.organization ||
-        (rawData as OrganizationData) || {};
-      reset({
-        business_name: org?.business_name || "",
-        business_description: org?.business_description || "",
-      });
-      setPreviewUrl(org?.business_logo_url || null);
-    }
   };
 
   if (isLoadingProfile) {
-    return <div>Loading...</div>;
+    return <div>{t("common.loading", "Loading...")}</div>;
   }
 
   return (
@@ -143,10 +94,10 @@ export default function OrganizerProfileSettings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-            Organizer Profile
+            {t("settings.menu.organizer", "Organizer Profile")}
           </h1>
           <p className="text-sm text-gray-600">
-            Manage your organization details and branding
+            {t("settings.organizerProfile.description", "Manage your organization details and branding")}
           </p>
         </div>
         {!isEditing && (
@@ -156,7 +107,7 @@ export default function OrganizerProfileSettings() {
             className="flex items-center gap-2 px-4 py-1.5 rounded-lg border-blue-600 text-blue-600 hover:bg-blue-50 shadow-sm"
           >
             <PencilIcon size={16} weight="duotone" />
-            Edit Profile
+            {t("profile.editButton", "Edit Profile")}
           </Button>
         )}
       </div>
@@ -164,43 +115,31 @@ export default function OrganizerProfileSettings() {
       {isOrganizerRejected() && <RejectionNotice />}
 
       <div className="glass-card rounded-xl p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-
-          {/* Logo Section */}
-          <div className="space-y-2">
-
-            {isEditing ? (
-              <ImageUploader
-                label="Business Logo"
-                value={previewUrl || ""}
-                onChange={(file) => {
-                  if (file) {
-                    setSelectedFile(file);
-                    setPreviewUrl(URL.createObjectURL(file));
-                  } else {
-                    setSelectedFile(null);
-                    setPreviewUrl(null);
-                  }
-                }}
-                onRemove={() => {
-                  setSelectedFile(null);
-                  setPreviewUrl(null);
-                }}
-                maxSizeMB={2}
-                helperText="Recommended size: 500x500px."
-                helperTextSize="Max size: 2MB."
-              // checkAspectRatio={true} // Optional: we can enforce 1:1 if desired, but user didn't explicitly ask for strict 1:1 enforcement here, just validation "such as Invalid media file"
-              // Let's keep it simple as per requirement "Validation such as Invalid media file, limit exceed missing"
-              />
-            ) : (
+        {isEditing ? (
+          <OrganizerProfileForm
+            defaultValues={{
+              business_name: org?.business_name || "",
+              business_description: org?.business_description || "",
+            }}
+            initialLogoUrl={org?.business_logo_url}
+            isEditing={true}
+            isPending={mutation.isPending}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            showActions={true}
+            showLogoUploader={true}
+          />
+        ) : (
+            <div className="space-y-6">
+              {/* Logo Display */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-900 block">
-                  Business Logo
+                  {t("settings.organizerProfile.businessLogo", "Business Logo")}
                 </label>
                 <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                  {previewUrl ? (
+                  {org?.business_logo_url ? (
                     <Image
-                      src={previewUrl}
+                      src={org.business_logo_url}
                       alt="Business Logo"
                       fill
                       className="object-contain"
@@ -210,88 +149,28 @@ export default function OrganizerProfileSettings() {
                   )}
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Business Name */}
-          <div className="space-y-2">
-            <label htmlFor="business_name" className="text-sm font-medium text-gray-900 block">
-              Business Name
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <BuildingOfficeIcon size={18} className="text-gray-600" weight="duotone" />
-              </div>
-              <Input
-                id="business_name"
-                {...register("business_name")}
-                disabled={!isEditing}
-                maxLength={50}
-                className={cn(
-                  "pl-10",
-                  !isEditing && "bg-gray-50 cursor-not-allowed",
-                  errors.business_name && "border-red-500"
-                )}
-              />
-            </div>
-            <div className="flex justify-between mt-1">
-              {errors.business_name ? (
-                <p className="text-sm text-red-500">{errors.business_name.message}</p>
-              ) : (
-                <span />
-              )}
-              {isEditing && (
-                <p className="text-xs text-gray-400">
-                  {form.watch("business_name")?.length || 0}/50
+              {/* Business Name Display */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900 block">
+                  {t("settings.organizerProfile.businessName", "Business Name")}
+                </label>
+                <p className="text-gray-700 bg-gray-50 px-4 py-3 rounded-lg">
+                  {org?.business_name || t("common.notSpecified", "Not specified")}
                 </p>
-              )}
-            </div>
-          </div>
+              </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <label htmlFor="business_description" className="text-sm font-medium text-gray-900 block">
-              Description
-            </label>
-            <Textarea
-              id="business_description"
-              {...register("business_description")}
-              disabled={!isEditing}
-              maxLength={500}
-              className={cn(
-                "min-h-[100px]",
-                !isEditing && "bg-gray-50 cursor-not-allowed"
-              )}
-              placeholder="Tell us about your organization..."
-            />
-            {isEditing && (
-              <p className="text-xs text-gray-400 text-right">
-                {form.watch("business_description")?.length || 0}/500
-              </p>
-            )}
+              {/* Description Display */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900 block">
+                  {t("settings.organizerProfile.about", "Description")}
+                </label>
+                <p className="text-gray-700 bg-gray-50 px-4 py-3 rounded-lg min-h-[100px]">
+                  {org?.business_description || t("common.notSpecified", "Not specified")}
+                </p>
+              </div>
           </div>
-
-          {/* Action Buttons */}
-          {isEditing && (
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
-              <Button
-                type="submit"
-                disabled={mutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {mutation.isPending ? "Saving..." : "Save Changes"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
-        </form>
+        )}
       </div>
     </div>
   );
