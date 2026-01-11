@@ -1,13 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { UserIcon, EnvelopeIcon, PencilIcon } from '@phosphor-icons/react/dist/ssr';
+import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PhoneInput } from '@/components/ui/phone-input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  TranslatedFormMessage,
+} from '@/components/ui/form';
 import { useAuthStore } from '@/store/authStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -15,53 +25,47 @@ import { authService } from '@/services/authService';
 import { AuthError } from '@/lib/errors';
 import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
-import { createValidationHelpers } from '@/lib/validation';
-
 import { isValidPhoneNumber, parsePhoneNumber } from 'react-phone-number-input';
 
-// Validation schema
-const createProfileSchema = (t: (key: string, fallback?: string) => string) => {
-  const v = createValidationHelpers(t);
-
+// Validation schema - returns translation keys for TranslatedFormMessage
+const createProfileSchema = () => {
   return z.object({
     firstName: z
       .string()
-      .min(1, v.required("First name"))
-      .min(3, v.minLength("First name", 3))
-      .max(50, v.maxLength("First name", 50)),
+      .min(1, 'settings.profile.validation.firstNameRequired')
+      .min(3, 'settings.profile.validation.firstNameMinLength')
+      .max(50, 'settings.profile.validation.firstNameMaxLength'),
     lastName: z
       .string()
-      .min(1, v.required("Last name"))
-      .min(3, v.minLength("Last name", 3))
-      .max(50, v.maxLength("Last name", 50)),
+      .min(1, 'settings.profile.validation.lastNameRequired')
+      .min(3, 'settings.profile.validation.lastNameMinLength')
+      .max(50, 'settings.profile.validation.lastNameMaxLength'),
     phone: z
       .string()
-      .min(1, v.required("Phone number"))
+      .min(1, 'settings.profile.validation.phoneRequired')
       .refine(
         (val) => !val || val.length === 0 || (typeof val === 'string' && isValidPhoneNumber(val)),
-        v.phone("Phone")
+        { message: 'settings.profile.validation.phoneInvalid' }
       ),
   });
-}
+};
 
+type ProfileFormData = z.infer<ReturnType<typeof createProfileSchema>>;
 
 export default function ProfileSettingsPage() {
   const { user, fetchProfile } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const schema = createProfileSchema(t);
-  type ProfileFormData = z.infer<typeof schema>;
+  // Create schema once - it returns translation keys, not translated strings
+  const schema = useMemo(() => createProfileSchema(), []);
 
   // Helper function to combine country code and phone number
   const getFullPhoneNumber = (phone?: string, countryCode?: string): string => {
     if (!phone) return '';
     if (!countryCode) return phone;
-    // If phone already starts with +, return as is
     if (phone.startsWith('+')) return phone;
-    // Combine country code and phone number
     return `${countryCode}${phone}`;
   };
 
@@ -75,33 +79,36 @@ export default function ProfileSettingsPage() {
     mode: 'onChange',
   });
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors, isDirty },
-  } = form;
+  // Track initial mount to prevent reset on language change
+  const isInitialMount = useRef(true);
+  const prevUserRef = useRef<string | null>(null);
 
   // Update form when user data changes (e.g., after profile fetch)
   useEffect(() => {
-    if (user) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevUserRef.current = JSON.stringify(user);
+      return;
+    }
+
+    const currentUserStr = JSON.stringify(user);
+    if (user && prevUserRef.current !== currentUserStr) {
+      prevUserRef.current = currentUserStr;
       const fullPhone = user.phone && user.countryCode && !user.phone.startsWith('+')
         ? `${user.countryCode}${user.phone}`
         : user.phone || '';
 
-      reset({
+      form.reset({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         phone: fullPhone,
       });
     }
-  }, [user, reset]);
+  }, [user, form]);
 
-  const onSubmit = async (data: ProfileFormData) => {
-    setIsLoading(true);
-
-    try {
+  // Use TanStack Query mutation for profile update
+  const mutation = useMutation({
+    mutationFn: async (data: ProfileFormData) => {
       // Parse phone number if provided to extract country code
       let parsedPhone = data.phone;
       let countryCode: string | undefined = undefined;
@@ -120,24 +127,28 @@ export default function ProfileSettingsPage() {
         phone: parsedPhone || undefined,
         country_code: countryCode,
       });
-
+    },
+    onSuccess: async () => {
       await fetchProfile();
       toast.success('settings.toast.profileUpdated', 'Profile updated successfully!');
       setIsEditing(false);
-    } catch (error) {
+    },
+    onError: (error: Error) => {
       console.error('Profile update failed:', error);
       if (error instanceof AuthError) {
         toast.error('settings.toast.updateFailed', error.message || 'Failed to update profile.');
       } else {
         toast.error('settings.toast.updateFailed', 'Failed to update profile.');
       }
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = (data: ProfileFormData) => {
+    mutation.mutate(data);
   };
 
   const handleCancel = () => {
-    reset({
+    form.reset({
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
       phone: getFullPhoneNumber(user?.phone, user?.countryCode),
@@ -187,136 +198,148 @@ export default function ProfileSettingsPage() {
             <p className="text-sm text-gray-600">{user?.email}</p>
             {user?.isEmailVerified && (
               <span className="inline-flex items-center px-2 py-0.5 mt-2 text-xs font-medium text-green-700 bg-green-100 rounded-full">
-                ✓ Verified
+                ✓ {t('settings.profile.verified', 'Verified')}
               </span>
             )}
           </div>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* First Name */}
-            <div className="space-y-2">
-              <label htmlFor="firstName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.firstName', 'First Name')}
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon weight='duotone' size={18} className="text-gray-600" />
-                </div>
-                <Input
-                  id="firstName"
-                  type="text"
-                  disabled={!isEditing}
-                  className={cn(
-                    "h-11 pl-11 pr-4",
-                    !isEditing && "bg-gray-50 cursor-not-allowed",
-                    errors.firstName && "border-destructive"
-                  )}
-                  {...register('firstName')}
-                />
-              </div>
-              {errors.firstName && (
-                <p className="text-xs text-destructive">{errors.firstName.message}</p>
-              )}
-            </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* First Name */}
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-900">
+                      {t('settings.profile.firstName', 'First Name')}
+                    </FormLabel>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                        <UserIcon weight='duotone' size={18} className="text-gray-600" />
+                      </div>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          disabled={!isEditing}
+                          className={cn(
+                            "h-11 pl-11 pr-4",
+                            !isEditing && "bg-gray-50 cursor-not-allowed"
+                          )}
+                        />
+                      </FormControl>
+                    </div>
+                    <TranslatedFormMessage t={t} />
+                  </FormItem>
+                )}
+              />
 
-            {/* Last Name */}
-            <div className="space-y-2">
-              <label htmlFor="lastName" className="text-sm font-medium text-gray-900 block">
-                {t('settings.profile.lastName', 'Last Name')}
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <UserIcon weight='duotone' size={18} className="text-gray-600" />
-                </div>
-                <Input
-                  id="lastName"
-                  type="text"
-                  disabled={!isEditing}
-                  className={cn(
-                    "h-11 pl-11 pr-4",
-                    !isEditing && "bg-gray-50 cursor-not-allowed",
-                    errors.lastName && "border-destructive"
-                  )}
-                  {...register('lastName')}
-                />
-              </div>
-              {errors.lastName && (
-                <p className="text-xs text-destructive">{errors.lastName.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Email (Read-only) */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-900 block">
-              {t('settings.profile.email', 'Email Address')}
-            </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                <EnvelopeIcon weight='duotone' size={18} className="text-gray-600" />
-              </div>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || ''}
-                disabled
-                className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
+              {/* Last Name */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-900">
+                      {t('settings.profile.lastName', 'Last Name')}
+                    </FormLabel>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                        <UserIcon weight='duotone' size={18} className="text-gray-600" />
+                      </div>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="text"
+                          disabled={!isEditing}
+                          className={cn(
+                            "h-11 pl-11 pr-4",
+                            !isEditing && "bg-gray-50 cursor-not-allowed"
+                          )}
+                        />
+                      </FormControl>
+                    </div>
+                    <TranslatedFormMessage t={t} />
+                  </FormItem>
+                )}
               />
             </div>
-            <p className="text-xs text-gray-500">
-              {t('settings.profile.emailNote', 'Email cannot be changed')}
-            </p>
-          </div>
 
-          {/* Phone */}
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium text-gray-900 block">
-              {t('settings.profile.phone', 'Phone Number')}
-            </label>
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <PhoneInput
-                  value={field.value || ''}
-                  onChange={(value) => field.onChange(value || '')}
-                  disabled={!isEditing}
-                  defaultCountry="NP"
-                  className={cn(
-                    !isEditing && "opacity-50 cursor-not-allowed",
-                    errors.phone && "border-destructive"
-                  )}
+            {/* Email (Read-only) */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-gray-900 block">
+                {t('settings.profile.email', 'Email Address')}
+              </label>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <EnvelopeIcon weight='duotone' size={18} className="text-gray-600" />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  value={user?.email || ''}
+                  disabled
+                  className="h-11 pl-11 pr-4 bg-gray-50 cursor-not-allowed"
                 />
+              </div>
+              <p className="text-xs text-gray-500">
+                {t('settings.profile.emailNote', 'Email cannot be changed')}
+              </p>
+            </div>
+
+            {/* Phone */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-900">
+                    {t('settings.profile.phone', 'Phone Number')}
+                  </FormLabel>
+                  <FormControl>
+                    <PhoneInput
+                      value={field.value || ''}
+                      onChange={(value) => field.onChange(value || '')}
+                      disabled={!isEditing}
+                      defaultCountry="NP"
+                      className={cn(
+                        !isEditing && "opacity-50 cursor-not-allowed"
+                      )}
+                    />
+                  </FormControl>
+                  <TranslatedFormMessage t={t} />
+                </FormItem>
               )}
             />
-            {errors.phone && (
-              <p className="text-xs text-destructive">{errors.phone.message}</p>
-            )}
-          </div>
 
-          {/* Action Buttons */}
-          {isEditing && (
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
-              <Button
-                type="submit"
-                disabled={isLoading || !isDirty}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isLoading ? t('settings.profile.saving', 'Saving...') : t('settings.profile.saveButton', 'Save Changes')}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCancel}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-              >
-                {t('settings.profile.cancelButton', 'Cancel')}
-              </Button>
-            </div>
-          )}
-        </form>
+            {/* Action Buttons */}
+            {isEditing && (
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <Button
+                  type="submit"
+                  disabled={mutation.isPending || !form.formState.isDirty}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {mutation.isPending
+                    ? t('common.saving', 'Saving...')
+                    : t('common.saveChanges', 'Save Changes')}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleCancel}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-600"
+                >
+                  {t('common.cancel', 'Cancel')}
+                </Button>
+              </div>
+            )}
+          </form>
+        </Form>
       </div>
     </div>
   );

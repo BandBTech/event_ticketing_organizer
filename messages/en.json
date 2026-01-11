@@ -294,6 +294,31 @@
       "about": "About",
       "businessNamePlaceholder": "Enter your business name",
       "aboutPlaceholder": "Write about your organization..."
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "subtitle": "Manage your personal information",
+      "editButton": "Edit Profile",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "emailNote": "Email cannot be changed",
+      "phone": "Phone Number",
+      "verified": "Verified",
+      "validation": {
+        "firstNameRequired": "First name is required.",
+        "firstNameMinLength": "First name must be at least 3 characters.",
+        "firstNameMaxLength": "First name cannot exceed 50 characters.",
+        "lastNameRequired": "Last name is required.",
+        "lastNameMinLength": "Last name must be at least 3 characters.",
+        "lastNameMaxLength": "Last name cannot exceed 50 characters.",
+        "phoneRequired": "Phone number is required.",
+        "phoneInvalid": "Please enter a valid phone number."
+      }
+    },
+    "toast": {
+      "profileUpdated": "Profile updated successfully!",
+      "updateFailed": "Failed to update profile."
     }
   },
   "event": {

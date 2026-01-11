@@ -196,6 +196,31 @@
         "passwordNumber": "Deve contenere almeno un numero.",
         "passwordMismatch": "Le password non corrispondono."
       }
+    },
+    "profile": {
+      "title": "Impostazioni profilo",
+      "subtitle": "Gestisci le tue informazioni personali",
+      "editButton": "Modifica profilo",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Indirizzo email",
+      "emailNote": "L'email non può essere modificata",
+      "phone": "Numero di telefono",
+      "verified": "Verificato",
+      "validation": {
+        "firstNameRequired": "Il nome è obbligatorio.",
+        "firstNameMinLength": "Il nome deve contenere almeno 3 caratteri.",
+        "firstNameMaxLength": "Il nome non può superare i 50 caratteri.",
+        "lastNameRequired": "Il cognome è obbligatorio.",
+        "lastNameMinLength": "Il cognome deve contenere almeno 3 caratteri.",
+        "lastNameMaxLength": "Il cognome non può superare i 50 caratteri.",
+        "phoneRequired": "Il numero di telefono è obbligatorio.",
+        "phoneInvalid": "Inserisci un numero di telefono valido."
+      }
+    },
+    "toast": {
+      "profileUpdated": "Profilo aggiornato con successo!",
+      "updateFailed": "Aggiornamento del profilo non riuscito."
     }
   },
   "profile": {

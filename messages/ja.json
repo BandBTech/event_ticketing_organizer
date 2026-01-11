@@ -196,6 +196,31 @@
         "passwordNumber": "数字を少なくとも1つ含める必要があります。",
         "passwordMismatch": "パスワードが一致しません。"
       }
+    },
+    "profile": {
+      "title": "プロフィール設定",
+      "subtitle": "個人情報を管理する",
+      "editButton": "プロフィールを編集",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "emailNote": "メールアドレスは変更できません",
+      "phone": "電話番号",
+      "verified": "認証済み",
+      "validation": {
+        "firstNameRequired": "名は必須です。",
+        "firstNameMinLength": "名は3文字以上である必要があります。",
+        "firstNameMaxLength": "名は50文字を超えることはできません。",
+        "lastNameRequired": "姓は必須です。",
+        "lastNameMinLength": "姓は3文字以上である必要があります。",
+        "lastNameMaxLength": "姓は50文字を超えることはできません。",
+        "phoneRequired": "電話番号は必須です。",
+        "phoneInvalid": "有効な電話番号を入力してください。"
+      }
+    },
+    "toast": {
+      "profileUpdated": "プロフィールが正常に更新されました！",
+      "updateFailed": "プロフィールの更新に失敗しました。"
     }
   },
   "profile": {
