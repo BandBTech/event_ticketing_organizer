@@ -13,7 +13,17 @@
     "cancelButton": "Cancellare",
     "validation": {
       "invalidDatetime": "Inserisci una data/ora valida."
-    }
+    },
+    "createdAt": "Creato a",
+    "updatedAt": "Aggiornato a",
+    "delete": "Eliminare",
+    "deleteModal": {
+      "description": "Sei sicuro di voler eliminare?",
+      "warning": "Questa azione non può essere annullata.",
+      "loading": "Eliminazione...",
+      "confirm": "Eliminare"
+    },
+    "cancel": "Cancellare"
   },
   "navigation": {
     "events": "Eventi",
@@ -114,6 +124,35 @@
     },
     "section": {
       "venueSchedule": "Luogo"
+    }
+  },
+  "tierTemplates": {
+    "columns": {
+      "templateName": "Nome del modello di livello",
+      "description": "Descrizione",
+      "status": "Stato"
+    },
+    "detailModal": {
+      "title": "Dettagli del modello di livello"
+    },
+    "deleteModal": {
+      "title": "Elimina modello di livello"
+    },
+    "title": "Modelli di livello",
+    "description": "Gestisci i tuoi modelli di livello riutilizzabili",
+    "createButton": "Crea modello di livello",
+    "emptyState": {
+      "title": "Nessun modello di livello ancora",
+      "description": "Crea modelli di livelli riutilizzabili per impostare rapidamente i livelli dei biglietti per i tuoi eventi.",
+      "button": "Crea il tuo primo modello"
+    }
+  },
+  "settings": {
+    "menu": {
+      "organizer": "Profilo dell'organizzatore",
+      "tiers": "Modelli di livello",
+      "profile": "Profilo",
+      "security": "Sicurezza"
     }
   }
 }

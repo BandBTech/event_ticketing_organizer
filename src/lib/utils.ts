@@ -95,6 +95,37 @@ export function formatTime(date: Date | string | number | null | undefined): str
 }
 
 /**
+ * Format a UTC date to local long format (e.g., "January 11, 2026, 8:30 PM")
+ * @param date - Date object, ISO string (UTC), or timestamp
+ * @param locale - Optional locale string (defaults to "en-US")
+ * @returns Formatted date string in local timezone or empty string if invalid
+ */
+export function formatDateTimeLong(
+  date: Date | string | number | null | undefined,
+  locale: string = "en-US"
+): string {
+  if (!date) return "";
+
+  try {
+    const dateObj = typeof date === "string" || typeof date === "number"
+      ? new Date(date)
+      : date;
+
+    if (isNaN(dateObj.getTime())) return "";
+
+    return dateObj.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+/**
  * Format a date relative to now (e.g., "2 days ago", "in 3 hours")
  * @param date - Date object, ISO string, or timestamp
  * @returns Relative time string or empty string if invalid

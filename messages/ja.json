@@ -13,7 +13,17 @@
     "cancelButton": "キャンセル",
     "validation": {
       "invalidDatetime": "有効な日時を入力してください。"
-    }
+    },
+    "createdAt": "作成日",
+    "updatedAt": "更新日",
+    "delete": "消去",
+    "deleteModal": {
+      "description": "削除してもよろしいですか",
+      "warning": "この操作は元に戻すことができません。",
+      "loading": "削除中...",
+      "confirm": "消去"
+    },
+    "cancel": "キャンセル"
   },
   "navigation": {
     "events": "イベント",
@@ -114,6 +124,35 @@
     },
     "section": {
       "venueSchedule": "会場"
+    }
+  },
+  "tierTemplates": {
+    "columns": {
+      "templateName": "階層テンプレート名",
+      "description": "説明",
+      "status": "状態"
+    },
+    "detailModal": {
+      "title": "階層テンプレートの詳細"
+    },
+    "deleteModal": {
+      "title": "階層テンプレートの削除"
+    },
+    "title": "階層テンプレート",
+    "description": "再利用可能な階層テンプレートを管理する",
+    "createButton": "階層テンプレートの作成",
+    "emptyState": {
+      "title": "階層テンプレートはまだありません",
+      "description": "再利用可能な階層テンプレートを作成して、イベントのチケット階層をすばやく設定します。",
+      "button": "最初のテンプレートを作成する"
+    }
+  },
+  "settings": {
+    "menu": {
+      "organizer": "主催者プロフィール",
+      "tiers": "階層テンプレート",
+      "profile": "プロフィール",
+      "security": "セキュリティ"
     }
   }
 }

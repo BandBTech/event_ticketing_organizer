@@ -86,7 +86,7 @@ export default function Events() {
 
         <div className="w-full sm:w-48">
           <Select value={statusFilter} onValueChange={handleStatusChange}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder={t("event.filter.status", "Filter by Status")} />
             </SelectTrigger>
             <SelectContent>

@@ -21,7 +21,17 @@
       "pattern": "{field} format is invalid.",
       "invalidDatetime": "Enter valid datetime."
     },
-    "cancelButton": "Cancel"
+    "cancelButton": "Cancel",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "delete": "Delete",
+    "deleteModal": {
+      "description": "Are you sure you want to delete",
+      "warning": "This action cannot be undone.",
+      "loading": "Deleting...",
+      "confirm": "Delete"
+    },
+    "cancel": "Cancel"
   },
   "navigation": {
     "events": "Events",
@@ -243,7 +253,13 @@
       "updating": "Updating...",
       "updateButton": "Update Password"
     },
-    "title": "Settings"
+    "title": "Settings",
+    "menu": {
+      "organizer": "Organizer Profile",
+      "tiers": "Tier Templates",
+      "profile": "Profile",
+      "security": "Security"
+    }
   },
   "event": {
     "eventDetails": "Event Details",
@@ -290,6 +306,27 @@
     },
     "section": {
       "venueSchedule": "Venue & Schedule"
+    }
+  },
+  "tierTemplates": {
+    "columns": {
+      "templateName": "Tier Template Name",
+      "description": "Description",
+      "status": "Status"
+    },
+    "detailModal": {
+      "title": "Tier Template Details"
+    },
+    "deleteModal": {
+      "title": "Delete Tier Template"
+    },
+    "title": "Tier Templates",
+    "description": "Manage your reusable tier templates",
+    "createButton": "Create Tier Template",
+    "emptyState": {
+      "title": "No tier templates yet",
+      "description": "Create reusable tier templates to quickly set up ticket tiers for your events.",
+      "button": "Create your first template"
     }
   }
 }

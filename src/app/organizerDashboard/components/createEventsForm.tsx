@@ -14,7 +14,7 @@ import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { Form } from "@/components/ui/form";
 import { queryKeys } from "@/lib/queryKeys";
-import { CreateTierTemplateDialog } from "./CreateTierTemplateDialog";
+import { CreateTierTemplateDialog } from "../settings/tiers/CreateTierTemplateDialog";
 import {
   getEventFormDefaults,
   getChangedFields,

@@ -9,29 +9,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 import { useAuthStore } from "@/store/authStore";
 
-const menuItems = [
-  {
-    href: "/organizerDashboard/settings/profile",
-    label: "Profile",
-    icon: UserIcon,
-  },
-  {
-    href: "/organizerDashboard/settings/organizer",
-    label: "Organizer Profile",
-    icon: BuildingsIcon,
-  },
-  {
-    href: "/organizerDashboard/settings/security",
-    label: "Security",
-    icon: LockKeyIcon,
-  },
-  {
-    href: "/organizerDashboard/settings/tiers",
-    label: "Tier Templates",
-    icon: StackIcon,
-  },
-];
-
 export default function SettingsLayout({
   children,
 }: {
@@ -41,6 +18,29 @@ export default function SettingsLayout({
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { isOrganizerRejected, isOrganizerPending } = useAuthStore();
+
+  const menuItems = [
+    {
+      href: "/organizerDashboard/settings/profile",
+      label: t("settings.menu.profile", "Profile"),
+      icon: UserIcon,
+    },
+    {
+      href: "/organizerDashboard/settings/organizer",
+      label: t("settings.menu.organizer", "Organizer Profile"),
+      icon: BuildingsIcon,
+    },
+    {
+      href: "/organizerDashboard/settings/security",
+      label: t("settings.menu.security", "Security"),
+      icon: LockKeyIcon,
+    },
+    {
+      href: "/organizerDashboard/settings/tiers",
+      label: t("settings.menu.tiers", "Tier Templates"),
+      icon: StackIcon,
+    },
+  ];
 
   const filteredMenuItems = menuItems.filter(item => {
     if (isOrganizerRejected() || isOrganizerPending()) {
