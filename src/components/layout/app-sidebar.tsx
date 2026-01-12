@@ -51,7 +51,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       permission: PERMISSIONS.PROFILE_VIEW
     },
     {
-      href: "/organizerDashboard/(pages)/events",
+      href: "/organizerDashboard/events",
       label: t("navigation.events", "Events"),
       icon: CalendarStarIcon,
       permission: PERMISSIONS.EVENT_READ
@@ -63,7 +63,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY]
     },
     {
-      href: "/organizerDashboard/(pages)/users",
+      href: "/organizerDashboard/users",
       label: t("navigation.users", "Users"),
       icon: UsersIcon,
       permission: PERMISSIONS.USER_READ

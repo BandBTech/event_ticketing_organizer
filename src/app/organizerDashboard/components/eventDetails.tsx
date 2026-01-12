@@ -255,7 +255,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               )}
               {canEdit && (
                 <Link
-                  href={`/organizerDashboard/(pages)/createevents?id=${event.id}&edit=true`}
+                  href={`/organizerDashboard/createevents?id=${event.id}&edit=true`}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
                 >
                   <PencilLine size={16} /> {t("event.button.editEvent", "Edit Event")}
