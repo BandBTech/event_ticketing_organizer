@@ -63,7 +63,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY]
     },
     {
-      href: "/organizerDashboard/pages/users",
+      href: "/organizerDashboard/(pages)/users",
       label: t("navigation.users", "Users"),
       icon: UsersIcon,
       permission: PERMISSIONS.USER_READ
