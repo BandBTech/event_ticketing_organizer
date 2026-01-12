@@ -9,7 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
@@ -47,7 +47,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                       {...field}
                     />
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
-                      <FormMessage className="mt-0" />
+                      <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
                         {field.value?.length || 0}/{VENUE_NAME_MAX} characters
                       </div>
@@ -81,7 +81,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                       error={!!fieldState.error}
                     />
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
-                      <FormMessage className="mt-0" />
+                      <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
                         {field.value?.length || 0}/{VENUE_ADDRESS_MAX} characters
                       </div>
@@ -120,7 +120,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                   />
                 </FormControl>
                 <div className="flex justify-between items-center -mt-1">
-                  <FormMessage className="mt-0" />
+                  <TranslatedFormMessage t={t} className="mt-0" />
                 </div>
               </FormItem>
             )}
@@ -143,7 +143,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     placeholder={t("event.placeholder.timezone", "Select timezone")}
                   />
                 </FormControl>
-                <FormMessage />
+                <TranslatedFormMessage t={t} />
               </FormItem>
             )}
           />
@@ -169,7 +169,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     error={!!fieldState.error}
                   />
                 </FormControl>
-                <FormMessage />
+                <TranslatedFormMessage t={t} />
               </FormItem>
             )}
           />
@@ -195,7 +195,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     error={!!fieldState.error}
                   />
                 </FormControl>
-                <FormMessage />
+                <TranslatedFormMessage t={t} />
               </FormItem>
             )}
           />

@@ -15,7 +15,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { useTranslation } from "@/hooks/useTranslation";
 import { EventFormData, PROMO_CODE_NAME_MAX } from "@/lib/validation";
@@ -51,7 +51,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 />
               </FormControl>
               <div className="flex justify-between items-center -mt-1 min-h-[20px]">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
                 <div className="text-xs text-muted-foreground ml-auto">
                   {field.value?.length || 0}/{PROMO_CODE_NAME_MAX} characters
                 </div>
@@ -78,7 +78,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 </SelectContent>
               </Select>
               <div className="flex justify-between items-center -mt-1">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}
@@ -109,7 +109,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 />
               </FormControl>
               <div className="flex justify-between items-center -mt-1">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}
@@ -140,7 +140,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
                 />
               </FormControl>
               <div className="flex justify-between items-center -mt-1">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}

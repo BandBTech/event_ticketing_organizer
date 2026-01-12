@@ -33,7 +33,27 @@
     },
     "cancel": "Cancel",
     "saving": "Saving...",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "role": "Role",
+    "placeholder": {
+      "selectRole": "Select a role"
+    },
+    "staff": "Staff",
+    "staffDescription": "Can check-in tickets and view events",
+    "manager": "Manager",
+    "managerDescription": "Full access to manage events and team",
+    "columns": {
+      "sn": "S.N.",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions",
+      "contact": "Contact"
+    },
+    "status": "Status",
+    "unknown": "Unknown",
+    "allRoles": "All Roles"
   },
   "navigation": {
     "events": "Events",
@@ -121,8 +141,8 @@
       "phone": "Contact Number",
       "password": "Password",
       "confirmPassword": "Confirm Password",
-      "firstNamePlaceholder": "John",
-      "lastNamePlaceholder": "Doe",
+      "firstNamePlaceholder": "Enter first name",
+      "lastNamePlaceholder": "Enter last name",
       "emailPlaceholder": "Enter email address",
       "phonePlaceholder": "Enter valid contact number",
       "passwordPlaceholder": "••••••••••••",
@@ -137,11 +157,11 @@
       "privacy": "privacy policy",
       "validation": {
         "firstNameTooShort": "First name must be at least 2 characters.",
-        "firstNameTooLong": "First name is too long.",
+        "firstNameTooLong": "First Name must not exceed 50 characters.",
         "lastNameTooShort": "Last name must be at least 2 characters.",
-        "lastNameTooLong": "Last name is too long.",
+        "lastNameTooLong": "Last Name must not exceed 50 characters.",
         "emailRequired": "Email is required.",
-        "emailInvalid": "Please enter a valid email address.",
+        "emailInvalid": "Invalid email address.",
         "phoneInvalid": "Please enter a valid phone number.",
         "passwordTooShort": "Password must be at least 8 characters.",
         "passwordTooLong": "Password is too long.",
@@ -151,7 +171,11 @@
         "passwordMismatch": "Passwords do not match.",
         "phoneRequired": "Contact number is required.",
         "firstNameRequired": "First name is required.",
-        "lastNameRequired": "Last name is required."
+        "lastNameRequired": "Last name is required.",
+        "passwordRequired": "Password is required.",
+        "passwordMin": "Password must be at least 8 characters.",
+        "passwordUpperLower": "Password must contain at least one uppercase and one lowercase letter.",
+        "passwordSpecialChar": "Password must contain at least one special character."
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -388,5 +412,38 @@
       "description": "Create reusable tier templates to quickly set up ticket tiers for your events.",
       "button": "Create your first template"
     }
+  },
+  "users": {
+    "create": {
+      "success": "User created successfully",
+      "error": "Failed to create user",
+      "title": "Add Team Member",
+      "description": "Add a new staff or manager to your organization.",
+      "passwordHint": "Click the icon to generate a secure password",
+      "label": "Add Team Member",
+      "button": "Add User"
+    },
+    "update": {
+      "success": "User updated successfully",
+      "error": "Failed to update user"
+    },
+    "edit": {
+      "title": "Edit Team Member",
+      "description": "Update team member's role and access status."
+    },
+    "activeAccount": "Active Account",
+    "activeAccountDescription": "When disabled, user cannot access the system.",
+    "delete": {
+      "success": "User removed successfully",
+      "error": "Failed to remove user"
+    },
+    "generatePassword": {
+      "successCopy": "Password generated and copied to clipboard!",
+      "success": "Password generated successfully"
+    },
+    "search": "Search users...",
+    "filterByRole": "Filter by role",
+    "pageTitle": "Team Management",
+    "pageSubtitle": "Manage your organization team and user access."
   }
 }

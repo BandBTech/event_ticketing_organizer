@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -28,7 +28,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,7 @@ interface UserFormDialogProps {
 function generateStrongPassword(): string {
   const uppercase = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   const lowercase = "abcdefghjkmnpqrstuvwxyz";
-  const numbers = "23456789";
+  const numbers = "0123456789";
   const special = "!@#$%&*?";
 
   // Ensure at least one of each required character type
@@ -128,6 +128,7 @@ export default function UserFormDialog({
         phone: "",
         role_name: "staff",
       },
+    mode: 'onChange'
   });
 
   // Detect country from IP
@@ -185,9 +186,9 @@ export default function UserFormDialog({
     form.setValue("password", newPassword, { shouldValidate: true });
     // Copy to clipboard
     navigator.clipboard.writeText(newPassword).then(() => {
-      toast.success("Password generated and copied to clipboard!");
+      toast.success(t('users.generatePassword.successCopy', "Password generated and copied to clipboard!"));
     }).catch(() => {
-      toast.success("Password generated!");
+      toast.success(t('users.generatePassword.success', "Password generated successfully"));
     });
   };
 
@@ -203,12 +204,9 @@ export default function UserFormDialog({
       }),
     onSuccess: () => {
       toast.success(t('users.create.success', "User created successfully"));
-      queryClient.invalidateQueries({ queryKey: ["orgUsers"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all });
       onOpenChange(false);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || t('users.create.error', "Failed to create user"));
-    },
+    }
   });
 
   const updateMutation = useMutation({
@@ -219,7 +217,7 @@ export default function UserFormDialog({
       }),
     onSuccess: () => {
       toast.success(t('users.update.success', "User updated successfully"));
-      queryClient.invalidateQueries({ queryKey: ["orgUsers"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all });
       onOpenChange(false);
     },
     onError: (error: Error) => {
@@ -266,7 +264,7 @@ export default function UserFormDialog({
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t('common.firstName', "First Name")}
+                          {t('auth.signup.firstName', "First Name")}
                         </FormLabel>
                         <div className="relative">
                           <div
@@ -277,7 +275,7 @@ export default function UserFormDialog({
                           </div>
                           <FormControl>
                             <Input
-                              placeholder="Jane"
+                              placeholder={t('auth.signup.firstNamePlaceholder', "Enter first name")}
                               {...field}
                               className={cn(
                                 "h-12 pl-14 pr-4",
@@ -286,7 +284,7 @@ export default function UserFormDialog({
                             />
                           </FormControl>
                         </div>
-                        <FormMessage />
+                        <TranslatedFormMessage t={t} />
                       </FormItem>
                     )}
                   />
@@ -296,7 +294,7 @@ export default function UserFormDialog({
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t('common.lastName', "Last Name")}
+                          {t('auth.signup.lastName', "Last Name")}
                         </FormLabel>
                         <div className="relative">
                           <div
@@ -307,7 +305,7 @@ export default function UserFormDialog({
                           </div>
                           <FormControl>
                             <Input
-                              placeholder="Smith"
+                              placeholder={t('auth.signup.lastNamePlaceholder', "Enter last name")}
                               {...field}
                               className={cn(
                                 "h-12 pl-14 pr-4",
@@ -316,7 +314,7 @@ export default function UserFormDialog({
                             />
                           </FormControl>
                         </div>
-                        <FormMessage />
+                        <TranslatedFormMessage t={t} />
                       </FormItem>
                     )}
                   />
@@ -329,7 +327,7 @@ export default function UserFormDialog({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-900">
-                        {t('common.email', "Email")}
+                        {t('auth.signup.email', "Email")}
                       </FormLabel>
                       <div className="relative">
                         <div
@@ -340,7 +338,7 @@ export default function UserFormDialog({
                         </div>
                         <FormControl>
                           <Input
-                            placeholder="jane.smith@example.com"
+                            placeholder={t('auth.signup.emailPlaceholder', "Enter email address")}
                             type="email"
                             {...field}
                             className={cn(
@@ -350,7 +348,7 @@ export default function UserFormDialog({
                           />
                         </FormControl>
                       </div>
-                      <FormMessage />
+                      <TranslatedFormMessage t={t} />
                     </FormItem>
                   )}
                 />
@@ -362,7 +360,7 @@ export default function UserFormDialog({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-900">
-                        {t('common.password', "Password")}
+                        {t('auth.signup.password', "Password")}
                       </FormLabel>
                       <div className="relative">
                         <div
@@ -394,22 +392,22 @@ export default function UserFormDialog({
                       <p className="text-xs text-muted-foreground mt-1">
                         {t('users.create.passwordHint', "Click the icon to generate a secure password")}
                       </p>
-                      <FormMessage />
+                      <TranslatedFormMessage t={t} />
                     </FormItem>
                   )}
                 />
 
                 {/* Phone Field - Same as registration form */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-900">
-                    {t('common.phone', "Contact Number")}
-                    <span className="text-muted-foreground text-xs font-normal ml-1">(optional)</span>
-                  </label>
-                  <Controller
-                    name="phone"
-                    control={form.control}
-                    render={({ field, fieldState }) => (
-                      <>
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-900">
+                        {t('auth.signup.phone', "Contact Number")}
+                        <span className="text-muted-foreground text-xs font-normal ml-1">{t('common.optional', "(optional)")}</span>
+                      </FormLabel>
+                      <FormControl>
                         <PhoneInput
                           value={field.value || ""}
                           onChange={field.onChange}
@@ -419,13 +417,11 @@ export default function UserFormDialog({
                             fieldState.error && "border-destructive"
                           )}
                         />
-                        {fieldState.error && (
-                          <p className="text-sm text-destructive">{fieldState.error.message}</p>
-                        )}
-                      </>
-                    )}
-                  />
-                </div>
+                      </FormControl>
+                      <TranslatedFormMessage t={t} />
+                    </FormItem>
+                  )}
+                />
 
                 <Separator />
 
@@ -452,26 +448,26 @@ export default function UserFormDialog({
                         >
                           <FormControl>
                             <SelectTrigger className="h-12 pl-14">
-                              <SelectValue placeholder="Select a role" />
+                              <SelectValue placeholder={t('common.placeholder.selectRole', "Select a role")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="staff">
                               <div className="flex flex-col items-start">
-                                <span className="font-medium">Staff</span>
-                                <span className="text-xs text-muted-foreground">Can check-in tickets and view events</span>
+                                <span className="font-medium">{t('common.staff', "Staff")}</span>
+                                <span className="text-xs text-muted-foreground">{t('common.staffDescription', "Can check-in tickets and view events")}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="manager">
                               <div className="flex flex-col items-start">
-                                <span className="font-medium">Manager</span>
-                                <span className="text-xs text-muted-foreground">Full access to manage events and team</span>
+                                <span className="font-medium">{t('common.manager', "Manager")}</span>
+                                <span className="text-xs text-muted-foreground">{t('common.managerDescription', "Full access to manage events and team")}</span>
                               </div>
                             </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <FormMessage />
+                      <TranslatedFormMessage t={t} />
                     </FormItem>
                   )}
                 />
@@ -521,26 +517,26 @@ export default function UserFormDialog({
                         >
                           <FormControl>
                             <SelectTrigger className="h-12 pl-14">
-                              <SelectValue placeholder="Select a role" />
+                              <SelectValue placeholder={t('common.placeholder.selectRole', "Select a role")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="staff">
                               <div className="flex flex-col items-start">
-                                <span className="font-medium">Staff</span>
-                                <span className="text-xs text-muted-foreground">Can check-in tickets and view events</span>
+                                <span className="font-medium">{t('common.staff', "Staff")}</span>
+                                <span className="text-xs text-muted-foreground">{t('common.staffDescription', "Can check-in tickets and view events")}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="manager">
                               <div className="flex flex-col items-start">
-                                <span className="font-medium">Manager</span>
-                                <span className="text-xs text-muted-foreground">Full access to manage events and team</span>
+                                <span className="font-medium">{t('common.manager', "Manager")}</span>
+                                <span className="text-xs text-muted-foreground">{t('common.managerDescription', "Full access to manage events and team")}</span>
                               </div>
                             </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <FormMessage />
+                      <TranslatedFormMessage t={t} />
                     </FormItem>
                   )}
                 />
@@ -553,10 +549,10 @@ export default function UserFormDialog({
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium text-gray-900">
-                          {t('common.active', "Active Account")}
+                          {t('users.activeAccount', "Active Account")}
                         </FormLabel>
                         <p className="text-sm text-muted-foreground">
-                          {t('users.edit.activeDescription', "When disabled, user cannot access the system.")}
+                          {t('users.activeAccountDescription', "When disabled, user cannot access the system.")}
                         </p>
                       </div>
                       <FormControl>
@@ -588,7 +584,7 @@ export default function UserFormDialog({
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isEditing
                   ? t('common.saveChanges', "Save Changes")
-                  : t('users.create.submit', "Add Team Member")}
+                  : t('users.create.label', "Add Team Member")}
               </Button>
             </DialogFooter>
           </form>

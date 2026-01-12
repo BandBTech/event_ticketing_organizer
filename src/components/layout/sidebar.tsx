@@ -22,16 +22,16 @@ import { useEffect, useState } from "react";
 const navLinks = [
   { href: "/organizerDashboard", label: "Dashboard", icon: SpeedometerIcon },
   {
-    href: "/organizerDashboard/pages/events",
+    href: "/organizerDashboard/(pages)/events",
     label: "Events",
     icon: CalendarStarIcon,
   },
   {
-    href: "/organizerDashboard/reports",
+    href: "/organizerDashboard/(pages)/reports",
     label: "Reports",
     icon: ChartLineIcon,
   },
-  { href: "/organizerDashboard/pages/users", label: "Users", icon: UsersIcon },
+  { href: "/organizerDashboard/(pages)/users", label: "Users", icon: UsersIcon },
   { href: "/organizerDashboard/settings", label: "Settings", icon: GearIcon },
   { href: "/staffDashboard", label: "Staff", icon: IdentificationBadgeIcon },
 ];

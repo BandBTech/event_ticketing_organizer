@@ -10,7 +10,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/image-uploader";
@@ -114,7 +114,7 @@ export function EventDetailsSection({
                         {...field}
                       />
                       <div className="flex justify-between items-center mt-1 min-h-[20px]">
-                        <FormMessage className="mt-0" />
+                        <TranslatedFormMessage t={t} className="mt-0" />
                         <div className="text-xs text-muted-foreground ml-auto">
                           {field.value?.length || 0}/{EVENT_TITLE_MAX} characters
                         </div>
@@ -146,7 +146,7 @@ export function EventDetailsSection({
                     />
                   </FormControl>
                   <div className="flex justify-between items-start -mt-1 min-h-[20px]">
-                    <FormMessage className="mt-0" />
+                    <TranslatedFormMessage t={t} className="mt-0" />
                     <div className="text-xs text-muted-foreground ml-auto">
                       {field.value?.length || 0}/5 tags | Max 50 chars/tag
                     </div>

@@ -8,7 +8,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TierNameSelector from "./TierNameSelector";
@@ -58,7 +58,7 @@ const TicketTierCard = ({
                   usedTierNames={usedTierNames}
                 />
               </FormControl>
-              <FormMessage />
+              <TranslatedFormMessage t={t} />
             </FormItem>
           )}
         />
@@ -88,7 +88,7 @@ const TicketTierCard = ({
                 />
               </FormControl>
               <div className="flex justify-between items-center -mt-1">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}
@@ -119,7 +119,7 @@ const TicketTierCard = ({
                 />
               </FormControl>
               <div className="flex justify-between items-center -mt-1">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}
@@ -150,7 +150,7 @@ const TicketTierCard = ({
                 />
               </FormControl>
               <div className="flex justify-between items-center">
-                <FormMessage className="mt-0" />
+                <TranslatedFormMessage t={t} className="mt-0" />
               </div>
             </FormItem>
           )}
@@ -174,7 +174,7 @@ const TicketTierCard = ({
                   error={!!fieldState.error}
                 />
               </FormControl>
-              <FormMessage />
+              <TranslatedFormMessage t={t} />
             </FormItem>
           )}
         />
@@ -197,7 +197,7 @@ const TicketTierCard = ({
                   error={!!fieldState.error}
                 />
               </FormControl>
-              <FormMessage />
+              <TranslatedFormMessage t={t} />
             </FormItem>
           )}
         />

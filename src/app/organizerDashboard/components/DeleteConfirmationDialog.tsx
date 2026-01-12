@@ -36,10 +36,10 @@ export function DeleteConfirmationDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription className="break-all">
+          <AlertDialogDescription>
             {t("common.deleteModal.description", "Are you sure you want to delete")}
-            {deleteWhat ? <span className="font-semibold">&quot;{deleteWhat}&quot;</span> : <br />}
-            {t("common.deleteModal.warning", "This action cannot be undone.")}
+            {deleteWhat ? <span className="font-semibold break-all"> &quot;{deleteWhat}&quot;?</span> : "? "}
+            {' '}{t("common.deleteModal.warning", "This action cannot be undone.")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

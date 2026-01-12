@@ -9,7 +9,7 @@ import { PERMISSIONS } from "@/lib/permissions";
 
 const navLinksData = [
   { href: "/staffDashboard", label: "Home", icon: HouseIcon, permission: PERMISSIONS.PROFILE_VIEW },
-  { href: "/staffDashboard/pages/events", label: "Events", icon: CalendarStarIcon, permission: PERMISSIONS.TICKET_READ },
+  { href: "/staffDashboard/(pages)/events", label: "Events", icon: CalendarStarIcon, permission: PERMISSIONS.TICKET_READ },
   { href: "/organizerDashboard", label: "Organizer", icon: UserIcon, permission: [PERMISSIONS.EVENT_CREATE, PERMISSIONS.STAFF_MANAGE] }
 ];
 

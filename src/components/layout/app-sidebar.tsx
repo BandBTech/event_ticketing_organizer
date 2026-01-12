@@ -51,7 +51,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       permission: PERMISSIONS.PROFILE_VIEW
     },
     {
-      href: "/organizerDashboard/pages/events",
+      href: "/organizerDashboard/(pages)/events",
       label: t("navigation.events", "Events"),
       icon: CalendarStarIcon,
       permission: PERMISSIONS.EVENT_READ

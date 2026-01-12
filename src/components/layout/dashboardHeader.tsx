@@ -24,13 +24,13 @@ function getGreeting(): string {
 }
 
 const pageHeaders: { prefix: string; title: string; editTitle?: string; isDynamic?: boolean }[] = [
-  { prefix: "/organizerDashboard/pages/events", title: "Events" },
+  { prefix: "/organizerDashboard/(pages)/events", title: "Events" },
   { prefix: "/organizerDashboard/settings", title: "" },
   { prefix: "/organizerDashboard/reports", title: "Reports" },
   { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
-  { prefix: "/organizerDashboard/pages/createevents", title: "Create new event", editTitle: "Edit Event" },
-  { prefix: "/organizerDashboard/pages/eventdetails", title: "Event details" },
-  { prefix: "/organizerDashboard/pages/users", title: "Users" },
+  { prefix: "/organizerDashboard/(pages)/createevents", title: "Create new event", editTitle: "Edit Event" },
+  { prefix: "/organizerDashboard/(pages)/eventdetails", title: "Event details" },
+  { prefix: "/organizerDashboard/(pages)/users", title: "Users" },
 ];
 
 export default function DashboardHeader() {
@@ -80,7 +80,7 @@ export default function DashboardHeader() {
   const createButtonLabel = t('event.field.create', 'Create New Event');
 
   const handleCreateButton = () => {
-    router.push("/organizerDashboard/pages/createevents");
+    router.push("/organizerDashboard/(pages)/createevents");
   };
 
   return (

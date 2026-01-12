@@ -278,26 +278,26 @@ export const createOrgUserSchema = (t: (key: string, fallback?: string) => strin
   return z.object({
     first_name: z.string()
       .trim()
-      .min(1, v.required("First Name"))
-      .min(2, t('common.validation.firstNameMin', "First Name must be at least 2 characters."))
-      .max(50, t('common.validation.firstNameMax', "First Name must not exceed 50 characters.")),
+      .min(1, t('auth.signup.validation.firstNameRequired', "First Name is required."))
+      .min(2, t('auth.signup.validation.firstNameTooShort', "First Name must be at least 2 characters."))
+      .max(50, t('auth.signup.validation.firstNameTooLong', "First Name must not exceed 50 characters.")),
     last_name: z.string()
       .trim()
-      .min(1, v.required("Last Name"))
-      .min(2, t('common.validation.lastNameMin', "Last Name must be at least 2 characters."))
-      .max(50, t('common.validation.lastNameMax', "Last Name must not exceed 50 characters.")),
+      .min(1, t('auth.signup.validation.lastNameRequired', "Last Name is required."))
+      .min(2, t('auth.signup.validation.lastNameTooShort', "Last Name must be at least 2 characters."))
+      .max(50, t('auth.signup.validation.lastNameTooLong', "Last Name must not exceed 50 characters.")),
     email: z.string()
-      .min(1, t('common.validation.emailRequired', "Email is required."))
-      .email(t('common.validation.emailInvalid', "Invalid email address.")),
+      .min(1, t('auth.signup.validation.emailRequired', "Email is required."))
+      .email(t('auth.signup.validation.emailInvalid', "Invalid email address.")),
     password: z.string()
-      .min(1, v.required("Password"))
-      .min(8, t('auth.validation.passwordMin', "Password must be at least 8 characters."))
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, v.passwordUpperLower())
-      .regex(/[^A-Za-z0-9]/, v.passwordSpecialChar())
-      .regex(/[0-9]/, v.passwordNumber()),
+      .min(1, t('auth.signup.validation.passwordRequired', "Password is required."))
+      .min(8, t('auth.signup.validation.passwordMin', "Password must be at least 8 characters."))
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', "Password must contain at least one uppercase and one lowercase letter."))
+      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', "Password must contain at least one special character."))
+      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', "Password must contain at least one number.")),
     phone: z.string()
       .optional()
-      .refine((val) => !val || isValidPhoneNumber(val), v.phone("Phone")),
+      .refine((val) => !val || isValidPhoneNumber(val), t('auth.signup.validation.phoneInvalid', "Invalid phone number.")),
     role_name: z.enum(['staff', 'manager']),
   });
 };

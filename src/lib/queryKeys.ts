@@ -47,7 +47,10 @@ export const queryKeys = {
    * Organization users query keys
    */
   orgUsers: {
-    /** Key for fetching users of an organization */
-    all: (orgId: string) => ['orgUsers', orgId] as const,
+    /** Key for invalidating all org users queries */
+    all: ['orgUsers'] as const,
+    /** Key for fetching users list with pagination/filters */
+    list: (params: { page?: number; limit?: number; search?: string; role?: string }) =>
+      ['orgUsers', params.page, params.limit, params.search, params.role] as const,
   },
 } as const;

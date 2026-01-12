@@ -25,7 +25,25 @@
     },
     "cancel": "キャンセル",
     "saving": "保存中...",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "optional": "(オプション)",
+    "role": "役割",
+    "placeholder": {
+      "selectRole": "役割を選択してください"
+    },
+    "staff": "スタッフ",
+    "staffDescription": "チケットのチェックインやイベントの閲覧が可能",
+    "manager": "マネージャー",
+    "managerDescription": "イベントとチームを管理するためのフルアクセス",
+    "columns": {
+      "sn": "S.N.",
+      "name": "名前",
+      "email": "電子メール",
+      "contact": "接触"
+    },
+    "status": "状態",
+    "unknown": "未知",
+    "allRoles": "すべての役割"
   },
   "navigation": {
     "events": "イベント",
@@ -74,18 +92,30 @@
       "validation": {
         "phoneRequired": "連絡先番号は必須です",
         "firstNameRequired": "名は必須です",
-        "firstNameTooLong": "名前が長すぎます",
+        "firstNameTooLong": "名は 50 文字を超えてはなりません。",
         "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
         "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
-        "passwordSpecialChar": "少なくとも 1 つの特殊文字を含める必要があります",
-        "passwordUpperLower": "少なくとも 1 つの大文字と 1 つの小文字を含める必要があります",
+        "passwordSpecialChar": "パスワードには少なくとも 1 つの特殊文字が含まれている必要があります。",
+        "passwordUpperLower": "パスワードには、少なくとも 1 つの大文字と 1 つの小文字が含まれている必要があります。",
         "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
-        "emailInvalid": "有効なメールアドレスを入力してください。",
+        "emailInvalid": "メールアドレスが無効です。",
         "phoneInvalid": "有効な電話番号を入力してください。",
-        "passwordMismatch": "パスワードが一致しません。"
+        "passwordMismatch": "パスワードが一致しません。",
+        "lastNameTooLong": "姓は 50 文字を超えてはなりません。",
+        "emailRequired": "電子メールは必須です。",
+        "passwordRequired": "パスワードが必要です。",
+        "passwordMin": "パスワードは 8 文字以上である必要があります。",
+        "lastNameRequired": "姓は必須です。"
       },
       "setPassword": "安全なパスワードを作成する",
-      "phone": "連絡先番号"
+      "phone": "連絡先番号",
+      "firstNamePlaceholder": "名を入力してください",
+      "lastNamePlaceholder": "姓を入力してください",
+      "emailPlaceholder": "メールアドレスを入力してください",
+      "password": "パスワード",
+      "firstName": "ファーストネーム",
+      "lastName": "苗字",
+      "email": "電子メール"
     },
     "resetPassword": {
       "subtitle": "新しいパスワードを設定してください"
@@ -231,5 +261,38 @@
       "descriptionMaxLength": "説明は 500 文字未満にする必要があります。"
     },
     "editButton": "プロフィールの編集"
+  },
+  "users": {
+    "create": {
+      "success": "ユーザーが正常に作成されました",
+      "error": "ユーザーの作成に失敗しました",
+      "title": "チームメンバーを追加",
+      "description": "新しいスタッフまたはマネージャーを組織に追加します。",
+      "passwordHint": "アイコンをクリックして安全なパスワードを生成します",
+      "label": "チームメンバーを追加",
+      "button": "ユーザーの追加"
+    },
+    "update": {
+      "success": "ユーザーは正常に更新されました",
+      "error": "ユーザーの更新に失敗しました"
+    },
+    "edit": {
+      "title": "チームメンバーの編集",
+      "description": "チームメンバーの役割とアクセスステータスを更新します。"
+    },
+    "activeAccount": "アクティブなアカウント",
+    "activeAccountDescription": "無効にすると、ユーザーはシステムにアクセスできなくなります。",
+    "delete": {
+      "success": "ユーザーは正常に削除されました",
+      "error": "ユーザーの削除に失敗しました"
+    },
+    "generatePassword": {
+      "successCopy": "パスワードが生成され、クリップボードにコピーされました。",
+      "success": "パスワードが正常に生成されました"
+    },
+    "search": "ユーザーを検索...",
+    "filterByRole": "役割でフィルタリングする",
+    "pageTitle": "チームマネジメント",
+    "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。"
   }
 }

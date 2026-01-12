@@ -18,14 +18,32 @@
     "updatedAt": "Aggiornato a",
     "delete": "Eliminare",
     "deleteModal": {
-      "description": "Sei sicuro di voler eliminare?",
+      "description": "Sei sicuro di voler eliminare",
       "warning": "Questa azione non può essere annullata.",
       "loading": "Eliminazione...",
       "confirm": "Eliminare"
     },
     "cancel": "Cancellare",
     "saving": "Risparmio...",
-    "saveChanges": "Salva modifiche"
+    "saveChanges": "Salva modifiche",
+    "optional": "(Opzionale)",
+    "role": "Ruolo",
+    "placeholder": {
+      "selectRole": "Seleziona un ruolo"
+    },
+    "staff": "Personale",
+    "staffDescription": "Può effettuare il check-in dei biglietti e visualizzare gli eventi",
+    "manager": "Manager",
+    "managerDescription": "Accesso completo per gestire eventi e team",
+    "columns": {
+      "sn": "S.N.",
+      "name": "Nome",
+      "email": "E-mail",
+      "contact": "Contatto"
+    },
+    "status": "Stato",
+    "unknown": "Sconosciuto",
+    "allRoles": "Tutti i ruoli"
   },
   "navigation": {
     "events": "Eventi",
@@ -74,18 +92,30 @@
       "validation": {
         "phoneRequired": "Il numero di contatto è obbligatorio",
         "firstNameRequired": "Il nome è obbligatorio",
-        "firstNameTooLong": "Il nome è troppo lungo",
+        "firstNameTooLong": "Il nome non deve superare i 50 caratteri.",
         "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
         "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
-        "passwordSpecialChar": "Deve contenere almeno un carattere speciale",
-        "passwordUpperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
+        "passwordSpecialChar": "La password deve contenere almeno un carattere speciale.",
+        "passwordUpperLower": "La password deve contenere almeno una lettera maiuscola e una minuscola.",
         "passwordNumber": "La password deve contenere almeno un numero.",
-        "emailInvalid": "Si prega di inserire un indirizzo email valido.",
+        "emailInvalid": "Indirizzo e-mail non valido.",
         "phoneInvalid": "Inserisci un numero di telefono valido.",
-        "passwordMismatch": "Le password non corrispondono."
+        "passwordMismatch": "Le password non corrispondono.",
+        "lastNameTooLong": "Il cognome non deve superare i 50 caratteri.",
+        "emailRequired": "L'e-mail è obbligatoria.",
+        "passwordRequired": "È richiesta la password.",
+        "passwordMin": "La password deve contenere almeno 8 caratteri.",
+        "lastNameRequired": "Il cognome è obbligatorio."
       },
       "setPassword": "Crea una password sicura per",
-      "phone": "Numero di contatto"
+      "phone": "Numero di contatto",
+      "firstNamePlaceholder": "Inserisci il nome",
+      "lastNamePlaceholder": "Inserisci il cognome",
+      "emailPlaceholder": "Inserisci l'indirizzo email",
+      "password": "Password",
+      "firstName": "Nome di battesimo",
+      "lastName": "Cognome",
+      "email": "E-mail"
     },
     "resetPassword": {
       "subtitle": "Imposta una nuova password per"
@@ -231,5 +261,38 @@
       "descriptionMaxLength": "La descrizione deve contenere meno di 500 caratteri."
     },
     "editButton": "Modifica profilo"
+  },
+  "users": {
+    "create": {
+      "success": "Utente creato con successo",
+      "error": "Impossibile creare l'utente",
+      "title": "Aggiungi membro del team",
+      "description": "Aggiungi un nuovo staff o manager alla tua organizzazione.",
+      "passwordHint": "Fare clic sull'icona per generare una password sicura",
+      "label": "Aggiungi membro del team",
+      "button": "Aggiungi utente"
+    },
+    "update": {
+      "success": "Utente aggiornato con successo",
+      "error": "Impossibile aggiornare l'utente"
+    },
+    "edit": {
+      "title": "Modifica membro del team",
+      "description": "Aggiorna il ruolo e lo stato di accesso del membro del team."
+    },
+    "activeAccount": "Conto attivo",
+    "activeAccountDescription": "Quando disabilitato, l'utente non può accedere al sistema.",
+    "delete": {
+      "success": "Utente rimosso con successo",
+      "error": "Impossibile rimuovere l'utente"
+    },
+    "generatePassword": {
+      "successCopy": "Password generata e copiata negli appunti!",
+      "success": "Password generata correttamente"
+    },
+    "search": "Cerca utenti...",
+    "filterByRole": "Filtra per ruolo",
+    "pageTitle": "Gestione della squadra",
+    "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti."
   }
 }
