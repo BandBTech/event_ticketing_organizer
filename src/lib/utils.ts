@@ -182,19 +182,19 @@ export function safeParseJSON<T>(data: string | null): T | null {
  * @param data - Object to validate
  * @returns True if data matches the expected registration data structure
  */
-export function isValidRegistrationData(data: any): data is {
+export function isValidRegistrationData(data: unknown): data is {
   email: string;
   firstName: string;
   lastName: string;
   phone: string;
   countryCode?: string;
 } {
+  if (!data || typeof data !== "object") return false;
+  const obj = data as Record<string, unknown>;
   return (
-    data &&
-    typeof data === "object" &&
-    typeof data.email === "string" &&
-    typeof data.firstName === "string" &&
-    typeof data.lastName === "string" &&
-    typeof data.phone === "string"
+    typeof obj.email === "string" &&
+    typeof obj.firstName === "string" &&
+    typeof obj.lastName === "string" &&
+    typeof obj.phone === "string"
   );
 }

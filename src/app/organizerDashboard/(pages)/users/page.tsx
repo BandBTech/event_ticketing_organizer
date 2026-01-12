@@ -50,28 +50,7 @@ export default function UsersPage() {
     pageSize: 10,
   });
 
-  // --- Auth Protection ---
-  if (isOrganizerRejected()) {
-    return (
-      <div className="p-6">
-        <RejectionNotice />
-      </div>
-    );
-  }
-
-  if (isOrganizerPending()) {
-    return (
-      <div className="p-6">
-        <PendingNotice />
-      </div>
-    );
-  }
-
-  if (isAuthLoading) {
-    return <div className="flex-1 p-8 pt-6 flex justify-center items-center">Loading...</div>;
-  }
-
-  // --- Data Fetching ---
+  // --- Data Fetching (must be before early returns) ---
   const { data: usersResponse, isLoading, isError } = useQuery({
     queryKey: queryKeys.orgUsers.list({
       page: pagination.pageIndex + 1,
@@ -85,12 +64,13 @@ export default function UsersPage() {
       globalFilter || undefined,
       roleFilter !== "all" ? roleFilter : undefined
     ),
+    enabled: !isOrganizerRejected() && !isOrganizerPending() && !isAuthLoading,
   });
 
   const users = usersResponse?.users || [];
   const totalPages = usersResponse ? Math.ceil(usersResponse.total / usersResponse.limit) : 0;
 
-  // --- Mutations ---
+  // --- Mutations (must be before early returns) ---
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => organizerUserService.deleteUser(userId),
     onSuccess: (_, deletedUserId) => {
@@ -117,7 +97,7 @@ export default function UsersPage() {
     },
   });
 
-  // --- Event Handlers ---
+  // --- Event Handlers (must be before early returns) ---
   const handleEdit = useCallback((user: OrgUser) => {
     openEditUserModal(user);
   }, [openEditUserModal]);
@@ -126,23 +106,23 @@ export default function UsersPage() {
     setDeleteUser(user);
   }, []);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = useCallback(() => {
     if (deleteUser) {
       deleteMutation.mutate(deleteUser.id);
     }
-  };
+  }, [deleteUser, deleteMutation]);
 
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setGlobalFilter(value);
     setPagination(prev => ({ ...prev, pageIndex: 0 }));
-  };
+  }, []);
 
-  const handleRoleChange = (value: string) => {
+  const handleRoleChange = useCallback((value: string) => {
     setRoleFilter(value);
     setPagination(prev => ({ ...prev, pageIndex: 0 }));
-  };
+  }, []);
 
-  // --- Table Columns ---
+  // --- Table Columns (must be before early returns) ---
   const columns = useMemo(
     () => getColumns({
       onEdit: handleEdit,
@@ -153,6 +133,27 @@ export default function UsersPage() {
     }),
     [handleEdit, handleDeleteClick, t, pagination.pageIndex, pagination.pageSize]
   );
+
+  // --- Auth Protection (AFTER all hooks) ---
+  if (isOrganizerRejected()) {
+    return (
+      <div className="p-6">
+        <RejectionNotice />
+      </div>
+    );
+  }
+
+  if (isOrganizerPending()) {
+    return (
+      <div className="p-6">
+        <PendingNotice />
+      </div>
+    );
+  }
+
+  if (isAuthLoading) {
+    return <div className="flex-1 p-8 pt-6 flex justify-center items-center">Loading...</div>;
+  }
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
