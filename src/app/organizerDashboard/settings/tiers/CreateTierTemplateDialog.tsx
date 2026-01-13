@@ -56,6 +56,7 @@ export function CreateTierTemplateDialog({
       template_name: "",
       description: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {

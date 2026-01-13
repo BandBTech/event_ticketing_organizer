@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -30,24 +29,24 @@ import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-
-// Validation schema with translation keys
-const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, "auth.validation.emailRequired")
-    .email("auth.validation.emailInvalid"),
-});
-
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+import {
+  forgotPasswordSchema,
+  ForgotPasswordFormData,
+} from "@/lib/validation";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
+  // Use centralized schema with memoization
+  const schema = useMemo(
+    () => forgotPasswordSchema((key, fallback, params) => key),
+    []
+  );
+
   const form = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       email: "",
     },
@@ -129,7 +128,7 @@ export default function ForgotPasswordForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t("auth.forgotPassword.email", "Email Address")}
+                          {t("auth.login.email", "Email Address")}
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -147,7 +146,7 @@ export default function ForgotPasswordForm() {
                               type="email"
                               autoComplete="email"
                               placeholder={t(
-                                "auth.forgotPassword.emailPlaceholder",
+                                "auth.login.emailPlaceholder",
                                 "Enter your email address"
                               )}
                               className={cn(
@@ -177,7 +176,7 @@ export default function ForgotPasswordForm() {
                       )}
                     >
                       {sendResetMutation.isPending
-                        ? t("auth.forgotPassword.sending", "Sending...")
+                        ? t("common.sending", "Sending...")
                         : t("auth.forgotPassword.sendResetCode", "Send Reset Code")}
                     </Button>
                   </div>

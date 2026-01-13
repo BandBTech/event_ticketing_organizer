@@ -14,9 +14,10 @@
     "validation": {
       "invalidDatetime": "有効な日時を入力してください。",
       "yearLimit": "年は 4 桁を超えることはできません。",
-      "required": "{フィールド}は必須です。",
-      "min": "{field} は少なくとも {value} でなければなりません。",
-      "max": "{field} は {value} を超えることはできません。"
+      "required": "{field}は必須です。",
+      "min": "{field}は少なくとも{value}でなければなりません。",
+      "max": "{field}は{value}を超えることはできません。",
+      "discountPercentageRequired": "割引率は必須です。"
     },
     "createdAt": "作成日",
     "updatedAt": "更新日",
@@ -84,7 +85,9 @@
         "stay": "ページにとどまる",
         "leave": "ページを離れる"
       }
-    }
+    },
+    "continue": "続く",
+    "sending": "送信中..."
   },
   "navigation": {
     "events": "イベント",
@@ -115,9 +118,9 @@
       "noAccount": "アカウントをお持ちでない方は",
       "signUpHere": "こちらから登録",
       "validation": {
-        "emailRequired": "メールアドレスは必須です",
-        "emailInvalid": "有効なメールアドレスを入力してください",
-        "passwordRequired": "パスワードは必須です",
+        "emailRequired": "電子メールは必須です。",
+        "emailInvalid": "有効なメールアドレスを入力してください。",
+        "passwordRequired": "パスワードが必要です。",
         "passwordTooShort": "パスワードは6文字以上である必要があります",
         "passwordTooLong": "パスワードが長すぎます"
       },
@@ -147,7 +150,9 @@
         "emailRequired": "電子メールは必須です。",
         "passwordRequired": "パスワードが必要です。",
         "passwordMin": "パスワードは少なくとも {min} 文字にする必要があります。",
-        "lastNameRequired": "姓は必須です。"
+        "lastNameRequired": "姓は必須です。",
+        "confirmPasswordRequired": "パスワードの確認が必要です。",
+        "passwordMax": "パスワードは {max} 文字を超えることはできません。"
       },
       "setPassword": "安全なパスワードを作成する",
       "phone": "連絡先番号",
@@ -157,23 +162,68 @@
       "password": "パスワード",
       "firstName": "ファーストネーム",
       "lastName": "苗字",
-      "email": "電子メール"
+      "email": "電子メール",
+      "title": "登録する",
+      "creatingAccount": "アカウントを作成しています...",
+      "completeRegistration": "登録を完了する",
+      "haveAccount": "すでにアカウントをお持ちですか?",
+      "loginAsOrganizer": "オーガナイザーとしてサインインします。",
+      "basicInfo": "基本情報",
+      "pageStep": "ステップ {currentStep}/3:",
+      "sendingOTP": "確認コードを送信中...",
+      "passwordPlaceholder": "••••••••••••",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "パスワードを認証する",
+      "termsPrefix": "続行すると、当社の内容を読んで理解したという事実に同意したことになります。",
+      "terms": "利用規約",
+      "termsAnd": "そして",
+      "privacy": "プライバシーポリシー"
     },
     "resetPassword": {
-      "subtitle": "新しいパスワードを設定してください"
+      "subtitle": "新しいパスワードを設定してください",
+      "title": "パスワードのリセット",
+      "newPassword": "新しいパスワード",
+      "resetting": "リセット中...",
+      "backToLogin": "ログインに戻る"
     },
     "verifyOTP": {
       "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
-      "verifyButton": "OTP を確認する"
+      "verifyButton": "OTP を確認する",
+      "didntReceiveCode": "コードを受信しませんでしたか?",
+      "resendIn": "{resendTimer} 秒以内に再送信します",
+      "resend": "再送信",
+      "back": "戻る",
+      "title": "OTP を確認する",
+      "subtitle": "に送信された 6 桁のコードを入力してください",
+      "verifying": "確認中...",
+      "validation": {
+        "otpLength": "OTP は 6 桁である必要があります。"
+      },
+      "checkSpam": "メールが見つからない場合は迷惑メールフォルダを確認してください",
+      "didntReceive": "コードを受け取っていませんか?"
     },
     "toast": {
-      "passwordChangedLogin": "新しいパスワードでログインしてください。"
+      "passwordChangedLogin": "新しいパスワードでログインしてください。",
+      "otpResent": "新しいコードがメールに送信されました",
+      "resendFailed": "コードの再送信に失敗しました。\nもう一度試してください。",
+      "signupSuccess": "アカウントが正常に作成されました。",
+      "signupError": "登録に失敗しました。\nもう一度試してください。"
     },
     "passwordRequirements": {
       "minLength": "8文字以上で構成する必要があります",
       "upperLower": "大文字と小文字をそれぞれ少なくとも1つ含める必要があります",
       "specialChar": "少なくとも1つの特殊文字を含める必要があります",
       "number": "少なくとも1つの数字を含める必要があります"
+    },
+    "forgotPassword": {
+      "title": "パスワードをお忘れですか",
+      "subtitle": "メールアドレスを入力してパスワードリセットコードを受信して​​ください",
+      "sendResetCode": "リセットコードを送信する",
+      "rememberPassword": "パスワードを覚えていますか?",
+      "loginHere": "ここからログインしてください"
+    },
+    "phoneNumberSearch": {
+      "placeholder": "国を検索..."
     }
   },
   "event": {
@@ -202,7 +252,11 @@
       "bannerImageHelperTextSize": "1920x1200px、サイズ最大5MBのPNG/JPGファイル",
       "bannerImageHelperText": "バナー画像をアップロードまたはドラッグ",
       "startDateTime": "イベント開始日",
-      "endDateTime": "イベント終了日"
+      "endDateTime": "イベント終了日",
+      "discountType": "割引タイプ",
+      "promoCode": "プロモーションコード",
+      "discountAmount": "割引額",
+      "discountPercentage": "割引率 (%)"
     },
     "helperText": {
       "bannerImage": "バナー画像をアップロードまたはドラッグ",
@@ -228,7 +282,10 @@
       "addMore": "さらに追加...",
       "tags": "入力して Enter/カンマを押して追加します...",
       "searchTier": "階層を検索または作成...",
-      "selectTier": "層名を選択または入力..."
+      "selectTier": "層名を選択または入力...",
+      "discountType": "割引タイプを選択してください",
+      "discountAmount": "割引額を入力してください",
+      "discountPercentage": "割引率を入力してください"
     },
     "section": {
       "venueSchedule": "会場",
@@ -284,7 +341,7 @@
       "gstRequired": "GSTは必須です。\n該当しない場合は 0 に設定します。",
       "gstPositive": "GST は正の値である必要があります。",
       "gstMax": "GST は 100% を超えることはできません。",
-      "dateTimeRequired": "{フィールド}は必須です。",
+      "dateTimeRequired": "{field}は必須です。",
       "salesEndAfterStart": "販売終了日は販売開始日以降である必要があります。",
       "promoCodeRequired": "プロモーション コードが必要です。",
       "promoCodeMaxLength": "プロモーション コードは {max} 文字未満にする必要があります。",
@@ -313,7 +370,13 @@
       "cancelReasonRequired": "理由が必要です。",
       "cancelReasonMinLength": "理由は少なくとも {min} 文字でなければなりません。",
       "cancelReasonMaxLength": "理由は {max} 文字を超えることはできません。",
-      "descriptionRequired": "イベントの説明は必須です。"
+      "descriptionRequired": "イベントの説明は必須です。",
+      "percentageMin": "パーセンテージは少なくとも 0.01% である必要があります。",
+      "percentageMax": "パーセンテージは 100% を超えることはできません。",
+      "percentageDecimals": "パーセンテージは小数点以下 2 桁までです。",
+      "salesStartBeforeEventStart": "販売開始日をイベント開始日以降にすることはできません。",
+      "discountAmountRequired": "割引金額は必須です。",
+      "discountPercentageRequired": "割引率は必須です。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -335,7 +398,12 @@
       "paused": "販売一時停止",
       "stopped": "販売停止",
       "sold_out": "完売",
-      "sales_ended": "販売終了"
+      "sales_ended": "販売終了",
+      "rejected": "拒否されました"
+    },
+    "option": {
+      "amountFixed": "金額（固定）",
+      "percentage": "パーセンテージ (%)"
     }
   },
   "tierTemplates": {

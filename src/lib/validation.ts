@@ -6,8 +6,9 @@ import { z } from "zod";
 
 
 // Helper for required date string
-const createRequiredDateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string, fieldName?: string) =>
-  z.string().min(1, fieldName ? t('event.validation.dateTimeRequired', '{field} is required.', { field: fieldName }) : t('event.validation.dateTimeRequired', 'This field is required.')).superRefine((val, ctx) => {
+// fieldNameKey should be in format "translationKey:FallbackName" for translation support
+const createRequiredDateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string, fieldNameKey?: string) =>
+  z.string().min(1, fieldNameKey ? `event.validation.dateTimeRequired|field:${fieldNameKey}` : 'This field is required.').superRefine((val, ctx) => {
     const date = new Date(val);
     if (isNaN(date.getTime())) {
       ctx.addIssue({
@@ -28,8 +29,8 @@ const createRequiredDateSchema = (t: (key: string, fallback?: string, params?: R
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) {
-      const message = fieldName
-        ? t('event.validation.fieldPastDate', '{field} cannot be in the past.', { field: fieldName })
+      const message = fieldNameKey
+        ? `event.validation.fieldPastDate|field:${fieldNameKey}`
         : t('event.validation.pastDate', 'Date cannot be in the past.');
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -55,7 +56,7 @@ export const LAST_NAME_MIN = 2;
 export const FIRST_NAME_MAX = 50;
 export const LAST_NAME_MAX = 50;
 export const PASSWORD_MIN = 8;
-export const PASSWORD_MAX = 255;
+export const PASSWORD_MAX = 50;
 export const STOP_SALES_REASON_MIN = 1;
 export const CANCEL_REASON_MIN = 1;
 
@@ -67,16 +68,107 @@ export const PROMO_CODE_NAME_MAX = 50;
 export const PROMO_CODE_AMOUNT_MAX = 100000;
 export const PROMO_CODE_QUANTITY_MAX = 100000;
 
+// Auth Schemas
+export const loginSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
+  email: z
+    .string()
+    .min(1, t('auth.login.validation.emailRequired', 'Email is required.'))
+    .email(t('auth.login.validation.emailInvalid', 'Email is invalid.')),
+  password: z.string().min(1, t('auth.login.validation.passwordRequired', 'Password is required.')),
+  rememberMe: z.boolean(),
+});
+
+export type LoginFormData = z.infer<ReturnType<typeof loginSchema>>;
+
+// Registration Schemas
+export const registerBasicInfoSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
+  firstName: z
+    .string()
+    .min(1, t('auth.signup.validation.firstNameRequired', 'First name is required.'))
+    .min(FIRST_NAME_MIN, t('auth.signup.validation.firstNameTooShort', 'First name must be at least {min} characters.', { min: FIRST_NAME_MIN }))
+    .max(FIRST_NAME_MAX, t('auth.signup.validation.firstNameTooLong', 'First name must not exceed {max} characters.', { max: FIRST_NAME_MAX })),
+  lastName: z
+    .string()
+    .min(1, t('auth.signup.validation.lastNameRequired', 'Last name is required.'))
+    .min(LAST_NAME_MIN, t('auth.signup.validation.lastNameTooShort', 'Last name must be at least {min} characters.', { min: LAST_NAME_MIN }))
+    .max(LAST_NAME_MAX, t('auth.signup.validation.lastNameTooLong', 'Last name must not exceed {max} characters.', { max: LAST_NAME_MAX })),
+  email: z
+    .string()
+    .min(1, t('auth.signup.validation.emailRequired', 'Email is required.'))
+    .email(t('auth.signup.validation.emailInvalid', 'Invalid email address.')),
+  phone: z
+    .string()
+    .min(1, t('auth.signup.validation.phoneRequired', 'Contact number is required.'))
+    .refine((val) => isValidPhoneNumber(val), t('auth.signup.validation.phoneInvalid', 'Invalid phone number.')),
+});
+
+export type RegisterBasicInfoFormData = z.infer<ReturnType<typeof registerBasicInfoSchema>>;
+
+export const registerOTPSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
+  otp: z.string().length(6, t('auth.verifyOTP.validation.otpLength', 'OTP must be 6 digits.')),
+});
+
+export type RegisterOTPFormData = z.infer<ReturnType<typeof registerOTPSchema>>;
+
+export const registerPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
+  .object({
+    password: z
+      .string()
+      .min(1, t('auth.signup.validation.passwordRequired', 'Password is required.'))
+      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', 'Password must be at least {min} characters.', { min: PASSWORD_MIN }))
+      .max(PASSWORD_MAX, t('auth.signup.validation.passwordMax', 'Password cannot exceed {max} characters.', { max: PASSWORD_MAX }))
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', 'Password must contain at least one uppercase and one lowercase letter.'))
+      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', 'Password must contain at least one special character.'))
+      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', 'Password must contain at least one number.')),
+    confirmPassword: z.string().min(1, t('auth.signup.validation.confirmPasswordRequired', 'Confirm password is required.')),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: t('auth.signup.validation.passwordMismatch', 'Passwords do not match.'),
+    path: ["confirmPassword"],
+  });
+
+export type RegisterPasswordFormData = z.infer<ReturnType<typeof registerPasswordSchema>>;
+
+// Forgot Password Schema
+export const forgotPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
+  email: z
+    .string()
+    .min(1, t('auth.login.validation.emailRequired', 'Email is required.'))
+    .email(t('auth.login.validation.emailInvalid', 'Invalid email address.')),
+});
+
+export type ForgotPasswordFormData = z.infer<ReturnType<typeof forgotPasswordSchema>>;
+
+// Reset Password Schema
+export const resetPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
+  .object({
+    newPassword: z
+      .string()
+      .min(1, t('auth.login.validation.passwordRequired', 'Password is required.'))
+      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', 'Password must be at least {min} characters.', { min: PASSWORD_MIN }))
+      .max(PASSWORD_MAX, t('auth.signup.validation.passwordMax', 'Password cannot exceed {max} characters.', { max: PASSWORD_MAX }))
+      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', 'Password must contain at least one uppercase and one lowercase letter.'))
+      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', 'Password must contain at least one special character.'))
+      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', 'Password must contain at least one number.')),
+    confirmPassword: z.string().min(1, t('auth.signup.validation.confirmPasswordRequired', 'Confirm password is required.')),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('auth.signup.validation.passwordMismatch', 'Passwords do not match.'),
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordFormData = z.infer<ReturnType<typeof resetPasswordSchema>>;
+
 // Helper to create a required number schema with proper "is required" message
+// fieldNameKey should be in format "translationKey:FallbackName" for translation support
 const createRequiredNumberSchema = (
   t: (key: string, fallback?: string, params?: Record<string, string | number>) => string,
-  fieldName: string,
+  fieldNameKey: string,
   minValue: number = 1,
-  minMessage?: string,
-  maxValue?: number,
-  maxMessage?: string
-) =>
-  z.preprocess(
+  maxValue: number = Number.MAX_SAFE_INTEGER,
+) => {
+  // Use pipe format: "common.validation.required|field:translationKey:FallbackName"
+  return z.preprocess(
     (val) => {
       // Convert empty string or NaN to undefined so z.number() treats it as missing
       if (val === '' || val === null || val === undefined) return undefined;
@@ -85,11 +177,12 @@ const createRequiredNumberSchema = (
     },
     z
       .number({
-        error: t('common.validation.required', '{field} is required.', { field: fieldName }),
+        message: `common.validation.required|field:${fieldNameKey}`,
       })
-      .min(minValue, minMessage || t('common.validation.min', '{field} must be at least {value}.', { field: fieldName, value: minValue.toString() }))
-      .max(maxValue || Number.MAX_SAFE_INTEGER, maxMessage || t('common.validation.max', '{field} cannot exceed {value}.', { field: fieldName, value: (maxValue || Number.MAX_SAFE_INTEGER).toString() }))
+      .min(minValue, `common.validation.min|field:${fieldNameKey},value:${minValue}`)
+      .max(maxValue, `common.validation.max|field:${fieldNameKey},value:${maxValue}`)
   );
+};
 
 export const createTicketSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
   .object({
@@ -100,19 +193,15 @@ export const createTicketSchema = (t: (key: string, fallback?: string, params?: 
       .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.", { max: TIER_NAME_MAX.toString() })),
     price: createRequiredNumberSchema(
       t,
-      t('event.field.ticketPrice', 'Price'),
+      'event.field.ticketPrice:Price',
       1,
-      t('event.validation.priceRequired', "Price must be at least 1."),
       MAX_PRICE,
-      t('event.validation.priceMax', "Price cannot exceed {max}.", { max: MAX_PRICE.toString() })
     ),
     quantity: createRequiredNumberSchema(
       t,
-      t('event.field.ticketQuantity', 'Quantity'),
+      'event.field.ticketQuantity:Quantity',
       1,
-      t('event.validation.quantityMin', "Quantity must be at least 1."),
       MAX_QUANTITY,
-      t('event.validation.quantityMax', "Quantity cannot exceed {max}.", { max: MAX_QUANTITY.toString() })
     ),
     gst: z.preprocess(
       (val) => {
@@ -122,13 +211,13 @@ export const createTicketSchema = (t: (key: string, fallback?: string, params?: 
       },
       z
         .number({
-          error: t('event.validation.gstRequired', "GST is required. Set to 0 if not applicable."),
+          message: "GST is required. Set to 0 if not applicable.",
         })
         .min(0, t('event.validation.gstPositive', "GST must be positive."))
         .max(100, t('event.validation.gstMax', "GST cannot exceed 100%."))
     ),
-    salesStart: createRequiredDateSchema(t, t('event.field.salesStart', 'Sales Start Date')),
-    salesEnd: createRequiredDateSchema(t, t('event.field.salesEnd', 'Sales End Date')),
+    salesStart: createRequiredDateSchema(t, 'event.field.salesStart:Sales Start Date'),
+    salesEnd: createRequiredDateSchema(t, 'event.field.salesEnd:Sales End Date'),
   })
   .refine((data) => {
     if (!data.salesEnd || !data.salesStart) return true;
@@ -145,22 +234,86 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string, params
     .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo Code must be under {max} characters.", { max: PROMO_CODE_NAME_MAX.toString() }))
     .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo Code may only contain A-Z , 0-9, _ or -")),
   discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount Type is required.")),
-  amount: createRequiredNumberSchema(
-    t,
-    t('event.field.discountAmount', 'Amount'),
-    1,
-    t('event.validation.amountRequired', "Amount must be at least 1."),
-    PROMO_CODE_AMOUNT_MAX,
-    t('event.validation.amountMax', "Amount cannot exceed {max}.", { max: PROMO_CODE_AMOUNT_MAX.toLocaleString() })
+  amount: z.preprocess(
+    (val) => {
+      if (val === '' || val === null || val === undefined) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    },
+    z.number().optional()
   ),
   quantity: createRequiredNumberSchema(
     t,
-    t('event.field.discountQuantity', 'Quantity'),
+    'event.field.discountQuantity:Quantity',
     1,
-    t('event.validation.quantityMin', "Quantity must be at least 1."),
     PROMO_CODE_QUANTITY_MAX,
-    t('event.validation.quantityMax', "Quantity cannot exceed {max}.", { max: PROMO_CODE_QUANTITY_MAX.toLocaleString() })
   ),
+}).superRefine((data, ctx) => {
+  const { discountType, amount } = data;
+
+  // Handle empty amount based on discount type
+  if (amount === undefined || amount === null) {
+    const message = discountType === 'percentage'
+      ? t('event.validation.discountPercentageRequired', 'Discount Percentage is required.')
+      : t('event.validation.discountAmountRequired', 'Discount Amount is required.');
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message,
+      path: ['amount'],
+    });
+    return;
+  }
+
+  if (discountType === 'percentage') {
+    if (!amount) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.discountPercentageRequired', 'Discount Percentage is required.'),
+        path: ['amount'],
+      });
+    }
+    // Percentage validation: 0.01 - 100, max 2 decimal places
+    if (amount < 0.01) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.percentageMin', "Percentage must be at least 0.01%."),
+        path: ['amount'],
+      });
+    }
+    if (amount > 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.percentageMax', "Percentage cannot exceed 100%."),
+        path: ['amount'],
+      });
+    }
+    // Check for max 2 decimal places
+    const decimalStr = amount.toString();
+    const decimalPart = decimalStr.split('.')[1];
+    if (decimalPart && decimalPart.length > 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.percentageDecimals', "Percentage can have at most 2 decimal places."),
+        path: ['amount'],
+      });
+    }
+  } else {
+    // Amount (fixed) validation: 1 - PROMO_CODE_AMOUNT_MAX
+    if (amount < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.amountRequired', "Amount must be at least 1."),
+        path: ['amount'],
+      });
+    }
+    if (amount > PROMO_CODE_AMOUNT_MAX) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('event.validation.amountMax', "Amount cannot exceed {max}.", { max: PROMO_CODE_AMOUNT_MAX.toLocaleString() }),
+        path: ['amount'],
+      });
+    }
+  }
 });
 
 export const createEventSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
@@ -181,15 +334,13 @@ export const createEventSchema = (t: (key: string, fallback?: string, params?: R
       .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue Address must be under {max} characters.", { max: VENUE_ADDRESS_MAX.toString() })),
     capacity: createRequiredNumberSchema(
       t,
-      t('event.field.capacity', 'Capacity'),
+      'event.field.capacity:Capacity',
       1,
-      t('event.validation.capacityMin', "Capacity must be at least 1."),
       MAX_CAPACITY,
-      t('event.validation.capacityMax', "Capacity cannot exceed {max}.", { max: MAX_CAPACITY.toString() })
     ),
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
-    startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Event Start Date')),
-    endDate: createRequiredDateSchema(t, t('event.field.endDateTime', 'Event End Date')),
+    startDate: createRequiredDateSchema(t, 'event.field.startDateTime:Event Start Date'),
+    endDate: createRequiredDateSchema(t, 'event.field.endDateTime:Event End Date'),
     tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one Ticket is required.")),
     promoCodes: z.array(createPromoCodeSchema(t)).optional(),
   })

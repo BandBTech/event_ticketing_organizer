@@ -1,6 +1,6 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,6 +30,14 @@ interface PromoCodeCardProps {
 const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
   const { t } = useTranslation();
 
+  // Watch discount type to dynamically change amount field label/placeholder
+  const discountType = useWatch({
+    control,
+    name: `promoCodes.${index}.discountType`,
+  });
+
+  const isPercentage = discountType === "percentage";
+
   return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
       <div className="grid grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-4 gap-5">
@@ -53,7 +61,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
               <div className="flex justify-between items-center -mt-1 min-h-[20px]">
                 <TranslatedFormMessage t={t} className="mt-0" />
                 <div className="text-xs text-muted-foreground ml-auto">
-                  {field.value?.length || 0}/{PROMO_CODE_NAME_MAX} characters
+                  {field.value?.length || 0}/{PROMO_CODE_NAME_MAX} {t("common.characters", "characters")}
                 </div>
               </div>
             </FormItem>
@@ -69,7 +77,7 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className={cn("h-13 md:text-md", !!fieldState.error && "border-red-500 focus:ring-red-500/20")}>
-                    <SelectValue placeholder={t("common.placeholder.select", "Select Type")} />
+                    <SelectValue placeholder={t("event.placeholder.discountType", "Select discount type")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -89,12 +97,20 @@ const PromoCodeCard = ({ index, control, onDelete }: PromoCodeCardProps) => {
           name={`promoCodes.${index}.amount`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.discountAmount", "Amount")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {isPercentage
+                  ? t("event.field.discountPercentage", "Percentage (%)")
+                  : t("event.field.discountAmount", "Discount Amount")
+                } <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   className="h-13 md:text-md"
                   type="number"
-                  placeholder={t("event.placeholder.amount", "Enter amount")}
+                  placeholder={isPercentage
+                    ? t("event.placeholder.discountPercentage", "Enter discount percentage")
+                    : t("event.placeholder.discountAmount", "Enter discount amount")
+                  }
                   {...field}
                   onChange={(e) => {
                     const val = e.target.value;

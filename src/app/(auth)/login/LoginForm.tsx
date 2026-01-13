@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -36,18 +36,8 @@ import { useAuthStore } from "@/store/authStore";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { LoginFormData, loginSchema } from "@/lib/validation";
 
-// Validation schema with translation keys
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "auth.validation.emailRequired")
-    .email("auth.validation.emailInvalid"),
-  password: z.string().min(1, "auth.validation.passwordRequired"),
-  rememberMe: z.boolean(),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -63,8 +53,10 @@ export default function LoginForm() {
     }
   }, [isAuthenticated, router]);
 
+  const loginFormSchema = useMemo(() => loginSchema((key, fallback, params) => key), []);
+
   const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",

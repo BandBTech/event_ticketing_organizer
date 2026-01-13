@@ -14,9 +14,10 @@
     "validation": {
       "invalidDatetime": "Inserisci una data/ora valida.",
       "yearLimit": "L'anno non può contenere più di 4 cifre.",
-      "required": "{campo} è obbligatorio.",
+      "required": "{field} è obbligatorio.",
       "min": "{field} deve essere almeno {value}.",
-      "max": "{campo} non può superare {valore}."
+      "max": "{field} non può superare {value}.",
+      "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
     },
     "createdAt": "Creato a",
     "updatedAt": "Aggiornato a",
@@ -84,7 +85,9 @@
         "stay": "Rimani sulla pagina",
         "leave": "Lascia la pagina"
       }
-    }
+    },
+    "continue": "Continuare",
+    "sending": "Invio..."
   },
   "navigation": {
     "events": "Eventi",
@@ -115,9 +118,9 @@
       "noAccount": "Non hai un account?",
       "signUpHere": "Registrati qui.",
       "validation": {
-        "emailRequired": "Email è richiesta",
-        "emailInvalid": "Inserisci un indirizzo email valido",
-        "passwordRequired": "Password è richiesta",
+        "emailRequired": "L'e-mail è obbligatoria.",
+        "emailInvalid": "Si prega di inserire un indirizzo email valido.",
+        "passwordRequired": "È richiesta la password.",
         "passwordTooShort": "La password deve essere di almeno 6 caratteri",
         "passwordTooLong": "La password è troppo lunga"
       },
@@ -147,7 +150,9 @@
         "emailRequired": "L'e-mail è obbligatoria.",
         "passwordRequired": "È richiesta la password.",
         "passwordMin": "La password deve contenere almeno {min} caratteri.",
-        "lastNameRequired": "Il cognome è obbligatorio."
+        "lastNameRequired": "Il cognome è obbligatorio.",
+        "confirmPasswordRequired": "È richiesta la conferma della password.",
+        "passwordMax": "La password non può contenere più di {max} caratteri."
       },
       "setPassword": "Crea una password sicura per",
       "phone": "Numero di contatto",
@@ -157,23 +162,68 @@
       "password": "Password",
       "firstName": "Nome di battesimo",
       "lastName": "Cognome",
-      "email": "E-mail"
+      "email": "E-mail",
+      "title": "Registro",
+      "creatingAccount": "Creazione dell'account...",
+      "completeRegistration": "Completa la registrazione",
+      "haveAccount": "Hai già un account?",
+      "loginAsOrganizer": "Accedi come Organizzatore.",
+      "basicInfo": "Informazioni di base",
+      "pageStep": "Passaggio {currentStep} di 3:",
+      "sendingOTP": "Invio del codice di verifica...",
+      "passwordPlaceholder": "••••••••••••",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "Conferma password",
+      "termsPrefix": "Proseguendo acconsenti al fatto di aver letto e compreso la nostra",
+      "terms": "Termini e Condizioni",
+      "termsAnd": "E",
+      "privacy": "politica sulla riservatezza"
     },
     "resetPassword": {
-      "subtitle": "Imposta una nuova password per"
+      "subtitle": "Imposta una nuova password per",
+      "title": "Reimposta password",
+      "newPassword": "Nuova parola d'ordine",
+      "resetting": "Reimpostazione...",
+      "backToLogin": "Torna al login"
     },
     "verifyOTP": {
       "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
-      "verifyButton": "Verificare l'OTP"
+      "verifyButton": "Verificare l'OTP",
+      "didntReceiveCode": "Non hai ricevuto il codice?",
+      "resendIn": "Invia di nuovo tra {resendTimer} s",
+      "resend": "Invia nuovamente",
+      "back": "Indietro",
+      "title": "Verificare l'OTP",
+      "subtitle": "Inserisci il codice di 6 cifre inviato a",
+      "verifying": "Verifica...",
+      "validation": {
+        "otpLength": "L'OTP deve essere composto da 6 cifre."
+      },
+      "checkSpam": "Controlla la cartella spam se non vedi l'e-mail",
+      "didntReceive": "Non hai ricevuto il codice?"
     },
     "toast": {
-      "passwordChangedLogin": "Effettua il login con la tua nuova password."
+      "passwordChangedLogin": "Effettua il login con la tua nuova password.",
+      "otpResent": "Nuovo codice inviato alla tua email",
+      "resendFailed": "Impossibile inviare nuovamente il codice. \nPer favore riprova.",
+      "signupSuccess": "Account creato con successo!",
+      "signupError": "La registrazione non è riuscita. \nPer favore riprova."
     },
     "passwordRequirements": {
       "minLength": "Deve essere composto da almeno 8 caratteri",
       "upperLower": "Deve contenere almeno una lettera maiuscola e una minuscola",
       "specialChar": "Deve contenere almeno un carattere speciale",
       "number": "Deve contenere almeno un numero"
+    },
+    "forgotPassword": {
+      "title": "Ha dimenticato la password",
+      "subtitle": "Inserisci la tua email per ricevere un codice di reimpostazione della password",
+      "sendResetCode": "Invia codice di ripristino",
+      "rememberPassword": "Ricordi la tua password?",
+      "loginHere": "Accedi qui"
+    },
+    "phoneNumberSearch": {
+      "placeholder": "Cerca paese..."
     }
   },
   "event": {
@@ -202,7 +252,11 @@
       "bannerImageHelperTextSize": "File PNG/JPG di 1920x1200px con dimensioni fino a 5 MB",
       "bannerImageHelperText": "Carica l'immagine del banner o trascinala",
       "startDateTime": "Data di inizio evento",
-      "endDateTime": "Data di fine evento"
+      "endDateTime": "Data di fine evento",
+      "discountType": "Tipo di sconto",
+      "promoCode": "Codice promozionale",
+      "discountAmount": "Importo dello sconto",
+      "discountPercentage": "Percentuale di sconto (%)"
     },
     "helperText": {
       "bannerImage": "Carica l'immagine del banner o trascinala",
@@ -228,7 +282,10 @@
       "addMore": "Aggiungi altro...",
       "tags": "Digita e premi Invio/Virgola per aggiungere...",
       "searchTier": "Cerca o crea livello...",
-      "selectTier": "Seleziona o digita il nome del livello..."
+      "selectTier": "Seleziona o digita il nome del livello...",
+      "discountType": "Seleziona il tipo di sconto",
+      "discountAmount": "Inserisci l'importo dello sconto",
+      "discountPercentage": "Inserisci la percentuale di sconto"
     },
     "section": {
       "venueSchedule": "Luogo",
@@ -284,7 +341,7 @@
       "gstRequired": "La GST è obbligatoria. \nImpostare su 0 se non applicabile.",
       "gstPositive": "La GST deve essere positiva.",
       "gstMax": "La GST non può superare il 100%.",
-      "dateTimeRequired": "{campo} è obbligatorio.",
+      "dateTimeRequired": "{field} è obbligatorio.",
       "salesEndAfterStart": "La data di fine delle vendite deve essere successiva alla data di inizio delle vendite.",
       "promoCodeRequired": "È richiesto il codice promozionale.",
       "promoCodeMaxLength": "Il codice promozionale deve contenere meno di {max} caratteri.",
@@ -314,7 +371,13 @@
       "stopSalesReasonMaxLength": "Il motivo non può contenere più di {max} caratteri.",
       "cancelReasonRequired": "La ragione è necessaria.",
       "cancelReasonMinLength": "Il motivo deve contenere almeno {min} caratteri.",
-      "cancelReasonMaxLength": "Il motivo non può contenere più di {max} caratteri."
+      "cancelReasonMaxLength": "Il motivo non può contenere più di {max} caratteri.",
+      "percentageMin": "La percentuale deve essere almeno pari allo 0,01%.",
+      "percentageMax": "La percentuale non può superare il 100%.",
+      "percentageDecimals": "La percentuale può avere al massimo 2 cifre decimali.",
+      "salesStartBeforeEventStart": "La data di inizio delle vendite non può essere successiva alla data di inizio dell'evento.",
+      "discountAmountRequired": "L'importo dello sconto è obbligatorio.",
+      "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -338,6 +401,10 @@
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
       "sales_ended": "Vendite terminate"
+    },
+    "option": {
+      "amountFixed": "Importo (fisso)",
+      "percentage": "Percentuale (%)"
     }
   },
   "tierTemplates": {

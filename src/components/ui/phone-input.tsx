@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type PhoneInputProps = Omit<
   React.ComponentProps<"input">,
@@ -85,6 +87,8 @@ const CountrySelect = ({
   options: countryList,
   onChange,
 }: CountrySelectProps) => {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
   const [searchValue, setSearchValue] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
@@ -134,7 +138,7 @@ const CountrySelect = ({
                 }
               }, 0);
             }}
-            placeholder="Search country..."
+            placeholder={t("auth.phoneNumberSearch.placeholder", "Search country...")}
           />
           <CommandList>
             <ScrollArea ref={scrollAreaRef} className="h-72">

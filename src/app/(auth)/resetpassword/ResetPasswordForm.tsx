@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import * as z from "zod";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -30,28 +29,13 @@ import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import {
+  resetPasswordSchema,
+  ResetPasswordFormData,
+} from "@/lib/validation";
 
 // Local components
 import { PasswordRequirements } from "../components/PasswordRequirements";
-
-// Validation schema with translation keys
-const resetPasswordSchema = z
-  .object({
-    newPassword: z
-      .string()
-      .min(1, "auth.validation.passwordRequired")
-      .min(8, "auth.validation.passwordMinLength")
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, "auth.validation.passwordUpperLower")
-      .regex(/[^A-Za-z0-9]/, "auth.validation.passwordSpecial")
-      .regex(/[0-9]/, "auth.validation.passwordNumber"),
-    confirmPassword: z.string().min(1, "auth.validation.confirmPasswordRequired"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "auth.validation.passwordMatch",
-    path: ["confirmPassword"],
-  });
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
@@ -78,8 +62,14 @@ function ResetPasswordContent() {
     setOtp(otpParam);
   }, [searchParams, router]);
 
+  // Use centralized schema with memoization
+  const schema = useMemo(
+    () => resetPasswordSchema((key, fallback, params) => key),
+    []
+  );
+
   const form = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       newPassword: "",
       confirmPassword: "",
@@ -200,6 +190,15 @@ function ResetPasswordContent() {
                                 </button>
                               </div>
                             </FormControl>
+                            {form.formState.errors.newPassword &&
+                              form.formState.errors.newPassword.message !== "Invalid input" &&
+                              // Filter out messages that are already covered by PasswordRequirements
+                              !form.formState.errors.newPassword.message?.includes("must be at least 8 characters") &&
+                              !form.formState.errors.newPassword.message?.includes("uppercase and one lowercase") &&
+                              !form.formState.errors.newPassword.message?.includes("special character") &&
+                              !form.formState.errors.newPassword.message?.includes("numeric digit") && (
+                                <TranslatedFormMessage t={t} />
+                              )}
                             <PasswordRequirements password={form.watch("newPassword")} />
                           </FormItem>
                         )}
@@ -275,7 +274,7 @@ function ResetPasswordContent() {
                         >
                           {resetMutation.isPending
                             ? t("auth.resetPassword.resetting", "Resetting...")
-                            : t("auth.resetPassword.resetButton", "Reset Password")}
+                              : t("auth.resetPassword.title", "Reset Password")}
                         </Button>
                       </div>
                     </form>

@@ -20,7 +20,8 @@
       "max": "{field} cannot exceed {value}.",
       "pattern": "{field} format is invalid.",
       "invalidDatetime": "Enter valid datetime.",
-      "yearLimit": "Year cannot be more than 4 digits."
+      "yearLimit": "Year cannot be more than 4 digits.",
+      "discountPercentageRequired": "Discount Percentage is required."
     },
     "cancelButton": "Cancel",
     "createdAt": "Created At",
@@ -91,7 +92,9 @@
         "stay": "Stay on Page",
         "leave": "Leave Page"
       }
-    }
+    },
+    "continue": "Continue",
+    "sending": "Sending..."
   },
   "navigation": {
     "events": "Events",
@@ -156,14 +159,14 @@
       "signUpHere": "Sign up here.",
       "demoCredentials": "Demo: Use attendee@example.com / password123",
       "validation": {
-        "emailRequired": "Email is required",
-        "emailInvalid": "Please enter a valid email address",
-        "passwordRequired": "Password is required",
-        "passwordTooShort": "Password must be at least 6 characters long",
-        "passwordTooLong": "Password is too long"
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Please enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "passwordTooShort": "Password must be at least 6 characters long.",
+        "passwordTooLong": "Password is too long."
       },
       "errors": {
-        "invalidCredentials": "Invalid email or password",
+        "invalidCredentials": "Invalid email or password.",
         "loginFailed": "Login failed. Please try again."
       },
       "showPassword": "Show password",
@@ -212,8 +215,10 @@
         "lastNameRequired": "Last name is required.",
         "passwordRequired": "Password is required.",
         "passwordMin": "Password must be at least {min} characters.",
+        "passwordMax": "Password cannot exceed {max} characters.",
         "passwordUpperLower": "Password must contain at least one uppercase and one lowercase letter.",
-        "passwordSpecialChar": "Password must contain at least one special character."
+        "passwordSpecialChar": "Password must contain at least one special character.",
+        "confirmPasswordRequired": "Confirm password is required."
       },
       "errors": {
         "signupFailed": "Registration failed. Please try again."
@@ -221,13 +226,16 @@
       "showPassword": "Show password",
       "hidePassword": "Hide password",
       "setPassword": "Create a secure password for",
-      "loginAsOrganizer": "Sign in as Organizer."
+      "loginAsOrganizer": "Sign in as Organizer.",
+      "creatingAccount": "Creating Account...",
+      "completeRegistration": "Complete Registration",
+      "basicInfo": "Basic Information",
+      "pageStep": "Step {currentStep} of 3:",
+      "sendingOTP": "Sending verification code..."
     },
     "forgotPassword": {
       "title": "Forgot Password",
       "subtitle": "Enter your email to receive a password reset code",
-      "email": "Email Address",
-      "emailPlaceholder": "Enter your email address",
       "sendResetCode": "Send Reset Code",
       "sending": "Sending...",
       "backToLogin": "Back to login",
@@ -272,7 +280,7 @@
       }
     },
     "verifyOTP": {
-      "title": "Verify Your Email",
+      "title": "Verify OTP",
       "subtitle": "Enter the 6-digit code sent to",
       "back": "Back",
       "otp": "Verification Code",
@@ -289,7 +297,12 @@
         "verificationFailed": "Invalid OTP. Please try again.",
         "resendFailed": "Failed to resend OTP. Please try again."
       },
-      "otpValidity": "The code will automatically expire after 10 minutes."
+      "otpValidity": "The code will automatically expire after 10 minutes.",
+      "validation": {
+        "otpLength": "OTP must be 6 digits."
+      },
+      "didntReceiveCode": "Didn't receive code?",
+      "resendIn": "Resend in {resendTimer}s"
     },
     "toast": {
       "loginSuccess": "Welcome back!",
@@ -305,13 +318,17 @@
       "invalidCredentials": "Invalid email or password",
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again.",
-      "passwordChangedLogin": "Please login with your new password."
+      "passwordChangedLogin": "Please login with your new password.",
+      "resendFailed": "Failed to resend code. Please try again."
     },
     "passwordRequirements": {
       "minLength": "Must consist of at least 8 characters",
       "upperLower": "Must contain at least one uppercase and one lowercase letter",
       "specialChar": "Must contain at least one special character",
       "number": "Must contain at least one numeric digit"
+    },
+    "phoneNumberSearch": {
+      "placeholder": "Search country..."
     }
   },
   "settings": {
@@ -402,7 +419,7 @@
       "gst": "GST(%)",
       "promoCode": "Promo Code",
       "discountType": "Discount Type",
-      "discountAmount": "Amount",
+      "discountAmount": "Discount Amount",
       "discountQuantity": "Quantity",
       "tags": "Tags",
       "location": "Location",
@@ -413,7 +430,8 @@
       "uploadBanner": "Upload Banner",
       "categoryTags": "Category Tags",
       "bannerImageHelperTextSize": "PNG/JPG file of 1920x1200px with size up to 5MB",
-      "bannerImageHelperText": "Upload banner image or drag & drop"
+      "bannerImageHelperText": "Upload banner image or drag & drop",
+      "discountPercentage": "Discount Percentage (%)"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
@@ -443,7 +461,10 @@
       "addMore": "Add more...",
       "tags": "Type and press Enter/Comma to add...",
       "searchTier": "Search or create tier...",
-      "selectTier": "Select or type tier name..."
+      "selectTier": "Select or type tier name...",
+      "discountType": "Select discount type",
+      "discountAmount": "Enter discount amount",
+      "discountPercentage": "Enter discount percentage"
     },
     "section": {
       "venueSchedule": "Venue & Schedule",
@@ -529,7 +550,13 @@
       "stopSalesReasonMaxLength": "Reason cannot exceed {max} characters.",
       "cancelReasonRequired": "Reason is required.",
       "cancelReasonMinLength": "Reason must be at least {min} characters.",
-      "cancelReasonMaxLength": "Reason cannot exceed {max} characters."
+      "cancelReasonMaxLength": "Reason cannot exceed {max} characters.",
+      "percentageMin": "Percentage must be at least 0.01%.",
+      "percentageMax": "Percentage cannot exceed 100%.",
+      "percentageDecimals": "Percentage can have at most 2 decimal places.",
+      "salesStartBeforeEventStart": "Sales Start Date cannot be after Event Start Date.",
+      "discountAmountRequired": "Discount Amount is required.",
+      "discountPercentageRequired": "Discount Percentage is required."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
@@ -552,6 +579,10 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended"
+    },
+    "option": {
+      "amountFixed": "Amount (Fixed)",
+      "percentage": "Percentage (%)"
     }
   },
   "tierTemplates": {

@@ -183,7 +183,7 @@ FormMessage.displayName = "FormMessage"
  */
 interface TranslatedFormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
   /** Translation function from useTranslation hook */
-  t: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string
   /** Fallback text if translation key is not found */
   fallback?: string
 }
@@ -248,12 +248,30 @@ const TranslatedFormMessage = React.forwardRef<
       // Parse the message for embedded params (format: "key|param1:value1,param2:value2")
       const { key, params } = parseMessageWithParams(rawMessage)
 
-      // Translate the key
+      // Translate any param values that contain translation keys (format: "translationKey:Fallback")
+      const translatedParams: Record<string, string> = {}
+      Object.entries(params).forEach(([paramKey, paramValue]) => {
+        if (paramValue.includes(':')) {
+          // This param value has a translation key with fallback
+          const colonIndex = paramValue.indexOf(':')
+          const translationKey = paramValue.substring(0, colonIndex)
+          const fallbackValue = paramValue.substring(colonIndex + 1)
+          translatedParams[paramKey] = t(translationKey, fallbackValue)
+        } else if (paramValue.includes('.')) {
+          // This param value is a translation key without fallback
+          translatedParams[paramKey] = t(paramValue, paramValue)
+        } else {
+          // Plain value, use as-is
+          translatedParams[paramKey] = paramValue
+        }
+      })
+
+      // Translate the main key
       let translated = t(key, fallback || key)
 
-      // Substitute any placeholders with params
-      if (Object.keys(params).length > 0) {
-        translated = substitutePlaceholders(translated, params)
+      // Substitute any placeholders with translated params
+      if (Object.keys(translatedParams).length > 0) {
+        translated = substitutePlaceholders(translated, translatedParams)
       }
 
       body = translated

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface PaginationProps {
@@ -15,6 +17,8 @@ export default function EventPagination({
 	onPageChange,
 	className = "",
 }: PaginationProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 	if (totalPages <= 1) return null;
 
 	const goToPrevious = () => {
@@ -36,7 +40,7 @@ export default function EventPagination({
 					}`}
 			>
 				<ArrowLeft className="w-4 h-4 mr-1" />
-				Previous
+        {t("common.previous", "Previous")}
 			</button>
 
 			{/* Page Numbers */}
@@ -81,7 +85,7 @@ export default function EventPagination({
 					: "hover:bg-gray-50 hover:shadow-sm"
 					}`}
 			>
-				Next
+        {t("common.next", "Next")}
 				<ArrowRight className="w-4 h-4 ml-1" />
 			</button>
 		</div>
