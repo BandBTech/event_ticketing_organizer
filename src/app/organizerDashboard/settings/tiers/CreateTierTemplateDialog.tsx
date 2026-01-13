@@ -23,6 +23,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,7 +48,7 @@ export function CreateTierTemplateDialog({
   const queryClient = useQueryClient();
   const isEditing = !!initialData;
 
-  const tierTemplateSchema = useMemo(() => createTierTemplateSchema(t), [t]);
+  const tierTemplateSchema = useMemo(() => createTierTemplateSchema((key, fallback, params) => key), []);
 
   const form = useForm<TierTemplateFormData>({
     resolver: zodResolver(tierTemplateSchema),
@@ -156,7 +157,7 @@ export function CreateTierTemplateDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? "Edit Tier Template" : "Create Tier Template"}
+            {isEditing ? t("tierTemplates.dialog.editTierTemplate.title", "Edit Tier Template") : t("tierTemplates.dialog.createTierTemplate.title", "Create Tier Template")}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -166,14 +167,14 @@ export function CreateTierTemplateDialog({
               name="template_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Template Name</FormLabel>
+                  <FormLabel>{t("tierTemplates.columns.templateName", "Template Name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., VIP, Early Bird" maxLength={TIER_NAME_MAX} {...field} />
+                    <Input placeholder={t("tierTemplates.placeholder.templateName", "e.g., VIP, Early Bird")} maxLength={TIER_NAME_MAX} {...field} />
                   </FormControl>
                   <div className="flex justify-between items-center -mt-1 min-h-[20px]">
-                    <FormMessage className="mt-0" />
+                    <TranslatedFormMessage t={t} />
                     <div className="text-xs text-muted-foreground ml-auto">
-                      {field.value?.length || 0}/{TIER_NAME_MAX} characters
+                      {field.value?.length || 0}/{TIER_NAME_MAX} {t("common.characters", "characters")}
                     </div>
                   </div>
                 </FormItem>
@@ -184,19 +185,19 @@ export function CreateTierTemplateDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("tierTemplates.columns.description", "Description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Describe this tier..."
+                      placeholder={t("tierTemplates.placeholder.description", "Describe this tier...")}
                       rows={3}
                       maxLength={TIER_DESC_MAX}
                       {...field}
                     />
                   </FormControl>
                   <div className="flex justify-between items-center -mt-1 min-h-[20px]">
-                    <FormMessage className="mt-0" />
+                    <TranslatedFormMessage t={t} />
                     <div className="text-xs text-muted-foreground ml-auto">
-                      {field.value?.length || 0}/{TIER_DESC_MAX} characters
+                      {field.value?.length || 0}/{TIER_DESC_MAX} {t("common.characters", "characters")}
                     </div>
                   </div>
                 </FormItem>
@@ -205,17 +206,17 @@ export function CreateTierTemplateDialog({
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancel
+                  {t("common.cancel", "Cancel")}
                 </Button>
               </DialogClose>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {isEditing ? "Updating..." : "Creating..."}
+                    {isEditing ? t("common.updating", "Updating...") : t("common.creating", "Creating...")}
                   </>
                 ) : (
-                  isEditing ? "Update" : "Create"
+                    isEditing ? t("common.update", "Update") : t("common.create", "Create")
                 )}
               </Button>
             </DialogFooter>

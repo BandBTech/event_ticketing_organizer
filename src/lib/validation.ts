@@ -6,8 +6,8 @@ import { z } from "zod";
 
 
 // Helper for required date string
-const createRequiredDateSchema = (t: (key: string, fallback?: string) => string, fieldName?: string) =>
-  z.string().min(1, fieldName ? `${fieldName} is required.` : t('event.validation.dateTimeRequired', 'This field is required.')).superRefine((val, ctx) => {
+const createRequiredDateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string, fieldName?: string) =>
+  z.string().min(1, fieldName ? t('event.validation.dateTimeRequired', '{field} is required.', { field: fieldName }) : t('event.validation.dateTimeRequired', 'This field is required.')).superRefine((val, ctx) => {
     const date = new Date(val);
     if (isNaN(date.getTime())) {
       ctx.addIssue({
@@ -29,7 +29,7 @@ const createRequiredDateSchema = (t: (key: string, fallback?: string) => string,
     today.setHours(0, 0, 0, 0);
     if (date < today) {
       const message = fieldName
-        ? t('event.validation.fieldPastDate', '{field} cannot be in the past.').replace('{field}', fieldName)
+        ? t('event.validation.fieldPastDate', '{field} cannot be in the past.', { field: fieldName })
         : t('event.validation.pastDate', 'Date cannot be in the past.');
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -47,6 +47,18 @@ export const TIER_NAME_MAX = 100;
 export const TIER_DESC_MAX = 500;
 export const STOP_SALES_REASON_MAX = 500;
 export const CANCEL_REASON_MAX = 500;
+export const BUSINESS_NAME_MAX = 50;
+export const BUSINESS_NAME_MIN = 3;
+export const BUSINESS_DESC_MAX = 500;
+export const FIRST_NAME_MIN = 2;
+export const LAST_NAME_MIN = 2;
+export const FIRST_NAME_MAX = 50;
+export const LAST_NAME_MAX = 50;
+export const PASSWORD_MIN = 8;
+export const PASSWORD_MAX = 255;
+export const STOP_SALES_REASON_MIN = 1;
+export const CANCEL_REASON_MIN = 1;
+
 // Numeric Limits
 export const MAX_CAPACITY = 100000;
 export const MAX_PRICE = 100000;
@@ -57,7 +69,7 @@ export const PROMO_CODE_QUANTITY_MAX = 100000;
 
 // Helper to create a required number schema with proper "is required" message
 const createRequiredNumberSchema = (
-  t: (key: string, fallback?: string) => string,
+  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string,
   fieldName: string,
   minValue: number = 1,
   minMessage?: string,
@@ -73,26 +85,26 @@ const createRequiredNumberSchema = (
     },
     z
       .number({
-        error: t('common.validation.required', '{field} is required.').replace('{field}', fieldName),
+        error: t('common.validation.required', '{field} is required.', { field: fieldName }),
       })
-      .min(minValue, minMessage || t('common.validation.min', '{field} must be at least {value}.').replace('{field}', fieldName).replace('{value}', minValue.toString()))
-      .max(maxValue || Number.MAX_SAFE_INTEGER, maxMessage || t('common.validation.max', '{field} cannot exceed {value}.').replace('{field}', fieldName).replace('{value}', (maxValue || Number.MAX_SAFE_INTEGER).toString()))
+      .min(minValue, minMessage || t('common.validation.min', '{field} must be at least {value}.', { field: fieldName, value: minValue.toString() }))
+      .max(maxValue || Number.MAX_SAFE_INTEGER, maxMessage || t('common.validation.max', '{field} cannot exceed {value}.', { field: fieldName, value: (maxValue || Number.MAX_SAFE_INTEGER).toString() }))
   );
 
-export const createTicketSchema = (t: (key: string, fallback?: string) => string) => z
+export const createTicketSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
   .object({
     id: z.string().optional(),
     name: z
       .string()
       .min(1, t('event.validation.tierNameRequired', "Tier Name is required."))
-      .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
+      .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.", { max: TIER_NAME_MAX.toString() })),
     price: createRequiredNumberSchema(
       t,
       t('event.field.ticketPrice', 'Price'),
       1,
       t('event.validation.priceRequired', "Price must be at least 1."),
       MAX_PRICE,
-      t('event.validation.priceMax', "Price cannot exceed {max}.").replace('{max}', MAX_PRICE.toString())
+      t('event.validation.priceMax', "Price cannot exceed {max}.", { max: MAX_PRICE.toString() })
     ),
     quantity: createRequiredNumberSchema(
       t,
@@ -100,7 +112,7 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
       1,
       t('event.validation.quantityMin', "Quantity must be at least 1."),
       MAX_QUANTITY,
-      t('event.validation.quantityMax', "Quantity cannot exceed {max}.").replace('{max}', MAX_QUANTITY.toString())
+      t('event.validation.quantityMax', "Quantity cannot exceed {max}.", { max: MAX_QUANTITY.toString() })
     ),
     gst: z.preprocess(
       (val) => {
@@ -126,11 +138,11 @@ export const createTicketSchema = (t: (key: string, fallback?: string) => string
     path: ["salesEnd"],
   });
 
-export const createPromoCodeSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const createPromoCodeSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   code: z
     .string()
     .min(1, t('event.validation.promoCodeRequired', "Promo Code is required."))
-    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo Code must be under {max} characters.").replace('{max}', PROMO_CODE_NAME_MAX.toString()))
+    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo Code must be under {max} characters.", { max: PROMO_CODE_NAME_MAX.toString() }))
     .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo Code may only contain A-Z , 0-9, _ or -")),
   discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount Type is required.")),
   amount: createRequiredNumberSchema(
@@ -139,7 +151,7 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
     1,
     t('event.validation.amountRequired', "Amount must be at least 1."),
     PROMO_CODE_AMOUNT_MAX,
-    t('event.validation.amountMax', "Amount cannot exceed {max}.").replace('{max}', PROMO_CODE_AMOUNT_MAX.toLocaleString())
+    t('event.validation.amountMax', "Amount cannot exceed {max}.", { max: PROMO_CODE_AMOUNT_MAX.toLocaleString() })
   ),
   quantity: createRequiredNumberSchema(
     t,
@@ -147,33 +159,33 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string) => str
     1,
     t('event.validation.quantityMin', "Quantity must be at least 1."),
     PROMO_CODE_QUANTITY_MAX,
-    t('event.validation.quantityMax', "Quantity cannot exceed {max}.").replace('{max}', PROMO_CODE_QUANTITY_MAX.toLocaleString())
+    t('event.validation.quantityMax', "Quantity cannot exceed {max}.", { max: PROMO_CODE_QUANTITY_MAX.toLocaleString() })
   ),
 });
 
-export const createEventSchema = (t: (key: string, fallback?: string) => string) => z
+export const createEventSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
   .object({
     name: z.string()
       .min(1, t('event.validation.titleRequired', "Event Title is required."))
-      .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event Title must be under {max} characters.").replace('{max}', EVENT_TITLE_MAX.toString())),
+      .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event Title must be under {max} characters.", { max: EVENT_TITLE_MAX.toString() })),
     description: z.string()
       .min(1, t('event.validation.descriptionRequired', "Event Description is required."))
-      .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Event Description must be under {max} characters.").replace('{max}', EVENT_DESC_MAX.toString())),
+      .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Event Description must be under {max} characters.", { max: EVENT_DESC_MAX.toString() })),
     tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one Tag is required.")),
-    image: z.string().min(1, t('event.validation.imageRequired', "Image is required.")),
+    image: z.string().min(1, t('event.validation.imageRequired', "Banner Image is required.")),
     venue: z.string()
       .min(1, t('event.validation.venueRequired', "Venue Name is required."))
-      .max(VENUE_NAME_MAX, t('event.validation.venueMaxLength', "Venue Name must be under {max} characters.").replace('{max}', VENUE_NAME_MAX.toString())),
+      .max(VENUE_NAME_MAX, t('event.validation.venueMaxLength', "Venue Name must be under {max} characters.", { max: VENUE_NAME_MAX.toString() })),
     venueAddress: z.string()
       .min(1, t('event.validation.venueAddressRequired', "Venue Address is required."))
-      .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue Address must be under {max} characters.").replace('{max}', VENUE_ADDRESS_MAX.toString())),
+      .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue Address must be under {max} characters.", { max: VENUE_ADDRESS_MAX.toString() })),
     capacity: createRequiredNumberSchema(
       t,
       t('event.field.capacity', 'Capacity'),
       1,
       t('event.validation.capacityMin', "Capacity must be at least 1."),
       MAX_CAPACITY,
-      t('event.validation.capacityMax', "Capacity cannot exceed {max}.").replace('{max}', MAX_CAPACITY.toString())
+      t('event.validation.capacityMax', "Capacity cannot exceed {max}.", { max: MAX_CAPACITY.toString() })
     ),
     timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
     startDate: createRequiredDateSchema(t, t('event.field.startDateTime', 'Event Start Date')),
@@ -258,12 +270,12 @@ export const createEventSchema = (t: (key: string, fallback?: string) => string)
     }
   });
 
-export const createTierTemplateSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const createTierTemplateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   template_name: z.string()
-    .min(1, t('event.validation.tierNameRequired', "Tier Template Name is required."))
-    .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Template Name must be under {max} characters.").replace('{max}', TIER_NAME_MAX.toString())),
+    .min(1, t('event.validation.tierNameRequired', "Tier Name is required."))
+    .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.", { max: TIER_NAME_MAX.toString() })),
   description: z.string()
-    .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Event Description must be under {max} characters.").replace('{max}', TIER_DESC_MAX.toString()))
+    .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Tier Description must be under {max} characters.", { max: TIER_DESC_MAX.toString() }))
     .optional(),
 });
 
@@ -272,26 +284,26 @@ export type TicketFormData = z.infer<ReturnType<typeof createTicketSchema>>;
 export type PromoCodeFormData = z.infer<ReturnType<typeof createPromoCodeSchema>>;
 export type TierTemplateFormData = z.infer<ReturnType<typeof createTierTemplateSchema>>;
 
-export const createOrgUserSchema = (t: (key: string, fallback?: string) => string) => {
+export const createOrgUserSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => {
   const v = createValidationHelpers(t);
 
   return z.object({
     first_name: z.string()
       .trim()
       .min(1, t('auth.signup.validation.firstNameRequired', "First Name is required."))
-      .min(2, t('auth.signup.validation.firstNameTooShort', "First Name must be at least 2 characters."))
-      .max(50, t('auth.signup.validation.firstNameTooLong', "First Name must not exceed 50 characters.")),
+      .min(FIRST_NAME_MIN, t('auth.signup.validation.firstNameTooShort', "First Name must be at least {min} characters.", { min: FIRST_NAME_MIN.toString() }))
+      .max(FIRST_NAME_MAX, t('auth.signup.validation.firstNameTooLong', "First Name must not exceed {max} characters.", { max: FIRST_NAME_MAX.toString() })),
     last_name: z.string()
       .trim()
       .min(1, t('auth.signup.validation.lastNameRequired', "Last Name is required."))
-      .min(2, t('auth.signup.validation.lastNameTooShort', "Last Name must be at least 2 characters."))
-      .max(50, t('auth.signup.validation.lastNameTooLong', "Last Name must not exceed 50 characters.")),
+      .min(LAST_NAME_MIN, t('auth.signup.validation.lastNameTooShort', "Last Name must be at least {min} characters.", { min: LAST_NAME_MIN.toString() }))
+      .max(LAST_NAME_MAX, t('auth.signup.validation.lastNameTooLong', "Last Name must not exceed {max} characters.", { max: LAST_NAME_MAX.toString() })),
     email: z.string()
       .min(1, t('auth.signup.validation.emailRequired', "Email is required."))
       .email(t('auth.signup.validation.emailInvalid', "Invalid email address.")),
     password: z.string()
       .min(1, t('auth.signup.validation.passwordRequired', "Password is required."))
-      .min(8, t('auth.signup.validation.passwordMin', "Password must be at least 8 characters."))
+      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', "Password must be at least {min} characters.", { min: PASSWORD_MIN.toString() }))
       .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', "Password must contain at least one uppercase and one lowercase letter."))
       .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', "Password must contain at least one special character."))
       .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', "Password must contain at least one number.")),
@@ -303,7 +315,7 @@ export const createOrgUserSchema = (t: (key: string, fallback?: string) => strin
 };
 
 // Update schema uses t for consistency and potential future validation messages
-export const updateOrgUserSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const updateOrgUserSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   role_type: z.enum(['staff', 'manager'], {
     message: t('users.validation.roleRequired', 'Role is required')
   }),
@@ -313,19 +325,19 @@ export const updateOrgUserSchema = (t: (key: string, fallback?: string) => strin
 export type CreateOrgUserFormData = z.infer<ReturnType<typeof createOrgUserSchema>>;
 export type UpdateOrgUserFormData = z.infer<ReturnType<typeof updateOrgUserSchema>>;
 
-export const stopSalesSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const stopSalesSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   reason: z.string()
-    .max(STOP_SALES_REASON_MAX, t('event.validation.stopSalesReasonMaxLength', "Reason cannot exceed {max} characters.").replace('{max}', STOP_SALES_REASON_MAX.toString()))
+    .max(STOP_SALES_REASON_MAX, t('event.validation.stopSalesReasonMaxLength', "Reason cannot exceed {max} characters.", { max: STOP_SALES_REASON_MAX.toString() }))
     .optional(),
 });
 
 export type StopSalesFormData = z.infer<ReturnType<typeof stopSalesSchema>>;
 
-export const cancelEventSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const cancelEventSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   reason: z.string()
     .min(1, t('event.validation.cancelReasonRequired', "Reason is required."))
-    .min(10, t('event.validation.cancelReasonMinLength', "Reason must be at least 10 characters."))
-    .max(CANCEL_REASON_MAX, t('event.validation.cancelReasonMaxLength', "Reason cannot exceed {max} characters.").replace('{max}', CANCEL_REASON_MAX.toString())),
+    .min(CANCEL_REASON_MIN, t('event.validation.cancelReasonMinLength', "Reason must be at least {min} characters.", { min: CANCEL_REASON_MIN.toString() }))
+    .max(CANCEL_REASON_MAX, t('event.validation.cancelReasonMaxLength', "Reason cannot exceed {max} characters.", { max: CANCEL_REASON_MAX.toString() })),
 });
 
 export type CancelEventFormData = z.infer<ReturnType<typeof cancelEventSchema>>;
@@ -357,15 +369,15 @@ export interface ValidationHelpers {
  * @returns Object with validation helper methods
  */
 export const createValidationHelpers = (
-  t: (key: string, fallback?: string) => string
+  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string
 ): ValidationHelpers => ({
   /**
    * Required field validation
    * Uses: common.validation.required
    */
   required: (field: string) => {
-    const message = t('common.validation.required', '{field} is required.');
-    return message.replace('{field}', field);
+    const message = t('common.validation.required', '{field} is required.', { field });
+    return message;
   },
 
   /**
@@ -373,8 +385,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.invalid
    */
   invalid: (field: string) => {
-    const message = t('common.validation.invalid', '{field} is invalid.');
-    return message.replace('{field}', field);
+    const message = t('common.validation.invalid', '{field} is invalid.', { field });
+    return message;
   },
 
   /**
@@ -382,8 +394,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.minLength
    */
   minLength: (field: string, length: number) => {
-    const message = t('common.validation.minLength', '{field} must be at least {length} characters long.');
-    return message.replace('{field}', field).replace('{length}', length.toString());
+    const message = t('common.validation.minLength', '{field} must be at least {length} characters long.', { field, length });
+    return message;
   },
 
   /**
@@ -391,8 +403,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.maxLength
    */
   maxLength: (field: string, length: number) => {
-    const message = t('common.validation.maxLength', '{field} cannot exceed {length} characters.');
-    return message.replace('{field}', field).replace('{length}', length.toString());
+    const message = t('common.validation.maxLength', '{field} cannot exceed {length} characters.', { field, length });
+    return message;
   },
 
   /**
@@ -400,8 +412,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.min
    */
   min: (field: string, value: number) => {
-    const message = t('common.validation.min', '{field} must be at least {value}.');
-    return message.replace('{field}', field).replace('{value}', value.toString());
+    const message = t('common.validation.min', '{field} must be at least {value}.', { field, value });
+    return message;
   },
 
   /**
@@ -409,8 +421,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.max
    */
   max: (field: string, value: number) => {
-    const message = t('common.validation.max', '{field} cannot exceed {value}.');
-    return message.replace('{field}', field).replace('{value}', value.toString());
+    const message = t('common.validation.max', '{field} cannot exceed {value}.', { field, value });
+    return message;
   },
 
   /**
@@ -418,8 +430,8 @@ export const createValidationHelpers = (
    * Uses: common.validation.pattern
    */
   pattern: (field: string) => {
-    const message = t('common.validation.pattern', '{field} format is invalid.');
-    return message.replace('{field}', field);
+    const message = t('common.validation.pattern', '{field} format is invalid.', { field });
+    return message;
   },
 
   /**
@@ -496,15 +508,15 @@ export const createValidationHelpers = (
  * });
  */
 
-export const createOrganizerProfileSchema = (t: (key: string, fallback?: string) => string) => z.object({
+export const createOrganizerProfileSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   business_name: z
     .string()
     .min(1, t('profile.validation.businessNameRequired', 'Business name is required.'))
-    .min(3, t('profile.validation.businessNameMinLength', 'Business name must be at least 3 characters.'))
-    .max(50, t('profile.validation.businessNameMaxLength', 'Business name must be less than 50 characters.')),
+    .min(BUSINESS_NAME_MIN, t('profile.validation.businessNameMinLength', 'Business name must be at least {min} characters.', { min: BUSINESS_NAME_MIN.toString() }))
+    .max(BUSINESS_NAME_MAX, t('profile.validation.businessNameMaxLength', 'Business name must be less than {max} characters.', { max: BUSINESS_NAME_MAX.toString() })),
   business_description: z
     .string()
-    .max(500, t('profile.validation.descriptionMaxLength', 'Description must be less than 500 characters.'))
+    .max(BUSINESS_DESC_MAX, t('profile.validation.descriptionMaxLength', 'Description must be less than {max} characters.', { max: BUSINESS_DESC_MAX.toString() }))
     .optional(),
 });
 

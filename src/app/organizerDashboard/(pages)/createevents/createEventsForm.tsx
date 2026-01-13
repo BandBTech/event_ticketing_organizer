@@ -14,7 +14,7 @@ import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { Form } from "@/components/ui/form";
 import { queryKeys } from "@/lib/queryKeys";
-import { CreateTierTemplateDialog } from "../settings/tiers/CreateTierTemplateDialog";
+import { CreateTierTemplateDialog } from "../../settings/tiers/CreateTierTemplateDialog";
 import {
   getEventFormDefaults,
   getChangedFields,
@@ -70,7 +70,7 @@ export default function CreateEventPage({
   });
 
   // Create event schema with translations
-  const eventSchema = useMemo(() => createEventSchema(t), [t]);
+  const eventSchema = useMemo(() => createEventSchema((key, fallback, params) => key), []);
 
   // Form setup
   const form = useForm<EventFormData>({
@@ -309,7 +309,7 @@ export default function CreateEventPage({
           if (!open) setActiveTicketIndex(null);
         }}
         onSuccess={(newTemplate) => {
-        // Instant local update for immediate UI feedback (non-blocking)
+          // Instant local update for immediate UI feedback (non-blocking)
           queryClient.setQueryData(
             queryKeys.tierTemplates.all,
             (old: TierTemplate[] | undefined) => (old ? [newTemplate, ...old] : [newTemplate])

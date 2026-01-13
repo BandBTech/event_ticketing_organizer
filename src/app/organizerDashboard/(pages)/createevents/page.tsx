@@ -4,7 +4,7 @@
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import CreateEventsForm from "../../components/createEventsForm";
+import CreateEventsForm from "./createEventsForm";
 import { eventService } from "@/services/eventService";
 import { Suspense } from "react";
 import { queryKeys } from "@/lib/queryKeys";

@@ -30,7 +30,7 @@ export function PendingNotice() {
         <div className="flex shrink-0">
           <Button variant="outline" className="border-yellow-200 text-yellow-700 hover:bg-yellow-50 hover:text-yellow-800 hover:border-yellow-300 transition-all shadow-sm">
             <EnvelopeSimpleIcon className="mr-2 h-4 w-4" />
-            Contact Support
+            {t('common.contactSupport', 'Contact Support')}
           </Button>
         </div>
       </div>

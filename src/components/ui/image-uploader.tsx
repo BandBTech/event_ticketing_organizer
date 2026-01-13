@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner"; // Assuming sonner is used for toasts based on other files
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ImageUploaderProps {
   value?: string; // URL or base64 string of the image
@@ -47,6 +49,8 @@ export function ImageUploader({
   checkAspectRatio = false,
   required = false,
 }: ImageUploaderProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [internalError, setInternalError] = useState<string>("");
 
@@ -109,11 +113,11 @@ export function ImageUploader({
       if (rejection) {
         const err = rejection.errors[0];
         if (err.code === "file-too-large") {
-          const msg = `File size exceeds the maximum limit of ${maxSizeMB}MB.`;
+          const msg = t("common.image.limitExceeded", "File size exceeds the maximum limit of {maxSizeMB}MB.", { maxSizeMB });
           setInternalError(msg);
           toast.error(msg);
         } else if (err.code === "file-invalid-type") {
-          const msg = "Invalid media file. Please upload a valid image (PNG/JPG).";
+          const msg = t("common.image.fileInvalidType", "Invalid media file. Please upload a valid image (PNG/JPG).");
           setInternalError(msg);
           toast.error(msg);
         } else {
@@ -193,8 +197,8 @@ export function ImageUploader({
               }}
             >
               <div className="text-white space-y-2 text-center">
-                <p className="font-medium">Change Image</p>
-                <p className="text-xs text-white/80">Click to replace</p>
+                <p className="font-medium">{t("common.changeImage", "Change Image")}</p>
+                <p className="text-xs text-white/80">{t("common.clickToReplace", "Click to replace")}</p>
               </div>
             </div>
           </div>
@@ -204,7 +208,7 @@ export function ImageUploader({
               <ImageIcon className="w-6 h-6" />
             </div>
             {isDragActive ? (
-              <p className="text-blue-600 font-medium">Drop the image here...</p>
+                <p className="text-blue-600 font-medium">{t("common.dropImageHere", "Drop the image here...")}</p>
             ) : (
               <>
                 <p className="font-medium text-gray-900 mb-1">{helperText}</p>
@@ -229,7 +233,7 @@ export function ImageUploader({
 
       {effectiveError && (
         <p className="text-xs font-medium text-destructive">
-          {effectiveError}
+          {t(effectiveError)}
         </p>
       )}
     </div>

@@ -22,7 +22,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { authService } from '@/services/authService';
 import { AuthError } from '@/lib/errors';
 import { toast } from '@/lib/toast';
-import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { PasswordRequirements } from '@/app/(auth)/components/PasswordRequirements';
@@ -278,7 +277,7 @@ export default function SecuritySettingsPage() {
               >
                 {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {mutation.isPending
-                  ? t('settings.security.updating', 'Updating...')
+                  ? t('common.updating', 'Updating...')
                   : t('settings.security.updateButton', 'Update Password')}
               </Button>
               <Button

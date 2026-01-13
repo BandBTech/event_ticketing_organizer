@@ -1,8 +1,5 @@
-import MultiStepRegister from "@/app/(auth)/components/MultiStepRegister";
+import MultiStepRegister from "./MultiStepRegister";
 
 export default function RegisterPage() {
-  return (
-    <MultiStepRegister />
-  );
-
+  return <MultiStepRegister />;
 }

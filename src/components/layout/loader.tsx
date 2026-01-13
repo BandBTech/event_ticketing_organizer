@@ -1,3 +1,5 @@
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 import { SpinnerIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useState, useCallback } from 'react';
@@ -61,14 +63,15 @@ export function LinkLoader({
   href, 
   children, 
   isLoading = false, 
-  loadingText = "Loading...",
   className = "",
   onClick
 }: LinkLoaderProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   if (isLoading) {
     return (
       <span className={`inline-flex items-center gap-2 text-blue-600 opacity-50 cursor-not-allowed ${className}`}>
-        <Loader size="sm" text={loadingText} />
+        <Loader size="sm" text={t("common.loading", "Loading...")} />
       </span>
     );
   }

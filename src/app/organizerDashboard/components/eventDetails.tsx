@@ -266,7 +266,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   onClick={() => setCancelDialogOpen(true)}
                   className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
                 >
-                  <XCircle size={16} /> {t("common.button.cancel", "Cancel")}
+                  <XCircle size={16} /> {t("common.cancel", "Cancel")}
                 </button>
               )}
             </div>
@@ -297,7 +297,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               {/* Description */}
               <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
                 <h3 className="text-lg font-semibold text-gray-700 ">
-                  {t("event.section.description", "Event description")}
+                  {t("event.field.eventDescription", "Event Description")}
                 </h3>
                 <HtmlRenderer html={event.description || ""} />
                 <div className="flex flex-wrap gap-2 ">
@@ -322,7 +322,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                 {/* Details */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
                   <div>
-                    <h3 className="font-semibold">{t("event.field.venue", "Venue")}</h3>
+                    <h3 className="font-semibold">{t("event.field.venueName", "Venue Name")}</h3>
                     <p className="font-medium text-gray-500">
                       {event.venue_name}
                     </p>
@@ -382,7 +382,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div key={tier.tier_id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
                         <div className="flex justify-between text-sm @sm:flex-row flex-col">
                           <p className={`font-semibold ${color.labelClass}`}>{tier.tier_name}</p>
-                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/{t("event.text.ticket", "ticket")}</p>
+                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/{t("common.ticket", "ticket")}</p>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -391,9 +391,9 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                           />
                         </div>
                         <div className="flex justify-between text-sm @sm:flex-row flex-col">
-                          <span>{tier.sold_seats}/{tier.total_seats} {t("event.text.sold", "sold")}</span>
+                          <span>{tier.sold_seats}/{tier.total_seats} {t("common.sold", "sold")}</span>
                           <span className="text-green-600 font-medium">
-                            {tier.currency || 'NPR'} {tier.revenue.toLocaleString()}
+                            {tier.currency || 'JPY'} {tier.revenue.toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -415,7 +415,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
                         <div className="flex justify-between text-sm @sm:flex-row flex-col">
                           <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
-                          <p className="text-gray-600">NPR {ticket.price}/{t("event.text.ticket", "ticket")}</p>
+                          <p className="text-gray-600">{ticket.currency || 'JPY'} {ticket.price}/{t("common.ticket", "ticket")}</p>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
@@ -423,7 +423,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                             style={{ width: `${Math.min(soldPercent, 100)}%` }}
                           />
                         </div>
-                        <span className="text-sm">{sold}/{ticket.quantity} {t("event.text.sold", "sold")}</span>
+                        <span className="text-sm">{sold}/{ticket.quantity} {t("common.sold", "sold")}</span>
                       </div>
                     );
                   })
@@ -435,7 +435,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   </div>
                   <div className="@sm:justify-items-end">
                     <p className="font-semibold">{t("event.label.totalRevenue", "Total Revenue")}</p>
-                    <p className="font-semibold text-green-600">NPR {totalRevenue.toLocaleString()}</p>
+                    <p className="font-semibold text-green-600">{event.tiers?.[0].currency || 'JPY'} {totalRevenue.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -464,7 +464,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               <DialogHeader>
                 <DialogTitle>{t("event.dialog.cancelEvent.title", "Cancel Event")}</DialogTitle>
                 <DialogDescription>
-                  {t("event.dialog.cancelEvent.description", "Are you sure you want to cancel this event? This action cannot be undone. All ticket holders will be notified.")}
+                  {t("event.dialog.cancelEvent.description", "Are you sure you want to cancel this event? This action cannot be undone.")}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -484,7 +484,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div className="flex justify-between items-start mt-1">
                         <FormMessage />
                         <div className="text-xs text-gray-500 text-right grow">
-                          {field.value?.length || 0}/500 characters
+                          {field.value?.length || 0}/500 {t("common.characters", "characters")}   
                         </div>
                       </div>
                     </FormItem>
@@ -503,10 +503,10 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   {cancelEventMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Cancelling...
+                      {t("common.canceling", "Canceling...")}
                     </>
                   ) : (
-                    t("event.button.cancelEvent", "Cancel Event")
+                      t("event.dialog.cancelEvent.title", "Cancel Event")
                   )}
                 </Button>
               </DialogFooter>
@@ -546,7 +546,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div className="flex justify-between items-start mt-1">
                         <FormMessage />
                         <div className="text-xs text-gray-500 text-right grow">
-                          {field.value?.length || 0}/500 characters
+                          {field.value?.length || 0}/500 {t("common.characters", "characters")}
                         </div>
                       </div>
                     </FormItem>
@@ -555,7 +555,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setSalesDialogOpen(false)}>
-                  {t("common.button.cancel", "Cancel")}
+                  {t("common.cancel", "Cancel")}
                 </Button>
                 <Button
                   type="submit"
@@ -565,7 +565,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                   {salesControlMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      {t("common.processing", "Processing...")}
                     </>
                   ) : (
                     t("event.button.stopSales", "Stop Sales")

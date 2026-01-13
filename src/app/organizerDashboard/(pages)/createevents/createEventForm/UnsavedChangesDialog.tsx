@@ -43,13 +43,13 @@ export function UnsavedChangesDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel}>
-            {t("common.button.stay", "Stay on Page")}
+            {t("common.dialog.unsavedChanges.stay", "Stay on Page")}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className="bg-red-600 hover:bg-red-700"
           >
-            {t("common.button.leave", "Leave Page")}
+            {t("common.dialog.unsavedChanges.leave", "Leave Page")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

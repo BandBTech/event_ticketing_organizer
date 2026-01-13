@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Editor } from "@/components/blocks/rte/editor";
-import CategoryTagsSelector from "../CategoryTagsSelector";
+import CategoryTagsSelector from "../../../components/CategoryTagsSelector";
 import { cn } from "@/lib/utils";
 
 interface EventDetailsSectionProps {
@@ -116,7 +116,7 @@ export function EventDetailsSection({
                       <div className="flex justify-between items-center mt-1 min-h-[20px]">
                         <TranslatedFormMessage t={t} className="mt-0" />
                         <div className="text-xs text-muted-foreground ml-auto">
-                          {field.value?.length || 0}/{EVENT_TITLE_MAX} characters
+                          {field.value?.length || 0}/{EVENT_TITLE_MAX} {t("common.characters", "characters")}
                         </div>
                       </div>
                     </div>
@@ -138,7 +138,7 @@ export function EventDetailsSection({
                     <CategoryTagsSelector
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Select or type categories..."
+                      placeholder={t("event.placeholder.categoryTags", "Enter category tags separated by commas")}
                       maxTags={5}
                       maxChars={50}
                       className="min-h-13 md:text-md"
@@ -148,7 +148,7 @@ export function EventDetailsSection({
                   <div className="flex justify-between items-start -mt-1 min-h-[20px]">
                     <TranslatedFormMessage t={t} className="mt-0" />
                     <div className="text-xs text-muted-foreground ml-auto">
-                      {field.value?.length || 0}/5 tags | Max 50 chars/tag
+                      {field.value?.length || 0}/5 {t("common.tags", "tags")} | {t("common.max", "Max")} 50 {t("common.characters", "characters")}/{t("common.tag", "tag")}
                     </div>
                   </div>
                 </FormItem>
@@ -186,11 +186,11 @@ export function EventDetailsSection({
           <div className="flex justify-between items-center mt-1 min-h-[20px]">
             {descriptionError ? (
               <p className="text-xs font-medium text-destructive mt-0 flex items-center gap-1">
-                {descriptionError}
+                {t(descriptionError)}
               </p>
             ) : <div />}
             <div className="text-xs text-muted-foreground ml-auto">
-              {descriptionTextLength}/{EVENT_DESC_MAX} characters
+              {descriptionTextLength}/{EVENT_DESC_MAX} {t("common.characters", "characters")}
             </div>
           </div>
         </div>

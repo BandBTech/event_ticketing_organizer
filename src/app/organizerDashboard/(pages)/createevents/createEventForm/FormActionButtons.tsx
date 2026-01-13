@@ -37,7 +37,7 @@ export function FormActionButtons({
         >
           <Plus className="w-5 h-5 mr-2" />
           {isPending
-            ? t("common.status.saving", "Saving...")
+            ? t("common.saving", "Saving...")
             : isEditing
               ? t("event.button.updateEvent", "Update Event")
               : t("event.button.createEvent", "Create Event")}

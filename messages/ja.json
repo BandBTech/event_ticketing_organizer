@@ -12,7 +12,11 @@
     "tryAgain": "検索条件を調整するか、後でもう一度確認してください。",
     "cancelButton": "キャンセル",
     "validation": {
-      "invalidDatetime": "有効な日時を入力してください。"
+      "invalidDatetime": "有効な日時を入力してください。",
+      "yearLimit": "年は 4 桁を超えることはできません。",
+      "required": "{フィールド}は必須です。",
+      "min": "{field} は少なくとも {value} でなければなりません。",
+      "max": "{field} は {value} を超えることはできません。"
     },
     "createdAt": "作成日",
     "updatedAt": "更新日",
@@ -43,7 +47,44 @@
     },
     "status": "状態",
     "unknown": "未知",
-    "allRoles": "すべての役割"
+    "allRoles": "すべての役割",
+    "characters": "キャラクター",
+    "ticket": "チケット",
+    "sold": "売られた",
+    "canceling": "キャンセル中...",
+    "processing": "処理...",
+    "accessDenied": "アクセスが拒否されました",
+    "accessDeniedMessage": "このページにアクセスするために必要な権限がありません。\nこれがエラーであると思われる場合は、管理者に問い合わせてください。",
+    "goBack": "戻る",
+    "updating": "更新中...",
+    "creating": "作成...",
+    "update": "アップデート",
+    "create": "作成する",
+    "viewDetail": "詳細を見る",
+    "previous": "前の",
+    "next": "次",
+    "remark": "述べる",
+    "contactSupport": "サポートに連絡する",
+    "tags": "タグ",
+    "max": "マックス",
+    "tag": "タグ",
+    "changeImage": "画像の変更",
+    "clickToUpdate": "クリックして更新",
+    "dropImageHere": "ここに画像をドロップしてください...",
+    "image": {
+      "fileTooLarge": "ファイルサイズが {size} を超えています。\n小さい画像をアップロードしてください。",
+      "fileInvalidType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。",
+      "limitExceeded": "ファイル サイズが上限の {maxSizeMB}MB を超えています。"
+    },
+    "clickToReplace": "クリックして置き換えます",
+    "dialog": {
+      "unsavedChanges": {
+        "title": "未保存の変更",
+        "description": "未保存の変更があります。\n本当に退会してもよろしいですか?\nすべての進行状況は失われます。",
+        "stay": "ページにとどまる",
+        "leave": "ページを離れる"
+      }
+    }
   },
   "navigation": {
     "events": "イベント",
@@ -85,26 +126,27 @@
         "loginFailed": "ログインに失敗しました。もう一度お試しください。"
       },
       "showPassword": "パスワードを表示",
-      "hidePassword": "パスワードを非表示"
+      "hidePassword": "パスワードを非表示",
+      "asOrganizer": "主催者として"
     },
     "signup": {
       "phonePlaceholder": "有効な連絡先番号を入力してください",
       "validation": {
         "phoneRequired": "連絡先番号は必須です",
         "firstNameRequired": "名は必須です",
-        "firstNameTooLong": "名は 50 文字を超えてはなりません。",
-        "firstNameTooShort": "名は少なくとも 2 文字である必要があります",
-        "lastNameTooShort": "姓は少なくとも 2 文字である必要があります",
+        "firstNameTooLong": "名は {max} 文字を超えてはなりません。",
+        "firstNameTooShort": "名は少なくとも {min} 文字でなければなりません。",
+        "lastNameTooShort": "姓は少なくとも {min} 文字でなければなりません。",
         "passwordSpecialChar": "パスワードには少なくとも 1 つの特殊文字が含まれている必要があります。",
         "passwordUpperLower": "パスワードには、少なくとも 1 つの大文字と 1 つの小文字が含まれている必要があります。",
         "passwordNumber": "パスワードには少なくとも 1 つの数字が含まれている必要があります。",
         "emailInvalid": "メールアドレスが無効です。",
         "phoneInvalid": "有効な電話番号を入力してください。",
         "passwordMismatch": "パスワードが一致しません。",
-        "lastNameTooLong": "姓は 50 文字を超えてはなりません。",
+        "lastNameTooLong": "姓は {max} 文字を超えてはなりません。",
         "emailRequired": "電子メールは必須です。",
         "passwordRequired": "パスワードが必要です。",
-        "passwordMin": "パスワードは 8 文字以上である必要があります。",
+        "passwordMin": "パスワードは少なくとも {min} 文字にする必要があります。",
         "lastNameRequired": "姓は必須です。"
       },
       "setPassword": "安全なパスワードを作成する",
@@ -142,7 +184,25 @@
       "venueName": "会場名",
       "venueAddress": "会場住所",
       "capacity": "容量",
-      "timezone": "タイムゾーン"
+      "timezone": "タイムゾーン",
+      "tags": "タグ",
+      "location": "位置",
+      "eventStartsOn": "イベント開始日",
+      "eventEndsOn": "イベント終了日",
+      "ticketSalesStartsOn": "チケット販売開始日",
+      "ticketSalesEndsOn": "チケット販売終了日",
+      "salesStart": "販売開始日",
+      "salesEnd": "販売終了日",
+      "uploadBanner": "バナーをアップロードする",
+      "categoryTags": "カテゴリタグ",
+      "ticketQuantity": "量",
+      "ticketPrice": "価格",
+      "tierName": "ティア名",
+      "gst": "消費税(%)",
+      "bannerImageHelperTextSize": "1920x1200px、サイズ最大5MBのPNG/JPGファイル",
+      "bannerImageHelperText": "バナー画像をアップロードまたはドラッグ",
+      "startDateTime": "イベント開始日",
+      "endDateTime": "イベント終了日"
     },
     "helperText": {
       "bannerImage": "バナー画像をアップロードまたはドラッグ",
@@ -150,7 +210,8 @@
       "bannerImageBrowse": "ファイルの参照"
     },
     "error": {
-      "invalidImageType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。"
+      "invalidImageType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。",
+      "loadFailed": "イベントの読み込みに失敗しました。"
     },
     "placeholder": {
       "eventDescription": "イベントについて書いてください...",
@@ -158,10 +219,123 @@
       "venueAddress": "会場の住所を検索する",
       "capacity": "例: 5000",
       "timezone": "タイムゾーンの選択",
-      "eventTitle": "イベントタイトルを入力してください"
+      "eventTitle": "イベントタイトルを入力してください",
+      "cancellationReason": "このイベントをキャンセルする理由を入力してください...",
+      "stopSalesReason": "販売中止の理由を教えてください...",
+      "searchEvents": "イベントを検索...",
+      "categoryTags": "カテゴリタグをカンマで区切って入力します",
+      "gst": "GST をパーセントで入力します",
+      "addMore": "さらに追加...",
+      "tags": "入力して Enter/カンマを押して追加します...",
+      "searchTier": "階層を検索または作成...",
+      "selectTier": "層名を選択または入力..."
     },
     "section": {
-      "venueSchedule": "会場"
+      "venueSchedule": "会場",
+      "adminNotes": "管理者メモ",
+      "ticketTiers": "チケットの階層",
+      "promoCodes": "プロモーション/割引コード",
+      "ticketing": "発券業務",
+      "discountsPromo": "割引",
+      "templates": "テンプレート"
+    },
+    "button": {
+      "pauseSales": "販売の一時停止",
+      "resumeSales": "販売再開",
+      "stopSales": "販売停止",
+      "editEvent": "イベントの編集",
+      "keepEvent": "キープイベント",
+      "updateEvent": "アップデートイベント",
+      "createEvent": "イベントの作成",
+      "addTicketTier": "チケット層を追加する",
+      "addPromoCode": "プロモーションコードを追加する",
+      "createNewTier": "新しい階層の作成"
+    },
+    "label": {
+      "totalSales": "総売上高",
+      "totalRevenue": "総収益",
+      "cancellationReason": "キャンセル理由（最低10文字）",
+      "stopSalesReason": "理由（任意）"
+    },
+    "text": {
+      "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
+      "noTierFound": "階層が見つかりません。",
+      "tierNameUsed": "名前はすでに使用されています"
+    },
+    "dialog": {
+      "cancelEvent": {
+        "title": "イベントのキャンセル",
+        "description": "このイベントをキャンセルしてもよろしいですか?\nこの操作は元に戻すことができません。"
+      },
+      "stopSales": {
+        "title": "イベント販売停止",
+        "description": "このイベントの販売を停止してもよろしいですか?\nこれにより、新たにチケットを購入できなくなります。"
+      }
+    },
+    "validation": {
+      "tierNameRequired": "層名は必須です。",
+      "fieldPastDate": "{field} を過去にすることはできません。",
+      "pastDate": "日付を過去にすることはできません。",
+      "tierNameLength": "層名は {max} 文字未満である必要があります。",
+      "priceRequired": "価格は少なくとも 1 でなければなりません。",
+      "priceMax": "価格は {max} を超えることはできません。",
+      "quantityMin": "数量は少なくとも 1 である必要があります。",
+      "quantityMax": "数量は {max} を超えることはできません。",
+      "gstRequired": "GSTは必須です。\n該当しない場合は 0 に設定します。",
+      "gstPositive": "GST は正の値である必要があります。",
+      "gstMax": "GST は 100% を超えることはできません。",
+      "dateTimeRequired": "{フィールド}は必須です。",
+      "salesEndAfterStart": "販売終了日は販売開始日以降である必要があります。",
+      "promoCodeRequired": "プロモーション コードが必要です。",
+      "promoCodeMaxLength": "プロモーション コードは {max} 文字未満にする必要があります。",
+      "promoCodeFormat": "プロモーション コードには A ～ Z、0 ～ 9、_、または - のみを含めることができます。」",
+      "discountTypeRequired": "割引タイプは必須です。",
+      "amountRequired": "量は少なくとも 1 でなければなりません。",
+      "amountMax": "金額は {max} を超えることはできません。",
+      "titleRequired": "イベントタイトルは必須です。",
+      "titleMaxLength": "イベントのタイトルは {max} 文字未満にする必要があります。",
+      "descriptionMaxLength": "イベントの説明は {max} 文字未満にする必要があります。",
+      "tagsRequired": "少なくとも 1 つのタグが必要です。",
+      "imageRequired": "バナー画像は必須です。",
+      "venueRequired": "会場名は必須です。",
+      "venueMaxLength": "会場名は {max} 文字未満である必要があります。",
+      "venueAddressRequired": "会場住所は必須です。",
+      "venueAddressMaxLength": "会場の住所は {max} 文字未満である必要があります。",
+      "capacityMin": "容量は少なくとも 1 である必要があります。",
+      "timezoneRequired": "タイムゾーンは必須です。",
+      "ticketsRequired": "少なくとも1枚のチケットが必要です。",
+      "endDateAfterStart": "イベント終了日はイベント開始日以降である必要があります。",
+      "salesEndBeforeEventStart": "販売終了日をイベント開始日以降にすることはできません。",
+      "duplicatePromoCode": "プロモーション コードは一意である必要があります。",
+      "duplicateTierName": "層名は一意である必要があります。",
+      "tierDescLength": "説明は {max} 文字未満にする必要があります。",
+      "stopSalesReasonMaxLength": "理由は {max} 文字を超えることはできません。",
+      "cancelReasonRequired": "理由が必要です。",
+      "cancelReasonMinLength": "理由は少なくとも {min} 文字でなければなりません。",
+      "cancelReasonMaxLength": "理由は {max} 文字を超えることはできません。",
+      "descriptionRequired": "イベントの説明は必須です。"
+    },
+    "createNewEvent": "新しいイベントの作成",
+    "editEvent": "イベントの編集",
+    "filterEvents": "イベントをフィルタリングする",
+    "filter": {
+      "status": "ステータスによるフィルター"
+    },
+    "noEventsFound": "イベントが見つかりませんでした",
+    "adjustFilters": "検索またはフィルターを調整してみてください",
+    "eventDetails": "イベント詳細",
+    "badge": {
+      "approved": "承認された",
+      "pending": "保留中",
+      "cancelled": "キャンセル",
+      "draft": "下書き",
+      "live": "ライブ",
+      "ended": "終了しました",
+      "active": "セールスライブ",
+      "paused": "販売一時停止",
+      "stopped": "販売停止",
+      "sold_out": "完売",
+      "sales_ended": "販売終了"
     }
   },
   "tierTemplates": {
@@ -183,6 +357,17 @@
       "title": "階層テンプレートはまだありません",
       "description": "再利用可能な階層テンプレートを作成して、イベントのチケット階層をすばやく設定します。",
       "button": "最初のテンプレートを作成する"
+    },
+    "dialog": {
+      "editTierTemplate": {
+        "title": "階層テンプレートの編集"
+      },
+      "createTierTemplate": {
+        "title": "階層テンプレートの作成"
+      }
+    },
+    "placeholder": {
+      "description": "階層の説明を入力してください"
     }
   },
   "settings": {
@@ -213,7 +398,6 @@
       "newPasswordPlaceholder": "新しいパスワードを入力",
       "confirmPassword": "新しいパスワードの確認",
       "confirmPasswordPlaceholder": "新しいパスワードを再度入力",
-      "updating": "更新中...",
       "updateButton": "パスワードを更新",
       "validation": {
         "currentPasswordRequired": "現在のパスワードは必須です。",
@@ -256,9 +440,9 @@
   "profile": {
     "validation": {
       "businessNameRequired": "法人名は必須です。",
-      "businessNameMinLength": "会社名は 3 文字以上である必要があります。",
-      "businessNameMaxLength": "会社名は 50 文字未満にする必要があります。",
-      "descriptionMaxLength": "説明は 500 文字未満にする必要があります。"
+      "businessNameMinLength": "ビジネス名は少なくとも {min} 文字である必要があります。",
+      "businessNameMaxLength": "ビジネス名は {max} 文字未満である必要があります。",
+      "descriptionMaxLength": "説明は {max} 文字未満にする必要があります。"
     },
     "editButton": "プロフィールの編集"
   },
@@ -293,6 +477,30 @@
     "search": "ユーザーを検索...",
     "filterByRole": "役割でフィルタリングする",
     "pageTitle": "チームマネジメント",
-    "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。"
-  }
+    "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。",
+    "validation": {
+      "roleRequired": "役割は必須です"
+    }
+  },
+  "greeting": {
+    "morning": "おはよう",
+    "afternoon": "こんにちは",
+    "evening": "こんばんは"
+  },
+  "dashboard": {
+    "accountRejected": {
+      "title": "アカウントアクセスが制限されています",
+      "description": "あなたの主催者アカウントは拒否されました。"
+    },
+    "accountPending": {
+      "title": "アカウントの承認待ち",
+      "description": "オーガナイザー アカウントの申請は現在審査中です。\nアカウントが承認されるまで、一部のプラットフォーム機能へのアクセスは制限されます。"
+    }
+  },
+  "All Statuses": "すべてのステータス",
+  "Draft": "下書き",
+  "Pending": "保留中",
+  "Approved": "承認された",
+  "Rejected": "拒否されました",
+  "Cancelled": "キャンセル"
 }

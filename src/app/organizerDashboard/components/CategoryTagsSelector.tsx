@@ -25,7 +25,7 @@ const CategoryTagsSelector = ({
   error = false,
 }: CategoryTagsSelectorProps) => {
   const { t } = useTranslation();
-  const defaultPlaceholder = t("event.placeholder.tags", "Type and press Enter to add...");
+  const defaultPlaceholder = t("event.placeholder.tags", "Type and press Enter/Comma to add...");
   const effectivePlaceholder = placeholder || defaultPlaceholder;
 
   const [inputValue, setInputValue] = useState("");

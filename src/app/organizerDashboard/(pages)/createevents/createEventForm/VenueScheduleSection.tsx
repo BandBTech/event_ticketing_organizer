@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
-import TimezoneSelector from "../TimezoneSelector";
+import TimezoneSelector from "../../../components/TimezoneSelector";
 
 interface VenueScheduleSectionProps {
   control: Control<EventFormData>;
@@ -49,7 +49,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
                       <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
-                        {field.value?.length || 0}/{VENUE_NAME_MAX} characters
+                        {field.value?.length || 0}/{VENUE_NAME_MAX} {t("common.characters", "characters")}
                       </div>
                     </div>
                   </div>
@@ -83,7 +83,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
                       <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
-                        {field.value?.length || 0}/{VENUE_ADDRESS_MAX} characters
+                        {field.value?.length || 0}/{VENUE_ADDRESS_MAX} {t("common.characters", "characters")}
                       </div>
                     </div>
                   </div>

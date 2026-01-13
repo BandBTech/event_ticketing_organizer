@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import { SalesStatusBadge } from "./SalesStatusBadge";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 /**
  * Get badge color class based on event status
@@ -47,6 +49,8 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event }: EventCardProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation();
   const categories = parseCategories(event.category);
 
   return (
@@ -64,7 +68,7 @@ export default function EventCard({ event }: EventCardProps) {
           <Badge
             className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${getStatusBadgeClass(event.status)}`}
           >
-            {event.status}
+            {t(`event.badge.${event.status}`)}
           </Badge>
         )}
         {/* Sales Status Badge */}
@@ -115,7 +119,7 @@ export default function EventCard({ event }: EventCardProps) {
               href={`/organizerDashboard/eventdetails?id=${event.id}`}
               className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
             >
-              View Detail <ArrowRight className="w-4 h-4" />
+              {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
             </Link>
             <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
               {(event.status === "pending" || event.status === "draft") && (

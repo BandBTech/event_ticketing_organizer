@@ -1,8 +1,5 @@
-import VerifyOTP from "@/app/(auth)/components/verifyOtpForm";
+import VerifyOtpForm from "./VerifyOtpForm";
 
-export default function ChangePasswordPage() {
-  return (
-    <VerifyOTP />
-  );
-
+export default function VerifyOTPPage() {
+  return <VerifyOtpForm />;
 }

@@ -30,7 +30,7 @@ export function RejectionNotice() {
             </p>
             {user?.organizationInfo?.remark && (
               <div className="text-sm bg-red-50 p-3 rounded-md border border-red-200">
-                <span className="font-medium text-red-800">{t('common.label.remark', 'Remark')}: </span>
+                <span className="font-medium text-red-800">{t('common.remark', 'Remark')}: </span>
                 <span className="text-red-700">{user.organizationInfo.remark}</span>
               </div>
             )}
@@ -40,7 +40,7 @@ export function RejectionNotice() {
         <div className="flex shrink-0">
           <Button variant="outline" className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 hover:border-red-300 transition-all shadow-sm">
             <EnvelopeSimpleIcon className="mr-2 h-4 w-4" />
-            Contact Support
+            {t('common.contactSupport', 'Contact Support')}
           </Button>
         </div>
       </div>

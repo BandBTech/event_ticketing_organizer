@@ -1,7 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface SalesStatusBadgeProps {
   status?: string;
@@ -35,6 +37,8 @@ function getSalesStatusLabel(status: string): string {
 }
 
 export function SalesStatusBadge({ status, className, showAlways = false }: SalesStatusBadgeProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   if (!status && !showAlways) return null;
   
   const displayStatus = status || "";
@@ -54,7 +58,7 @@ export function SalesStatusBadge({ status, className, showAlways = false }: Sale
           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
         </span>
       )}
-      {getSalesStatusLabel(displayStatus)}
+      {t(`event.badge.${displayStatus}`)}
     </Badge>
   );
 }

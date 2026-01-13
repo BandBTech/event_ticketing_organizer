@@ -77,7 +77,7 @@ export default function Events() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <Input
             type="text"
-            placeholder={t("common.placeholder.searchEvents", "Search events...")}
+            placeholder={t("event.placeholder.searchEvents", "Search events...")}
             value={searchInput}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -92,7 +92,7 @@ export default function Events() {
             <SelectContent>
               {EVENT_STATUSES.map((status) => (
                 <SelectItem key={status.value} value={status.value}>
-                  {t(`event.status.${status.value}`, status.label)}
+                  {t(status.label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -122,11 +122,11 @@ export default function Events() {
               <div className="col-span-full grid place-items-center py-12 text-gray-500">
                 <CalendarXIcon className="w-12 h-12 mb-2" />
                 <p className="text-lg">
-                  {t("event.text.noEventsFound", "No events found")}
+                  {t("event.noEventsFound", "No events found")}
                 </p>
                 {hasActiveFilters && (
                   <p className="text-sm mt-2">
-                    {t("event.text.adjustFilters", "Try adjusting your search or filters")}
+                    {t("event.adjustFilters", "Try adjusting your search or filters")}
                   </p>
                 )}
               </div>

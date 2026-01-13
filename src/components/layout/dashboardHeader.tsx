@@ -13,27 +13,8 @@ import { PERMISSIONS } from "@/lib/permissions";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
 
-/**
- * Get time-based greeting message
- */
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 17) return "Good Afternoon";
-  return "Good Evening";
-}
-
-const pageHeaders: { prefix: string; title: string; editTitle?: string; isDynamic?: boolean }[] = [
-  { prefix: "/organizerDashboard/events", title: "Events" },
-  { prefix: "/organizerDashboard/settings", title: "" },
-  { prefix: "/organizerDashboard/reports", title: "Reports" },
-  { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
-  { prefix: "/organizerDashboard/createevents", title: "Create new event", editTitle: "Edit Event" },
-  { prefix: "/organizerDashboard/eventdetails", title: "Event details" },
-  { prefix: "/organizerDashboard/users", title: "Users" },
-];
-
 export default function DashboardHeader() {
+
   const router = useRouter();
   const rawPath = usePathname() ?? "/";
   const pathname = rawPath.replace(/\/+$/, "") || "/";
@@ -44,14 +25,34 @@ export default function DashboardHeader() {
   // const { openCreateUserModal } = useUser();
   const { user, isOrganizerRejected, isOrganizerPending } = useAuthStore();
 
+  /**
+ * Get time-based greeting message
+ */
+  const getGreeting = (): string => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t("greeting.morning", "Good Morning");
+    if (hour < 17) return t("greeting.afternoon", "Good Afternoon");
+    return t("greeting.evening", "Good Evening");
+  };
+
   // Get user's first name or fallback
   const userName = user?.firstName || "there";
   const orgId = user?.organization?.id || user?.organizationId;
 
+  const pageHeaders: { prefix: string; title: string; editTitle?: string; isDynamic?: boolean }[] = useMemo(() => [
+    { prefix: "/organizerDashboard/events", title: t("navigation.events", "Events") },
+    { prefix: "/organizerDashboard/settings", title: "" },
+    { prefix: "/organizerDashboard/reports", title: t("navigation.reports", "Reports") },
+    { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
+    { prefix: "/organizerDashboard/createevents", title: t("event.createNewEvent", "Create New Event"), editTitle: t("event.editEvent", "Edit Event") },
+    { prefix: "/organizerDashboard/eventdetails", title: t("event.eventDetails", "Event details") },
+    { prefix: "/organizerDashboard/users", title: t("navigation.users", "Users") },
+  ], [t]);
+
   // Dynamic greeting for dashboard
   const dynamicGreeting = useMemo(() => {
     return `${getGreeting()}, ${userName}!`;
-  }, [userName]);
+  }, [userName, t]);
 
   // Pick the best match (longest prefix first)
   const matched = pageHeaders
@@ -77,7 +78,7 @@ export default function DashboardHeader() {
 
   // Don't show create button when editing an event, or if no organization
   const showCreateButton = (!isOrganizerRejected() || !isOrganizerPending()) && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
-  const createButtonLabel = t('event.field.create', 'Create New Event');
+  const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {
     router.push("/organizerDashboard/createevents");

@@ -11,7 +11,7 @@ import {
   TranslatedFormMessage,
 } from "@/components/ui/form";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
-import TierNameSelector from "./TierNameSelector";
+import TierNameSelector from "../../../components/TierNameSelector";
 import { TierTemplate } from "@/types/event";
 import { EventFormData, MAX_PRICE, MAX_QUANTITY } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";

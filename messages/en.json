@@ -19,7 +19,8 @@
       "min": "{field} must be at least {value}.",
       "max": "{field} cannot exceed {value}.",
       "pattern": "{field} format is invalid.",
-      "invalidDatetime": "Enter valid datetime."
+      "invalidDatetime": "Enter valid datetime.",
+      "yearLimit": "Year cannot be more than 4 digits."
     },
     "cancelButton": "Cancel",
     "createdAt": "Created At",
@@ -53,7 +54,44 @@
     },
     "status": "Status",
     "unknown": "Unknown",
-    "allRoles": "All Roles"
+    "allRoles": "All Roles",
+    "characters": "characters",
+    "ticket": "ticket",
+    "sold": "sold",
+    "canceling": "Canceling...",
+    "processing": "Processing...",
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You do not have the necessary permissions to access this page. Please contact your administrator if you believe this is an error.",
+    "goBack": "Go Back",
+    "updating": "Updating...",
+    "creating": "Creating...",
+    "update": "Update",
+    "create": "Create",
+    "viewDetail": "View Detail",
+    "previous": "Previous",
+    "next": "Next",
+    "remark": "Remark",
+    "contactSupport": "Contact Support",
+    "tags": "tags",
+    "max": "Max",
+    "tag": "tag",
+    "changeImage": "Change Image",
+    "clickToUpdate": "Click to update",
+    "dropImageHere": "Drop the image here...",
+    "image": {
+      "fileTooLarge": "File size exceeds {size}. Please upload a smaller image.",
+      "fileInvalidType": "Invalid file type. Please upload an image (PNG/JPG).",
+      "limitExceeded": "File size exceeds the maximum limit of {maxSizeMB}MB."
+    },
+    "clickToReplace": "Click to replace",
+    "dialog": {
+      "unsavedChanges": {
+        "title": "Unsaved Changes",
+        "description": "You have unsaved changes. Are you sure you want to leave? All your progress will be lost.",
+        "stay": "Stay on Page",
+        "leave": "Leave Page"
+      }
+    }
   },
   "navigation": {
     "events": "Events",
@@ -92,9 +130,9 @@
     },
     "validation": {
       "businessNameRequired": "Business name is required.",
-      "businessNameMinLength": "Business name must be at least 3 characters.",
-      "businessNameMaxLength": "Business name must be less than 50 characters.",
-      "descriptionMaxLength": "Description must be less than 500 characters."
+      "businessNameMinLength": "Business name must be at least {min} characters.",
+      "businessNameMaxLength": "Business name must be less than {max} characters.",
+      "descriptionMaxLength": "Description must be less than {max} characters."
     }
   },
   "languages": {
@@ -156,10 +194,10 @@
       "termsAnd": "and",
       "privacy": "privacy policy",
       "validation": {
-        "firstNameTooShort": "First name must be at least 2 characters.",
-        "firstNameTooLong": "First Name must not exceed 50 characters.",
-        "lastNameTooShort": "Last name must be at least 2 characters.",
-        "lastNameTooLong": "Last Name must not exceed 50 characters.",
+        "firstNameTooShort": "First Name must be at least {min} characters.",
+        "firstNameTooLong": "First Name must not exceed {max} characters.",
+        "lastNameTooShort": "Last Name must be at least {min} characters.",
+        "lastNameTooLong": "Last Name must not exceed {max} characters.",
         "emailRequired": "Email is required.",
         "emailInvalid": "Invalid email address.",
         "phoneInvalid": "Please enter a valid phone number.",
@@ -173,7 +211,7 @@
         "firstNameRequired": "First name is required.",
         "lastNameRequired": "Last name is required.",
         "passwordRequired": "Password is required.",
-        "passwordMin": "Password must be at least 8 characters.",
+        "passwordMin": "Password must be at least {min} characters.",
         "passwordUpperLower": "Password must contain at least one uppercase and one lowercase letter.",
         "passwordSpecialChar": "Password must contain at least one special character."
       },
@@ -288,7 +326,6 @@
       "newPasswordPlaceholder": "Enter new password",
       "confirmPassword": "Confirm New Password",
       "confirmPasswordPlaceholder": "Enter new password again",
-      "updating": "Updating...",
       "updateButton": "Update Password",
       "validation": {
         "currentPasswordRequired": "Current password is required.",
@@ -366,7 +403,17 @@
       "promoCode": "Promo Code",
       "discountType": "Discount Type",
       "discountAmount": "Amount",
-      "discountQuantity": "Quantity"
+      "discountQuantity": "Quantity",
+      "tags": "Tags",
+      "location": "Location",
+      "eventStartsOn": "Event Starts On",
+      "eventEndsOn": "Event Ends On",
+      "ticketSalesStartsOn": "Ticket Sales Starts On",
+      "ticketSalesEndsOn": "Ticket Sales Ends On",
+      "uploadBanner": "Upload Banner",
+      "categoryTags": "Category Tags",
+      "bannerImageHelperTextSize": "PNG/JPG file of 1920x1200px with size up to 5MB",
+      "bannerImageHelperText": "Upload banner image or drag & drop"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
@@ -378,7 +425,8 @@
       "invalidImageSize": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.",
       "invalidDatetime": "Enter valid datetime.",
       "pastDate": "Date cannot be in the past.",
-      "fieldPastDate": "{field} cannot be in the past."
+      "fieldPastDate": "{field} cannot be in the past.",
+      "loadFailed": "Failed to load events."
     },
     "placeholder": {
       "eventDescription": "Write about your event...",
@@ -386,10 +434,124 @@
       "venueAddress": "Search for venue address",
       "capacity": "e.g 5000",
       "timezone": "Select timezone",
-      "eventTitle": "Enter event title"
+      "eventTitle": "Enter event title",
+      "cancellationReason": "Please provide a reason for cancelling this event...",
+      "stopSalesReason": "Provide a reason for stopping sales...",
+      "searchEvents": "Search events...",
+      "categoryTags": "Enter category tags separated by commas",
+      "gst": "Enter GST in percentage",
+      "addMore": "Add more...",
+      "tags": "Type and press Enter/Comma to add...",
+      "searchTier": "Search or create tier...",
+      "selectTier": "Select or type tier name..."
     },
     "section": {
-      "venueSchedule": "Venue & Schedule"
+      "venueSchedule": "Venue & Schedule",
+      "adminNotes": "Admin Notes",
+      "ticketTiers": "Ticket Tiers",
+      "promoCodes": "Promo/Discount Codes",
+      "ticketing": "Ticketing",
+      "discountsPromo": "Discounts & Promo Codes",
+      "templates": "Templates"
+    },
+    "button": {
+      "pauseSales": "Pause Sales",
+      "resumeSales": "Resume Sales",
+      "stopSales": "Stop Sales",
+      "editEvent": "Edit Event",
+      "keepEvent": "Keep Event",
+      "updateEvent": "Update Event",
+      "createEvent": "Create Event",
+      "addTicketTier": "Add ticket tier",
+      "addPromoCode": "Add promo code",
+      "createNewTier": "Create New Tier"
+    },
+    "label": {
+      "totalSales": "Total Sales",
+      "totalRevenue": "Total Revenue",
+      "cancellationReason": "Reason for cancellation (minimum 10 characters)",
+      "stopSalesReason": "Reason (optional)"
+    },
+    "text": {
+      "noPromoCodes": "No promo codes configured for this event.",
+      "noTierFound": "No tier found.",
+      "tierNameUsed": "Name already used"
+    },
+    "dialog": {
+      "cancelEvent": {
+        "title": "Cancel Event",
+        "description": "Are you sure you want to cancel this event? This action cannot be undone."
+      },
+      "stopSales": {
+        "title": "Stop Event Sales",
+        "description": "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases."
+      }
+    },
+    "validation": {
+      "tierNameRequired": "Tier Name is required.",
+      "tierNameLength": "Tier Name must be under {max} characters.",
+      "tierDescLength": "Description must be under {max} characters.",
+      "fieldPastDate": "{field} cannot be in the past.",
+      "pastDate": "Date cannot be in the past.",
+      "priceRequired": "Price must be at least 1.",
+      "priceMax": "Price cannot exceed {max}.",
+      "quantityMin": "Quantity must be at least 1.",
+      "quantityMax": "Quantity cannot exceed {max}.",
+      "gstRequired": "GST is required. Set to 0 if not applicable.",
+      "gstPositive": "GST must be positive.",
+      "gstMax": "GST cannot exceed 100%.",
+      "dateTimeRequired": "{field} is required.",
+      "salesEndAfterStart": "Sales End Date must be after Sales Start Date.",
+      "promoCodeRequired": "Promo Code is required.",
+      "promoCodeMaxLength": "Promo Code must be under {max} characters.",
+      "promoCodeFormat": "Promo Code may only contain A-Z , 0-9, _ or -\"",
+      "discountTypeRequired": "Discount Type is required.",
+      "amountRequired": "Amount must be at least 1.",
+      "amountMax": "Amount cannot exceed {max}.",
+      "titleRequired": "Event Title is required.",
+      "titleMaxLength": "Event Title must be under {max} characters.",
+      "descriptionRequired": "Event Description is required.",
+      "descriptionMaxLength": "Event Description must be under {max} characters.",
+      "tagsRequired": "t least one Tag is required.",
+      "imageRequired": "Banner Image is required.",
+      "venueRequired": "Venue Name is required.",
+      "venueMaxLength": "Venue Name must be under {max} characters.",
+      "venueAddressRequired": "Venue Address is required.",
+      "venueAddressMaxLength": "Venue Address must be under {max} characters.",
+      "capacityMin": "Capacity must be at least 1.",
+      "capacityMax": "Capacity cannot exceed {max}.",
+      "timezoneRequired": "Timezone is required.",
+      "ticketsRequired": "At least one Ticket is required.",
+      "endDateAfterStart": "Event End Date must be after Event Start Date.",
+      "salesEndBeforeEventStart": "Sales End Date cannot be after Event Start Date.",
+      "duplicatePromoCode": "Promo Code must be unique.",
+      "duplicateTierName": "Tier Name must be unique.",
+      "stopSalesReasonMaxLength": "Reason cannot exceed {max} characters.",
+      "cancelReasonRequired": "Reason is required.",
+      "cancelReasonMinLength": "Reason must be at least {min} characters.",
+      "cancelReasonMaxLength": "Reason cannot exceed {max} characters."
+    },
+    "createNewEvent": "Create New Event",
+    "editEvent": "Edit Event",
+    "filterEvents": "Filter events",
+    "filter": {
+      "status": "Filter by Status"
+    },
+    "noEventsFound": "No events found",
+    "adjustFilters": "Try adjusting your search or filters",
+    "badge": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "draft": "Draft",
+      "live": "Live",
+      "ended": "Ended",
+      "rejected": "Rejected",
+      "active": "Sales Live",
+      "paused": "Sales Paused",
+      "stopped": "Sales Stopped",
+      "sold_out": "Sold Out",
+      "sales_ended": "Sales Ended"
     }
   },
   "tierTemplates": {
@@ -411,6 +573,18 @@
       "title": "No tier templates yet",
       "description": "Create reusable tier templates to quickly set up ticket tiers for your events.",
       "button": "Create your first template"
+    },
+    "dialog": {
+      "editTierTemplate": {
+        "title": "Edit Tier Template"
+      },
+      "createTierTemplate": {
+        "title": "Create Tier Template"
+      }
+    },
+    "placeholder": {
+      "templateName": "e.g., VIP, Early Bird",
+      "description": "Enter tier description"
     }
   },
   "users": {
@@ -444,6 +618,30 @@
     "search": "Search users...",
     "filterByRole": "Filter by role",
     "pageTitle": "Team Management",
-    "pageSubtitle": "Manage your organization team and user access."
-  }
+    "pageSubtitle": "Manage your organization team and user access.",
+    "validation": {
+      "roleRequired": "Role is required"
+    }
+  },
+  "greeting": {
+    "morning": "Good Morning",
+    "afternoon": "Good Afternoon",
+    "evening": "Good Evening"
+  },
+  "dashboard": {
+    "accountRejected": {
+      "title": "Account Access Restricted",
+      "description": "Your organizer account has been rejected."
+    },
+    "accountPending": {
+      "title": "Account Approval Pending",
+      "description": "Your organizer account application is currently under review. Access to some platform features is restricted until your account is approved."
+    }
+  },
+  "All Statuses": "All Statuses",
+  "Draft": "Draft",
+  "Pending": "Pending",
+  "Approved": "Approved",
+  "Rejected": "Rejected",
+  "Cancelled": "Cancelled"
 }

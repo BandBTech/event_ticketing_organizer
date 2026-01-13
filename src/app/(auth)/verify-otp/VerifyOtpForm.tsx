@@ -2,18 +2,25 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+
+// Icons
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
+
+// UI Components
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+
+// Services & Hooks
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authService } from "@/services/authService";
-import { AuthError } from "@/lib/errors";
 import { useAuthStore } from "@/store/authStore";
+import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +36,6 @@ function VerifyOTPContent() {
   const [otpType, setOtpType] = useState("registration");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
 
   useEffect(() => {
@@ -56,96 +61,78 @@ function VerifyOTPContent() {
     }
   }, [resendTimer]);
 
-  const handleVerify = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (otp.length < 6) {
-      setError(
-        t(
-          "auth.verifyOTP.errors.otpIncomplete",
-          "Please enter the complete 6-digit code"
-        )
-      );
-      return;
-    }
-
-    setIsLoading(true);
-    setError("");
-
-    try {
-      // Verify OTP
-      await authService.verifyOTP({
+  // Verify OTP mutation
+  const verifyMutation = useMutation({
+    mutationFn: async () => {
+      return authService.verifyOTP({
         identifier: email,
         otp_code: otp,
         otp_type: otpType,
         role: "organizer",
       });
-
-      // Show success toast
+    },
+    onSuccess: async () => {
       toast.success("auth.toast.otpVerified", "Email verified successfully!");
 
-      // Handle different OTP types
       if (otpType === "password_reset") {
         // For password reset, redirect to reset password page
         router.push(
-          `/resetpassword?email=${encodeURIComponent(
-            email
-          )}&otp=${encodeURIComponent(otp)}`
+          `/resetpassword?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`
         );
       } else if (password) {
         // For registration, auto-login
-        await login({
-          email,
-          password,
-        });
+        await login({ email, password });
         router.push("/");
       } else {
-        // Fallback to homepage
         router.push("/");
       }
-    } catch (err) {
-
-      // Show error toast
+    },
+    onError: (err: Error) => {
       if (err instanceof AuthError) {
-        toast.error(
-          "",
-          err.message || "Invalid OTP. Please try again.",
-          err.details
-        );
+        toast.error("", err.message || "Invalid OTP. Please try again.", err.details);
       } else {
         toast.error("auth.toast.serverError", "Invalid OTP. Please try again.");
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const handleResendOTP = async () => {
-    setIsResending(true);
-    setError("");
-
-    try {
-      await authService.sendOTP({
+  // Resend OTP mutation
+  const resendMutation = useMutation({
+    mutationFn: async () => {
+      return authService.sendOTP({
         identifier: email,
         otp_type: otpType,
       });
-
+    },
+    onSuccess: () => {
       setError("");
       setOtp("");
-      // Show success toast
       toast.success("auth.toast.otpResent", "New code sent to your email");
-
-      // Restart 1-minute timer
       setResendTimer(60);
-    } catch (err) {
-      // Show error toast
+    },
+    onError: (err: Error) => {
       if (err instanceof AuthError) {
         toast.error("", err.message || "Failed to resend OTP. Please try again.", err.details);
       } else {
         toast.error("", "Failed to resend OTP. Please try again.");
       }
-    } finally {
-      setIsResending(false);
+    },
+  });
+
+  const handleVerify = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (otp.length < 6) {
+      setError(
+        t("auth.verifyOTP.errors.otpIncomplete", "Please enter the complete 6-digit code")
+      );
+      return;
     }
+    setError("");
+    verifyMutation.mutate();
+  };
+
+  const handleResendOTP = () => {
+    resendMutation.mutate();
   };
 
   return (
@@ -174,17 +161,11 @@ function VerifyOTPContent() {
                   {t("auth.verifyOTP.title", "Verify Your Email")}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.verifyOTP.subtitle",
-                    "Enter the 6-digit code sent to"
-                  )}
+                  {t("auth.verifyOTP.subtitle", "Enter the 6-digit code sent to")}
                   <br />
                   <strong>{email}</strong>
                   <br />
-                  {t(
-                    "auth.verifyOTP.otpValidity",
-                    "The code will expire in 10 minutes."
-                  )}
+                  {t("auth.verifyOTP.otpValidity", "The code will expire in 10 minutes.")}
                 </p>
               </div>
 
@@ -200,30 +181,12 @@ function VerifyOTPContent() {
                 <div className="flex justify-center">
                   <InputOTP maxLength={6} value={otp} onChange={setOtp}>
                     <InputOTPGroup>
-                      <InputOTPSlot
-                        index={0}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={1}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={2}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={3}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={4}
-                        className="h-14 w-14 text-lg"
-                      />
-                      <InputOTPSlot
-                        index={5}
-                        className="h-14 w-14 text-lg"
-                      />
+                      <InputOTPSlot index={0} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={1} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={2} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={3} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={4} className="h-14 w-14 text-lg" />
+                      <InputOTPSlot index={5} className="h-14 w-14 text-lg" />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -231,16 +194,16 @@ function VerifyOTPContent() {
                 {/* Verify Button */}
                 <Button
                   type="submit"
-                  disabled={isLoading || otp.length < 6}
+                  disabled={verifyMutation.isPending || otp.length < 6}
                   className={cn(
                     "w-full h-12 rounded-lg font-medium transition-all duration-200",
                     "bg-blue-600 hover:bg-blue-700 text-white",
                     "shadow-lg hover:shadow-xl",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    isLoading && "animate-pulse"
+                    verifyMutation.isPending && "animate-pulse"
                   )}
                 >
-                  {isLoading
+                  {verifyMutation.isPending
                     ? t("auth.verifyOTP.verifying", "Verifying...")
                     : t("auth.verifyOTP.verifyButton", "Verify OTP")}
                 </Button>
@@ -249,20 +212,17 @@ function VerifyOTPContent() {
               {/* Resend OTP */}
               <div className="text-center space-y-2">
                 <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.verifyOTP.didntReceive",
-                    "Didn't receive the code?"
-                  )}{" "}
+                  {t("auth.verifyOTP.didntReceive", "Didn't receive the code?")}{" "}
                   <button
                     type="button"
                     onClick={handleResendOTP}
-                    disabled={isResending || resendTimer > 0}
+                    disabled={resendMutation.isPending || resendTimer > 0}
                     className="font-medium cursor-pointer text-primary hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isResending
+                    {resendMutation.isPending
                       ? t("auth.verifyOTP.resending", "Resending...")
                       : resendTimer > 0
-                        ? `Resend in ${resendTimer}s`
+                        ? `${t("auth.verifyOTP.resendIn", "Resend in")} ${resendTimer}s`
                         : t("auth.verifyOTP.resend", "Resend")}
                   </button>
                 </p>
@@ -281,9 +241,10 @@ function VerifyOTPContent() {
   );
 }
 
-export default function VerifyOTPPage() {
+export default function VerifyOtpForm() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  
   return (
     <Suspense
       fallback={

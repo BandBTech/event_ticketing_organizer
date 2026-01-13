@@ -152,7 +152,7 @@ export default function UsersPage() {
   }
 
   if (isAuthLoading) {
-    return <div className="flex-1 p-8 pt-6 flex justify-center items-center">Loading...</div>;
+    return <div className="flex-1 p-8 pt-6 flex justify-center items-center">{t("common.loading", "Loading...")}</div>;
   }
 
   return (

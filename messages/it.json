@@ -12,7 +12,11 @@
     "tryAgain": "Prova ad aggiustare i criteri di ricerca o controlla più tardi per nuovi eventi.",
     "cancelButton": "Cancellare",
     "validation": {
-      "invalidDatetime": "Inserisci una data/ora valida."
+      "invalidDatetime": "Inserisci una data/ora valida.",
+      "yearLimit": "L'anno non può contenere più di 4 cifre.",
+      "required": "{campo} è obbligatorio.",
+      "min": "{field} deve essere almeno {value}.",
+      "max": "{campo} non può superare {valore}."
     },
     "createdAt": "Creato a",
     "updatedAt": "Aggiornato a",
@@ -43,7 +47,44 @@
     },
     "status": "Stato",
     "unknown": "Sconosciuto",
-    "allRoles": "Tutti i ruoli"
+    "allRoles": "Tutti i ruoli",
+    "characters": "caratteri",
+    "ticket": "biglietto",
+    "sold": "venduto",
+    "canceling": "Annullamento...",
+    "processing": "Elaborazione...",
+    "accessDenied": "Accesso negato",
+    "accessDeniedMessage": "Non disponi dei permessi necessari per accedere a questa pagina. \nContatta l'amministratore se ritieni che si tratti di un errore.",
+    "goBack": "Torna indietro",
+    "updating": "Aggiornamento...",
+    "creating": "Creazione...",
+    "update": "Aggiornamento",
+    "create": "Creare",
+    "viewDetail": "Visualizza dettagli",
+    "previous": "Precedente",
+    "next": "Prossimo",
+    "remark": "Osservazione",
+    "contactSupport": "Contatta l'assistenza",
+    "tags": "tag",
+    "max": "Massimo",
+    "tag": "etichetta",
+    "changeImage": "Cambia immagine",
+    "clickToUpdate": "Fare clic per aggiornare",
+    "dropImageHere": "Rilascia l'immagine qui...",
+    "image": {
+      "fileTooLarge": "La dimensione del file supera le {dimensioni}. \nCarica un'immagine più piccola.",
+      "fileInvalidType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG).",
+      "limitExceeded": "La dimensione del file supera il limite massimo di {maxSizeMB} MB."
+    },
+    "clickToReplace": "Fare clic per sostituire",
+    "dialog": {
+      "unsavedChanges": {
+        "title": "Modifiche non salvate",
+        "description": "Sono presenti modifiche non salvate. \nSei sicuro di voler partire? \nTutti i tuoi progressi andranno persi.",
+        "stay": "Rimani sulla pagina",
+        "leave": "Lascia la pagina"
+      }
+    }
   },
   "navigation": {
     "events": "Eventi",
@@ -85,26 +126,27 @@
         "loginFailed": "Accesso fallito. Riprova."
       },
       "showPassword": "Mostra password",
-      "hidePassword": "Nascondi password"
+      "hidePassword": "Nascondi password",
+      "asOrganizer": "come Organizzatore"
     },
     "signup": {
       "phonePlaceholder": "Inserisci un numero di contatto valido",
       "validation": {
         "phoneRequired": "Il numero di contatto è obbligatorio",
         "firstNameRequired": "Il nome è obbligatorio",
-        "firstNameTooLong": "Il nome non deve superare i 50 caratteri.",
-        "firstNameTooShort": "Il nome deve contenere almeno 2 caratteri",
-        "lastNameTooShort": "Il cognome deve contenere almeno 2 caratteri",
+        "firstNameTooLong": "Il nome non deve contenere più di {max} caratteri.",
+        "firstNameTooShort": "Il nome deve contenere almeno {min} caratteri.",
+        "lastNameTooShort": "Il cognome deve contenere almeno {min} caratteri.",
         "passwordSpecialChar": "La password deve contenere almeno un carattere speciale.",
         "passwordUpperLower": "La password deve contenere almeno una lettera maiuscola e una minuscola.",
         "passwordNumber": "La password deve contenere almeno un numero.",
         "emailInvalid": "Indirizzo e-mail non valido.",
         "phoneInvalid": "Inserisci un numero di telefono valido.",
         "passwordMismatch": "Le password non corrispondono.",
-        "lastNameTooLong": "Il cognome non deve superare i 50 caratteri.",
+        "lastNameTooLong": "Il cognome non deve superare i {max} caratteri.",
         "emailRequired": "L'e-mail è obbligatoria.",
         "passwordRequired": "È richiesta la password.",
-        "passwordMin": "La password deve contenere almeno 8 caratteri.",
+        "passwordMin": "La password deve contenere almeno {min} caratteri.",
         "lastNameRequired": "Il cognome è obbligatorio."
       },
       "setPassword": "Crea una password sicura per",
@@ -142,7 +184,25 @@
       "venueName": "Nome della sede",
       "venueAddress": "Indirizzo della sede",
       "capacity": "Capacità",
-      "timezone": "Fuso orario"
+      "timezone": "Fuso orario",
+      "tags": "Tag",
+      "location": "Posizione",
+      "eventStartsOn": "L'evento inizia il",
+      "eventEndsOn": "L'evento termina il",
+      "ticketSalesStartsOn": "La vendita dei biglietti inizia il",
+      "ticketSalesEndsOn": "La vendita dei biglietti termina il",
+      "ticketPrice": "Prezzo",
+      "salesStart": "Data di inizio delle vendite",
+      "salesEnd": "Data di fine delle vendite",
+      "uploadBanner": "Carica banner",
+      "categoryTags": "Tag di categoria",
+      "ticketQuantity": "Quantità",
+      "tierName": "Nome del livello",
+      "gst": "GST(%)",
+      "bannerImageHelperTextSize": "File PNG/JPG di 1920x1200px con dimensioni fino a 5 MB",
+      "bannerImageHelperText": "Carica l'immagine del banner o trascinala",
+      "startDateTime": "Data di inizio evento",
+      "endDateTime": "Data di fine evento"
     },
     "helperText": {
       "bannerImage": "Carica l'immagine del banner o trascinala",
@@ -150,7 +210,8 @@
       "bannerImageBrowse": "Sfoglia file"
     },
     "error": {
-      "invalidImageType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG)."
+      "invalidImageType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG).",
+      "loadFailed": "Impossibile caricare gli eventi."
     },
     "placeholder": {
       "eventDescription": "Scrivi del tuo evento...",
@@ -158,10 +219,125 @@
       "venueAddress": "Cerca l'indirizzo della sede",
       "capacity": "ad esempio 5000",
       "timezone": "Seleziona fuso orario",
-      "eventTitle": "Inserisci il titolo dell'evento"
+      "eventTitle": "Inserisci il titolo dell'evento",
+      "cancellationReason": "Si prega di fornire un motivo per annullare questo evento...",
+      "stopSalesReason": "Fornire un motivo per interrompere le vendite...",
+      "searchEvents": "Cerca eventi...",
+      "categoryTags": "Inserisci i tag di categoria separati da virgole",
+      "gst": "Inserisci la GST in percentuale",
+      "addMore": "Aggiungi altro...",
+      "tags": "Digita e premi Invio/Virgola per aggiungere...",
+      "searchTier": "Cerca o crea livello...",
+      "selectTier": "Seleziona o digita il nome del livello..."
     },
     "section": {
-      "venueSchedule": "Luogo"
+      "venueSchedule": "Luogo",
+      "adminNotes": "Note dell'amministratore",
+      "ticketTiers": "Livelli di biglietti",
+      "promoCodes": "Codici promozionali/sconto",
+      "ticketing": "biglietteria",
+      "discountsPromo": "Sconti",
+      "templates": "Modelli"
+    },
+    "button": {
+      "pauseSales": "Metti in pausa le vendite",
+      "resumeSales": "Riprendi le vendite",
+      "stopSales": "Stop alle vendite",
+      "editEvent": "Modifica evento",
+      "keepEvent": "Mantieni evento",
+      "updateEvent": "Aggiorna evento",
+      "createEvent": "Crea evento",
+      "addTicketTier": "Aggiungi livello di biglietto",
+      "addPromoCode": "Aggiungi il codice promozionale",
+      "createNewTier": "Crea nuovo livello"
+    },
+    "label": {
+      "totalSales": "Vendite totali",
+      "totalRevenue": "Entrate totali",
+      "cancellationReason": "Motivo della cancellazione (minimo 10 caratteri)",
+      "stopSalesReason": "Motivo (facoltativo)"
+    },
+    "text": {
+      "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
+      "noTierFound": "Nessun livello trovato.",
+      "tierNameUsed": "Nome già utilizzato"
+    },
+    "dialog": {
+      "cancelEvent": {
+        "title": "Annulla evento",
+        "description": "Sei sicuro di voler annullare questo evento? \nQuesta azione non può essere annullata."
+      },
+      "stopSales": {
+        "title": "Interrompi le vendite di eventi",
+        "description": "Sei sicuro di voler interrompere le vendite per questo evento? \nCiò impedirà qualsiasi nuovo acquisto di biglietti."
+      }
+    },
+    "validation": {
+      "tierNameRequired": "Il nome del livello è obbligatorio.",
+      "fieldPastDate": "{field} non può essere nel passato.",
+      "pastDate": "La data non può essere nel passato.",
+      "tierNameLength": "Il nome del livello deve contenere meno di {max} caratteri.",
+      "priceRequired": "Il prezzo deve essere almeno 1.",
+      "priceMax": "Il prezzo non può superare {max}.",
+      "quantityMin": "La quantità deve essere almeno 1.",
+      "quantityMax": "La quantità non può superare {max}.",
+      "gstRequired": "La GST è obbligatoria. \nImpostare su 0 se non applicabile.",
+      "gstPositive": "La GST deve essere positiva.",
+      "gstMax": "La GST non può superare il 100%.",
+      "dateTimeRequired": "{campo} è obbligatorio.",
+      "salesEndAfterStart": "La data di fine delle vendite deve essere successiva alla data di inizio delle vendite.",
+      "promoCodeRequired": "È richiesto il codice promozionale.",
+      "promoCodeMaxLength": "Il codice promozionale deve contenere meno di {max} caratteri.",
+      "promoCodeFormat": "Il codice promozionale può contenere solo A-Z, 0-9, _ o -\"",
+      "discountTypeRequired": "Il tipo di sconto è obbligatorio.",
+      "amountRequired": "L'importo deve essere almeno 1.",
+      "amountMax": "L'importo non può superare {max}.",
+      "titleRequired": "Il titolo dell'evento è obbligatorio.",
+      "titleMaxLength": "Il titolo dell'evento deve contenere meno di {max} caratteri.",
+      "descriptionRequired": "La descrizione dell'evento è obbligatoria.",
+      "descriptionMaxLength": "La descrizione dell'evento deve contenere meno di {max} caratteri.",
+      "tagsRequired": "È richiesto almeno un tag.",
+      "imageRequired": "L'immagine del banner è obbligatoria.",
+      "venueRequired": "Il nome della sede è obbligatorio.",
+      "venueMaxLength": "Il nome della sede deve contenere meno di {max} caratteri.",
+      "venueAddressRequired": "L'indirizzo della sede è obbligatorio.",
+      "venueAddressMaxLength": "L'indirizzo della sede deve contenere meno di {max} caratteri.",
+      "capacityMax": "La capacità non può superare {max}.",
+      "capacityMin": "La capacità deve essere almeno 1.",
+      "timezoneRequired": "Il fuso orario è obbligatorio.",
+      "ticketsRequired": "È richiesto almeno un biglietto.",
+      "endDateAfterStart": "La data di fine dell'evento deve essere successiva alla data di inizio dell'evento.",
+      "salesEndBeforeEventStart": "La data di fine delle vendite non può essere successiva alla data di inizio dell'evento.",
+      "duplicatePromoCode": "Il codice promozionale deve essere univoco.",
+      "duplicateTierName": "Il nome del livello deve essere univoco.",
+      "tierDescLength": "La descrizione deve contenere meno di {max} caratteri.",
+      "stopSalesReasonMaxLength": "Il motivo non può contenere più di {max} caratteri.",
+      "cancelReasonRequired": "La ragione è necessaria.",
+      "cancelReasonMinLength": "Il motivo deve contenere almeno {min} caratteri.",
+      "cancelReasonMaxLength": "Il motivo non può contenere più di {max} caratteri."
+    },
+    "createNewEvent": "Crea nuovo evento",
+    "editEvent": "Modifica evento",
+    "filterEvents": "Filtra eventi",
+    "filter": {
+      "status": "Filtra per stato"
+    },
+    "noEventsFound": "Nessun evento trovato",
+    "adjustFilters": "Prova a modificare la ricerca o i filtri",
+    "eventDetails": "Dettagli dell'evento",
+    "badge": {
+      "approved": "Approvato",
+      "pending": "In attesa di",
+      "cancelled": "Annullato",
+      "draft": "Bozza",
+      "live": "Vivere",
+      "ended": "Finito",
+      "rejected": "Respinto",
+      "active": "Vendite in diretta",
+      "paused": "Vendite sospese",
+      "stopped": "Le vendite si sono fermate",
+      "sold_out": "Esaurito",
+      "sales_ended": "Vendite terminate"
     }
   },
   "tierTemplates": {
@@ -183,6 +359,17 @@
       "title": "Nessun modello di livello ancora",
       "description": "Crea modelli di livelli riutilizzabili per impostare rapidamente i livelli dei biglietti per i tuoi eventi.",
       "button": "Crea il tuo primo modello"
+    },
+    "dialog": {
+      "editTierTemplate": {
+        "title": "Modifica modello di livello"
+      },
+      "createTierTemplate": {
+        "title": "Crea modello di livello"
+      }
+    },
+    "placeholder": {
+      "description": "Inserisci la descrizione del livello"
     }
   },
   "settings": {
@@ -213,7 +400,6 @@
       "newPasswordPlaceholder": "Inserisci la nuova password",
       "confirmPassword": "Conferma nuova password",
       "confirmPasswordPlaceholder": "Inserisci di nuovo la nuova password",
-      "updating": "Aggiornamento...",
       "updateButton": "Aggiorna password",
       "validation": {
         "currentPasswordRequired": "La password attuale è obbligatoria.",
@@ -256,9 +442,9 @@
   "profile": {
     "validation": {
       "businessNameRequired": "Il nome dell'azienda è obbligatorio.",
-      "businessNameMinLength": "Il nome dell'azienda deve contenere almeno 3 caratteri.",
-      "businessNameMaxLength": "Il nome dell'azienda deve contenere meno di 50 caratteri.",
-      "descriptionMaxLength": "La descrizione deve contenere meno di 500 caratteri."
+      "businessNameMinLength": "Il nome dell'azienda deve contenere almeno {min} caratteri.",
+      "businessNameMaxLength": "Il nome dell'azienda deve contenere meno di {max} caratteri.",
+      "descriptionMaxLength": "La descrizione deve contenere meno di {max} caratteri."
     },
     "editButton": "Modifica profilo"
   },
@@ -293,6 +479,30 @@
     "search": "Cerca utenti...",
     "filterByRole": "Filtra per ruolo",
     "pageTitle": "Gestione della squadra",
-    "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti."
-  }
+    "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti.",
+    "validation": {
+      "roleRequired": "Il ruolo è richiesto"
+    }
+  },
+  "greeting": {
+    "morning": "Buongiorno",
+    "afternoon": "Buon pomeriggio",
+    "evening": "Buonasera"
+  },
+  "dashboard": {
+    "accountRejected": {
+      "title": "Accesso all'account limitato",
+      "description": "Il tuo account organizzatore è stato rifiutato."
+    },
+    "accountPending": {
+      "title": "Approvazione dell'account in attesa",
+      "description": "La tua richiesta di account organizzatore è attualmente in fase di revisione. \nL'accesso ad alcune funzionalità della piattaforma è limitato fino all'approvazione del tuo account."
+    }
+  },
+  "All Statuses": "Tutti gli stati",
+  "Draft": "Bozza",
+  "Pending": "In attesa di",
+  "Approved": "Approvato",
+  "Rejected": "Respinto",
+  "Cancelled": "Annullato"
 }
