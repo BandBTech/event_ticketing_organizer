@@ -159,7 +159,7 @@ export default function CreateEventPage({
         `Event has been successfully ${isEditing ? "updated" : "created"}.`
       );
       // Navigate only after all invalidations complete
-      router.push("/organizerDashboard/events");
+      router.push("/organizerDashboard/event");
     },
   });
 
@@ -254,7 +254,7 @@ export default function CreateEventPage({
 
   // Handler for cancel button
   const handleCancel = useCallback(() => {
-    handleNavigateAway(() => router.push("/organizerDashboard/events"));
+    handleNavigateAway(() => router.push("/organizerDashboard/event"));
   }, [handleNavigateAway, router]);
 
   return (

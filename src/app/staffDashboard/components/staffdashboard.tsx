@@ -71,7 +71,7 @@ export default function StaffDashboardHomePage() {
                 {/* Actions */}
                 <div className="flex justify-between mt-3">
                 <Link
-                    href={`/organizerDashboard/eventdetails/${event.id}`}
+                    href={`/organizerDashboard/event/details?id=${event.id}`}
                     className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
                   >
                     View Detail <ArrowRightIcon className="w-4 h-4" />
@@ -136,7 +136,7 @@ export default function StaffDashboardHomePage() {
                 <div className="flex justify-between mt-3">
               
                   <Link
-                    href={`/organizerDashboard/eventdetails/${event.id}`}
+                    href={`/organizerDashboard/event/details?id=${event.id}`}
                     className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
                   >
                     View Detail <ArrowRightIcon className="w-4 h-4" />

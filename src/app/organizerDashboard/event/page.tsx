@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/store/authStore";
 import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
-import Events from "../../components/events";
+import Events from "../components/events";
 
 export default function EventsPage() {
   const { isOrganizerRejected, isOrganizerPending } = useAuthStore();

@@ -40,13 +40,14 @@ export default function DashboardHeader() {
   const orgId = user?.organization?.id || user?.organizationId;
 
   const pageHeaders: { prefix: string; title: string; editTitle?: string; isDynamic?: boolean }[] = useMemo(() => [
-    { prefix: "/organizerDashboard/events", title: t("navigation.events", "Events") },
+    { prefix: "/organizerDashboard/event/create", title: t("event.createNewEvent", "Create New Event") },
+    { prefix: "/organizerDashboard/event/details", title: t("event.eventDetails", "Event details") },
+    { prefix: "/organizerDashboard/event/edit", title: t("event.editEvent", "Edit Event") },
+    { prefix: "/organizerDashboard/event", title: t("navigation.events", "Events") },
     { prefix: "/organizerDashboard/settings", title: "" },
     { prefix: "/organizerDashboard/reports", title: t("navigation.reports", "Reports") },
-    { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
-    { prefix: "/organizerDashboard/createevents", title: t("event.createNewEvent", "Create New Event"), editTitle: t("event.editEvent", "Edit Event") },
-    { prefix: "/organizerDashboard/eventdetails", title: t("event.eventDetails", "Event details") },
     { prefix: "/organizerDashboard/users", title: t("navigation.users", "Users") },
+    { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
   ], [t]);
 
   // Dynamic greeting for dashboard
@@ -65,15 +66,18 @@ export default function DashboardHeader() {
         pathname.startsWith(p.prefix)
     );
 
+  // Determine edit mode for title
+  const isActuallyEditing = pathname.endsWith("/edit") || pathname.endsWith("/edit/");
+
   // Use edit title if in edit mode and available, or dynamic greeting for dashboard
-  const headerText = isEditMode && matched?.editTitle
-    ? matched.editTitle
-    : matched?.isDynamic
+  const headerText = (isActuallyEditing || isEditMode)
+    ? (t("event.editEvent", "Edit Event"))
+    : matched?.isDynamic && matched.prefix === "/organizerDashboard"
       ? dynamicGreeting
       : (matched?.title ?? "Dashboard");
 
   // const isUsersPage = matched?.title === "Users";
-  const isEventsPage = matched?.title === "Events";
+  const isEventsPage = matched?.prefix === "/organizerDashboard/event";
   const isDashboard = pathname === "/organizerDashboard";
 
   // Don't show create button when editing an event, or if no organization
@@ -81,7 +85,7 @@ export default function DashboardHeader() {
   const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {
-    router.push("/organizerDashboard/createevents");
+    router.push("/organizerDashboard/event/create");
   };
 
   return (

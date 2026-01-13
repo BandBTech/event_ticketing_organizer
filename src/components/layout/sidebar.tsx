@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 const navLinks = [
   { href: "/organizerDashboard", label: "Dashboard", icon: SpeedometerIcon },
   {
-    href: "/organizerDashboard/events",
+    href: "/organizerDashboard/event",
     label: "Events",
     icon: CalendarStarIcon,
   },

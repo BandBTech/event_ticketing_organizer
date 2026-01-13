@@ -116,7 +116,7 @@ export default function EventCard({ event }: EventCardProps) {
           <div className="my-4 border-t border-gray-300" />
           <div className="flex justify-between items-center">
             <Link
-              href={`/organizerDashboard/eventdetails?id=${event.id}`}
+              href={`/organizerDashboard/event/details?id=${event.id}`}
               className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
             >
               {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
@@ -124,7 +124,7 @@ export default function EventCard({ event }: EventCardProps) {
             <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
               {(event.status === "pending" || event.status === "draft") && (
                 <Link
-                  href={`/organizerDashboard/createevents?id=${event.id}&edit=true`}
+                  href={`/organizerDashboard/event/edit?id=${event.id}`}
                   className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
                 >
                   <PencilLine className="w-4 h-4" />

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -9,28 +8,33 @@ import EventDetailsPage from "../../components/eventDetails";
 import { Loader2 } from "lucide-react";
 import { queryKeys } from "@/lib/queryKeys";
 
+
 export default function EventDetailsRoute() {
   const searchParams = useSearchParams();
   const eventId = searchParams.get("id");
 
+  // Ensure eventId is a string, default to empty string if null to satisfy query key type, 
+  // but enabled flag will prevents execution if empty.
+  const safeId = eventId || "";
+
   const { data: event, isLoading: eventLoading } = useQuery({
-    queryKey: queryKeys.events.detail(eventId!),
-    queryFn: () => eventService.getEvent(eventId!),
-    enabled: !!eventId,
+    queryKey: queryKeys.events.detail(safeId),
+    queryFn: () => eventService.getEvent(safeId),
+    enabled: !!eventId, // Only run if eventId exists
     refetchOnWindowFocus: true,
-    staleTime: 0, // Always refetch when returning to page
+    staleTime: 0,
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: queryKeys.events.analytics(eventId!),
-    queryFn: () => eventService.getEventAnalytics(eventId!),
+    queryKey: queryKeys.events.analytics(safeId),
+    queryFn: () => eventService.getEventAnalytics(safeId),
     enabled: !!eventId,
     refetchOnWindowFocus: true,
-    staleTime: 0, // Always refetch when returning to page
+    staleTime: 0,
   });
 
   if (!eventId) {
-    return <div className="p-8 text-center text-gray-500">Event ID missing</div>;
+    return <div className="p-8 text-center text-gray-500">Loading event details...</div>;
   }
 
   if (eventLoading || analyticsLoading) {
@@ -45,7 +49,5 @@ export default function EventDetailsRoute() {
     return <div className="p-8 text-center text-red-500">Event not found</div>;
   }
 
-  // Cast analytics if needed, or assume strictly matches
   return <EventDetailsPage event={event} analytics={analytics as EventAnalyticsResponse | undefined} />;
 }
-
