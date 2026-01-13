@@ -29,17 +29,22 @@ const CategoryTagsSelector = ({
   const effectivePlaceholder = placeholder || defaultPlaceholder;
 
   const [inputValue, setInputValue] = useState("");
+  const [duplicateError, setDuplicateError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTag = () => {
     const trimmedValue = inputValue.trim();
-    if (
-      trimmedValue &&
-      !value.some((tag) => tag.toLowerCase() === trimmedValue.toLowerCase()) &&
-      value.length < maxTags
-    ) {
+    if (!trimmedValue) return;
+
+    if (value.some((tag) => tag.toLowerCase() === trimmedValue.toLowerCase())) {
+      setDuplicateError(true);
+      return;
+    }
+
+    if (value.length < maxTags) {
       onChange([...value, trimmedValue]);
       setInputValue("");
+      setDuplicateError(false);
     }
   };
 
@@ -64,6 +69,7 @@ const CategoryTagsSelector = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    setDuplicateError(false); // Clear error on typing
 
     // Check if the input ends with comma (user pressed comma)
     if (newValue.endsWith(",")) {
@@ -79,7 +85,13 @@ const CategoryTagsSelector = ({
       const isDuplicate = value.some((tag) => tag.toLowerCase() === tagValue.toLowerCase());
       const isMaxTagsReached = value.length >= maxTags;
 
-      if (!isDuplicate && !isMaxTagsReached) {
+      if (isDuplicate) {
+        setDuplicateError(true);
+        setInputValue(tagValue); // Keep text, remove comma
+        return;
+      }
+
+      if (!isMaxTagsReached) {
         // Successfully add the tag
         onChange([...value, tagValue]);
         setInputValue("");
@@ -108,7 +120,7 @@ const CategoryTagsSelector = ({
       className={cn(
         "flex flex-wrap items-center gap-2 px-3 py-2 min-h-[52px] w-full rounded-md border border-input bg-white text-sm shadow-xs transition-[color,box-shadow] outline-none cursor-text",
         "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-        error && "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20",
+        (error || duplicateError) && "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20",
         className
       )}
     >

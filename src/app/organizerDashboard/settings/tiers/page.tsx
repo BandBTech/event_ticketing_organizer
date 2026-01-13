@@ -150,7 +150,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
       <p className="text-gray-500 mb-4 text-sm max-w-sm mx-auto">
         {t("tierTemplates.emptyState.description", "Create reusable tier templates to quickly set up ticket tiers for your events.")}
       </p>
-      <Button variant="outline" onClick={onCreateClick}>
+      <Button variant="outline" onClick={() => onCreateClick()}>
         {t("tierTemplates.emptyState.button", "Create your first template")}
       </Button>
     </div>
