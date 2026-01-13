@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 // Local Components
-import { DeleteConfirmationDialog } from "../../components/DeleteConfirmationDialog";
+import { DeleteConfirmationDialog } from "../components/DeleteConfirmationDialog";
 
 // Icons
 import { Plus, Search, ChevronLeft, ChevronRight, Users } from "lucide-react";
