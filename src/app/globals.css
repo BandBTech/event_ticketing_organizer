@@ -360,3 +360,6 @@ html[dir=ltr] {
 button {
   cursor: pointer;
 }
+.organizer-profile-form .image-uploader:has([alt="Preview"]) {
+  align-self: start;
+}

@@ -82,7 +82,9 @@
     "image": {
       "fileTooLarge": "File size exceeds {size}. Please upload a smaller image.",
       "fileInvalidType": "Invalid file type. Please upload an image (PNG/JPG).",
-      "limitExceeded": "File size exceeds the maximum limit of {maxSizeMB}MB."
+      "limitExceeded": "File size exceeds the maximum limit of {maxSizeMB}MB.",
+      "dimensionsExceeded": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.",
+      "aspectRatioInvalid": "Image aspect ratio must be approximately {ratio}."
     },
     "clickToReplace": "Click to replace",
     "dialog": {
@@ -94,7 +96,8 @@
       }
     },
     "continue": "Continue",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "notSpecified": "Not specified"
   },
   "navigation": {
     "events": "Events",
@@ -135,7 +138,8 @@
       "businessNameRequired": "Business name is required.",
       "businessNameMinLength": "Business name must be at least {min} characters.",
       "businessNameMaxLength": "Business name must be less than {max} characters.",
-      "descriptionMaxLength": "Description must be less than {max} characters."
+      "descriptionMaxLength": "Description must be less than {max} characters.",
+      "dimensionsExceeded": "Image dimensions must not exceed {maxWidth}x{maxHeight}px."
     }
   },
   "languages": {
@@ -674,5 +678,11 @@
   "Pending": "Pending",
   "Approved": "Approved",
   "Rejected": "Rejected",
-  "Cancelled": "Cancelled"
+  "Cancelled": "Cancelled",
+  "completeProfile": {
+    "title": "Complete Your Organizer Profile",
+    "description": "Please provide your business details to start creating events.",
+    "skipButton": "Skip for now",
+    "saveButton": "Save & Continue"
+  }
 }

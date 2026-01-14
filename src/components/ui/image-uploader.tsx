@@ -26,6 +26,10 @@ interface ImageUploaderProps {
   aspectRatioTolerance?: number; // Default 0.1
   checkAspectRatio?: boolean; // Whether to validate aspect ratio
   required?: boolean; // Whether to show required asterisk
+  maxWidth?: number; // Max width in pixels
+  maxHeight?: number; // Max height in pixels
+  imageClassName?: string; // Custom class for the image
+  uploaderClassName?: string; // Custom class for the uploader area
 }
 
 export function ImageUploader({
@@ -48,6 +52,10 @@ export function ImageUploader({
   aspectRatioTolerance = 0.1,
   checkAspectRatio = false,
   required = false,
+  maxWidth,
+  maxHeight,
+  imageClassName,
+  uploaderClassName,
 }: ImageUploaderProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -58,39 +66,59 @@ export function ImageUploader({
   const hasError = !!effectiveError;
 
   const validateImage = (file: File) => {
+    const requiresImageElement = checkAspectRatio || maxWidth || maxHeight;
+    if (!requiresImageElement) return;
+
     setInternalError("");
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
 
-    if (checkAspectRatio && aspectRatio) {
-      const img = new Image();
-      const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const width = img.width;
+      const height = img.height;
 
-      img.onload = () => {
-        URL.revokeObjectURL(objectUrl);
-        const width = img.width;
-        const height = img.height;
+      // Aspect Ratio Check
+      if (checkAspectRatio && aspectRatio) {
         const imageAspectRatio = width / height;
         const minAspectRatio = aspectRatio - aspectRatioTolerance;
         const maxAspectRatio = aspectRatio + aspectRatioTolerance;
 
         if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
-          // We might want to just warn or fail. 
-          // For now, let's treat it as an error passed to parent or internal error.
-          // However, blocking onChange might be too aggressive if we want to let parent handle it.
-          // But checking requirements "Validation such as Invalid media file... missing", implies we should block or show error.
-          const msg = `Image aspect ratio must be approximately ${aspectRatio.toFixed(2)}.`;
+          const msg = t("common.image.aspectRatioInvalid", "Image aspect ratio must be approximately {ratio}.", { ratio: aspectRatio.toFixed(2) });
           setInternalError(msg);
-          // If strict, we might want to call onChange(null) but usually we let the user see the preview and the error.
-          // Let's call onChange(file) but keep the error.
+          toast.error(msg);
+          onChange(null);
+          return;
         }
-      };
+      }
 
-      img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        setInternalError("Failed to load image for validation.");
-      };
+      // Max Width Check
+      if (maxWidth && width > maxWidth) {
+        const msg = t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", { maxWidth, maxHeight: maxHeight || maxWidth });
+        setInternalError(msg);
+        toast.error(msg);
+        onChange(null);
+        return;
+      }
 
-      img.src = objectUrl;
-    }
+      // Max Height Check
+      if (maxHeight && height > maxHeight) {
+        const msg = t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", { maxWidth: maxWidth || maxHeight, maxHeight });
+        setInternalError(msg);
+        toast.error(msg);
+        onChange(null);
+        return;
+      }
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setInternalError("Failed to load image for validation.");
+      onChange(null);
+    };
+
+    img.src = objectUrl;
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -102,7 +130,7 @@ export function ImageUploader({
       const file = acceptedFiles[0];
       if (file) {
         setInternalError("");
-        if (checkAspectRatio) {
+        if (checkAspectRatio || maxWidth || maxHeight) {
           validateImage(file);
         }
         onChange(file);
@@ -158,25 +186,25 @@ export function ImageUploader({
         {...getRootProps()}
         onClick={!value ? handleClick : undefined}
         className={cn(
-          "border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden",
+          "image-uploader border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden",
           !value && "cursor-pointer min-h-[100px]",
           hasError
             ? "border-red-500 bg-red-50/50"
             : isDragActive
               ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:bg-gray-50"
+              : "border-gray-300 hover:bg-gray-50",
+          uploaderClassName
         )}
       >
         <input {...getInputProps()} ref={fileInputRef} />
 
         {value ? (
-          <div className="relative w-full h-full group min-h-[100px]">
+          <div className="relative w-[182px] h-[182px] group overflow-hidden rounded-lg mx-auto">
             {/* Using img tag directly for flexibility with blob URLs and simplicity, optimized next/image requires width/height or fill */}
             <img
               src={value}
               alt="Preview"
-              className="w-full h-full object-contain rounded-lg p-1"
-            // used object-contain to ensure whole image is seen if aspect ratio differs from container
+              className={cn("w-full h-full object-cover", imageClassName)}
             />
 
             {/* Remove Button */}

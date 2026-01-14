@@ -143,13 +143,15 @@ export function OrganizerProfileForm({
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         {/* Logo Uploader */}
         {showLogoUploader && isEditing && (
-          <div className="space-y-2">
+          <div className="space-y-2 organizer-profile-form">
             <ImageUploader
               label={t("settings.organizerProfile.businessLogo", "Business Logo")}
               value={previewUrl || ""}
               onChange={handleLogoChange}
               onRemove={handleLogoRemove}
               maxSizeMB={2}
+              maxWidth={500}
+              maxHeight={500}
               helperText={t("settings.organizerProfile.logoHelperText", "Recommended size: 500x500px.")}
               helperTextSize={t("settings.organizerProfile.logoHelperTextSize", "Max size: 2MB.")}
             />

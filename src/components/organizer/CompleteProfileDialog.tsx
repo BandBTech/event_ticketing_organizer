@@ -15,6 +15,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { OrganizerProfileForm } from "@/components/organizer/OrganizerProfileForm";
 import { OrganizerProfileFormValues } from "@/lib/validation";
 
@@ -25,10 +26,16 @@ export function CompleteProfileDialog() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Only show if authenticated and profile is incomplete
-    if (isAuthenticated && isOrganizerComplete === false) {
+    // Check sessionStorage for tab-specific state
+    const dismissed = sessionStorage.getItem("profile_popup_dismissed") === "true";
+
+    // Only show if authenticated, profile is incomplete, and hasn't been dismissed
+    if (isAuthenticated && isOrganizerComplete === false && !dismissed) {
       setIsOpen(true);
-    } else {
+      // Mark as dismissed for this tab
+      sessionStorage.setItem("profile_popup_dismissed", "true");
+    } else if (isOrganizerComplete !== false) {
+      // If profile becomes complete, close it
       setIsOpen(false);
     }
   }, [isOrganizerComplete, isAuthenticated]);
@@ -57,13 +64,22 @@ export function CompleteProfileDialog() {
   };
 
   const handleSkip = () => {
+    sessionStorage.setItem("profile_popup_dismissed", "true");
     setIsOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    // If the user manually closes the dialog (e.g., clicking backdrop), count it as dismissed
+    if (!open) {
+      sessionStorage.setItem("profile_popup_dismissed", "true");
+    }
   };
 
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
@@ -75,7 +91,7 @@ export function CompleteProfileDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="pt-4">
+        <div className="pt-4 max-h-[70vh] overflow-y-auto">
           <OrganizerProfileForm
             isEditing={true}
             isPending={mutation.isPending}
@@ -84,7 +100,7 @@ export function CompleteProfileDialog() {
             showLogoUploader={true}
           />
 
-          <div className="mt-6 flex flex-col sm:flex-row gap-4">
+          <div className="mt-6 flex flex-col sm:flex-row gap-4 sticky bottom-0 bg-white pt-4 border-t border-gray-200 z-10">
             <Button
               type="button"
               variant="outline"

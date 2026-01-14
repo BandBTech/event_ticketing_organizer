@@ -136,13 +136,13 @@ export default function OrganizerProfileSettings() {
                 <label className="text-sm font-medium text-gray-900 block">
                   {t("settings.organizerProfile.businessLogo", "Business Logo")}
                 </label>
-                <div className="w-32 h-32 relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                <div className="w-[182px] h-[182px] relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
                   {org?.business_logo_url ? (
                     <Image
                       src={org.business_logo_url}
                       alt="Business Logo"
                       fill
-                      className="object-contain"
+                      className="object-cover"
                     />
                   ) : (
                     <BuildingOfficeIcon size={48} className="text-gray-300" />

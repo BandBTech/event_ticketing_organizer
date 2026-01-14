@@ -87,7 +87,8 @@
       }
     },
     "continue": "続く",
-    "sending": "送信中..."
+    "sending": "送信中...",
+    "notSpecified": "指定されていない"
   },
   "navigation": {
     "events": "イベント",
@@ -570,5 +571,11 @@
   "Pending": "保留中",
   "Approved": "承認された",
   "Rejected": "拒否されました",
-  "Cancelled": "キャンセル"
+  "Cancelled": "キャンセル",
+  "completeProfile": {
+    "title": "主催者プロフィールを完成させる",
+    "description": "イベントの作成を開始するには、ビジネスの詳細を入力してください。",
+    "skipButton": "今のところスキップしてください",
+    "saveButton": "保存して続行"
+  }
 }

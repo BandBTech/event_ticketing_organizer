@@ -87,7 +87,8 @@
       }
     },
     "continue": "Continuare",
-    "sending": "Invio..."
+    "sending": "Invio...",
+    "notSpecified": "Non specificato"
   },
   "navigation": {
     "events": "Eventi",
@@ -571,5 +572,11 @@
   "Pending": "In attesa di",
   "Approved": "Approvato",
   "Rejected": "Respinto",
-  "Cancelled": "Annullato"
+  "Cancelled": "Annullato",
+  "completeProfile": {
+    "title": "Completa il tuo profilo organizzatore",
+    "description": "Fornisci i dettagli della tua attività per iniziare a creare eventi.",
+    "skipButton": "Salta per ora",
+    "saveButton": "Salva e continua"
+  }
 }
