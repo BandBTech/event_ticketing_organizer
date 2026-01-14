@@ -199,6 +199,8 @@ async function refreshAccessToken(): Promise<string> {
   const refreshToken = tokenManager.getRefreshToken();
 
   if (!refreshToken) {
+    // Clear any stale tokens to prevent inconsistent state
+    tokenManager.clearTokens();
     throw new AuthError('No refresh token available', 'UNAUTHORIZED', 401);
   }
 

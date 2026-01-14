@@ -7,6 +7,8 @@ import { Permission } from '@/lib/permissions';
 import { usePermission } from '@/hooks/usePermission';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLanguageStore } from '@/store/languageStore';
+import { tokenManager } from '@/lib/tokenManager';
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   permission?: Permission | Permission[];
@@ -23,56 +25,49 @@ export function ProtectedRoute({
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const router = useRouter();
-  const { isAuthenticated, isLoading, checkAuth, user, _hasHydrated } = useAuthStore();
+  const { isAuthenticated, isLoading, _authChecked } = useAuthStore();
   const { can, canAll, canAny, is, isAny } = usePermission();
-  const [authChecked, setAuthChecked] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(true);
-
-  // No need for checkAuth here, it's handled by AuthProvider at the root level.
-  // Calling it here causes infinite loops when nested ProtectedRoutes toggle isLoading status.
+  const [routeChecked, setRouteChecked] = useState(false);
 
   useEffect(() => {
-    // Only proceed after:
-    // 1. Hydration is complete (_hasHydrated = true)
-    // 2. Auth check is not in progress (isLoading = false)
-    if (_hasHydrated && !isLoading) {
-      // Check if we have user data (from persisted storage) or are authenticated
-      const hasUserData = !!user;
+    // Only proceed after auth check is complete and not loading
+    if (_authChecked && !isLoading) {
+      // Check if tokens exist
+      const hasTokens = tokenManager.hasTokens();
 
-      if (!isAuthenticated && !hasUserData) {
-        // No auth and no persisted user - redirect to login
+      if (!hasTokens || !isAuthenticated) {
+      // No tokens or not authenticated - redirect to login
         router.replace('/login');
-      } else {
-        // Check authorization if permission or role is required
-        let allowed = true;
-
-        if (permission) {
-          if (Array.isArray(permission)) {
-            allowed = requireAll ? canAll(permission) : canAny(permission);
-          } else {
-            allowed = can(permission);
-          }
-        }
-
-        if (allowed && role) {
-          if (Array.isArray(role)) {
-            allowed = requireAll ? role.every(r => is(r)) : isAny(role);
-          } else {
-            allowed = is(role);
-          }
-        }
-
-        setIsAuthorized(allowed);
-        setAuthChecked(true);
+        return;
       }
-    }
-  }, [_hasHydrated, isAuthenticated, isLoading, router, user, permission, role, requireAll, can, canAll, canAny, is, isAny]);
 
-  // Show loading state while:
-  // 1. Waiting for hydration
-  // 2. Checking authentication
-  // 3. Auth check not complete
-  if (!_hasHydrated || isLoading || !authChecked) {
+      // Check authorization if permission or role is required
+      let allowed = true;
+
+      if (permission) {
+        if (Array.isArray(permission)) {
+          allowed = requireAll ? canAll(permission) : canAny(permission);
+        } else {
+          allowed = can(permission);
+        }
+      }
+
+      if (allowed && role) {
+        if (Array.isArray(role)) {
+          allowed = requireAll ? role.every(r => is(r)) : isAny(role);
+        } else {
+          allowed = is(role);
+        }
+      }
+
+      setIsAuthorized(allowed);
+      setRouteChecked(true);
+    }
+  }, [_authChecked, isAuthenticated, isLoading, router, permission, role, requireAll, can, canAll, canAny, is, isAny]);
+
+  // Show loading state while auth check in progress
+  if (!_authChecked || isLoading || !routeChecked) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50/50">
         <div className="flex flex-col items-center gap-4">
@@ -83,8 +78,8 @@ export function ProtectedRoute({
     );
   }
 
-  // Don't render children if not authenticated and no user data
-  if (!isAuthenticated && !user) {
+  // Don't render children if not authenticated
+  if (!isAuthenticated) {
     return null;
   }
 
