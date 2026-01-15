@@ -29,6 +29,7 @@ import { PERMISSIONS } from "@/lib/permissions";
 // Auth States
 import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
+import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 
 // Local Components
 import { getColumns } from "./columns";
@@ -36,7 +37,7 @@ import { DataTable } from "./data-table";
 import UserFormDialog from "./UserFormDialog";
 
 export default function UsersPage() {
-  const { isLoading: isAuthLoading, isOrganizerRejected, isOrganizerPending } = useAuthStore();
+  const { isLoading: isAuthLoading, isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { isUserModalOpen, closeUserModal, editingUser, openCreateUserModal, openEditUserModal } = useUser();
@@ -64,7 +65,7 @@ export default function UsersPage() {
       globalFilter || undefined,
       roleFilter !== "all" ? roleFilter : undefined
     ),
-    enabled: !isOrganizerRejected() && !isOrganizerPending() && !isAuthLoading,
+    enabled: !isOrganizerRejected() && !isOrganizerPending() && !isOrganizerInactive() && !isAuthLoading,
   });
 
   const users = usersResponse?.users || [];
@@ -147,6 +148,14 @@ export default function UsersPage() {
     return (
       <div className="p-6">
         <PendingNotice />
+      </div>
+    );
+  }
+
+  if (isOrganizerInactive()) {
+    return (
+      <div className="p-6">
+        <InactiveNotice />
       </div>
     );
   }

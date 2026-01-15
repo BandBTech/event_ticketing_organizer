@@ -4,10 +4,11 @@ import DashboardHomePage from "@/app/organizerDashboard/components/organizerdash
 import { useAuthStore } from "@/store/authStore";
 import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
+import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 
 export default function DashboardPage() {
 
-  const { isOrganizerRejected, isOrganizerPending } = useAuthStore();
+  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
 
   if (isOrganizerRejected()) {
     return (
@@ -21,6 +22,14 @@ export default function DashboardPage() {
     return (
       <div className="p-6">
         <PendingNotice />
+      </div>
+    );
+  }
+
+  if (isOrganizerInactive()) {
+    return (
+      <div className="p-6">
+        <InactiveNotice />
       </div>
     );
   }

@@ -23,7 +23,7 @@ export default function DashboardHeader() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation();
   // const { openCreateUserModal } = useUser();
-  const { user, isOrganizerRejected, isOrganizerPending } = useAuthStore();
+  const { user, isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
 
   /**
  * Get time-based greeting message
@@ -80,8 +80,9 @@ export default function DashboardHeader() {
   const isEventsPage = matched?.prefix === "/organizerDashboard/event";
   const isDashboard = pathname === "/organizerDashboard";
 
-  // Don't show create button when editing an event, or if no organization
-  const showCreateButton = (!isOrganizerRejected() || !isOrganizerPending()) && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
+  // Don't show create button when editing an event, or if no organization, or if organizer is restricted
+  const isOrganizerRestricted = isOrganizerRejected() || isOrganizerPending() || isOrganizerInactive();
+  const showCreateButton = !isOrganizerRestricted && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
   const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {

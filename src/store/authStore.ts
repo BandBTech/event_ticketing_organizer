@@ -27,6 +27,7 @@ interface AuthStore {
   hasPermission: (permission: string) => boolean;
   isOrganizerRejected: () => boolean;
   isOrganizerPending: () => boolean;
+  isOrganizerInactive: () => boolean;
   getOrganizationId: () => string | undefined;
 }
 
@@ -227,6 +228,15 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   isOrganizerPending: () => {
     const { user } = get();
     if (user?.organizationInfo?.status === 'pending') {
+      return true;
+    }
+    return false;
+  },
+
+  // Check if organizer is inactive
+  isOrganizerInactive: () => {
+    const { user } = get();
+    if (user?.organizationInfo?.status === 'inactive') {
       return true;
     }
     return false;

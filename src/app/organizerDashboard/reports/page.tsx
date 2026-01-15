@@ -48,9 +48,10 @@ const statsData = [
 import { useAuthStore } from "@/store/authStore";
 import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
+import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 
 export default function ReportsPage() {
-  const { isOrganizerRejected, isOrganizerPending } = useAuthStore();
+  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
 
   if (isOrganizerRejected()) {
     return (
@@ -67,6 +68,15 @@ export default function ReportsPage() {
       </div>
     );
   }
+
+  if (isOrganizerInactive()) {
+    return (
+      <div className="p-6">
+        <InactiveNotice />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 p-6 space-y-6">
       {/* Stats Grid */}

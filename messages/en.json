@@ -671,6 +671,10 @@
     "accountPending": {
       "title": "Account Approval Pending",
       "description": "Your organizer account application is currently under review. Access to some platform features is restricted until your account is approved."
+    },
+    "accountInactive": {
+      "title": "Account Deactivated",
+      "description": "Your organizer account has been deactivated by an administrator. Access to platform features is suspended."
     }
   },
   "All Statuses": "All Statuses",

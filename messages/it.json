@@ -565,6 +565,10 @@
     "accountPending": {
       "title": "Approvazione dell'account in attesa",
       "description": "La tua richiesta di account organizzatore è attualmente in fase di revisione. \nL'accesso ad alcune funzionalità della piattaforma è limitato fino all'approvazione del tuo account."
+    },
+    "accountInactive": {
+      "title": "Account disattivato",
+      "description": "Il tuo account organizzatore è stato disattivato da un amministratore. L'accesso alle funzionalità della piattaforma è sospeso."
     }
   },
   "All Statuses": "Tutti gli stati",

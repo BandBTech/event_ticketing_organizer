@@ -17,7 +17,7 @@ export default function SettingsLayout({
   const pathname = usePathname();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { isOrganizerRejected, isOrganizerPending } = useAuthStore();
+  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
 
   const menuItems = [
     {
@@ -43,7 +43,7 @@ export default function SettingsLayout({
   ];
 
   const filteredMenuItems = menuItems.filter(item => {
-    if (isOrganizerRejected() || isOrganizerPending()) {
+    if (isOrganizerRejected() || isOrganizerPending() || isOrganizerInactive()) {
       return ["/organizerDashboard/settings/profile", "/organizerDashboard/settings/organizer", "/organizerDashboard/settings/security"].includes(item.href);
     }
     return true;
