@@ -25,10 +25,19 @@ export function ProtectedRoute({
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const router = useRouter();
-  const { isAuthenticated, isLoading, _authChecked } = useAuthStore();
+  const { isAuthenticated, isLoading, _authChecked, logout } = useAuthStore();
   const { can, canAll, canAny, is, isAny } = usePermission();
   const [isAuthorized, setIsAuthorized] = useState(true);
   const [routeChecked, setRouteChecked] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/login');
+    } catch {
+      router.push('/login');
+    }
+  };
 
   useEffect(() => {
     // Only proceed after auth check is complete and not loading
@@ -97,12 +106,20 @@ export function ProtectedRoute({
           <p className="text-sm text-muted-foreground">
             {t("common.accessDeniedMessage", "You do not have the necessary permissions to access this page. Please contact your administrator if you believe this is an error.")}
           </p>
-          <button
-            onClick={() => router.back()}
-            className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          >
-            {t("common.goBack", "Go Back")}
-          </button>
+          <div className="flex gap-3 mt-2">
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {t("common.goBack", "Go Back")}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              {t("navigation.logout", "Logout")}
+            </button>
+          </div>
         </div>
       </div>
     );
