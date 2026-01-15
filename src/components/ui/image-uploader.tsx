@@ -199,7 +199,7 @@ export function ImageUploader({
         <input {...getInputProps()} ref={fileInputRef} />
 
         {value ? (
-          <div className="relative w-[182px] h-[182px] group overflow-hidden rounded-lg mx-auto">
+          <div className="relative group overflow-hidden rounded-lg mx-auto">
             {/* Using img tag directly for flexibility with blob URLs and simplicity, optimized next/image requires width/height or fill */}
             <img
               src={value}

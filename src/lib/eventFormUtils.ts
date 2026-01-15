@@ -159,6 +159,7 @@ export function getChangedFields(
       const initialTier = initialTiers[index];
       if (!initialTier) return true;
       return (
+        tier.tier_template_id !== initialTier.tier_template_id ||
         tier.price !== initialTier.price ||
         tier.quantity !== initialTier.quantity ||
         tier.gst !== (initialTier.gst || 0) ||

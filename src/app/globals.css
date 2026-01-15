@@ -306,6 +306,7 @@ html[dir=ltr] {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
+
 :root {
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
@@ -357,9 +358,13 @@ html[dir=ltr] {
 .active-menu::before {
   box-shadow: 0 2px 8px hsl(var(--primary));
 }
+
 button {
   cursor: pointer;
 }
+
 .organizer-profile-form .image-uploader:has([alt="Preview"]) {
   align-self: start;
+  width: 182px;
+    height: 182px;
 }
