@@ -46,15 +46,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-    // Call login API with remember me preference
       // tokenManager.setTokens is called inside authService.login
       await authService.login(credentials, rememberMe);
 
-      // Fetch user profile and organizer profile
-      await get().fetchProfile();
-      await get().fetchOrganizerProfile();
+      // Fetch user profile and organizer profile in parallel to avoid waterfall
+      await Promise.all([
+        get().fetchProfile(),
+        get().fetchOrganizerProfile(),
+      ]);
 
-      // Check organizer completion status
+      // Check organizer completion status (depends on profile data)
       await get().checkOrganizerCompletion();
 
     } catch (error) {
