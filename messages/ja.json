@@ -581,5 +581,10 @@
     "description": "イベントの作成を開始するには、ビジネスの詳細を入力してください。",
     "skipButton": "今のところスキップしてください",
     "saveButton": "保存して続行"
+  },
+  "events": {
+    "fields": {
+      "eventEndsOn": "イベント終了日"
+    }
   }
 }

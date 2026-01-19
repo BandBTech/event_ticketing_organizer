@@ -555,7 +555,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setSalesDialogOpen(false)}>
-                  {t("common.cancel", "Cancel")}
+                  {t("common.cancelButton", "Cancel")}
                 </Button>
                 <Button
                   type="submit"
