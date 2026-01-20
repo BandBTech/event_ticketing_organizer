@@ -49,14 +49,22 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       // tokenManager.setTokens is called inside authService.login
       await authService.login(credentials, rememberMe);
 
-      // Fetch user profile and organizer profile in parallel to avoid waterfall
-      await Promise.all([
-        get().fetchProfile(),
-        get().fetchOrganizerProfile(),
-      ]);
+      // Fetch user profile first to get the role
+      await get().fetchProfile();
 
-      // Check organizer completion status (depends on profile data)
-      await get().checkOrganizerCompletion();
+      const currentUser = get().user;
+      const userRoles = currentUser?.roles || [];
+      const isOrganizer = userRoles.includes('organizer') || userRoles.includes('admin') || userRoles.includes('subadmin');
+      // Only fetch organizer-specific data for organizer/admin/subadmin roles
+      // Staff and manager roles don't need this data
+      if (isOrganizer) {
+        await get().fetchOrganizerProfile();
+        // Check organizer completion status (depends on profile data)
+        await get().checkOrganizerCompletion();
+      } else {
+        // For staff/manager, mark as complete to avoid showing onboarding prompts
+        set({ isOrganizerComplete: true });
+      }
 
     } catch (error) {
       const errorMessage = error instanceof AuthError

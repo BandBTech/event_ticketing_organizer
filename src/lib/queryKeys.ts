@@ -53,4 +53,19 @@ export const queryKeys = {
     list: (params: { page?: number; limit?: number; search?: string; role?: string }) =>
       ['orgUsers', params.page, params.limit, params.search, params.role] as const,
   },
+
+  /**
+   * Ticket query keys
+   */
+  tickets: {
+    /** Key for invalidating all tickets queries */
+    all: ['tickets'] as const,
+    /** Key for fetching tickets list for an event with filters */
+    list: (eventId: string, filters?: { page?: number; limit?: number; status?: string; search?: string; checked_in?: boolean }) =>
+      ['tickets', 'list', eventId, filters] as const,
+    /** Key for fetching a single ticket by ID */
+    detail: (ticketId: string) => ['ticket', ticketId] as const,
+    /** Key for fetching ticket statistics for an event */
+    stats: (eventId: string) => ['ticketStats', eventId] as const,
+  },
 } as const;
