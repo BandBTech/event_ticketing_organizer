@@ -477,7 +477,8 @@
       "promoCodes": "Promo/Discount Codes",
       "ticketing": "Ticketing",
       "discountsPromo": "Discounts & Promo Codes",
-      "templates": "Templates"
+      "templates": "Templates",
+      "statusHistory": "Status History"
     },
     "button": {
       "pauseSales": "Pause Sales",
@@ -492,10 +493,10 @@
       "createNewTier": "Create New Tier"
     },
     "label": {
-      "totalSales": "Total Sales",
       "totalRevenue": "Total Revenue",
       "cancellationReason": "Reason for cancellation (minimum 10 characters)",
-      "stopSalesReason": "Reason (optional)"
+      "stopSalesReason": "Reason (optional)",
+      "totalSold": "Total Sold"
     },
     "text": {
       "noPromoCodes": "No promo codes configured for this event.",
@@ -583,6 +584,12 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended"
+    },
+    "analytics": {
+      "progress": "Sales Progress",
+      "sold": "Sold",
+      "revenue": "Revenue",
+      "ticketAnalytics": "Ticket Analytics"
     },
     "option": {
       "amountFixed": "Amount (Fixed)",

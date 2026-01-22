@@ -2,19 +2,9 @@
 
 import { useState, useMemo } from "react";
 import Footer from "@/components/layout/footer";
-import {
-  MapPin,
-  Calendar,
-  XCircle,
-  PauseCircle,
-  PlayCircle,
-  StopCircle,
-  PencilLine,
-  CircleDot,
-  Loader2,
-} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Event, EventAnalyticsResponse, SalesAction } from "@/types/event";
 import { eventService } from "@/services/eventService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,17 +37,21 @@ import { queryKeys } from "@/lib/queryKeys";
 import StatusHistorySidebar from "./StatusHistorySidebar";
 import { useQuery } from "@tanstack/react-query";
 import { SalesStatusBadge } from "./SalesStatusBadge";
+import { EventStatusBadge } from "./EventStatusBadge";
+import { useTranslation } from "@/hooks/useTranslation";
+import { format, isValid } from "date-fns";
+import { CalendarBlankIcon, ClockIcon, FireIcon, MapPinAreaIcon, MapPinIcon, PauseCircleIcon, PauseIcon, PencilSimpleLineIcon, PlayCircleIcon, PlayIcon, ShieldCheckIcon, StopCircleIcon, StopIcon, TicketIcon, XCircleIcon } from "@phosphor-icons/react";
+import { Loader2 } from "lucide-react";
 
 interface EventDetailsProps {
   event: Event;
   analytics?: EventAnalyticsResponse;
 }
 
-import { useTranslation } from "@/hooks/useTranslation";
-
 export default function EventDetailsPage({ event, analytics }: EventDetailsProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   // Fetch status history
   const { data: history = [], isLoading: isLoadingHistory } = useQuery({
@@ -66,10 +60,8 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   });
 
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  // const [cancelReason, setCancelReason] = useState(""); // Removed in favor of hook form
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
   const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
-  // const [salesReason, setSalesReason] = useState(""); // Removed in favor of hook form
 
   // Use analytics data if available, otherwise fall back to event tiers
   const totalTicketsSold = analytics?.sold_seats ??
@@ -146,23 +138,15 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     }
   };
 
-  // const confirmSalesAction = () => { // Removed as we use form submit now
-  //   if (salesAction) {
-  //     salesControlMutation.mutate({ action: salesAction, reason: salesReason });
-  //   }
-  // };
-
-  // const handleCancelEvent = () => { // Removed in favor of form
-  //   if (cancelReason.length >= 10) {
-  //     cancelEventMutation.mutate(cancelReason);
-  //   }
-  // };
-
   // Determine sales status for button display
   const salesStatus = analytics?.sales_status || 'active';
   const isEventCancelled = event.status === 'cancelled';
   const canControlSales = event.status === 'approved' && !isEventCancelled;
   const canEdit = event.status === 'pending' || event.status === 'draft';
+
+
+
+
 
   // Get the first tier's sales dates if available
   const firstTier = event.tiers?.[0];
@@ -173,285 +157,346 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
     ? formatDateTime(firstTier.sales_end)
     : 'Not set';
 
+  // Prevent division by zero for progress
+  const progress = totalCapacity > 0 ? (totalTicketsSold / totalCapacity) * 100 : 0;
+
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <div className="grow p-6 space-y-6 @container">
-          {/* Event Title + Actions */}
-          <div className="flex flex-col flex-wrap gap-4 md:items-start md:justify-between @min-4xl:flex-row">
-            <div className="space-y-2">
-              <h2 className="text-3xl text-gray-700 font-bold">
+      <div className="flex flex-col min-h-screen bg-gray-50/50">
+        <div className="grow p-6 space-y-6 container mx-auto max-w-7xl">
+
+          {/* Header - Matching Admin Layout */}
+          <div className="flex flex-col flex-wrap gap-4 md:items-start md:justify-between lg:flex-row">
+            <div className="space-y-3">
+              <h1 className="text-3xl text-gray-900 font-bold tracking-tight">
                 {event.title}
-              </h2>
+              </h1>
               <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
-                <Badge
-                  className={`flex items-center gap-1 capitalize ${event.status === 'approved' ? 'bg-emerald-500 hover:bg-emerald-500' :
-                    event.status === 'pending' ? 'bg-amber-500 hover:bg-amber-500' :
-                      event.status === 'cancelled' ? 'bg-red-500 hover:bg-red-500' :
-                        event.status === 'draft' ? 'bg-gray-500 hover:bg-gray-500' :
-                          event.status === 'rejected' ? 'bg-red-500 hover:bg-red-500' :
-                            'bg-blue-500 hover:bg-blue-500'
-                    }`}
-                >
-                  <CircleDot className="w-3 h-3" />
-                  {t(`event.status.${event.status}`, event.status)}
-                </Badge>
+                <EventStatusBadge status={event.status} />
                 {event.status === 'approved' && (
                   <SalesStatusBadge status={analytics?.sales_status || 'active'} />
                 )}
-                <div className="flex gap-2 flex-wrap">
-                  <div className="flex items-center gap-1 text-gray-700 ">
-                    <Calendar size={14} /> {new Date(event.start_date).toLocaleDateString()} {new Date(event.start_date).toLocaleTimeString()}
+
+                <div className="flex gap-4 flex-wrap ml-2">
+                  <div className="flex items-center gap-1.5 text-gray-600">
+                    <CalendarBlankIcon weight="duotone" size={16} />
+                    <span suppressHydrationWarning>
+                      {isValid(new Date(event.start_date))
+                        ? format(new Date(event.start_date), "MMM dd, yyyy")
+                        : "TBD"}
+                    </span>
+                    <span className="text-gray-300">|</span>
+                    <ClockIcon weight="duotone" size={16} />
+                    <span suppressHydrationWarning>
+                      {isValid(new Date(event.start_date))
+                        ? format(new Date(event.start_date), "h:mm a")
+                        : "--:--"}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-700 ">
-                    <MapPin size={14} />{event.address}
+                  <div className="flex items-center gap-1.5 text-gray-600">
+                    <MapPinIcon weight="duotone" size={16} />
+                    <span>{event.address}</span>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Quick Actions */}
             <div className="flex flex-col md:flex-row gap-3">
               {canControlSales && (
                 <>
                   {salesStatus === 'active' && (
-                    <button
+                    <Button
                       onClick={() => handleSalesAction('pause')}
                       disabled={salesControlMutation.isPending}
-                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                      variant="outline"
+                      className="gap-2"
                     >
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
                       ) : (
-                        <PauseCircle size={16} />
+                          <PauseIcon weight="duotone" size={18} />
                       )}
                       {t("event.button.pauseSales", "Pause Sales")}
-                    </button>
+                    </Button>
                   )}
                   {salesStatus === 'paused' && (
-                    <button
+                    <Button
                       onClick={() => handleSalesAction('resume')}
                       disabled={salesControlMutation.isPending}
-                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-green-400 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50"
+                      variant="outline"
+                      className="gap-2 text-green-600 hover:bg-green-50 hover:text-green-700 border-green-100"
                     >
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
                       ) : (
-                        <PlayCircle size={16} />
+                          <PlayIcon weight="duotone" size={18} />
                       )}
                       {t("event.button.resumeSales", "Resume Sales")}
-                    </button>
+                    </Button>
                   )}
                   {salesStatus !== 'stopped' && (
-                    <button
+                    <Button
                       onClick={() => handleSalesAction('stop')}
                       disabled={salesControlMutation.isPending}
-                      className="flex whitespace-nowrap items-center gap-2 px-4 py-2 border border-orange-400 rounded-lg bg-orange-100 text-orange-700 hover:bg-orange-200 disabled:opacity-50"
+                      variant="outline"
+                      className="gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-100"
                     >
-                      <StopCircle size={16} />
+                      <StopIcon weight="duotone" size={18} />
                       {t("event.button.stopSales", "Stop Sales")}
-                    </button>
+                    </Button>
                   )}
                 </>
               )}
               {canEdit && (
                 <Link
                   href={`/organizerDashboard/event/edit?id=${event.id}`}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
                 >
-                  <PencilLine size={16} /> {t("event.button.editEvent", "Edit Event")}
+                  <Button variant="outline" className="gap-2 w-full">
+                    <PencilSimpleLineIcon weight="duotone" size={16} /> {t("event.button.editEvent", "Edit Event")}
+                  </Button>
                 </Link>
               )}
               {!isEventCancelled && event.status !== 'rejected' && (
-                <button
+                <Button
                   onClick={() => setCancelDialogOpen(true)}
-                  className="flex cursor-pointer items-center gap-2 px-4 py-2 rounded-lg border border-red-400 bg-red-200 text-red-500 hover:bg-red-300"
+                  variant="destructive"
+                  className="gap-2"
                 >
-                  <XCircle size={16} /> {t("common.cancel", "Cancel")}
-                </button>
+                  <XCircleIcon weight="duotone" size={16} /> {t("common.cancel", "Cancel")}
+                </Button>
               )}
             </div>
           </div>
 
           {/* Admin Remark Section */}
           {event.admin_remark && (
-            <div className={`p-4 rounded-xl ${event.status === 'approved' ? 'bg-green-50 border border-green-200' : event.status === 'rejected' ? 'bg-red-50 border border-red-200' : 'bg-gray-50 border border-gray-200'}`}>
-              <h3 className={`font-semibold mb-0 ${event.status === 'approved' ? 'text-green-700' : event.status === 'rejected' ? 'text-red-700' : 'text-gray-700'}`}>
+            <div className={`p-4 rounded-xl border ${event.status === 'approved' ? 'bg-green-50 border-green-200 text-green-800' :
+              event.status === 'rejected' ? 'bg-red-50 border-red-200 text-red-800' :
+                'bg-gray-50 border-gray-200 text-gray-800'
+              }`}>
+              <h3 className="font-semibold mb-1 flex items-center gap-2">
+                <ShieldCheckIcon weight="duotone" size={16} />
                 {t("event.section.adminNotes", "Admin Notes")}
               </h3>
-              <p className="text-gray-600">{event.admin_remark}</p>
+              <p className="text-sm opacity-90">{event.admin_remark}</p>
             </div>
           )}
 
           {/* Main Grid */}
-          <div className="grid @3xl:grid-cols-3 gap-6">
-            {/* Banner */}
-            <div className="@3xl:col-span-2 space-y-6">
-              <div className="rounded-xl overflow-hidden relative h-64 md:h-80 lg:h-96">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* Left Column - Main Details */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Banner Image */}
+              <div className="glass-card-lowest rounded-2xl overflow-hidden relative bg-gray-100 aspect-16/10">
                 <Image
                   src={event.banner_image || "/placeholder.png"}
                   alt={event.title}
-                  fill={true}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  priority
                 />
+
+                {event.is_featured && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <Badge className="bg-orange-500 hover:bg-orange-600 text-white gap-1.5 shadow-lg border-orange-400/50 px-3 py-1">
+                      <FireIcon weight="duotone" size={18} />
+                      {t("events.fields.featured", "Featured")}
+                    </Badge>
+                  </div>
+                )}
               </div>
-              {/* Description */}
-              <div className="rounded-xl bg-white  p-6 shadow-sm space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700 ">
-                  {t("event.field.eventDescription", "Event Description")}
-                </h3>
-                <HtmlRenderer html={event.description || ""} />
-                <div className="flex flex-wrap gap-2 ">
-                  <h3 className="w-full text-lg font-semibold text-gray-700 mb-2">{t("event.field.tags", "Tags")}</h3>
-                  {(Array.isArray(event.category)
-                    ? (event.category as string[])
-                    : typeof event.category === "string"
-                      ? (event.category as string).split(",")
-                      : []
-                  )
-                    .map((tag) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
-                    .filter(Boolean)
-                    .map((tag) => (
-                      <span
-                        key={tag}
-                        className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm break-all"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+
+              {/* Description Card */}
+              <div className="glass-card-lowest rounded-2xl p-8 shadow-sm border border-gray-100 space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("event.field.eventDescription", "Event Description")}</h3>
+                  <div className="prose prose-gray max-w-none text-gray-600">
+                    <HtmlRenderer html={event.description || ""} />
+                  </div>
                 </div>
-                {/* Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+
+                {/* Categories / Tags */}
+                {event.category && (Array.isArray(event.category) ? event.category.length > 0 : !!event.category) && (
                   <div>
-                    <h3 className="font-semibold">{t("event.field.venueName", "Venue Name")}</h3>
-                    <p className="font-medium text-gray-500">
-                      {event.venue_name}
-                    </p>
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">{t("event.field.tags", "Tags")}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {(Array.isArray(event.category)
+                        ? (event.category as string[])
+                        : typeof event.category === "string"
+                          ? (event.category as string).split(",")
+                          : []
+                      )
+                        .map((tag) => tag.trim().replace(/^[{"]+|[}"]+$/g, ""))
+                        .filter(Boolean)
+                        .map((tag) => (
+                          <Badge key={tag} variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-200 font-normal">
+                            {tag}
+                          </Badge>
+                        ))}
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold ">{t("event.field.location", "Location")}</h3>
-                    <p className="font-medium text-gray-500">{event.address}</p>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-1">{t("event.field.venueName", "Venue Name")}</h4>
+                      <p className="font-medium text-gray-900">{event.venue_name}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-1">{t("event.field.location", "Location")}</h4>
+                      <p className="font-medium text-gray-900">{event.address}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold ">{t("event.field.eventStartsOn", "Event Starts On")}</h3>
-                    <p className="font-medium text-gray-500">
-                      {formatDateTime(event.start_date)}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold ">{t("event.field.eventEndsOn", "Event Ends On")}</h3>
-                    <p className="font-medium text-gray-500">
-                      {formatDateTime(event.end_date)}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{t("event.field.ticketSalesStartsOn", "Ticket Sales Starts On")}</h3>
-                    <p className="font-medium text-gray-500">
-                      {salesStartDate}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{t("event.field.ticketSalesEndsOn", "Ticket Sales Ends On")}</h3>
-                    <p className="font-medium text-gray-500">
-                      {salesEndDate}
-                    </p>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-1">{t("event.field.eventStartsOn", "Event Starts On")}</h4>
+                      <p className="font-medium text-gray-900">
+                        {isValid(new Date(event.start_date))
+                          ? format(new Date(event.start_date), "PPpp")
+                          : "TBD"}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 mb-1">{t("event.field.eventEndsOn", "Event Ends On")}</h4>
+                      <p className="font-medium text-gray-900">
+                        {isValid(new Date(event.end_date))
+                          ? format(new Date(event.end_date), "PPpp")
+                          : "TBD"}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right - Ticket Sales */}
-            <div className="space-y-6 text-gray-700">
-              {/* Ticket Tiers */}
-              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4 @container">
-                <h3 className="text-lg font-semibold">{t("event.section.ticketTiers", "Ticket Tiers")}</h3>
-                {/* Use analytics tiers if available, otherwise fall back to event tiers */}
-                {analytics?.tiers ? (
-                  analytics.tiers.map((tier, index) => {
-                    const colors = [
-                      { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
-                      { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
-                      { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
-                      { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
-                    ];
-                    const color = colors[index % colors.length];
-                    const soldPercent = tier.total_seats > 0
-                      ? (tier.sold_seats / tier.total_seats) * 100
-                      : 0;
+            {/* Right Column - Sidebar */}
+            <div className="space-y-6">
 
-                    return (
-                      <div key={tier.tier_id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
-                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
-                          <p className={`font-semibold ${color.labelClass}`}>{tier.tier_name}</p>
-                          <p className="text-gray-600">{tier.currency || 'NPR'} {tier.price}/{t("common.ticket", "ticket")}</p>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`${color.barClass} h-2 rounded-full`}
-                            style={{ width: `${Math.min(soldPercent, 100)}%` }}
-                          />
-                        </div>
-                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
-                          <span>{tier.sold_seats}/{tier.total_seats} {t("common.sold", "sold")}</span>
-                          <span className="text-green-600 font-medium">
-                            {tier.currency || 'JPY'} {tier.revenue.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  event.tiers?.map((ticket, index) => {
-                    const colors = [
-                      { labelClass: "text-gray-700", barClass: "bg-gray-500", cardClass: "bg-gray-50" },
-                      { labelClass: "text-amber-700", barClass: "bg-amber-500", cardClass: "bg-amber-50" },
-                      { labelClass: "text-orange-700", barClass: "bg-orange-500", cardClass: "bg-orange-50" },
-                      { labelClass: "text-purple-700", barClass: "bg-purple-500", cardClass: "bg-purple-50" },
-                    ];
-                    const color = colors[index % colors.length];
-                    const sold = ticket.sold || 0;
-                    const soldPercent = ticket.quantity > 0 ? (sold / ticket.quantity) * 100 : 0;
-
-                    return (
-                      <div key={ticket.id} className={`space-y-2 p-3 rounded-lg shadow-sm ${color.cardClass}`}>
-                        <div className="flex justify-between text-sm @sm:flex-row flex-col">
-                          <p className={`font-semibold ${color.labelClass}`}>{ticket.tier_name}</p>
-                          <p className="text-gray-600">{ticket.currency || 'JPY'} {ticket.price}/{t("common.ticket", "ticket")}</p>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className={`${color.barClass} h-2 rounded-full`}
-                            style={{ width: `${Math.min(soldPercent, 100)}%` }}
-                          />
-                        </div>
-                        <span className="text-sm">{sold}/{ticket.quantity} {t("common.sold", "sold")}</span>
-                      </div>
-                    );
-                  })
-                )}
-                <div className="grid @sm:grid-cols-2 border-t p-2 gap-2">
-                  <div>
-                    <p className="font-semibold">{t("event.label.totalSales", "Total Sales")}</p>
-                    <p className="font-semibold">{totalTicketsSold}/{totalCapacity}</p>
+              {/* Ticket Analytics */}
+              <div className="glass-card-lowest rounded-2xl p-6 shadow-sm border border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  {t("event.analytics.ticketAnalytics", "Ticket Analytics")}
+                </h2>
+                <div className="space-y-6">
+                  {/* Sales Progress */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">{t("events.analytics.progress", "Sales Progress")}</span>
+                      <span className="font-medium text-gray-900">
+                        {Math.round(progress)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-blue-600 h-full rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(progress, 100)}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="@sm:justify-items-end">
-                    <p className="font-semibold">{t("event.label.totalRevenue", "Total Revenue")}</p>
-                    <p className="font-semibold text-green-600">{event.tiers?.[0].currency || 'JPY'} {totalRevenue.toLocaleString()}</p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-blue-50 rounded-lg">
+                      <p className="text-xs text-blue-600 mb-1">{t("event.label.totalSold", "Total Sold")}</p>
+                      <p className="text-lg font-bold text-blue-700">{totalTicketsSold}</p>
+                    </div>
+                    <div className="p-3 bg-emerald-50 rounded-lg">
+                      <p className="text-xs text-emerald-600 mb-1">{t("event.label.totalRevenue", "Revenue")}</p>
+                      <p className="text-lg font-bold text-emerald-700">
+                        {event.tiers?.[0]?.currency || 'NPR'} {totalRevenue.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Tiers List */}
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-sm font-medium text-gray-900">{t("event.section.ticketTiers", "Ticket Tiers")}</h3>
+                    {analytics?.tiers ? (
+                      analytics.tiers.map((tier, index) => {
+                        const soldPercent = tier.total_seats > 0 ? (tier.sold_seats / tier.total_seats) * 100 : 0;
+                        return (
+                          <div key={tier.tier_id} className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium text-gray-900">{tier.tier_name}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium text-emerald-600">
+                                  {tier.currency || 'NPR'} {tier.revenue.toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                <div className="bg-blue-500 h-full rounded-full" style={{ width: `${Math.min(soldPercent, 100)}%` }} />
+                              </div>
+                              <div className="flex justify-between items-center text-xs text-gray-600">
+                                <span>{tier.sold_seats} / {tier.total_seats} {t("common.sold", "sold")}</span>
+
+                                <p className="text-xs text-gray-500">
+                                  {tier.currency || 'NPR'} {tier.price.toLocaleString()} / {t("common.ticket", "ticket")}
+                                </p>
+                              </div>
+
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                        event.tiers?.map((tier, index) => {
+                          const sold = tier.sold || 0;
+                          const soldPercent = tier.quantity > 0 ? (sold / tier.quantity) * 100 : 0;
+                          const tierRevenue = sold * tier.price;
+
+                          return (
+                            <div key={tier.id} className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <p className="font-medium text-gray-900">{tier.tier_name}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {tier.currency || 'NPR'} {tier.price.toLocaleString()} / {t("common.ticket", "ticket")}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-medium text-emerald-600">
+                                    {tier.currency || 'NPR'} {tierRevenue.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="space-y-1">
+                                <div className="flex justify-end text-xs text-gray-600">
+                                  <span>{sold} / {tier.quantity} {t("common.sold", "sold")}</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${Math.min(soldPercent, 100)}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Promo Codes */}
-              <div className="rounded-xl  bg-white p-6 shadow-sm space-y-4">
-                <h3 className="text-lg font-semibold">{t("event.section.promoCodes", "Promo/Discount Codes")}</h3>
+              <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">{t("event.section.promoCodes", "Promo/Discount Codes")}</h3>
                 <p className="text-gray-500 text-sm">{t("event.text.noPromoCodes", "No promo codes configured for this event.")}</p>
               </div>
 
               {/* Status History */}
               <StatusHistorySidebar history={history} isLoading={isLoadingHistory} />
+
             </div>
           </div>
         </div>
       </div>
+      <Footer />
 
       {/* Cancel Event Dialog */}
       <Dialog open={cancelDialogOpen} onOpenChange={(open) => {
@@ -484,7 +529,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
                       <div className="flex justify-between items-start mt-1">
                         <FormMessage />
                         <div className="text-xs text-gray-500 text-right grow">
-                          {field.value?.length || 0}/500 {t("common.characters", "characters")}   
+                          {field.value?.length || 0}/500 {t("common.characters", "characters")}
                         </div>
                       </div>
                     </FormItem>
@@ -576,9 +621,6 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
           </Form>
         </DialogContent>
       </Dialog>
-
-      {/* Footer */}
-      <Footer />
     </>
   );
 }

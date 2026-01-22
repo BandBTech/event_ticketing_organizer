@@ -19,23 +19,6 @@ const salesStatusColors: Record<string, string> = {
   'sales_ended': 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-50',
 };
 
-function getSalesStatusLabel(status: string): string {
-  switch (status) {
-    case "active":
-      return "SALES LIVE";
-    case "paused":
-      return "SALES PAUSED";
-    case "stopped":
-      return "SALES STOPPED";
-    case "sold_out":
-      return "SOLD OUT";
-    case "sales_ended":
-        return "SALES ENDED";
-    default:
-      return status.replace('_', ' ').toUpperCase();
-  }
-}
-
 export function SalesStatusBadge({ status, className, showAlways = false }: SalesStatusBadgeProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -58,7 +41,12 @@ export function SalesStatusBadge({ status, className, showAlways = false }: Sale
           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
         </span>
       )}
-      {t(`event.badge.${displayStatus}`)}
+      {t(`event.badge.${displayStatus}`).toUpperCase()}
+      {/* {t(`event.badge.active`)}
+      {t(`event.badge.paused`)}
+      {t(`event.badge.stopped`)}
+      {t(`event.badge.sold_out`)}
+      {t(`event.badge.sales_ended`)} */}
     </Badge>
   );
 }

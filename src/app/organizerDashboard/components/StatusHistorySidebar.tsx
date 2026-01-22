@@ -73,7 +73,7 @@ export default function StatusHistorySidebar({ history, isLoading }: StatusHisto
 
 	if (isLoading) {
 		return (
-			<div className="rounded-xl bg-white p-6 shadow-sm space-y-4 max-h-[600px] overflow-hidden">
+      <div className="glass-card-lowest rounded-2xl p-6 shadow-sm space-y-4 max-h-[600px] overflow-hidden">
 				<h3 className="text-lg font-semibold flex items-center gap-2 sticky top-0 bg-white pb-2 z-20">
 					{t("event.section.statusHistory", "Status History")}
 				</h3>
@@ -103,7 +103,7 @@ export default function StatusHistorySidebar({ history, isLoading }: StatusHisto
 
 	if (!historyList || historyList.length === 0) {
 		return (
-			<div className="rounded-xl bg-white p-6 shadow-sm space-y-4">
+      <div className="glass-card-lowest rounded-2xl p-6 shadow-sm space-y-4">
 				<h3 className="text-lg font-semibold flex items-center gap-2">
 					{t("event.section.statusHistory", "Status History")}
 				</h3>
@@ -115,7 +115,7 @@ export default function StatusHistorySidebar({ history, isLoading }: StatusHisto
 	}
 
 	return (
-    <div className="rounded-xl bg-white p-6 shadow-sm space-y-4 @container">
+    <div className="glass-card-lowest rounded-2xl p-6 shadow-sm space-y-4 @container">
 			<h3 className="text-lg font-semibold flex items-center gap-2 pb-2 z-20">
 				{t("event.section.statusHistory", "Status History")}
 			</h3>

@@ -34,6 +34,7 @@ export interface Event {
   organizer_id: string;
   created_at: string;
   updated_at: string;
+  is_featured?: boolean;
 }
 
 export interface CreateEventTierRequest {

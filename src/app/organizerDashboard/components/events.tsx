@@ -70,7 +70,7 @@ export default function Events() {
   const hasActiveFilters = searchInput.trim() !== "" || statusFilter !== "all";
 
   return (
-    <div className="flex-1 px-6 py-4">
+    <div className="flex-1 px-6 py-4 container mx-auto max-w-7xl">
       {/* Search Bar & Filter - Always visible */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center w-full max-w-md relative">

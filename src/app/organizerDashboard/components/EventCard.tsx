@@ -6,28 +6,12 @@ import Link from "next/link";
 import { EventMinimal } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
 import { CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react";
-import { Badge } from "@/components/ui/badge";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import { SalesStatusBadge } from "./SalesStatusBadge";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
-
-/**
- * Get badge color class based on event status
- */
-function getStatusBadgeClass(status: string): string {
-  const statusClasses: Record<string, string> = {
-    approved: "bg-emerald-500 hover:bg-emerald-500",
-    pending: "bg-amber-500 hover:bg-amber-500",
-    cancelled: "bg-red-500 hover:bg-red-500",
-    draft: "bg-gray-500 hover:bg-gray-500",
-    live: "bg-green-500 hover:bg-green-500",
-    ended: "bg-gray-500 hover:bg-gray-500",
-    rejected: "bg-red-500 hover:bg-red-500",
-  };
-  return statusClasses[status] || "bg-gray-500 hover:bg-gray-500";
-}
+import { EventStatusBadge } from "./EventStatusBadge";
 
 /**
  * Parse categories from API response (handles string or string[] format)
@@ -65,11 +49,10 @@ export default function EventCard({ event }: EventCardProps) {
         />
         {/* Event Status Badge */}
         {event.status && (
-          <Badge
-            className={`absolute top-2 left-2 uppercase font-semibold shadow-lg ${getStatusBadgeClass(event.status)}`}
-          >
-            {t(`event.badge.${event.status}`)}
-          </Badge>
+          <EventStatusBadge
+            status={event.status}
+            className="absolute top-2 left-2 shadow-lg"
+          />
         )}
         {/* Sales Status Badge */}
         {event.status === "approved" && (

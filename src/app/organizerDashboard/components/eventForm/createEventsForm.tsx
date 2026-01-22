@@ -258,7 +258,7 @@ export default function CreateEventPage({
   }, [handleNavigateAway, router]);
 
   return (
-    <div className="p-5 pt-3 space-y-6">
+    <div className="p-6 space-y-6 container mx-auto max-w-7xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <EventDetailsSection

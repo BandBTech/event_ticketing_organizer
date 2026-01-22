@@ -295,7 +295,8 @@
       "promoCodes": "プロモーション/割引コード",
       "ticketing": "発券業務",
       "discountsPromo": "割引",
-      "templates": "テンプレート"
+      "templates": "テンプレート",
+      "statusHistory": "ステータス履歴"
     },
     "button": {
       "pauseSales": "販売の一時停止",
@@ -310,10 +311,10 @@
       "createNewTier": "新しい階層の作成"
     },
     "label": {
-      "totalSales": "総売上高",
       "totalRevenue": "総収益",
       "cancellationReason": "キャンセル理由（最低10文字）",
-      "stopSalesReason": "理由（任意）"
+      "stopSalesReason": "理由（任意）",
+      "totalSold": "総販売数"
     },
     "text": {
       "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
@@ -405,6 +406,9 @@
     "option": {
       "amountFixed": "金額（固定）",
       "percentage": "パーセンテージ (%)"
+    },
+    "analytics": {
+      "ticketAnalytics": "チケット分析"
     }
   },
   "tierTemplates": {

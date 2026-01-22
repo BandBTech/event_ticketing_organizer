@@ -295,7 +295,8 @@
       "promoCodes": "Codici promozionali/sconto",
       "ticketing": "biglietteria",
       "discountsPromo": "Sconti",
-      "templates": "Modelli"
+      "templates": "Modelli",
+      "statusHistory": "Cronologia dello stato"
     },
     "button": {
       "pauseSales": "Metti in pausa le vendite",
@@ -310,10 +311,10 @@
       "createNewTier": "Crea nuovo livello"
     },
     "label": {
-      "totalSales": "Vendite totali",
       "totalRevenue": "Entrate totali",
       "cancellationReason": "Motivo della cancellazione (minimo 10 caratteri)",
-      "stopSalesReason": "Motivo (facoltativo)"
+      "stopSalesReason": "Motivo (facoltativo)",
+      "totalSold": "Totale venduto"
     },
     "text": {
       "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
@@ -406,6 +407,9 @@
     "option": {
       "amountFixed": "Importo (fisso)",
       "percentage": "Percentuale (%)"
+    },
+    "analytics": {
+      "ticketAnalytics": "Analisi dei biglietti"
     }
   },
   "tierTemplates": {
