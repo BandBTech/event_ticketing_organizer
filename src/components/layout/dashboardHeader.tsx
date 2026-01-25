@@ -1,6 +1,6 @@
 "use client";
 
-import { BellIcon } from "@phosphor-icons/react";
+import { BellIcon, List } from "@phosphor-icons/react";
 import { Plus } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo } from "react";
@@ -12,6 +12,7 @@ import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useUIStore } from "@/store/uiStore";
 
 export default function DashboardHeader() {
 
@@ -22,6 +23,7 @@ export default function DashboardHeader() {
   const isEditMode = searchParams.get("edit") === "true";
   const { locale } = useLanguageStore();
   const { t } = useTranslation();
+  const { toggleSidebar } = useUIStore();
   // const { openCreateUserModal } = useUser();
   const { user, isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
 
@@ -91,7 +93,15 @@ export default function DashboardHeader() {
 
   return (
     <div className="flex flex-1 items-center justify-between">
-      <h2 className="text-lg text-gray-900 font-semibold">{headerText}</h2>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleSidebar}
+          className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <List className="h-5 w-5 text-gray-600" />
+        </button>
+        <h2 className="text-lg text-gray-900 font-semibold">{headerText}</h2>
+      </div>
 
       <div className="flex items-center gap-3">
         <PermissionGuard permission={PERMISSIONS.EVENT_CREATE}>

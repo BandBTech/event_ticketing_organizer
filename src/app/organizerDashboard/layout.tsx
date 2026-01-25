@@ -1,25 +1,26 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import DashboardHeader from "@/components/layout/dashboardHeader";
 import { UserProvider } from "@/app/contexts/UserContext";
 import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
+import { useSidebarResponsive } from "@/hooks/useSidebarResponsive";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  useSidebarResponsive();
 
   return (
     <ProtectedRoute role={["organizer", "manager", "staff"]} requireAll={false}>
       <UserProvider>
         <div className=" flex h-screen overflow-hidden bg-gray-50/50">
           {/* Sidebar */}
-          <AppSidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+          <AppSidebar />
 
           {/* Main Content Area */}
           <div className="flex flex-1 flex-col">

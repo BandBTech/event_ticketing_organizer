@@ -353,7 +353,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Update website company information",
+        "description": "Update website company information with logo upload support",
         "consumes": [
           "multipart/form-data"
         ],
@@ -886,6 +886,68 @@
       }
     },
     "/api/v1/admin/events/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get detailed event information by ID for admin",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get event by ID (Admin)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Event ID (UUID)",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.EventDetailResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      },
       "put": {
         "security": [
           {
@@ -1004,88 +1066,6 @@
           },
           "403": {
             "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/events/{id}/approval": {
-      "put": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Allow admin/subadmin to update event status, commission rate, and admin remarks. Available statuses: pending, approved, rejected, on_sale, live, hold, scheduled, cancelled, draft",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Update event status and commission (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Event ID (UUID)",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Event approval/update details with status, commission_rate, and admin_remark",
-            "name": "approval",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.EventApprovalRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.Event"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -1272,6 +1252,88 @@
         }
       }
     },
+    "/api/v1/admin/events/{id}/status": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Allow admin/subadmin to update event status, commission rate, and admin remarks. Available statuses: pending, approved, rejected, on_sale, live, hold, scheduled, cancelled, draft",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update event status and commission (Admin)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Event ID (UUID)",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "description": "Event status update details with status, commission_rate (optional), and admin_remark",
+            "name": "status",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.EventStatusUpdateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.Event"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/events/{id}/status-history": {
       "get": {
         "security": [
@@ -1356,7 +1418,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Get list of all organizers with their current approval status (pending, approved, rejected, inactive)",
+        "description": "Get list of all organizers with their current approval status (pending, approved, rejected, inactive) with search and filter capabilities",
         "produces": [
           "application/json"
         ],
@@ -1384,6 +1446,24 @@
             "default": "\"-created_at\"",
             "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'first_name', '-organizer_status')",
             "name": "sort",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Search term for first_name, last_name, or email",
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by organizer status (pending, approved, rejected, inactive)",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by account status (active, inactive, suspended)",
+            "name": "account_status",
             "in": "query"
           }
         ],
@@ -1476,6 +1556,70 @@
           },
           "401": {
             "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/organizers/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get detailed information about a specific organizer by their ID",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get organizer by ID",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Organizer ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.UserResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -6422,7 +6566,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Mark a ticket as checked-in for an event (Organizer API)",
+        "description": "Mark a ticket as checked-in for an event (Organizer, Manager, or Staff API)",
         "consumes": [
           "application/json"
         ],
@@ -6485,7 +6629,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Mark a ticket as checked-out from an event (Organizer API)",
+        "description": "Mark a ticket as checked-out from an event (Organizer, Manager, or Staff API)",
         "consumes": [
           "application/json"
         ],
@@ -7448,8 +7592,8 @@
         "summary": "Get event by ID (Public)",
         "parameters": [
           {
-            "type": "integer",
-            "description": "Event ID",
+            "type": "string",
+            "description": "Event ID (UUID)",
             "name": "id",
             "in": "path",
             "required": true
@@ -7467,7 +7611,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/definitions/models.Event"
+                      "$ref": "#/definitions/models.EventPublicResponse"
                     }
                   }
                 }
@@ -8827,41 +8971,6 @@
         }
       }
     },
-    "models.EventApprovalRequest": {
-      "type": "object",
-      "required": [
-        "status"
-      ],
-      "properties": {
-        "admin_remark": {
-          "type": "string",
-          "maxLength": 500,
-          "example": "Event approved with standard commission rate"
-        },
-        "commission_rate": {
-          "description": "Admin sets commission during approval",
-          "type": "number",
-          "maximum": 50,
-          "minimum": 0,
-          "example": 15.5
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "pending",
-            "approved",
-            "rejected",
-            "on_sale",
-            "live",
-            "hold",
-            "scheduled",
-            "cancelled",
-            "draft"
-          ],
-          "example": "approved"
-        }
-      }
-    },
     "models.EventCancellationRequest": {
       "type": "object",
       "required": [
@@ -9206,6 +9315,41 @@
         "status_type": {
           "description": "'approval' or 'sales'",
           "type": "string"
+        }
+      }
+    },
+    "models.EventStatusUpdateRequest": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "admin_remark": {
+          "type": "string",
+          "maxLength": 500,
+          "example": "Event approved with standard commission rate"
+        },
+        "commission_rate": {
+          "description": "Optional: Admin can set commission rate during status update",
+          "type": "number",
+          "maximum": 50,
+          "minimum": 0,
+          "example": 15.5
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "on_sale",
+            "live",
+            "hold",
+            "scheduled",
+            "cancelled",
+            "draft"
+          ],
+          "example": "approved"
         }
       }
     },

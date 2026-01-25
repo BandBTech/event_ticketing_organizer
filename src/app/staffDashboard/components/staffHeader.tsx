@@ -1,9 +1,8 @@
-"use client";
-
-import { BellIcon,  } from "@phosphor-icons/react";
-import { ChevronDown, Globe  } from "lucide-react";
+import { BellIcon, List } from "@phosphor-icons/react";
+import { ChevronDown, Globe } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { useUIStore } from "@/store/uiStore";
 
 const pageHeaders: { prefix: string; title: string }[] = [
   { prefix: "/staffDashboard", title: "Good Evening John Doe!" },
@@ -14,6 +13,7 @@ export default function DashboardHeader() {
   const rawPath = usePathname() ?? "/";
   // Normalize trailing slash: "/dashboard/" -> "/dashboard"
   const pathname = rawPath.replace(/\/+$/, "") || "/";
+  const { toggleSidebar } = useUIStore();
 
 
   // Pick the best match (longest prefix first)
@@ -32,7 +32,15 @@ export default function DashboardHeader() {
   return (
     <>
       <header className="flex items-center justify-between ">
-        <h2 className="text-lg px-6 text-gray-700 font-semibold">{headerText}</h2>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleSidebar}
+            className="md:hidden p-2 ml-4 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <List className="h-5 w-5 text-gray-600" />
+          </button>
+          <h2 className="text-lg text-gray-700 font-semibold">{headerText}</h2>
+        </div>
 
         <div className="flex  items-center gap-4 p-4">
           <LanguageSelector />
