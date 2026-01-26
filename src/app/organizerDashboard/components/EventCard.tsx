@@ -47,13 +47,6 @@ export default function EventCard({ event }: EventCardProps) {
           fill={true}
           className="w-full h-full object-cover"
         />
-        {/* Event Status Badge */}
-        {event.status && (
-          <EventStatusBadge
-            status={event.status}
-            className="absolute top-2 left-2 shadow-lg"
-          />
-        )}
         {/* Sales Status Badge */}
         {event.status === "approved" && (
           <SalesStatusBadge
