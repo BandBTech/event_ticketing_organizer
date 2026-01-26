@@ -89,6 +89,13 @@ export default function LoginForm() {
               "Network error. Please check your connection."
             );
             break;
+          case "INTERNAL_SERVER_ERROR":
+            toast.error(
+              "",
+              "Login failed.",
+              error.details
+            );
+            break;
           default:
             toast.error(
               "auth.toast.loginError",
