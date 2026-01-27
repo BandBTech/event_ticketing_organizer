@@ -582,7 +582,8 @@
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
-      "sales_ended": "Sales Ended"
+      "sales_ended": "Sales Ended",
+      "on_sale": "On Sale"
     },
     "option": {
       "amountFixed": "Amount (Fixed)",
