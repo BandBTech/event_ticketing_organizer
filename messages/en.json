@@ -594,6 +594,9 @@
     "option": {
       "amountFixed": "Amount (Fixed)",
       "percentage": "Percentage (%)"
+    },
+    "status": {
+      "on_sale": "Sales Live"
     }
   },
   "tierTemplates": {

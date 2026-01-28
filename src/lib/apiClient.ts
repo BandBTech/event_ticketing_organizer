@@ -100,8 +100,10 @@ export async function apiRequest<T>(
 
     const data = await response.json();
 
-    // Handle 401 Unauthorized - try to refresh token
-    if (response.status === 401 && requiresAuth && !skipTokenRefresh) {
+    // Handle 401 Unauthorized or specific TOKEN_EXPIRED error - try to refresh token
+    const isTokenExpiredError = response.status === 401 || data?.error?.code === 'TOKEN_EXPIRED';
+
+    if (isTokenExpiredError && requiresAuth && !skipTokenRefresh) {
       try {
         const newToken = await refreshAccessToken();
 
@@ -125,6 +127,11 @@ export async function apiRequest<T>(
       const errorMsg = data?.message || data?.error?.message || 'An error occurred';
       const errorCode = data?.error?.code || 'UNKNOWN_ERROR';
       const errorDetails = data?.error?.details;
+
+      // Handle inactive account - clear tokens and force logout
+      if (errorCode === 'ACCOUNT_INACTIVE') {
+        tokenManager.clearTokens();
+      }
 
       // Show error toast if enabled
       if (showErrorToast) {

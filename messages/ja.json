@@ -409,6 +409,9 @@
     },
     "analytics": {
       "ticketAnalytics": "チケット分析"
+    },
+    "status": {
+      "on_sale": "セールスライブ"
     }
   },
   "tierTemplates": {

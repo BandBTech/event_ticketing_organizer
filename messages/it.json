@@ -410,6 +410,9 @@
     },
     "analytics": {
       "ticketAnalytics": "Analisi dei biglietti"
+    },
+    "status": {
+      "on_sale": "Vendite in diretta"
     }
   },
   "tierTemplates": {
