@@ -4,7 +4,6 @@ import {
   UserProfileResponse,
   RefreshTokenRequest,
   AuthApiResponse,
-  AuthApiError,
   OrganizerProfile
 } from '@/types/auth';
 import { tokenManager } from '@/lib/tokenManager';
@@ -13,56 +12,6 @@ import { api, apiRequest as apiClientRequest } from '@/lib/apiClient';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
 
 import { AuthError } from '@/lib/errors';
-
-// Legacy API request function for non-authenticated endpoints
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-
-  const config: RequestInit = {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  };
-
-  try {
-    const response = await fetch(url, config);
-    const data = await response.json();
-
-    if (!response.ok) {
-      const errorData = data as AuthApiError;
-      throw new AuthError(
-        errorData.message || 'An error occurred',
-        errorData.error?.code || 'UNKNOWN_ERROR',
-        response.status,
-        errorData.error?.details
-      );
-    }
-
-    const successData = data as AuthApiResponse<T>;
-    return successData.data;
-  } catch (error) {
-    if (error instanceof AuthError) {
-      throw error;
-    }
-
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new AuthError(
-        'Network error. Please check your connection.',
-        'NETWORK_ERROR'
-      );
-    }
-
-    throw new AuthError(
-      'An unexpected error occurred',
-      'UNEXPECTED_ERROR'
-    );
-  }
-}
 
 /**
  * Auth Service
@@ -75,9 +24,8 @@ class AuthService {
    * @param rememberMe - If true, stores tokens in localStorage; if false, stores in sessionStorage
    */
   async login(credentials: LoginRequest, rememberMe: boolean = false): Promise<TokenResponse> {
-    const tokens = await apiRequest<TokenResponse>('/auth/organizer/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
+    const tokens = await api.post<TokenResponse>('/auth/organizer/login', credentials, {
+      showErrorToast: false,
     });
 
     // Store tokens with remember me preference
@@ -162,10 +110,7 @@ class AuthService {
       refresh_token: refreshToken,
     };
 
-    const tokens = await apiRequest<TokenResponse>('/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify(request),
-    });
+    const tokens = await api.post<TokenResponse>('/auth/refresh', request);
 
     // Preserve the original remember me preference when refreshing tokens
     const rememberMe = tokenManager.isRememberMeEnabled();
@@ -221,15 +166,12 @@ class AuthService {
     phone?: string;
     country_code?: string;
   }): Promise<{ user: UserProfileResponse }> {
-    const response = await apiRequest<UserProfileResponse & { message?: string }>('/auth/organizer/register', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: userData.email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
-        country_code: userData.country_code
-      }),
+    const response = await api.post<UserProfileResponse & { message?: string }>('/auth/organizer/register', {
+      email: userData.email,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
+      country_code: userData.country_code
     });
 
     return {
@@ -268,15 +210,12 @@ class AuthService {
     confirm_password: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/organizer/reset-password', {
-      method: 'POST',
-      body: JSON.stringify({
-        otp: data.otp,
-        email_token: data.email_token,
-        new_password: data.new_password,
-        confirm_password: data.confirm_password,
-        role: data.role || 'user'
-      }),
+    await api.post<void>('/auth/organizer/reset-password', {
+      otp: data.otp,
+      email_token: data.email_token,
+      new_password: data.new_password,
+      confirm_password: data.confirm_password,
+      role: data.role || 'user'
     });
   }
 
@@ -322,12 +261,9 @@ class AuthService {
     identifier: string;
     otp_type: string;
   }): Promise<{ message: string; success: boolean; expires_in: number }> {
-    return await apiRequest<{ message: string; success: boolean; expires_in: number }>('/auth/organizer/send-otp', {
-      method: 'POST',
-      body: JSON.stringify({
-        identifier: data.identifier,
-        otp_type: data.otp_type,
-      }),
+    return await api.post<{ message: string; success: boolean; expires_in: number }>('/auth/organizer/send-otp', {
+      identifier: data.identifier,
+      otp_type: data.otp_type,
     });
   }
 
@@ -341,14 +277,11 @@ class AuthService {
     otp_type: string;
     role?: 'user' | 'organizer' | 'admin';
   }): Promise<void> {
-    await apiRequest<void>('/auth/organizer/verify-otp', {
-      method: 'POST',
-      body: JSON.stringify({
-        identifier: data.identifier,
-        otp_code: data.otp_code,
-        otp_type: data.otp_type,
-        role: data.role || 'user'
-      }),
+    await api.post<void>('/auth/organizer/verify-otp', {
+      identifier: data.identifier,
+      otp_code: data.otp_code,
+      otp_type: data.otp_type,
+      role: data.role || 'user'
     });
   }
 

@@ -402,7 +402,8 @@
       "paused": "Vendite sospese",
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
-      "sales_ended": "Vendite terminate"
+      "sales_ended": "Vendite terminate",
+      "on_sale": "In vendita"
     },
     "option": {
       "amountFixed": "Importo (fisso)",

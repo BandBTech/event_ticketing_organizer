@@ -583,7 +583,8 @@
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
-      "sales_ended": "Sales Ended"
+      "sales_ended": "Sales Ended",
+      "on_sale": "On Sale"
     },
     "analytics": {
       "progress": "Sales Progress",

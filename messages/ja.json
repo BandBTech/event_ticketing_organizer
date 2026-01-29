@@ -401,7 +401,8 @@
       "stopped": "販売停止",
       "sold_out": "完売",
       "sales_ended": "販売終了",
-      "rejected": "拒否されました"
+      "rejected": "拒否されました",
+      "on_sale": "販売中"
     },
     "option": {
       "amountFixed": "金額（固定）",
