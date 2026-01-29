@@ -141,7 +141,7 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
   // Determine sales status for button display
   const salesStatus = analytics?.sales_status || 'active';
   const isEventCancelled = event.status === 'cancelled';
-  const canControlSales = event.status === 'approved' && !isEventCancelled;
+  const canControlSales = event.status === 'on_sale' && !isEventCancelled;
   const canEdit = event.status === 'pending' || event.status === 'draft';
 
 
