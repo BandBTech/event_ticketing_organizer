@@ -323,7 +323,9 @@
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again.",
       "passwordChangedLogin": "Please login with your new password.",
-      "resendFailed": "Failed to resend code. Please try again."
+      "resendFailed": "Failed to resend code. Please try again.",
+      "accountInactive": "Your account is inactive.",
+      "contactSupportToReactivate": "Please contact support to reactivate your account."
     },
     "passwordRequirements": {
       "minLength": "Must consist of at least 8 characters",

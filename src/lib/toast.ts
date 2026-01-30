@@ -80,8 +80,9 @@ export const toast = {
 
     const locale = useLanguageStore.getState().locale;
     const message = getTranslation(translationKey, locale, fallback);
+    const descriptionMessage = description ? getTranslation(description, locale, description) : undefined;
     const toastId = sonnerToast.error(message, {
-      description: description,
+      description: descriptionMessage,
     });
     
     activeToasts.set(toastId, { key: translationKey, type: 'error', fallback });

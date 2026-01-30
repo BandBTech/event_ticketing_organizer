@@ -208,7 +208,9 @@
       "otpResent": "Nuovo codice inviato alla tua email",
       "resendFailed": "Impossibile inviare nuovamente il codice. \nPer favore riprova.",
       "signupSuccess": "Account creato con successo!",
-      "signupError": "La registrazione non è riuscita. \nPer favore riprova."
+      "signupError": "La registrazione non è riuscita. \nPer favore riprova.",
+      "accountInactive": "Il tuo account è inattivo.",
+      "contactSupportToReactivate": "Contatta l'assistenza per riattivare il tuo account."
     },
     "passwordRequirements": {
       "minLength": "Deve essere composto da almeno 8 caratteri",

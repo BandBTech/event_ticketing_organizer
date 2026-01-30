@@ -208,7 +208,9 @@
       "otpResent": "新しいコードがメールに送信されました",
       "resendFailed": "コードの再送信に失敗しました。\nもう一度試してください。",
       "signupSuccess": "アカウントが正常に作成されました。",
-      "signupError": "登録に失敗しました。\nもう一度試してください。"
+      "signupError": "登録に失敗しました。\nもう一度試してください。",
+      "accountInactive": "あなたのアカウントは非アクティブです。",
+      "contactSupportToReactivate": "アカウントを再開するにはサポートにお問い合わせください。"
     },
     "passwordRequirements": {
       "minLength": "8文字以上で構成する必要があります",

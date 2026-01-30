@@ -96,6 +96,13 @@ export default function LoginForm() {
               error.details
             );
             break;
+          case "ACCOUNT_INACTIVE":
+            toast.error(
+              "auth.toast.accountInactive",
+              error.message || "Account is inactive. Please contact support.",
+              "auth.toast.contactSupportToReactivate"
+            );
+            break;
           default:
             toast.error(
               "auth.toast.loginError",
