@@ -25,6 +25,9 @@ export const queryKeys = {
     analytics: (id: string) => ['eventAnalytics', id] as const,
     /** Key for fetching event status history by ID */
     statusHistory: (id: string) => ['eventStatusHistory', id] as const,
+    /** Key for fetching event tickets list */
+    tickets: (id: string, params: { page?: number; limit?: number; search?: string }) =>
+      ['eventTickets', id, params] as const,
   },
 
   /**

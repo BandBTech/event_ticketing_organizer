@@ -377,8 +377,13 @@ export default function EventDetailsPage({ event, analytics }: EventDetailsProps
 
               {/* Ticket Analytics */}
               <div className="glass-card-lowest rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  {t("event.analytics.ticketAnalytics", "Ticket Analytics")}
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-between gap-2">
+                  <span>{t("event.analytics.ticketAnalytics", "Ticket Analytics")}</span>
+                  <Link href={`/organizerDashboard/event/tickets?id=${event.id}`}>
+                    <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-8 text-xs">
+                      {t("event.button.viewTickets", "View All Tickets")}
+                    </Button>
+                  </Link>
                 </h2>
                 <div className="space-y-6">
                   {/* Sales Progress */}
