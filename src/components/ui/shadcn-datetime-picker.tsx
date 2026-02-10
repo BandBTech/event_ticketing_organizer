@@ -34,17 +34,16 @@ export function ShadcnDateTimePicker({
   clearable = true,
   format: formatStr,
   error = false,
-  // minDate, // Removed unused prop usage
+  minDate,
 }: ShadcnDateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   // Default to disabling dates before today (or specific minDate if provided)
-  // user request: "Disable previous date from calendar based on local time"
-  // We'll disable days before today for the calendar view.
   const disabledDays = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
+    const limit = minDate || new Date();
+    const limitDay = new Date(limit);
+    limitDay.setHours(0, 0, 0, 0);
+    return date < limitDay;
   };
 
   /**
@@ -57,6 +56,15 @@ export function ShadcnDateTimePicker({
       const currentTime = value || new Date();
       newDate.setHours(currentTime.getHours());
       newDate.setMinutes(currentTime.getMinutes());
+
+      if (minDate && newDate.toDateString() === minDate.toDateString()) {
+        if (newDate < minDate) {
+          // If preserved time makes it less than minDate, set it to minDate
+          newDate.setHours(minDate.getHours());
+          newDate.setMinutes(minDate.getMinutes());
+        }
+      }
+
       onChange?.(newDate);
     }
   }
@@ -90,7 +98,14 @@ export function ShadcnDateTimePicker({
       }
     }
 
-    onChange?.(newDate);
+    // After time change, if we have a minDate, ensure it's not before minDate
+    if (minDate && newDate < minDate) {
+      // If user tries to pick a time before minDate on the same day, we could either block it or snap it.
+      // Snapping might be confusing, but keeping it simple for now.
+      onChange?.(minDate);
+    } else {
+      onChange?.(newDate);
+    }
   }
 
   return (

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   CalendarStarIcon,
@@ -38,7 +39,9 @@ export function AppSidebar() {
   const { user, logout } = useAuthStore();
   const { can, canAny } = usePermission();
   const { t } = useTranslation();
+
   const { isCollapsed: collapsed, toggleCollapse: onToggle, sidebarOpen, setSidebarOpen } = useUIStore();
+
 
   const navLinks = [
     {

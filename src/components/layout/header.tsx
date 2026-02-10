@@ -1,6 +1,6 @@
 "use client";
 import { Ticket } from "lucide-react";
-import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
+import { LanguageSelector } from "@/components/organizerDashboard/LanguageSelector";
 
 export default function Header() {
   return (

@@ -2,11 +2,17 @@
 
 import { BellIcon, List } from "@phosphor-icons/react";
 import { Plus } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+const useSearchParams = () => {
+  const router = useRouter();
+  return { get: (key: string) => router.query[key] as string };
+};
+const usePathname = () => useRouter().pathname;
+
 import React, { useMemo } from "react";
-import { useUser } from "@/app/contexts/UserContext";
+import { useUser } from "@/contexts/UserContext";
 import { Button } from "@/components/ui/button";
-import { LanguageSelector } from "@/app/organizerDashboard/components/LanguageSelector";
+import { LanguageSelector } from "@/components/organizerDashboard/LanguageSelector";
 import { useAuthStore } from "@/store/authStore";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";

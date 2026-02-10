@@ -563,7 +563,9 @@
       "percentageDecimals": "Percentage can have at most 2 decimal places.",
       "salesStartBeforeEventStart": "Sales Start Date cannot be after Event Start Date.",
       "discountAmountRequired": "Discount Amount is required.",
-      "discountPercentageRequired": "Discount Percentage is required."
+      "discountPercentageRequired": "Discount Percentage is required.",
+      "salesStart24Hrs": "Sales Start Date must be at least 24 hours from now.",
+      "salesEnd24Hrs": "Sales End Date must be at least 24 hours from now."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",

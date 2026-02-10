@@ -381,7 +381,9 @@
       "percentageDecimals": "La percentuale può avere al massimo 2 cifre decimali.",
       "salesStartBeforeEventStart": "La data di inizio delle vendite non può essere successiva alla data di inizio dell'evento.",
       "discountAmountRequired": "L'importo dello sconto è obbligatorio.",
-      "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
+      "discountPercentageRequired": "La percentuale di sconto è obbligatoria.",
+      "salesStart24Hrs": "La data di inizio delle vendite deve essere tra almeno 24 ore da adesso.",
+      "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",

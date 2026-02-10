@@ -380,7 +380,9 @@
       "percentageDecimals": "パーセンテージは小数点以下 2 桁までです。",
       "salesStartBeforeEventStart": "販売開始日をイベント開始日以降にすることはできません。",
       "discountAmountRequired": "割引金額は必須です。",
-      "discountPercentageRequired": "割引率は必須です。"
+      "discountPercentageRequired": "割引率は必須です。",
+      "salesStart24Hrs": "販売開始日は今から 24 時間以上後である必要があります。",
+      "salesEnd24Hrs": "販売終了日は今から 24 時間以上後である必要があります。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
