@@ -561,7 +561,6 @@ export const createEventSchema = (
           if (!tag) return;
           const normalizedTag = tag.trim().toLowerCase();
           if (seenTags.has(normalizedTag)) {
-            console.log("Duplicate tag found:", normalizedTag);
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message: t("event.validation.duplicateTag", "Tag already exists"),

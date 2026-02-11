@@ -138,8 +138,6 @@ export async function apiRequest<T>(
       }
     }
 
-    console.log(response);
-
     // Handle other error responses
     if (!response.ok) {
       const errorMsg =
@@ -147,7 +145,6 @@ export async function apiRequest<T>(
       const errorCode = data?.error?.code || "UNKNOWN_ERROR";
       const errorDetails = data?.error?.details;
 
-      console.log(errorMsg, errorCode, errorDetails);
       // Handle inactive account - clear tokens and force logout
       if (
         errorCode === "ACCOUNT_INACTIVE" ||

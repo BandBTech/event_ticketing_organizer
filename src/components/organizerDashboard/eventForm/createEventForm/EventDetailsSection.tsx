@@ -144,7 +144,7 @@ export function EventDetailsSection({
                       className="min-h-13 md:text-md"
                       error={!!fieldState.error}
                     />
-                    {console.log("Date: ", new Date().toISOString(), "Tags Field State Error:", fieldState.error)}
+                    {/* {console.log("Date: ", new Date().toISOString(), "Tags Field State Error:", fieldState.error)} */}
                   </FormControl>
                   <div className="flex justify-between items-start -mt-1 min-h-[20px]">
                     <TranslatedFormMessage t={t} className="mt-0" />
