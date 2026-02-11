@@ -3,6 +3,7 @@
 import { ArrowRight, PencilLine } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { EventMinimal } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
 import { CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react/dist/ssr";
@@ -32,10 +33,20 @@ interface EventCardProps {
 export default function EventCard({ event }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const router = useRouter();
   const categories = parseCategories(event.category);
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation if text selection is happening
+    if (window.getSelection()?.toString()) return;
+    router.push(`/organizerDashboard/event/details?id=${event.id}`);
+  };
+
   return (
-    <div className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full">
+    <div
+      onClick={handleCardClick}
+      className="rounded-xl bg-white/60 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 overflow-hidden flex flex-col h-full cursor-pointer"
+    >
       <div className="relative aspect-16/10">
         <Image
           src={event.banner_image || "/placeholder.png"}
@@ -90,6 +101,7 @@ export default function EventCard({ event }: EventCardProps) {
           <div className="flex justify-between items-center">
             <Link
               href={`/organizerDashboard/event/details?id=${event.id}`}
+              onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
             >
               {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
@@ -98,6 +110,7 @@ export default function EventCard({ event }: EventCardProps) {
               {(event.status === "pending" || event.status === "draft") && (
                 <Link
                   href={`/organizerDashboard/event/edit?id=${event.id}`}
+                  onClick={(e) => e.stopPropagation()}
                   className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
                 >
                   <PencilLine className="w-4 h-4" />

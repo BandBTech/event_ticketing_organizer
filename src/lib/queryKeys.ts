@@ -56,4 +56,12 @@ export const queryKeys = {
     list: (params: { page?: number; limit?: number; search?: string; role?: string }) =>
       ['orgUsers', params.page, params.limit, params.search, params.role] as const,
   },
+
+  /**
+   * Dashboard query keys
+   */
+  dashboard: {
+    /** Key for fetching dashboard stats */
+    all: ['dashboard'] as const,
+  },
 } as const;
