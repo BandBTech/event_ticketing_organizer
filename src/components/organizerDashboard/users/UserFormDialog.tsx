@@ -14,6 +14,8 @@ import {
 } from "@phosphor-icons/react";
 import type { Country } from "react-phone-number-input";
 
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
+
 import {
   Dialog,
   DialogContent,
@@ -373,6 +375,7 @@ export default function UserFormDialog({
                       <p className="text-xs text-muted-foreground mt-1">
                         {t('users.create.passwordHint', "Click the icon to generate a secure password")}
                       </p>
+                      <PasswordRequirements password={field.value} />
                       <TranslatedFormMessage t={t} />
                     </FormItem>
                   )}

@@ -383,7 +383,8 @@
       "discountAmountRequired": "L'importo dello sconto è obbligatorio.",
       "discountPercentageRequired": "La percentuale di sconto è obbligatoria.",
       "salesStart24Hrs": "La data di inizio delle vendite deve essere tra almeno 24 ore da adesso.",
-      "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso."
+      "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso.",
+      "duplicateTag": "L'etichetta esiste già"
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",

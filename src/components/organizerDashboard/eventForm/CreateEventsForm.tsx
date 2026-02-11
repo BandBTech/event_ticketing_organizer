@@ -252,6 +252,12 @@ export default function CreateEventsForm({
             isEditing={isEditing}
             eventId={initialData?.id}
             initialDescription={initialData?.description || ""}
+            onTagsChange={() => {
+              // Trigger validation for tags explicitly
+              setTimeout(() => {
+                form.trigger("tags");
+              }, 0);
+            }}
           />
 
           <VenueScheduleSection control={form.control} />

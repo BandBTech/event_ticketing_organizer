@@ -20,8 +20,9 @@ import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
 
 // Icons
-import { Plus, Search, ChevronLeft, ChevronRight, Users } from "lucide-react";
-import { FunnelIcon } from "@phosphor-icons/react";
+import { Plus, Search, Users } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, FunnelIcon } from "@phosphor-icons/react";
+import EventPagination from "@/components/organizerDashboard/EventPagination";
 
 // Permissions
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
@@ -37,6 +38,7 @@ import { getColumns } from "@/components/organizerDashboard/users/columns";
 import { DataTable } from "@/components/organizerDashboard/users/data-table";
 import UserFormDialog from "@/components/organizerDashboard/users/UserFormDialog";
 import { DeleteConfirmationDialog } from "@/components/organizerDashboard/DeleteConfirmationDialog";
+import { useLanguageStore } from "@/store/languageStore";
 
 function UsersPageContent() {
   const { isLoading: isAuthLoading, isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
@@ -196,7 +198,7 @@ function UsersPageContent() {
             disabled={pagination.pageIndex === 0}
             className="h-8 rounded-full px-4"
           >
-            <ChevronLeft className="h-4 w-4 mr-2" />
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
             {t('common.previous', "Previous")}
           </Button>
           <div className="flex gap-2">
@@ -220,7 +222,7 @@ function UsersPageContent() {
             className="h-8 rounded-full px-4"
           >
             {t('common.next', "Next")}
-            <ChevronRight className="h-4 w-4 ml-2" />
+            <ArrowRightIcon className="h-4 w-4 ml-2" />
           </Button>
         </div>
       )}
@@ -272,10 +274,12 @@ function EmptyState({ hasUsers, onCreateClick, t }: { hasUsers: boolean; onCreat
 }
 
 export default function UsersPage() {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>Team Management | Organizer Dashboard</title>
+        <title>{t('users.pageTitle', "Team Management")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>

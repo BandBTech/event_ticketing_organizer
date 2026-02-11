@@ -29,27 +29,20 @@ const CategoryTagsSelector = ({
   const effectivePlaceholder = placeholder || defaultPlaceholder;
 
   const [inputValue, setInputValue] = useState("");
-  const [duplicateError, setDuplicateError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTag = () => {
     const trimmedValue = inputValue.trim();
     if (!trimmedValue) return;
 
-    if (value.some((tag) => tag.toLowerCase() === trimmedValue.toLowerCase())) {
-      setDuplicateError(true);
-      return;
-    }
-
     if (value.length < maxTags) {
       onChange([...value, trimmedValue]);
       setInputValue("");
-      setDuplicateError(false);
     }
   };
 
-  const handleRemove = (tagToRemove: string) => {
-    onChange(value.filter((tag) => tag !== tagToRemove));
+  const handleRemove = (tagToRemove: string, indexToRemove: number) => {
+    onChange(value.filter((_, index) => index !== indexToRemove));
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -62,13 +55,12 @@ const CategoryTagsSelector = ({
         handleAddTag();
       }
     } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
-      handleRemove(value[value.length - 1]);
+      handleRemove(value[value.length - 1], value.length - 1);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setDuplicateError(false);
 
     if (newValue.endsWith(",")) {
       const tagValue = newValue.slice(0, -1).trim();
@@ -78,16 +70,9 @@ const CategoryTagsSelector = ({
         return;
       }
 
-      const isDuplicate = value.some((tag) => tag.toLowerCase() === tagValue.toLowerCase());
       const isMaxTagsReached = value.length >= maxTags;
 
-      if (isDuplicate) {
-        setDuplicateError(true);
-        setInputValue(tagValue);
-        return;
-      }
-
-      if (!isMaxTagsReached) {
+      if (!isMaxReached) {
         onChange([...value, tagValue]);
         setInputValue("");
       } else {
@@ -113,13 +98,13 @@ const CategoryTagsSelector = ({
       className={cn(
         "flex flex-wrap items-center gap-2 px-3 py-2 min-h-[52px] w-full rounded-md border border-input bg-white text-sm shadow-xs transition-[color,box-shadow] outline-none cursor-text",
         "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-        (error || duplicateError) && "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20",
+        error && "border-red-500 focus-within:border-red-500 focus-within:ring-red-500/20",
         className
       )}
     >
-      {value.map((tag) => (
+      {value.map((tag, index) => (
         <span
-          key={tag}
+          key={`${tag}-${index}`}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 break-all whitespace-normal max-w-full"
         >
           {tag}
@@ -127,7 +112,7 @@ const CategoryTagsSelector = ({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              handleRemove(tag);
+              handleRemove(tag, index);
             }}
             className="p-0.5 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
             aria-label={`Remove ${tag}`}

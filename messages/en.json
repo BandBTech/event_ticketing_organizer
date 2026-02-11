@@ -540,7 +540,7 @@
       "titleMaxLength": "Event Title must be under {max} characters.",
       "descriptionRequired": "Event Description is required.",
       "descriptionMaxLength": "Event Description must be under {max} characters.",
-      "tagsRequired": "t least one Tag is required.",
+      "tagsRequired": "At least one Tag is required.",
       "imageRequired": "Banner Image is required.",
       "venueRequired": "Venue Name is required.",
       "venueMaxLength": "Venue Name must be under {max} characters.",
@@ -565,7 +565,8 @@
       "discountAmountRequired": "Discount Amount is required.",
       "discountPercentageRequired": "Discount Percentage is required.",
       "salesStart24Hrs": "Sales Start Date must be at least 24 hours from now.",
-      "salesEnd24Hrs": "Sales End Date must be at least 24 hours from now."
+      "salesEnd24Hrs": "Sales End Date must be at least 24 hours from now.",
+      "duplicateTag": "Tag already exists"
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",

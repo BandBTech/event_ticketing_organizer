@@ -3,13 +3,15 @@
  * Optimized for Static Export / VPS Deployment
  */
 
-import { tokenManager } from './tokenManager';
-import { AuthError } from './errors';
-import { toast } from './toast';
+import { tokenManager } from "./tokenManager";
+import { AuthError } from "./errors";
+import { toast } from "./toast";
 // import { useLanguageStore } from '@/store/languageStore';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://sandbox.timroticket.com/api/v1';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://sandbox.timroticket.com/api/v1";
 
 // Request queue for handling concurrent requests during token refresh
 let isRefreshing = false;
@@ -20,7 +22,7 @@ function subscribeTokenRefresh(callback: (token: string) => void) {
 }
 
 function onTokenRefreshed(token: string) {
-  refreshSubscribers.forEach(callback => callback(token));
+  refreshSubscribers.forEach((callback) => callback(token));
   refreshSubscribers = [];
 }
 
@@ -40,7 +42,7 @@ export interface ApiRequestConfig extends RequestInit {
  */
 export async function apiRequest<T>(
   endpoint: string,
-  config: ApiRequestConfig = {}
+  config: ApiRequestConfig = {},
 ): Promise<T> {
   const {
     requiresAuth = false,
@@ -55,17 +57,22 @@ export async function apiRequest<T>(
     ...restConfig
   } = config;
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : `${API_BASE_URL}${endpoint}`;
 
   // Prepare headers
   const requestHeaders: Record<string, string> = {
-    ...headers as Record<string, string>,
+    ...(headers as Record<string, string>),
   };
 
   // Only set Content-Type if not already set and body is not FormData
   // FormData should not have Content-Type set manually (browser sets it with boundary)
-  if (!requestHeaders['Content-Type'] && !(restConfig.body instanceof FormData)) {
-    requestHeaders['Content-Type'] = 'application/json';
+  if (
+    !requestHeaders["Content-Type"] &&
+    !(restConfig.body instanceof FormData)
+  ) {
+    requestHeaders["Content-Type"] = "application/json";
   }
 
   // Add auth token if required
@@ -73,7 +80,7 @@ export async function apiRequest<T>(
     const accessToken = tokenManager.getAccessToken();
 
     if (!accessToken) {
-      throw new AuthError('No access token available', 'UNAUTHORIZED', 401);
+      throw new AuthError("No access token available", "UNAUTHORIZED", 401);
     }
 
     // Check if token is about to expire
@@ -81,14 +88,18 @@ export async function apiRequest<T>(
       // Token is expired or about to expire, try to refresh
       try {
         const newToken = await refreshAccessToken();
-        requestHeaders['Authorization'] = `Bearer ${newToken}`;
+        requestHeaders["Authorization"] = `Bearer ${newToken}`;
       } catch {
         // Token refresh failed, throw unauthorized error
         tokenManager.clearTokens();
-        throw new AuthError('Session expired. Please login again.', 'SESSION_EXPIRED', 401);
+        throw new AuthError(
+          "Session expired. Please login again.",
+          "SESSION_EXPIRED",
+          401,
+        );
       }
     } else {
-      requestHeaders['Authorization'] = `Bearer ${accessToken}`;
+      requestHeaders["Authorization"] = `Bearer ${accessToken}`;
     }
   }
 
@@ -101,7 +112,8 @@ export async function apiRequest<T>(
     const data = await response.json();
 
     // Handle 401 Unauthorized or specific TOKEN_EXPIRED error - try to refresh token
-    const isTokenExpiredError = response.status === 401 || data?.error?.code === 'TOKEN_EXPIRED';
+    const isTokenExpiredError =
+      response.status === 401 || data?.error?.code === "TOKEN_EXPIRED";
 
     if (isTokenExpiredError && requiresAuth && !skipTokenRefresh) {
       try {
@@ -113,50 +125,57 @@ export async function apiRequest<T>(
           skipTokenRefresh: true, // Prevent infinite loops
           headers: {
             ...headers,
-            'Authorization': `Bearer ${newToken}`,
+            Authorization: `Bearer ${newToken}`,
           },
         });
       } catch {
         tokenManager.clearTokens();
-        throw new AuthError('Session expired. Please login again.', 'SESSION_EXPIRED', 401);
+        throw new AuthError(
+          "Session expired. Please login again.",
+          "SESSION_EXPIRED",
+          401,
+        );
       }
     }
 
+    console.log(response);
+
     // Handle other error responses
     if (!response.ok) {
-      const errorMsg = data?.message || data?.error?.message || 'An error occurred';
-      const errorCode = data?.error?.code || 'UNKNOWN_ERROR';
+      const errorMsg =
+        data?.message || data?.error?.message || "An error occurred";
+      const errorCode = data?.error?.code || "UNKNOWN_ERROR";
       const errorDetails = data?.error?.details;
 
+      console.log(errorMsg, errorCode, errorDetails);
       // Handle inactive account - clear tokens and force logout
-      if (errorCode === 'ACCOUNT_INACTIVE') {
+      if (
+        errorCode === "ACCOUNT_INACTIVE" ||
+        (errorCode === "GENERIC_ERROR" &&
+          (errorDetails === "ACCOUNT_INACTIVE." ||
+            errorDetails === "ACCOUNT_INACTIVE"))
+      ) {
         tokenManager.clearTokens();
       }
 
       // Show error toast if enabled
       if (showErrorToast) {
         const displayMessage = errorMessage || errorMsg;
-        toast.error('api.error', displayMessage, errorDetails);
+        toast.error("api.error", displayMessage, errorDetails);
       }
 
-      throw new AuthError(
-        errorMsg,
-        errorCode,
-        response.status,
-        errorDetails
-      );
+      throw new AuthError(errorMsg, errorCode, response.status, errorDetails);
     }
 
     // Success - show toast if enabled
     if (showSuccessToast) {
       const responseMessage = data?.message;
-      const displayMessage = successMessage || responseMessage || 'Success';
-      toast.success('api.success', displayMessage);
+      const displayMessage = successMessage || responseMessage || "Success";
+      toast.success("api.success", displayMessage);
 
       if (returnFullResponse) {
         return data as T;
       }
-
     }
 
     // Return successful response data
@@ -165,33 +184,36 @@ export async function apiRequest<T>(
     // Handle network errors
     if (error instanceof AuthError) {
       // Show error toast if not already shown and enabled
-      if (showErrorToast && error.code === 'NETWORK_ERROR') {
+      if (showErrorToast && error.code === "NETWORK_ERROR") {
         const displayMessage = errorMessage || error.message;
-        toast.error('api.networkError', displayMessage);
+        toast.error("api.networkError", displayMessage);
       }
       throw error;
     }
 
-    if (error instanceof TypeError && error.message.includes('fetch')) {
+    if (error instanceof TypeError && error.message.includes("fetch")) {
       const networkError = new AuthError(
-        'Network error. Please check your connection.',
-        'NETWORK_ERROR'
+        "Network error. Please check your connection.",
+        "NETWORK_ERROR",
       );
 
       if (showErrorToast) {
-        toast.error('api.networkError', errorMessage || networkError.message);
+        toast.error("api.networkError", errorMessage || networkError.message);
       }
 
       throw networkError;
     }
 
     const unexpectedError = new AuthError(
-      'An unexpected error occurred',
-      'UNEXPECTED_ERROR'
+      "An unexpected error occurred",
+      "UNEXPECTED_ERROR",
     );
 
     if (showErrorToast) {
-      toast.error('api.unexpectedError', errorMessage || unexpectedError.message);
+      toast.error(
+        "api.unexpectedError",
+        errorMessage || unexpectedError.message,
+      );
     }
 
     throw unexpectedError;
@@ -208,7 +230,7 @@ async function refreshAccessToken(): Promise<string> {
   if (!refreshToken) {
     // Clear any stale tokens to prevent inconsistent state
     tokenManager.clearTokens();
-    throw new AuthError('No refresh token available', 'UNAUTHORIZED', 401);
+    throw new AuthError("No refresh token available", "UNAUTHORIZED", 401);
   }
 
   // If already refreshing, wait for it to complete
@@ -224,15 +246,15 @@ async function refreshAccessToken(): Promise<string> {
 
   try {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ refresh_token: refreshToken }),
     });
 
     if (!response.ok) {
-      throw new Error('Token refresh failed');
+      throw new Error("Token refresh failed");
     }
 
     const data = await response.json();
@@ -240,7 +262,11 @@ async function refreshAccessToken(): Promise<string> {
 
     // Update tokens
     const rememberMe = tokenManager.isRememberMeEnabled();
-    tokenManager.setTokens(tokens.access_token, tokens.refresh_token, rememberMe);
+    tokenManager.setTokens(
+      tokens.access_token,
+      tokens.refresh_token,
+      rememberMe,
+    );
 
     // Notify all waiting requests
     onTokenRefreshed(tokens.access_token);
@@ -260,50 +286,58 @@ async function refreshAccessToken(): Promise<string> {
  */
 export const api = {
   get: <T>(endpoint: string, config?: ApiRequestConfig) =>
-    apiRequest<T>(endpoint, { ...config, method: 'GET' }),
+    apiRequest<T>(endpoint, { ...config, method: "GET" }),
 
   post: <T>(endpoint: string, body?: unknown, config?: ApiRequestConfig) =>
     apiRequest<T>(endpoint, {
       ...config,
-      method: 'POST',
+      method: "POST",
       body: body ? JSON.stringify(body) : undefined,
     }),
 
   put: <T>(endpoint: string, body?: unknown, config?: ApiRequestConfig) =>
     apiRequest<T>(endpoint, {
       ...config,
-      method: 'PUT',
+      method: "PUT",
       body: body ? JSON.stringify(body) : undefined,
     }),
 
   patch: <T>(endpoint: string, body?: unknown, config?: ApiRequestConfig) =>
     apiRequest<T>(endpoint, {
       ...config,
-      method: 'PATCH',
+      method: "PATCH",
       body: body ? JSON.stringify(body) : undefined,
     }),
 
   delete: <T>(endpoint: string, config?: ApiRequestConfig) =>
-    apiRequest<T>(endpoint, { ...config, method: 'DELETE' }),
+    apiRequest<T>(endpoint, { ...config, method: "DELETE" }),
 
   /**
    * PUT request with FormData support (multipart/form-data)
    * The apiRequest function automatically handles Content-Type for FormData
    */
-  putFormData: <T>(endpoint: string, formData: FormData, config?: ApiRequestConfig) =>
+  putFormData: <T>(
+    endpoint: string,
+    formData: FormData,
+    config?: ApiRequestConfig,
+  ) =>
     apiRequest<T>(endpoint, {
       ...config,
-      method: 'PUT',
+      method: "PUT",
       body: formData,
     }),
 
   /**
    * POST request with FormData support (multipart/form-data)
    */
-  postFormData: <T>(endpoint: string, formData: FormData, config?: ApiRequestConfig) =>
+  postFormData: <T>(
+    endpoint: string,
+    formData: FormData,
+    config?: ApiRequestConfig,
+  ) =>
     apiRequest<T>(endpoint, {
       ...config,
-      method: 'POST',
+      method: "POST",
       body: formData,
     }),
 };

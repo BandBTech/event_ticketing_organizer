@@ -11,16 +11,19 @@ class TokenManager {
    * @param refreshToken - Refresh token from API
    * @param rememberMe - If true, tokens persist across browser sessions (7 days). If false, tokens are session-only.
    */
-  setTokens(accessToken: string, refreshToken: string, rememberMe: boolean = false): void {
+  setTokens(
+    accessToken: string,
+    refreshToken: string,
+    rememberMe: boolean = false,
+  ): void {
     const cookieOptions: Cookies.CookieAttributes = {
-      path: '/',
-      ...(rememberMe ? { expires: 7 } : {})
+      path: "/",
+      ...(rememberMe ? { expires: 7 } : {}),
     };
 
     Cookies.set(ACCESS_TOKEN_KEY, accessToken, cookieOptions);
     Cookies.set(REFRESH_TOKEN_KEY, refreshToken, cookieOptions);
-    Cookies.set(REMEMBER_ME_KEY, rememberMe ? 'true' : 'false', cookieOptions);
-
+    Cookies.set(REMEMBER_ME_KEY, rememberMe ? "true" : "false", cookieOptions);
   }
 
   /**
@@ -41,7 +44,13 @@ class TokenManager {
    * Check if "Remember Me" was enabled
    */
   isRememberMeEnabled(): boolean {
-    return Cookies.get(REMEMBER_ME_KEY) === 'true';
+    return Cookies.get(REMEMBER_ME_KEY) === "true";
+  }
+
+  private onLogoutCallback: (() => void) | null = null;
+
+  setLogoutCallback(callback: () => void) {
+    this.onLogoutCallback = callback;
   }
 
   /**
@@ -51,25 +60,32 @@ class TokenManager {
     Cookies.remove(ACCESS_TOKEN_KEY);
     Cookies.remove(REFRESH_TOKEN_KEY);
     Cookies.remove(REMEMBER_ME_KEY);
+
+    if (this.onLogoutCallback) {
+      this.onLogoutCallback();
+    }
   }
 
   hasTokens(): boolean {
     return !!(this.getAccessToken() && this.getRefreshToken());
   }
 
-  decodeToken(token: string): { exp?: number;[key: string]: unknown } | null {
+  decodeToken(token: string): { exp?: number; [key: string]: unknown } | null {
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const jsonPayload = decodeURIComponent(
         atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
       );
-      return JSON.parse(jsonPayload) as { exp?: number;[key: string]: unknown };
+      return JSON.parse(jsonPayload) as {
+        exp?: number;
+        [key: string]: unknown;
+      };
     } catch (error) {
-      console.error('Error decoding token:', error);
+      console.error("Error decoding token:", error);
       return null;
     }
   }
@@ -83,7 +99,7 @@ class TokenManager {
     const currentTime = Date.now();
     const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
 
-    return currentTime >= (expirationTime - bufferTime);
+    return currentTime >= expirationTime - bufferTime;
   }
 
   getTokenExpiry(token: string): number | null {

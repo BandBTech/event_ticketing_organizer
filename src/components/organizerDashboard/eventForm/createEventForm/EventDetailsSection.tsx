@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Editor } from "@/components/blocks/rte/editor";
-import CategoryTagsSelector from "../../CategoryTagsSelector";
+import CategoryTagsSelector from "@/components/organizerDashboard/CategoryTagsSelector";
 import { cn } from "@/lib/utils";
 
 interface EventDetailsSectionProps {
@@ -32,6 +32,7 @@ interface EventDetailsSectionProps {
   isEditing?: boolean;
   eventId?: string;
   initialDescription?: string;
+  onTagsChange?: (tags: string[]) => void;
 }
 
 export function EventDetailsSection({
@@ -48,6 +49,7 @@ export function EventDetailsSection({
   isEditing = false,
   eventId,
   initialDescription = "",
+  onTagsChange,
 }: EventDetailsSectionProps) {
   const { t } = useTranslation();
 
@@ -132,13 +134,17 @@ export function EventDetailsSection({
                   <FormControl>
                     <CategoryTagsSelector
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        onTagsChange?.(newValue);
+                      }}
                       placeholder={t("event.placeholder.categoryTags", "Enter category tags separated by commas")}
                       maxTags={5}
                       maxChars={50}
                       className="min-h-13 md:text-md"
                       error={!!fieldState.error}
                     />
+                    {console.log("Date: ", new Date().toISOString(), "Tags Field State Error:", fieldState.error)}
                   </FormControl>
                   <div className="flex justify-between items-start -mt-1 min-h-[20px]">
                     <TranslatedFormMessage t={t} className="mt-0" />

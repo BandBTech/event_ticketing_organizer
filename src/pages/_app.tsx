@@ -23,7 +23,7 @@ import nprogress from "nprogress";
 import "nprogress/nprogress.css";
 
 // Configure nprogress
-nprogress.configure({ showSpinner: true });
+nprogress.configure({ showSpinner: false });
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();

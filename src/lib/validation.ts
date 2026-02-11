@@ -347,110 +347,232 @@ export const createPromoCodeSchema = (t: (key: string, fallback?: string, params
   }
 });
 
-export const createEventSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
-  .object({
-    name: z.string()
-      .min(1, t('event.validation.titleRequired', "Event Title is required."))
-      .max(EVENT_TITLE_MAX, t('event.validation.titleMaxLength', "Event Title must be under {max} characters.", { max: EVENT_TITLE_MAX.toString() })),
-    description: z.string()
-      .min(1, t('event.validation.descriptionRequired', "Event Description is required."))
-      .max(EVENT_DESC_MAX, t('event.validation.descriptionMaxLength', "Event Description must be under {max} characters.", { max: EVENT_DESC_MAX.toString() })),
-    tags: z.array(z.string()).min(1, t('event.validation.tagsRequired', "At least one Tag is required.")),
-    image: z.string().min(1, t('event.validation.imageRequired', "Banner Image is required.")),
-    venue: z.string()
-      .min(1, t('event.validation.venueRequired', "Venue Name is required."))
-      .max(VENUE_NAME_MAX, t('event.validation.venueMaxLength', "Venue Name must be under {max} characters.", { max: VENUE_NAME_MAX.toString() })),
-    venueAddress: z.string()
-      .min(1, t('event.validation.venueAddressRequired', "Venue Address is required."))
-      .max(VENUE_ADDRESS_MAX, t('event.validation.venueAddressMaxLength', "Venue Address must be under {max} characters.", { max: VENUE_ADDRESS_MAX.toString() })),
-    capacity: createRequiredNumberSchema(
-      t,
-      'event.field.capacity:Capacity',
-      1,
-      MAX_CAPACITY,
-    ),
-    timezone: z.string().min(1, t('event.validation.timezoneRequired', "Timezone is required.")),
-    startDate: createRequiredDateSchema(t, 'event.field.startDateTime:Event Start Date'),
-    endDate: createRequiredDateSchema(t, 'event.field.endDateTime:Event End Date'),
-    tickets: z.array(createTicketSchema(t)).min(1, t('event.validation.ticketsRequired', "At least one Ticket is required.")),
-    promoCodes: z.array(createPromoCodeSchema(t)).optional(),
-  })
-  .refine((data) => {
-    if (!data.endDate || !data.startDate) return true;
-    return new Date(data.endDate) > new Date(data.startDate);
-  }, {
-    message: t('event.validation.endDateAfterStart', "Event End Date must be after Event Start Date."),
-    path: ["endDate"],
-  })
-  .superRefine((data, ctx) => {
-    // Validate that each ticket's sales dates are not after the event start date
-    if (!data.startDate) return;
-    const eventStartDate = new Date(data.startDate);
+export const createEventSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z
+    .object({
+      name: z
+        .string()
+        .min(1, t("event.validation.titleRequired", "Event Title is required."))
+        .max(
+          EVENT_TITLE_MAX,
+          t(
+            "event.validation.titleMaxLength",
+            "Event Title must be under {max} characters.",
+            { max: EVENT_TITLE_MAX.toString() },
+          ),
+        ),
+      description: z
+        .string()
+        .min(
+          1,
+          t(
+            "event.validation.descriptionRequired",
+            "Event Description is required.",
+          ),
+        )
+        .max(
+          EVENT_DESC_MAX,
+          t(
+            "event.validation.descriptionMaxLength",
+            "Event Description must be under {max} characters.",
+            { max: EVENT_DESC_MAX.toString() },
+          ),
+        ),
+      tags: z
+        .array(z.string())
+        .min(
+          1,
+          t("event.validation.tagsRequired", "At least one Tag is required."),
+        ),
+      image: z
+        .string()
+        .min(
+          1,
+          t("event.validation.imageRequired", "Banner Image is required."),
+        ),
+      venue: z
+        .string()
+        .min(1, t("event.validation.venueRequired", "Venue Name is required."))
+        .max(
+          VENUE_NAME_MAX,
+          t(
+            "event.validation.venueMaxLength",
+            "Venue Name must be under {max} characters.",
+            { max: VENUE_NAME_MAX.toString() },
+          ),
+        ),
+      venueAddress: z
+        .string()
+        .min(
+          1,
+          t(
+            "event.validation.venueAddressRequired",
+            "Venue Address is required.",
+          ),
+        )
+        .max(
+          VENUE_ADDRESS_MAX,
+          t(
+            "event.validation.venueAddressMaxLength",
+            "Venue Address must be under {max} characters.",
+            { max: VENUE_ADDRESS_MAX.toString() },
+          ),
+        ),
+      capacity: createRequiredNumberSchema(
+        t,
+        "event.field.capacity:Capacity",
+        1,
+        MAX_CAPACITY,
+      ),
+      timezone: z
+        .string()
+        .min(
+          1,
+          t("event.validation.timezoneRequired", "Timezone is required."),
+        ),
+      startDate: createRequiredDateSchema(
+        t,
+        "event.field.startDateTime:Event Start Date",
+      ),
+      endDate: createRequiredDateSchema(
+        t,
+        "event.field.endDateTime:Event End Date",
+      ),
+      tickets: z
+        .array(createTicketSchema(t))
+        .min(
+          1,
+          t(
+            "event.validation.ticketsRequired",
+            "At least one Ticket is required.",
+          ),
+        ),
+      promoCodes: z.array(createPromoCodeSchema(t)).optional(),
+    })
+    .refine(
+      (data) => {
+        if (!data.endDate || !data.startDate) return true;
+        return new Date(data.endDate) > new Date(data.startDate);
+      },
+      {
+        message: t(
+          "event.validation.endDateAfterStart",
+          "Event End Date must be after Event Start Date.",
+        ),
+        path: ["endDate"],
+      },
+    )
+    .superRefine((data, ctx) => {
+      // Validate that each ticket's sales dates are not after the event start date
+      if (!data.startDate) return;
+      const eventStartDate = new Date(data.startDate);
 
-    data.tickets.forEach((ticket, index) => {
-      // Sales start date should not be after event start date
-      if (ticket.salesStart) {
-        const salesStartDate = new Date(ticket.salesStart);
-        if (salesStartDate > eventStartDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('event.validation.salesStartBeforeEventStart', "Sales Start Date cannot be after Event Start Date."),
-            path: ["tickets", index, "salesStart"],
-          });
+      data.tickets.forEach((ticket, index) => {
+        // Sales start date should not be after event start date
+        if (ticket.salesStart) {
+          const salesStartDate = new Date(ticket.salesStart);
+          if (salesStartDate > eventStartDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t(
+                "event.validation.salesStartBeforeEventStart",
+                "Sales Start Date cannot be after Event Start Date.",
+              ),
+              path: ["tickets", index, "salesStart"],
+            });
+          }
         }
+
+        // Sales end date should not be after event start date
+        if (ticket.salesEnd) {
+          const salesEndDate = new Date(ticket.salesEnd);
+          if (salesEndDate > eventStartDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t(
+                "event.validation.salesEndBeforeEventStart",
+                "Sales End Date cannot be after Event Start Date.",
+              ),
+              path: ["tickets", index, "salesEnd"],
+            });
+          }
+        }
+      });
+
+      // Check for duplicate promo codes
+      if (data.promoCodes && data.promoCodes.length > 0) {
+        const codes = data.promoCodes.map((p, i) => ({
+          code: p.code,
+          index: i,
+        }));
+        const seen = new Set();
+
+        codes.forEach(({ code, index }) => {
+          if (!code) return;
+          const normalizedCode = code.trim().toUpperCase();
+          if (seen.has(normalizedCode)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t(
+                "event.validation.duplicatePromoCode",
+                "Promo Code must be unique.",
+              ),
+              path: ["promoCodes", index, "code"],
+            });
+          }
+          seen.add(normalizedCode);
+        });
       }
 
-      // Sales end date should not be after event start date
-      if (ticket.salesEnd) {
-        const salesEndDate = new Date(ticket.salesEnd);
-        if (salesEndDate > eventStartDate) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('event.validation.salesEndBeforeEventStart', "Sales End Date cannot be after Event Start Date."),
-            path: ["tickets", index, "salesEnd"],
-          });
-        }
+      // Check for duplicate tier names
+      if (data.tickets && data.tickets.length > 0) {
+        const names = data.tickets.map((t, i) => ({ name: t.name, index: i }));
+        const seenNames = new Set();
+
+        names.forEach(({ name, index }) => {
+          if (!name) return;
+          const normalizedName = name.trim().toLowerCase();
+          if (seenNames.has(normalizedName)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t(
+                "event.validation.duplicateTierName",
+                "Tier Name must be unique.",
+              ),
+              path: ["tickets", index, "name"],
+            });
+          }
+          seenNames.add(normalizedName);
+        });
+      }
+
+      // Check for duplicate tags
+      if (data.tags && data.tags.length > 0) {
+        const tags = data.tags.map((tag, i) => ({ tag, index: i }));
+        const seenTags = new Set();
+
+        tags.forEach(({ tag, index }) => {
+          if (!tag) return;
+          const normalizedTag = tag.trim().toLowerCase();
+          if (seenTags.has(normalizedTag)) {
+            console.log("Duplicate tag found:", normalizedTag);
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t("event.validation.duplicateTag", "Tag already exists"),
+              path: ["tags"], // Attach error to the field itself to be displayed by TranslatedFormMessage
+            });
+          }
+          seenTags.add(normalizedTag);
+        });
       }
     });
 
-    // Check for duplicate promo codes
-    if (data.promoCodes && data.promoCodes.length > 0) {
-      const codes = data.promoCodes.map((p, i) => ({ code: p.code, index: i }));
-      const seen = new Set();
-
-      codes.forEach(({ code, index }) => {
-        if (!code) return;
-        const normalizedCode = code.trim().toUpperCase();
-        if (seen.has(normalizedCode)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('event.validation.duplicatePromoCode', "Promo Code must be unique."),
-            path: ["promoCodes", index, "code"],
-          });
-        }
-        seen.add(normalizedCode);
-      });
-    }
-
-    // Check for duplicate tier names
-    if (data.tickets && data.tickets.length > 0) {
-      const names = data.tickets.map((t, i) => ({ name: t.name, index: i }));
-      const seenNames = new Set();
-
-      names.forEach(({ name, index }) => {
-        if (!name) return;
-        const normalizedName = name.trim().toLowerCase();
-        if (seenNames.has(normalizedName)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t('event.validation.duplicateTierName', "Tier Name must be unique."),
-            path: ["tickets", index, "name"],
-          });
-        }
-        seenNames.add(normalizedName);
-      });
-    }
-  });
 
 export const createTierTemplateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   template_name: z.string()

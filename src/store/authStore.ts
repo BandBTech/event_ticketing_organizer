@@ -20,9 +20,14 @@ interface AuthStore {
   fetchProfile: () => Promise<void>;
   fetchOrganizerProfile: () => Promise<void>;
   clearError: () => void;
+  resetState: () => void;
   checkAuth: () => void;
   checkOrganizerCompletion: () => Promise<void>;
-  updateOrganizerProfile: (data: { business_name: string; business_description?: string; business_logo?: File }) => Promise<void>;
+  updateOrganizerProfile: (data: {
+    business_name: string;
+    business_description?: string;
+    business_logo?: File;
+  }) => Promise<void>;
   hasRole: (role: string) => boolean;
   hasPermission: (permission: string) => boolean;
   isOrganizerRejected: () => boolean;
@@ -50,18 +55,15 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       await authService.login(credentials, rememberMe);
 
       // Fetch user profile and organizer profile in parallel to avoid waterfall
-      await Promise.all([
-        get().fetchProfile(),
-        get().fetchOrganizerProfile(),
-      ]);
+      await Promise.all([get().fetchProfile(), get().fetchOrganizerProfile()]);
 
       // Check organizer completion status (depends on profile data)
       await get().checkOrganizerCompletion();
-
     } catch (error) {
-      const errorMessage = error instanceof AuthError
-        ? error.message
-        : 'Login failed. Please try again.';
+      const errorMessage =
+        error instanceof AuthError
+          ? error.message
+          : "Login failed. Please try again.";
 
       set({
         user: null,
@@ -122,7 +124,9 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         lastName: profile.last_name,
         phone: profile?.phone?.startsWith("+")
           ? profile?.phone
-          : (profile?.country_code && profile?.phone ? profile.country_code + profile.phone : profile?.phone),
+          : profile?.country_code && profile?.phone
+            ? profile.country_code + profile.phone
+            : profile?.phone,
         countryCode: profile.country_code,
         isEmailVerified: profile.is_email_verified,
         organizationId: profile.organization?.id || profile.organization_id,
@@ -140,9 +144,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         error: null,
       });
     } catch (error) {
-      const errorMessage = error instanceof AuthError
-        ? error.message
-        : 'Failed to fetch profile';
+      const errorMessage =
+        error instanceof AuthError ? error.message : "Failed to fetch profile";
 
       set({
         user: null,
@@ -169,7 +172,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
           user: {
             ...currentUser,
             organizationId: orgProfile.organizer_id,
-          }
+          },
         });
       }
     } catch (error) {
@@ -190,7 +193,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   },
 
   // Update organizer profile
-  updateOrganizerProfile: async (data: { business_name: string; business_description?: string; business_logo?: File }) => {
+  updateOrganizerProfile: async (data: {
+    business_name: string;
+    business_description?: string;
+    business_logo?: File;
+  }) => {
     try {
       await authService.updateOrganizerProfile(data);
       // Re-fetch organizer profile and check completion status after update
@@ -213,13 +220,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     const { user } = get();
     if (!user || !user.permissions) return false;
     // admin:full overrides everything
-    return user.permissions.includes('admin:full') || user.permissions.includes(permission);
+    return (
+      user.permissions.includes("admin:full") ||
+      user.permissions.includes(permission)
+    );
   },
 
   // Check if organizer is rejected
   isOrganizerRejected: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === 'rejected') {
+    if (user?.organizationInfo?.status === "rejected") {
       return true;
     }
     return false;
@@ -228,7 +238,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Check if organizer is pending
   isOrganizerPending: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === 'pending') {
+    if (user?.organizationInfo?.status === "pending") {
       return true;
     }
     return false;
@@ -237,7 +247,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Check if organizer is inactive
   isOrganizerInactive: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === 'inactive') {
+    if (user?.organizationInfo?.status === "inactive") {
       return true;
     }
     return false;
@@ -246,12 +256,29 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Get organization ID (primarily from organizer profile's organizer_id)
   getOrganizationId: () => {
     const { user, organizerProfile } = get();
-    return organizerProfile?.organizer_id || user?.organization?.id || user?.organizationId;
+    return (
+      organizerProfile?.organizer_id ||
+      user?.organization?.id ||
+      user?.organizationId
+    );
   },
 
   // Clear error
   clearError: () => {
     set({ error: null });
+  },
+
+  // Reset state (called when tokens are cleared)
+  resetState: () => {
+    set({
+      user: null,
+      organizerProfile: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null,
+      isOrganizerComplete: true,
+      _authChecked: true,
+    });
   },
 
   // Check authentication status on app load
@@ -291,7 +318,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     // Tokens are valid - fetch fresh profile data
     set({ isLoading: true });
 
-    get().fetchProfile()
+    get()
+      .fetchProfile()
       .then(() => get().fetchOrganizerProfile())
       .then(() => get().checkOrganizerCompletion())
       .catch(() => {
@@ -310,3 +338,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       });
   },
 }));
+
+// Register callback to reset store when tokens are cleared
+tokenManager.setLogoutCallback(() => {
+  useAuthStore.getState().resetState();
+});
