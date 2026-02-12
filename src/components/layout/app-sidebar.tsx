@@ -16,6 +16,7 @@ import {
   TicketIcon,
   UserIcon,
   UsersIcon,
+  WalletIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -67,6 +68,12 @@ export function AppSidebar() {
       label: t("navigation.users", "Users"),
       icon: UsersIcon,
       permission: PERMISSIONS.USER_READ
+    },
+    {
+      href: "/organizerDashboard/payouts",
+      label: t("navigation.payouts", "Payouts"),
+      icon: WalletIcon,
+      permission: PERMISSIONS.PAYOUT_READ
     },
     {
       href: "/organizerDashboard/settings",
@@ -180,7 +187,7 @@ export function AppSidebar() {
             <DropdownMenuTrigger asChild>
               <div
                 className={`flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors ${collapsed ? "justify-center" : ""
-                }`}
+                  }`}
               >
                 <div className="relative w-9 h-9 shrink-0">
                   <Image
@@ -224,6 +231,18 @@ export function AppSidebar() {
                   <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
                 </div>
               </div>
+
+              {/* Payouts */}
+              <DropdownMenuItem
+                onClick={() => {
+                  router.push("/organizerDashboard/payouts");
+                  setSidebarOpen(false);
+                }}
+                className="cursor-pointer"
+              >
+                <WalletIcon className="mr-2 h-4 w-4 text-gray-600" />
+                <span className="text-gray-700">{t("navigation.payouts", "Payouts")}</span>
+              </DropdownMenuItem>
 
               {/* Profile */}
               <DropdownMenuItem
