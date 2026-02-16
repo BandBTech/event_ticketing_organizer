@@ -44,10 +44,8 @@ export default function LoginForm() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { login, isAuthenticated, clearError } = useAuthStore();
+  const { login, isAuthenticated, clearError, user } = useAuthStore();
 
-  // Get user from auth store for role-based redirect
-  const { user } = useAuthStore();
 
   // Redirect if already authenticated - role-based
   useEffect(() => {

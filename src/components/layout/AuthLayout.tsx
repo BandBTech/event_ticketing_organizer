@@ -15,8 +15,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       try {
         if (authService.isAuthenticated()) {
           // Double check with profile to ensure token is actually valid for session
-          await authService.getProfile();
-          router.push("/organizerDashboard");
+          const profile = await authService.getProfile();
+          const userRoles = profile?.roles || [];
+          if (userRoles.includes('staff') || userRoles.includes('manager')) {
+            router.push("/staffDashboard");
+          } else {
+            router.push("/organizerDashboard");
+          }
         } else {
           setIsCheckingAuth(false);
         }
@@ -38,7 +43,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Auth Header */}
       <Header />
       {/* Main Auth Content */}
-      <main className="flex-grow grid">{children}</main>
+      <main className="grow grid">{children}</main>
       {/* Auth Footer */}
       <Footer />
     </div>
