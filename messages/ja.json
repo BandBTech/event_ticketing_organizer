@@ -383,7 +383,11 @@
       "discountPercentageRequired": "割引率は必須です。",
       "salesStart24Hrs": "販売開始日は今から 24 時間以上後である必要があります。",
       "salesEnd24Hrs": "販売終了日は今から 24 時間以上後である必要があります。",
-      "duplicateTag": "タグはすでに存在します"
+      "duplicateTag": "タグはすでに存在します",
+      "latitudeRange": "緯度は -90 ～ 90 でなければなりません。",
+      "longitudeRange": "経度は -180 ～ 180 である必要があります。",
+      "longitudeRequired": "経度は必須です。",
+      "latitudeRequired": "緯度は必須です。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -418,6 +422,10 @@
     },
     "status": {
       "on_sale": "セールスライブ"
+    },
+    "action": {
+      "enterAddress": "住所を入力してください",
+      "enterCoordinates": "座標を入力してください"
     }
   },
   "tierTemplates": {

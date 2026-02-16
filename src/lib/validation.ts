@@ -423,7 +423,54 @@ export const createEventSchema = (
             "Venue Address must be under {max} characters.",
             { max: VENUE_ADDRESS_MAX.toString() },
           ),
-        ),
+      )
+        .superRefine((val, ctx) => {
+          if (val.includes(",")) {
+            const [latStr, lngStr] = val.split(",").map((s) => s.trim());
+
+            if (!latStr) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t(
+                  "event.validation.latitudeRequired",
+                  "Latitude is required.",
+                ),
+              });
+            } else {
+              const lat = parseFloat(latStr);
+              if (isNaN(lat) || lat < -90 || lat > 90) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: t(
+                    "event.validation.latitudeRange",
+                    "Latitude must be between -90 and 90",
+                  ),
+                });
+              }
+            }
+
+            if (!lngStr) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t(
+                  "event.validation.longitudeRequired",
+                  "Longitude is required.",
+                ),
+              });
+            } else {
+              const lng = parseFloat(lngStr);
+              if (isNaN(lng) || lng < -180 || lng > 180) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: t(
+                    "event.validation.longitudeRange",
+                    "Longitude must be between -180 and 180",
+                  ),
+                });
+              }
+            }
+          }
+        }),
       capacity: createRequiredNumberSchema(
         t,
         "event.field.capacity:Capacity",

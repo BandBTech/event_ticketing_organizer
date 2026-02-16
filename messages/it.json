@@ -384,7 +384,11 @@
       "discountPercentageRequired": "La percentuale di sconto è obbligatoria.",
       "salesStart24Hrs": "La data di inizio delle vendite deve essere tra almeno 24 ore da adesso.",
       "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso.",
-      "duplicateTag": "L'etichetta esiste già"
+      "duplicateTag": "L'etichetta esiste già",
+      "latitudeRange": "La latitudine deve essere compresa tra -90 e 90.",
+      "longitudeRange": "La longitudine deve essere compresa tra -180 e 180.",
+      "longitudeRequired": "La longitudine è obbligatoria.",
+      "latitudeRequired": "La latitudine è richiesta."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -419,6 +423,10 @@
     },
     "status": {
       "on_sale": "Vendite in diretta"
+    },
+    "action": {
+      "enterAddress": "Inserisci l'indirizzo",
+      "enterCoordinates": "Inserisci le coordinate"
     }
   },
   "tierTemplates": {
