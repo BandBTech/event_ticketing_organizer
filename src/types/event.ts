@@ -34,6 +34,7 @@ export interface Event {
   organizer_id: string;
   created_at: string;
   updated_at: string;
+  is_featured?: boolean;
 }
 
 export interface CreateEventTierRequest {
@@ -178,4 +179,70 @@ export interface EventSearchParams {
   limit?: number;
   search?: string;
   status?: string;
+}
+
+// Ticket Types
+export interface GuestUserResponse {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserResponse {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  profile_image?: string;
+  is_verified: boolean;
+  status: string;
+}
+
+export interface Attendee {
+  name: string;
+  email: string;
+  type: string;
+}
+
+export interface TicketResponse {
+  id: string;
+  event_id: string;
+  user_id?: string;
+  guest_user_id?: string;
+  ticket_number: string;
+  qr_data: string;
+  status: string; // 'valid', 'used', 'cancelled', 'refunded'
+  purchase_date: string;
+  price: number;
+  currency: string;
+  check_in_time?: string;
+  check_out_time?: string;
+  checked_in_by?: string;
+  checked_out_by?: string;
+  checked_in_count: number;
+  tier_id: string;
+  tier_name?: string;
+  user?: UserResponse;
+  guest_user?: GuestUserResponse;
+  attendee?: Attendee;
+  quantity: number;
+  total_amount: number;
+  is_guest_purchase: boolean;
+  order_id: string;
+}
+
+export interface EventTicketsListResponse {
+  tickets: TicketResponse[];
+  pagination: {
+    has_next: boolean;
+    has_prev: boolean;
+    limit: number;
+    page: number;
+    total: number;
+    total_pages: number;
+  };
 }

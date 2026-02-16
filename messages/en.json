@@ -323,7 +323,9 @@
       "networkError": "Network error. Please check your connection.",
       "serverError": "Something went wrong. Please try again.",
       "passwordChangedLogin": "Please login with your new password.",
-      "resendFailed": "Failed to resend code. Please try again."
+      "resendFailed": "Failed to resend code. Please try again.",
+      "accountInactive": "Your account is inactive.",
+      "contactSupportToReactivate": "Please contact support to reactivate your account."
     },
     "passwordRequirements": {
       "minLength": "Must consist of at least 8 characters",
@@ -477,7 +479,8 @@
       "promoCodes": "Promo/Discount Codes",
       "ticketing": "Ticketing",
       "discountsPromo": "Discounts & Promo Codes",
-      "templates": "Templates"
+      "templates": "Templates",
+      "statusHistory": "Status History"
     },
     "button": {
       "pauseSales": "Pause Sales",
@@ -492,10 +495,10 @@
       "createNewTier": "Create New Tier"
     },
     "label": {
-      "totalSales": "Total Sales",
       "totalRevenue": "Total Revenue",
       "cancellationReason": "Reason for cancellation (minimum 10 characters)",
-      "stopSalesReason": "Reason (optional)"
+      "stopSalesReason": "Reason (optional)",
+      "totalSold": "Total Sold"
     },
     "text": {
       "noPromoCodes": "No promo codes configured for this event.",
@@ -537,7 +540,7 @@
       "titleMaxLength": "Event Title must be under {max} characters.",
       "descriptionRequired": "Event Description is required.",
       "descriptionMaxLength": "Event Description must be under {max} characters.",
-      "tagsRequired": "t least one Tag is required.",
+      "tagsRequired": "At least one Tag is required.",
       "imageRequired": "Banner Image is required.",
       "venueRequired": "Venue Name is required.",
       "venueMaxLength": "Venue Name must be under {max} characters.",
@@ -560,7 +563,10 @@
       "percentageDecimals": "Percentage can have at most 2 decimal places.",
       "salesStartBeforeEventStart": "Sales Start Date cannot be after Event Start Date.",
       "discountAmountRequired": "Discount Amount is required.",
-      "discountPercentageRequired": "Discount Percentage is required."
+      "discountPercentageRequired": "Discount Percentage is required.",
+      "salesStart24Hrs": "Sales Start Date must be at least 24 hours from now.",
+      "salesEnd24Hrs": "Sales End Date must be at least 24 hours from now.",
+      "duplicateTag": "Tag already exists"
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
@@ -582,11 +588,21 @@
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
-      "sales_ended": "Sales Ended"
+      "sales_ended": "Sales Ended",
+      "on_sale": "On Sale"
+    },
+    "analytics": {
+      "progress": "Sales Progress",
+      "sold": "Sold",
+      "revenue": "Revenue",
+      "ticketAnalytics": "Ticket Analytics"
     },
     "option": {
       "amountFixed": "Amount (Fixed)",
       "percentage": "Percentage (%)"
+    },
+    "status": {
+      "on_sale": "Sales Live"
     }
   },
   "tierTemplates": {

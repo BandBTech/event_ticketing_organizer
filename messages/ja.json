@@ -208,7 +208,9 @@
       "otpResent": "新しいコードがメールに送信されました",
       "resendFailed": "コードの再送信に失敗しました。\nもう一度試してください。",
       "signupSuccess": "アカウントが正常に作成されました。",
-      "signupError": "登録に失敗しました。\nもう一度試してください。"
+      "signupError": "登録に失敗しました。\nもう一度試してください。",
+      "accountInactive": "あなたのアカウントは非アクティブです。",
+      "contactSupportToReactivate": "アカウントを再開するにはサポートにお問い合わせください。"
     },
     "passwordRequirements": {
       "minLength": "8文字以上で構成する必要があります",
@@ -295,7 +297,8 @@
       "promoCodes": "プロモーション/割引コード",
       "ticketing": "発券業務",
       "discountsPromo": "割引",
-      "templates": "テンプレート"
+      "templates": "テンプレート",
+      "statusHistory": "ステータス履歴"
     },
     "button": {
       "pauseSales": "販売の一時停止",
@@ -310,10 +313,10 @@
       "createNewTier": "新しい階層の作成"
     },
     "label": {
-      "totalSales": "総売上高",
       "totalRevenue": "総収益",
       "cancellationReason": "キャンセル理由（最低10文字）",
-      "stopSalesReason": "理由（任意）"
+      "stopSalesReason": "理由（任意）",
+      "totalSold": "総販売数"
     },
     "text": {
       "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
@@ -377,7 +380,10 @@
       "percentageDecimals": "パーセンテージは小数点以下 2 桁までです。",
       "salesStartBeforeEventStart": "販売開始日をイベント開始日以降にすることはできません。",
       "discountAmountRequired": "割引金額は必須です。",
-      "discountPercentageRequired": "割引率は必須です。"
+      "discountPercentageRequired": "割引率は必須です。",
+      "salesStart24Hrs": "販売開始日は今から 24 時間以上後である必要があります。",
+      "salesEnd24Hrs": "販売終了日は今から 24 時間以上後である必要があります。",
+      "duplicateTag": "タグはすでに存在します"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -400,11 +406,18 @@
       "stopped": "販売停止",
       "sold_out": "完売",
       "sales_ended": "販売終了",
-      "rejected": "拒否されました"
+      "rejected": "拒否されました",
+      "on_sale": "販売中"
     },
     "option": {
       "amountFixed": "金額（固定）",
       "percentage": "パーセンテージ (%)"
+    },
+    "analytics": {
+      "ticketAnalytics": "チケット分析"
+    },
+    "status": {
+      "on_sale": "セールスライブ"
     }
   },
   "tierTemplates": {

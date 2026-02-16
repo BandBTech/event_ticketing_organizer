@@ -208,7 +208,9 @@
       "otpResent": "Nuovo codice inviato alla tua email",
       "resendFailed": "Impossibile inviare nuovamente il codice. \nPer favore riprova.",
       "signupSuccess": "Account creato con successo!",
-      "signupError": "La registrazione non è riuscita. \nPer favore riprova."
+      "signupError": "La registrazione non è riuscita. \nPer favore riprova.",
+      "accountInactive": "Il tuo account è inattivo.",
+      "contactSupportToReactivate": "Contatta l'assistenza per riattivare il tuo account."
     },
     "passwordRequirements": {
       "minLength": "Deve essere composto da almeno 8 caratteri",
@@ -295,7 +297,8 @@
       "promoCodes": "Codici promozionali/sconto",
       "ticketing": "biglietteria",
       "discountsPromo": "Sconti",
-      "templates": "Modelli"
+      "templates": "Modelli",
+      "statusHistory": "Cronologia dello stato"
     },
     "button": {
       "pauseSales": "Metti in pausa le vendite",
@@ -310,10 +313,10 @@
       "createNewTier": "Crea nuovo livello"
     },
     "label": {
-      "totalSales": "Vendite totali",
       "totalRevenue": "Entrate totali",
       "cancellationReason": "Motivo della cancellazione (minimo 10 caratteri)",
-      "stopSalesReason": "Motivo (facoltativo)"
+      "stopSalesReason": "Motivo (facoltativo)",
+      "totalSold": "Totale venduto"
     },
     "text": {
       "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
@@ -378,7 +381,10 @@
       "percentageDecimals": "La percentuale può avere al massimo 2 cifre decimali.",
       "salesStartBeforeEventStart": "La data di inizio delle vendite non può essere successiva alla data di inizio dell'evento.",
       "discountAmountRequired": "L'importo dello sconto è obbligatorio.",
-      "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
+      "discountPercentageRequired": "La percentuale di sconto è obbligatoria.",
+      "salesStart24Hrs": "La data di inizio delle vendite deve essere tra almeno 24 ore da adesso.",
+      "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso.",
+      "duplicateTag": "L'etichetta esiste già"
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -401,11 +407,18 @@
       "paused": "Vendite sospese",
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
-      "sales_ended": "Vendite terminate"
+      "sales_ended": "Vendite terminate",
+      "on_sale": "In vendita"
     },
     "option": {
       "amountFixed": "Importo (fisso)",
       "percentage": "Percentuale (%)"
+    },
+    "analytics": {
+      "ticketAnalytics": "Analisi dei biglietti"
+    },
+    "status": {
+      "on_sale": "Vendite in diretta"
     }
   },
   "tierTemplates": {

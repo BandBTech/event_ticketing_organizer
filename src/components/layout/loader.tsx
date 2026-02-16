@@ -1,3 +1,5 @@
+"use client";
+
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
 import { SpinnerIcon } from "@phosphor-icons/react";
@@ -56,6 +58,19 @@ export function useLoading(initialState = false) {
     stopLoading,
     toggleLoading
   };
+}
+
+export function PageLoader({ text = "Loading..." }: { text?: string }) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+  return (
+    <div className="flex min-h-[50vh] w-full items-center justify-center bg-gray-50/50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-sm text-muted-foreground">{t("common.loading", text)}</p>
+      </div>
+    </div>
+  );
 }
 
 
