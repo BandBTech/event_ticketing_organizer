@@ -38,14 +38,13 @@ export interface PayoutRequest {
   updated_at: string;
   // Expanded fields
   event?: {
-    id: string;
+    id: string; // Changed from id to match usual API response patterns if specific fields are returned
     title: string;
+    // Add other fields if returned by API, currently assumed based on typical expansion
   };
   organizer?: {
     id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
+    // Add other fields if returned by API
   };
 }
 
