@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/image-uploader";
-import { Editor } from "@/components/blocks/rte/editor";
+import { Editor } from "@/components/editor/editor";
 import CategoryTagsSelector from "@/components/organizerDashboard/CategoryTagsSelector";
 import { cn } from "@/lib/utils";
 

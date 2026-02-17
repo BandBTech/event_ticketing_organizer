@@ -10,7 +10,7 @@ const useSearchParams = () => {
 const usePathname = () => useRouter().pathname;
 
 import React, { useMemo } from "react";
-import { useUser } from "@/contexts/UserContext";
+import { useUser } from "@/components/organizerDashboard/users/UserContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/organizerDashboard/LanguageSelector";
 import { useAuthStore } from "@/store/authStore";
@@ -56,6 +56,8 @@ export default function DashboardHeader() {
     { prefix: "/organizerDashboard/reports", title: t("navigation.reports", "Reports") },
     { prefix: "/organizerDashboard/users", title: t("navigation.users", "Users") },
     { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
+    { prefix: "/staffDashboard/events", title: "Events" }, // Staff Events
+    { prefix: "/staffDashboard", title: "", isDynamic: true }, // Staff Dashboard Dynamic greeting
   ], [t]);
 
   // Dynamic greeting for dashboard
@@ -80,7 +82,7 @@ export default function DashboardHeader() {
   // Use edit title if in edit mode and available, or dynamic greeting for dashboard
   const headerText = (isActuallyEditing || isEditMode)
     ? (t("event.editEvent", "Edit Event"))
-    : matched?.isDynamic && matched.prefix === "/organizerDashboard"
+    : matched?.isDynamic && (matched.prefix === "/organizerDashboard" || matched.prefix === "/staffDashboard")
       ? dynamicGreeting
       : (matched?.title ?? "Dashboard");
 
@@ -90,7 +92,8 @@ export default function DashboardHeader() {
 
   // Don't show create button when editing an event, or if no organization, or if organizer is restricted
   const isOrganizerRestricted = isOrganizerRejected() || isOrganizerPending() || isOrganizerInactive();
-  const showCreateButton = !isOrganizerRestricted && (isEventsPage || isDashboard) && !isEditMode && !!orgId;
+  const isStaffDashboard = pathname.startsWith("/staffDashboard");
+  const showCreateButton = !isOrganizerRestricted && (isEventsPage || isDashboard) && !isEditMode && !!orgId && !isStaffDashboard;
   const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {

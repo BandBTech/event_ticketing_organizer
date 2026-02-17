@@ -45,11 +45,11 @@ export function LanguageSelector({ className }: LanguageSelectorProps) {
 				)}
 			>
 				<GlobeIcon size={16} className="text-gray-600" />
-				<span className="text-sm font-medium">{currentLang.name}</span>
+        <span className="text-sm font-medium max-md:hidden">{currentLang.name}</span>
 				<CaretDownIcon
 					size={12}
 					className={cn(
-						"text-gray-600 transition-transform duration-200",
+            "text-gray-600 transition-transform duration-200 max-md:hidden",
 						isOpen && "rotate-180"
 					)}
 				/>

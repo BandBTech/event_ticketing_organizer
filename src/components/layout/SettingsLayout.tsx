@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuthStore } from "@/store/authStore";
+import { usePermission } from "@/hooks/usePermission";
 import { Suspense } from "react";
 import { PageLoader } from "@/components/layout/loader";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -21,6 +22,7 @@ export default function SettingsLayout({
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { is } = usePermission();
 
   const menuItems = [
     {
@@ -46,6 +48,11 @@ export default function SettingsLayout({
   ];
 
   const filteredMenuItems = menuItems.filter(item => {
+    // Hide specialized settings for staff
+    if (is("staff") && ["/organizerDashboard/settings/organizer", "/organizerDashboard/settings/tiers"].includes(item.href)) {
+      return false;
+    }
+
     if (isOrganizerRejected() || isOrganizerPending() || isOrganizerInactive()) {
       return ["/organizerDashboard/settings/profile", "/organizerDashboard/settings/organizer", "/organizerDashboard/settings/security"].includes(item.href);
     }

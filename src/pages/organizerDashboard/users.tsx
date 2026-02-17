@@ -1,9 +1,9 @@
-"use client";
+
 
 import { useState, useMemo, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useUser, UserProvider } from "@/contexts/UserContext";
+import { useUser, UserProvider } from "@/components/organizerDashboard/users/UserContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { organizerUserService } from "@/services/organizerUserService";
 import { OrgUser, OrgUsersListResponse } from "@/types/organizerUser";
@@ -22,7 +22,7 @@ import Head from "next/head";
 // Icons
 import { Plus, Search, Users } from "lucide-react";
 import { ArrowLeftIcon, ArrowRightIcon, FunnelIcon } from "@phosphor-icons/react";
-import EventPagination from "@/components/organizerDashboard/EventPagination";
+
 
 // Permissions
 import { PermissionGuard } from "@/components/auth/PermissionGuard";

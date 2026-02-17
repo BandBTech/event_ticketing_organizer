@@ -599,5 +599,15 @@
     "fields": {
       "eventEndsOn": "イベント終了日"
     }
+  },
+  "staffDashboard": {
+    "readyToScan": "スキャンする準備はできましたか?",
+    "readyToScanDescription": "チケットのスキャンを開始して、イベントの参加者をチェックインします。",
+    "readyToScanButton": "チケットスキャンの開始"
+  },
+  "staffScanner": {
+    "cameraErrorDescription": "ブラウザの設定でカメラへのアクセスを許可し、ページを更新してください。",
+    "noCameraAccess": "カメラにアクセスできませんでした。\nカメラの許可を確認してください。",
+    "ticketNumber": "チケット"
   }
 }

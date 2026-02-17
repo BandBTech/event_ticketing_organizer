@@ -1,7 +1,7 @@
-"use client";
+
 
 import StaffDashboardHome from "@/components/staffDashboard/StaffDashboardHome";
-import StaffDashboardLayout from "@/components/layout/StaffDashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import Head from "next/head";
 
 export default function StaffDashboardPage() {
@@ -10,9 +10,9 @@ export default function StaffDashboardPage() {
       <Head>
         <title>Staff Dashboard | E-Ticket</title>
       </Head>
-      <StaffDashboardLayout>
+      <DashboardLayout>
         <StaffDashboardHome />
-      </StaffDashboardLayout>
+      </DashboardLayout>
     </>
   );
 }

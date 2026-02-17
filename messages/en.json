@@ -704,5 +704,15 @@
     "description": "Please provide your business details to start creating events.",
     "skipButton": "Skip for now",
     "saveButton": "Save & Continue"
+  },
+  "staffDashboard": {
+    "readyToScan": "Ready to Scan?",
+    "readyToScanDescription": "Start scanning tickets to check in attendees for the event.",
+    "readyToScanButton": "Start Ticket Scan"
+  },
+  "staffScanner": {
+    "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",
+    "noCameraAccess": "Failed to access camera. Please check camera permissions.",
+    "ticketNumber": "Ticket"
   }
 }

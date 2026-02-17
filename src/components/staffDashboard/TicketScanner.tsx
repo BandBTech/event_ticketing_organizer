@@ -21,7 +21,6 @@ import {
   XCircle,
   Keyboard,
   Camera,
-  X,
 } from '@phosphor-icons/react';
 
 interface TicketScannerProps {
@@ -33,7 +32,7 @@ interface TicketScannerProps {
 export default function TicketScanner({
   isOpen,
   onClose,
-  eventId,
+  // eventId,
 }: TicketScannerProps) {
   const [manualCode, setManualCode] = useState('');
   const [scanResult, setScanResult] = useState<{
@@ -73,9 +72,10 @@ export default function TicketScanner({
     });
   };
 
-  const handleQRScan = (result: any) => {
+  const handleQRScan = (result: unknown[]) => {
     if (result && result.length > 0) {
-      const scannedCode = result[0].rawValue;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const scannedCode = (result[0] as any).rawValue;
       handleScan(scannedCode);
     }
   };
@@ -90,7 +90,7 @@ export default function TicketScanner({
     }
   };
 
-  const handleCameraError = (error: any) => {
+  const handleCameraError = (error: unknown) => {
     console.error('Camera error:', error);
     setCameraError('Failed to access camera. Please check permissions or use manual entry.');
     setUseCameraScanner(false);

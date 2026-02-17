@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import DashboardHeader from "@/components/layout/dashboardHeader";
-import { UserProvider } from "@/contexts/UserContext";
+import { UserProvider } from "@/components/organizerDashboard/users/UserContext";
 import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { useSidebarResponsive } from "@/hooks/useSidebarResponsive";

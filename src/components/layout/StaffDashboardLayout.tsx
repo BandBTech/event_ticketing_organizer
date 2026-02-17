@@ -1,7 +1,10 @@
 "use client";
 
-import StaffSidebar from "@/components/staffDashboard/StaffSidebar";
-import StaffHeader from "@/components/staffDashboard/StaffHeader";
+import { Suspense } from "react";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import DashboardHeader from "@/components/layout/dashboardHeader";
+import { UserProvider } from "@/components/organizerDashboard/users/UserContext";
+import { CompleteProfileDialog } from "@/components/organizer/CompleteProfileDialog";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { useSidebarResponsive } from "@/hooks/useSidebarResponsive";
 
@@ -14,13 +17,24 @@ export default function StaffDashboardLayout({
 
   return (
     <ProtectedRoute role={["admin", "subadmin", "organizer", "manager", "staff"]} requireAll={false}>
-      <div className="flex min-h-screen bg-gray-50 overflow-hidden">
-        <StaffSidebar />
-        <div className="flex flex-col flex-1 transition-all duration-300 ">
-          <StaffHeader />
-          <main className="flex-1 overflow-auto p-4">{children}</main>
+      <UserProvider>
+        <div className=" flex h-screen overflow-hidden bg-gray-50/50">
+          {/* Sidebar */}
+          <AppSidebar />
+
+          {/* Main Content Area */}
+          <div className="flex flex-1 flex-col">
+            <header className="flex h-16 shrink-0 items-center gap-4 border-b px-6">
+              <Suspense fallback={<div className="flex-1" />}>
+                <DashboardHeader />
+              </Suspense>
+            </header>
+            <main className="flex-1 overflow-y-auto">{children}</main>
+          </div>
+
+          <CompleteProfileDialog />
         </div>
-      </div>
+      </UserProvider>
     </ProtectedRoute>
   );
 }

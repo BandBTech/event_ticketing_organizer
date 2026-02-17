@@ -11,6 +11,7 @@ import {
   CaretRightIcon,
   ChartLineIcon,
   GearIcon,
+  HouseIcon,
   SignOutIcon,
   SpeedometerIcon,
   TicketIcon,
@@ -37,36 +38,50 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const { can, canAny } = usePermission();
+  const { can, canAny, is } = usePermission();
   const { t } = useTranslation();
 
   const { isCollapsed: collapsed, toggleCollapse: onToggle, sidebarOpen, setSidebarOpen } = useUIStore();
 
 
   const navLinks = [
+    // Staff Links
+    {
+      href: "/staffDashboard",
+      label: "Home",
+      icon: HouseIcon,
+      permission: PERMISSIONS.PROFILE_VIEW,
+      role: "staff"
+    },
+
+    // Organizer Links
     {
       href: "/organizerDashboard",
       label: t("navigation.dashboard", "Dashboard"),
       icon: SpeedometerIcon,
-      permission: PERMISSIONS.PROFILE_VIEW
+      permission: PERMISSIONS.PROFILE_VIEW,
+      role: "organizer"
     },
     {
       href: "/organizerDashboard/event",
       label: t("navigation.events", "Events"),
       icon: CalendarStarIcon,
-      permission: PERMISSIONS.EVENT_READ
+      permission: PERMISSIONS.EVENT_READ,
+      role: "organizer"
     },
     {
       href: "/organizerDashboard/reports",
       label: t("navigation.reports", "Reports"),
       icon: ChartLineIcon,
-      permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY]
+      permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY],
+      role: "organizer"
     },
     {
       href: "/organizerDashboard/users",
       label: t("navigation.users", "Users"),
       icon: UsersIcon,
-      permission: PERMISSIONS.USER_READ
+      permission: PERMISSIONS.USER_READ,
+      role: "organizer"
     },
     {
       href: "/organizerDashboard/settings",
@@ -80,6 +95,11 @@ export function AppSidebar() {
     // If user is rejected, pending, or inactive, only allow dashboard and settings
     if (user && (useAuthStore.getState().isOrganizerRejected() || useAuthStore.getState().isOrganizerPending() || useAuthStore.getState().isOrganizerInactive())) {
       return ['/organizerDashboard', '/organizerDashboard/settings'].includes(link.href);
+    }
+
+    // Role check
+    if (link.role && !is(link.role)) {
+      return false;
     }
 
     if (!link.permission) return true;
@@ -148,7 +168,9 @@ export function AppSidebar() {
         <nav className="flex-1 py-4 px-2 space-y-1">
           {filteredNavLinks.map(({ href, label, icon: Icon }) => {
             // Check if current path matches or starts with the nav item path
-            const isActive = pathname === `${href}/` || (href !== "/organizerDashboard" && pathname.startsWith(href));
+            // specific handling for multiple dashboard roots
+            const isActive = pathname === href ||
+              (pathname.startsWith(`${href}/`) && href !== "/organizerDashboard" && href !== "/staffDashboard");
 
             return (
               <Link key={href} href={href} className="no-underline" onClick={() => setSidebarOpen(false)}>

@@ -38,14 +38,14 @@ export default function TicketTable({
   isLoading,
   pagination,
   onPageChange,
-  eventId,
+  // eventId,
 }: TicketTableProps) {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const checkInMutation = useCheckInTicket();
 
   const handleQuickCheckIn = (ticket: Ticket) => {
     if (ticket.checked_in) return;
-    
+
     checkInMutation.mutate({
       ticketId: ticket.id,
     });
@@ -61,7 +61,7 @@ export default function TicketTable({
     };
 
     const config = variants[status] || variants.valid;
-    
+
     return (
       <Badge variant={config.variant} className={config.className}>
         {status}

@@ -595,5 +595,15 @@
     "description": "Fornisci i dettagli della tua attività per iniziare a creare eventi.",
     "skipButton": "Salta per ora",
     "saveButton": "Salva e continua"
+  },
+  "staffDashboard": {
+    "readyToScan": "Pronto per la scansione?",
+    "readyToScanDescription": "Inizia a scansionare i biglietti per effettuare il check-in dei partecipanti all'evento.",
+    "readyToScanButton": "Avvia la scansione del biglietto"
+  },
+  "staffScanner": {
+    "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",
+    "noCameraAccess": "Impossibile accedere alla fotocamera. \nControlla i permessi della fotocamera.",
+    "ticketNumber": "Biglietto"
   }
 }
