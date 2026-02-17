@@ -54,10 +54,10 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       // tokenManager.setTokens is called inside authService.login
       await authService.login(credentials, rememberMe);
 
-      // Fetch user profile and organizer profile in parallel to avoid waterfall
-      await Promise.all([get().fetchProfile(), get().fetchOrganizerProfile()]);
-
-      // Check organizer completion status (depends on profile data)
+      // Fetch profile data sequentially to ensure state updates are applied in order
+      // fetchOrganizerProfile depends on user state being set by fetchProfile
+      await get().fetchProfile();
+      await get().fetchOrganizerProfile();
       await get().checkOrganizerCompletion();
     } catch (error) {
       const errorMessage =

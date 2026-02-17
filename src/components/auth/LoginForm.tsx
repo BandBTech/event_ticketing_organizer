@@ -44,14 +44,21 @@ export default function LoginForm() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { login, isAuthenticated, clearError } = useAuthStore();
+  const { login, isAuthenticated, clearError, user } = useAuthStore();
 
-  // Redirect if already authenticated
+
+  // Redirect if already authenticated - role-based
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/organizerDashboard");
+    if (isAuthenticated && user) {
+      const userRoles = user.roles || [];
+      // Staff and manager go to staff dashboard, others to organizer dashboard
+      if (userRoles.includes('staff') || userRoles.includes('manager')) {
+        router.push("/staffDashboard");
+      } else {
+        router.push("/organizerDashboard");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const loginFormSchema = useMemo(() => loginSchema((key, fallback, params) => key), []);
 
@@ -75,7 +82,14 @@ export default function LoginForm() {
     },
     onSuccess: () => {
       toast.success("auth.toast.loginSuccess", "Welcome back!");
-      router.push("/organizerDashboard");
+      // Role-based redirect after login
+      const currentUser = useAuthStore.getState().user;
+      const userRoles = currentUser?.roles || [];
+      if (userRoles.includes('staff') || userRoles.includes('manager')) {
+        router.push("/staffDashboard");
+      } else {
+        router.push("/organizerDashboard");
+      }
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {
