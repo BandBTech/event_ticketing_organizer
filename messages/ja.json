@@ -607,5 +607,27 @@
     "fields": {
       "eventEndsOn": "イベント終了日"
     }
+  },
+  "rte": {
+    "image": {
+      "invalid_type": "無効な画像タイプです。 \nPNG、JPG、WebP、または GIF をアップロードしてください。",
+      "size_exceeded": "画像サイズが {value} MB 制限を超えています。",
+      "dimensions_exceeded": "画像のサイズが {width} × {height} ピクセルを超えています。",
+      "failed_to_load": "画像の読み込みに失敗しました。\n別のファイルを試してください。"
+    },
+    "toolbar": {
+      "insert_link": "リンクを挿入",
+      "insert_link_description": "リンクしたいURLを入力してください",
+      "url": "URL",
+      "paragraph": "段落",
+      "heading_1": "見出し1",
+      "heading_2": "見出し2",
+      "heading_3": "見出し 3",
+      "toggle_bold": "太字に切り替える",
+      "toggle_italic": "斜体を切り替えます",
+      "toggle_underline": "下線の切り替え",
+      "toggle_strikethrough": "取り消し線の切り替え",
+      "toggle_code": "トグルコード"
+    }
   }
 }

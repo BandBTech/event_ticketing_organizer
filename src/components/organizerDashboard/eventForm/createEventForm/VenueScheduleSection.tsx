@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Control, useFormContext } from "react-hook-form";
+import { Control, FieldError, useFormContext } from "react-hook-form";
 import { EventFormData, VENUE_NAME_MAX, VENUE_ADDRESS_MAX } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
@@ -33,11 +33,11 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
 
   const venueAddress = watch("venueAddress");
 
-  const getCoordErrors = (error: any) => {
+  const getCoordErrors = (error?: FieldError) => {
     const messages: string[] = [];
     if (error?.message) messages.push(error.message);
     if (error?.types) {
-      Object.values(error.types).forEach((errs: any) => {
+      Object.values(error.types).forEach((errs) => {
         if (Array.isArray(errs)) messages.push(...errs);
         else if (typeof errs === "string") messages.push(errs);
       });

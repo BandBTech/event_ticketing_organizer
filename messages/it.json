@@ -603,5 +603,28 @@
     "description": "Fornisci i dettagli della tua attività per iniziare a creare eventi.",
     "skipButton": "Salta per ora",
     "saveButton": "Salva e continua"
+  },
+  "rte": {
+    "image": {
+      "invalid_type": "Tipo di immagine non valido. \nCarica PNG, JPG, WebP o GIF.",
+      "size_exceeded": "La dimensione dell'immagine supera il limite di {value} MB.",
+      "dimensions_exceeded": "Le dimensioni dell'immagine superano {width}×{height}px.",
+      "failed_to_load": "Impossibile caricare l'immagine. \nProva con un file diverso."
+    },
+    "toolbar": {
+      "insert_link": "Inserisci collegamento",
+      "insert_link_description": "Inserisci l'URL a cui vuoi collegarti",
+      "url": "URL",
+      "paragraph": "Paragrafo",
+      "heading_1": "Rubrica 1",
+      "heading_2": "Rubrica 2",
+      "heading_3": "Rubrica 3",
+      "quote": "Citazione",
+      "toggle_bold": "Attiva/disattiva grassetto",
+      "toggle_italic": "Attiva/disattiva corsivo",
+      "toggle_underline": "Attiva/disattiva la sottolineatura",
+      "toggle_strikethrough": "Attiva/disattiva barrato",
+      "toggle_code": "Attiva/disattiva il codice"
+    }
   }
 }

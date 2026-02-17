@@ -9,6 +9,7 @@ import {
   ParagraphNode,
   TextNode,
 } from "lexical"
+import { ImageNode } from "./image-node"
 
 export const nodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> =
   [
@@ -21,4 +22,5 @@ export const nodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> =
     LinkNode,
     AutoLinkNode,
     CodeNode,
+    ImageNode,
   ]
