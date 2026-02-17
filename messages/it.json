@@ -384,7 +384,11 @@
       "discountPercentageRequired": "La percentuale di sconto è obbligatoria.",
       "salesStart24Hrs": "La data di inizio delle vendite deve essere tra almeno 24 ore da adesso.",
       "salesEnd24Hrs": "La data di fine delle vendite deve essere tra almeno 24 ore da adesso.",
-      "duplicateTag": "L'etichetta esiste già"
+      "duplicateTag": "L'etichetta esiste già",
+      "latitudeRange": "La latitudine deve essere compresa tra -90 e 90.",
+      "longitudeRange": "La longitudine deve essere compresa tra -180 e 180.",
+      "longitudeRequired": "La longitudine è obbligatoria.",
+      "latitudeRequired": "La latitudine è richiesta."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -419,6 +423,10 @@
     },
     "status": {
       "on_sale": "Vendite in diretta"
+    },
+    "action": {
+      "enterAddress": "Inserisci l'indirizzo",
+      "enterCoordinates": "Inserisci le coordinate"
     }
   },
   "tierTemplates": {
@@ -604,6 +612,28 @@
   "staffScanner": {
     "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",
     "noCameraAccess": "Impossibile accedere alla fotocamera. \nControlla i permessi della fotocamera.",
-    "ticketNumber": "Biglietto"
+    "ticketNumber": "Biglietto",
+  "rte": {
+    "image": {
+      "invalid_type": "Tipo di immagine non valido. \nCarica PNG, JPG, WebP o GIF.",
+      "size_exceeded": "La dimensione dell'immagine supera il limite di {value} MB.",
+      "dimensions_exceeded": "Le dimensioni dell'immagine superano {width}×{height}px.",
+      "failed_to_load": "Impossibile caricare l'immagine. \nProva con un file diverso."
+    },
+    "toolbar": {
+      "insert_link": "Inserisci collegamento",
+      "insert_link_description": "Inserisci l'URL a cui vuoi collegarti",
+      "url": "URL",
+      "paragraph": "Paragrafo",
+      "heading_1": "Rubrica 1",
+      "heading_2": "Rubrica 2",
+      "heading_3": "Rubrica 3",
+      "quote": "Citazione",
+      "toggle_bold": "Attiva/disattiva grassetto",
+      "toggle_italic": "Attiva/disattiva corsivo",
+      "toggle_underline": "Attiva/disattiva la sottolineatura",
+      "toggle_strikethrough": "Attiva/disattiva barrato",
+      "toggle_code": "Attiva/disattiva il codice"
+    }
   }
 }

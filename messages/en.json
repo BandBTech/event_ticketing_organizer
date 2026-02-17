@@ -566,7 +566,11 @@
       "discountPercentageRequired": "Discount Percentage is required.",
       "salesStart24Hrs": "Sales Start Date must be at least 24 hours from now.",
       "salesEnd24Hrs": "Sales End Date must be at least 24 hours from now.",
-      "duplicateTag": "Tag already exists"
+      "duplicateTag": "Tag already exists",
+      "latitudeRange": "Latitude must be between -90 and 90.",
+      "longitudeRange": "Longitude must be between -180 and 180.",
+      "longitudeRequired": "Longitude is required.",
+      "latitudeRequired": "Latitude is required."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
@@ -603,6 +607,10 @@
     },
     "status": {
       "on_sale": "Sales Live"
+    },
+    "action": {
+      "enterAddress": "Enter address",
+      "enterCoordinates": "Enter coordinates"
     }
   },
   "tierTemplates": {
@@ -713,6 +721,28 @@
   "staffScanner": {
     "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",
     "noCameraAccess": "Failed to access camera. Please check camera permissions.",
-    "ticketNumber": "Ticket"
+    "ticketNumber": "Ticket",
+  "rte": {
+    "image": {
+      "invalid_type": "Invalid image type. Please upload PNG, JPG, WebP, or GIF.",
+      "size_exceeded": "Image size exceeds {value}MB limit.",
+      "dimensions_exceeded": "Image dimensions exceed {width}×{height}px.",
+      "failed_to_load": "Failed to load image. Please try a different file."
+    },
+    "toolbar": {
+      "insert_link": "Insert Link",
+      "insert_link_description": "Enter the URL you want to link to",
+      "url": "URL",
+      "paragraph": "Paragraph",
+      "heading_1": "Heading 1",
+      "heading_2": "Heading 2",
+      "heading_3": "Heading 3",
+      "quote": "Quote",
+      "toggle_bold": "Toggle bold",
+      "toggle_italic": "Toggle italic",
+      "toggle_underline": "Toggle underline",
+      "toggle_strikethrough": "Toggle strikethrough",
+      "toggle_code": "Toggle code"
+    }
   }
 }

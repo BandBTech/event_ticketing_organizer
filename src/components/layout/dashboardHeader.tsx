@@ -93,7 +93,7 @@ export default function DashboardHeader() {
   // Don't show create button when editing an event, or if no organization, or if organizer is restricted
   const isOrganizerRestricted = isOrganizerRejected() || isOrganizerPending() || isOrganizerInactive();
   const isStaffDashboard = pathname.startsWith("/staffDashboard");
-  const showCreateButton = !isOrganizerRestricted && (isEventsPage || isDashboard) && !isEditMode && !!orgId && !isStaffDashboard;
+  const showCreateButton = !isOrganizerRestricted && (isEventsPage) && !isEditMode && !!orgId && !isStaffDashboard;
   const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {
