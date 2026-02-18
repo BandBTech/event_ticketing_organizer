@@ -722,6 +722,14 @@
     "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",
     "noCameraAccess": "Failed to access camera. Please check camera permissions.",
     "ticketNumber": "Ticket",
+    "cameraErrorGeneric": "Failed to access camera.",
+    "cameraPermissionDenied": "Camera access denied. Please enable camera permissions in your browser settings.",
+    "noCameraFound": "No camera found on this device.",
+    "cameraInUse": "Camera is currently in use by another application or permission is denied.",
+    "cameraConstraints": "Camera constraints not satisfied.",
+    "insecureContext": "Camera access requires a secure context (HTTPS).",
+    "retryCameraAccess": "Retry Camera Access"
+  },
   "rte": {
     "image": {
       "invalid_type": "Invalid image type. Please upload PNG, JPG, WebP, or GIF.",

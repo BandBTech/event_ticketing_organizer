@@ -613,6 +613,14 @@
     "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",
     "noCameraAccess": "Impossibile accedere alla fotocamera. \nControlla i permessi della fotocamera.",
     "ticketNumber": "Biglietto",
+    "cameraErrorGeneric": "Impossibile accedere alla fotocamera.",
+    "cameraPermissionDenied": "Accesso alla telecamera negato. \nAbilita le autorizzazioni della fotocamera nelle impostazioni del browser.",
+    "noCameraFound": "Nessuna fotocamera trovata su questo dispositivo.",
+    "cameraInUse": "La fotocamera è attualmente utilizzata da un'altra applicazione o l'autorizzazione è negata.",
+    "cameraConstraints": "Vincoli della fotocamera non soddisfatti.",
+    "insecureContext": "L'accesso alla telecamera richiede un contesto sicuro (HTTPS).",
+    "retryCameraAccess": "Riprovare l'accesso alla fotocamera"
+  },
   "rte": {
     "image": {
       "invalid_type": "Tipo di immagine non valido. \nCarica PNG, JPG, WebP o GIF.",

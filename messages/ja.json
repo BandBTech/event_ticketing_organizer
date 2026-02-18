@@ -617,6 +617,13 @@
     "cameraErrorDescription": "ブラウザの設定でカメラへのアクセスを許可し、ページを更新してください。",
     "noCameraAccess": "カメラにアクセスできませんでした。\nカメラの許可を確認してください。",
     "ticketNumber": "チケット",
+    "cameraErrorGeneric": "カメラにアクセスできませんでした。",
+    "cameraPermissionDenied": "カメラへのアクセスが拒否されました。\nブラウザの設定でカメラの許可を有効にしてください。",
+    "cameraInUse": "カメラは現在別のアプリケーションによって使用されているか、許可が拒否されています。",
+    "cameraConstraints": "カメラの制約が満たされていません。",
+    "insecureContext": "カメラへのアクセスには安全なコンテキスト (HTTPS) が必要です。",
+    "retryCameraAccess": "カメラアクセスを再試行します"
+  },
   "rte": {
     "image": {
       "invalid_type": "無効な画像タイプです。 \nPNG、JPG、WebP、または GIF をアップロードしてください。",

@@ -75,8 +75,30 @@ export default function ScannerPage() {
 
   const handleCameraError = (error: unknown) => {
     console.error('Camera error:', error);
-    setCameraError(t('staffScanner.noCameraAccess', "Failed to access camera. Please check camera permissions."));
+
+    let errorMessage = t('staffScanner.cameraErrorGeneric', "Failed to access camera.");
+
+    if (error instanceof Error) {
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage = t('staffScanner.cameraPermissionDenied', "Camera access denied. Please enable camera permissions in your browser settings.");
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        errorMessage = t('staffScanner.noCameraFound', "No camera found on this device.");
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        errorMessage = t('staffScanner.cameraInUse', "Camera is currently in use by another application or permission is denied.");
+      } else if (error.name === 'OverconstrainedError') {
+        errorMessage = t('staffScanner.cameraConstraints', "Camera constraints not satisfied.");
+      }
+    }
+
+    setCameraError(errorMessage);
   };
+
+  // Check for secure context on mount
+  useState(() => {
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      setCameraError(t('staffScanner.insecureContext', "Camera access requires a secure context (HTTPS)."));
+    }
+  });
 
   return (
     <>
@@ -109,6 +131,9 @@ export default function ScannerPage() {
                         components={{
                           finder: false,
                         }}
+                        constraints={{
+                          facingMode: 'environment'
+                        }}
                         styles={{
                           container: {
                             width: '100vw',
@@ -139,15 +164,26 @@ export default function ScannerPage() {
                 </>
               ) : (
                 /* Camera Error Display */
-                <div className="space-y-4 max-md:p-6">
-                  <Alert variant="destructive" className='py-4.5'>
+                  <div className="space-y-4 max-md:p-6 text-center">
+                    <Alert variant="destructive" className='py-4.5 text-left'>
                     <XCircleIcon weight='duotone' size={20} />
                     <AlertDescription className='-mb-[3px] font-semibold'>{cameraError}</AlertDescription>
                   </Alert>
 
-                  <p className="text-center text-sm text-gray-600">
-                    {t('staffScanner.cameraErrorDescription')}
+                    <p className="text-sm text-gray-600">
+                      {t('staffScanner.cameraErrorDescription', 'Please ensure camera permissions are allowed in your browser settings.')}
                   </p>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCameraError(null);
+                        // Force remount of scanner component
+                        setTimeout(() => window.location.reload(), 100);
+                      }}
+                    >
+                      {t('staffScanner.retryCameraAccess', 'Retry Camera Access')}
+                    </Button>
                 </div>
               )}
 
