@@ -115,7 +115,66 @@
     "signIn": "Sign In",
     "organizeEvent": "Organize Event",
     "profile": "My Profile",
+    "payouts": "Payouts",
     "logout": "Logout"
+  },
+  "payouts": {
+    "title": "Payout Requests",
+    "requestPayout": "Request Payout",
+    "summary": {
+      "earnings": "Total Earnings",
+      "withdrawn": "Amount Withdrawn",
+      "pending": "Pending Requests",
+      "balance": "Available Balance"
+    },
+    "tabs": {
+      "all": "All Requests",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "paid": "Paid"
+    },
+    "table": {
+      "requestNumber": "Request #",
+      "amount": "Amount",
+      "type": "Type",
+      "status": "Status",
+      "date": "Date",
+      "description": "Description"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "paid": "Paid"
+    },
+    "type": {
+      "event_payout": "Event Payout",
+      "bulk_payout": "Bulk Payout"
+    },
+    "create": {
+      "title": "Create Payout Request",
+      "description": "Submit a request to withdraw your earnings.",
+      "amount": "Amount",
+      "amountPlaceholder": "Enter amount",
+      "type": "Request Type",
+      "typePlaceholder": "Select type",
+      "event": "Event",
+      "eventPlaceholder": "Select event",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Add notes...",
+      "submit": "Submit Request",
+      "cancel": "Cancel",
+      "validation": {
+        "amountRequired": "Amount is required",
+        "amountMin": "Amount must be greater than 0",
+        "typeRequired": "Request type is required"
+      }
+    },
+    "empty": {
+      "title": "No payout requests found",
+      "description": "You haven't made any payout requests yet."
+    }
   },
   "profile": {
     "title": "My Profile",

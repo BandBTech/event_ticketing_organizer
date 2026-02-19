@@ -38,7 +38,6 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { LoginFormData, loginSchema } from "@/lib/validation";
 
-
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -46,13 +45,12 @@ export default function LoginForm() {
   const { t } = useTranslation(locale);
   const { login, isAuthenticated, clearError, user } = useAuthStore();
 
-
   // Redirect if already authenticated - role-based
   useEffect(() => {
     if (isAuthenticated && user) {
       const userRoles = user.roles || [];
       // Staff and manager go to staff dashboard, others to organizer dashboard
-      if (userRoles.includes('staff') || userRoles.includes('manager')) {
+      if (userRoles.includes("staff") || userRoles.includes("manager")) {
         router.push("/staffDashboard");
       } else {
         router.push("/organizerDashboard");
@@ -60,7 +58,10 @@ export default function LoginForm() {
     }
   }, [isAuthenticated, user, router]);
 
-  const loginFormSchema = useMemo(() => loginSchema((key, fallback, params) => key), []);
+  const loginFormSchema = useMemo(
+    () => loginSchema((key, fallback, params) => key),
+    [],
+  );
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
@@ -77,7 +78,7 @@ export default function LoginForm() {
     mutationFn: async (data: LoginFormData) => {
       return login(
         { email: data.email, password: data.password },
-        data.rememberMe
+        data.rememberMe,
       );
     },
     onSuccess: () => {
@@ -85,7 +86,7 @@ export default function LoginForm() {
       // Role-based redirect after login
       const currentUser = useAuthStore.getState().user;
       const userRoles = currentUser?.roles || [];
-      if (userRoles.includes('staff') || userRoles.includes('manager')) {
+      if (userRoles.includes("staff") || userRoles.includes("manager")) {
         router.push("/staffDashboard");
       } else {
         router.push("/organizerDashboard");
@@ -94,33 +95,34 @@ export default function LoginForm() {
     onError: (error: Error) => {
       if (error instanceof AuthError) {
         switch (error.code) {
-          case "UNAUTHORIZED":
-            toast.error("", error.message || "Invalid email or password");
+          case "INVALID_CREDENTIALS":
+            toast.error(
+              "",
+              error.message || "Invalid email or password",
+              error.details,
+            );
             break;
           case "NETWORK_ERROR":
             toast.error(
               "auth.toast.networkError",
-              "Network error. Please check your connection."
+              "Network error. Please check your connection.",
             );
             break;
           case "INTERNAL_SERVER_ERROR":
-            toast.error(
-              "",
-              "Login failed.",
-              error.details
-            );
+            toast.error("", "Login failed.", error.details);
             break;
           case "ACCOUNT_INACTIVE":
             toast.error(
               "auth.toast.accountInactive",
               error.message || "Account is inactive. Please contact support.",
-              "auth.toast.contactSupportToReactivate"
+              "auth.toast.contactSupportToReactivate",
             );
             break;
           default:
             toast.error(
-              "auth.toast.loginError",
-              error.message || "Login failed. Please try again."
+              "",
+              error.message || "Login failed. Please try again.",
+              error.details,
             );
         }
       } else {
@@ -154,7 +156,10 @@ export default function LoginForm() {
 
               {/* Form with shadcn Form components */}
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   {/* Email Field */}
                   <FormField
                     control={form.control}
@@ -162,7 +167,7 @@ export default function LoginForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                           {t("auth.login.email", "Email")}
+                          {t("auth.login.email", "Email")}
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -181,11 +186,12 @@ export default function LoginForm() {
                               autoComplete="email"
                               placeholder={t(
                                 "auth.login.emailPlaceholder",
-                                "Enter email address"
+                                "Enter email address",
                               )}
                               className={cn(
                                 "h-12 pl-16 pr-4 login-input",
-                                form.formState.errors.email && "border-destructive"
+                                form.formState.errors.email &&
+                                  "border-destructive",
                               )}
                               {...field}
                             />
@@ -222,11 +228,12 @@ export default function LoginForm() {
                               autoComplete="current-password"
                               placeholder={t(
                                 "auth.login.passwordPlaceholder",
-                                "••••••••••••"
+                                "••••••••••••",
                               )}
                               className={cn(
                                 "h-12 pl-16 pr-16 login-input",
-                                form.formState.errors.password && "border-destructive"
+                                form.formState.errors.password &&
+                                  "border-destructive",
                               )}
                               {...field}
                             />
@@ -235,8 +242,14 @@ export default function LoginForm() {
                               onClick={() => setShowPassword(!showPassword)}
                               aria-label={
                                 showPassword
-                                  ? t("auth.login.hidePassword", "Hide password")
-                                  : t("auth.login.showPassword", "Show password")
+                                  ? t(
+                                      "auth.login.hidePassword",
+                                      "Hide password",
+                                    )
+                                  : t(
+                                      "auth.login.showPassword",
+                                      "Show password",
+                                    )
                               }
                               className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                             >
@@ -300,7 +313,7 @@ export default function LoginForm() {
                         "bg-blue-600 hover:bg-blue-700 text-white",
                         "shadow-lg hover:shadow-xl",
                         "disabled:opacity-50 disabled:cursor-not-allowed",
-                        loginMutation.isPending && "animate-pulse"
+                        loginMutation.isPending && "animate-pulse",
                       )}
                     >
                       {loginMutation.isPending

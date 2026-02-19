@@ -73,6 +73,19 @@ export const queryKeys = {
   },
 
   /**
+   * Payout query keys
+   */
+  payouts: {
+    /** Key for fetching all payout requests */
+    all: ['payouts'] as const,
+    /** Key for fetching payout requests list with filters */
+    list: (params: { page?: number; limit?: number; status?: string }) =>
+      ['payouts', 'list', params] as const,
+    /** Key for fetching payout summary */
+    summary: ['payouts', 'summary'] as const,
+  },
+
+  /**
    * Dashboard query keys
    */
   dashboard: {
