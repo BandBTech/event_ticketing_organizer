@@ -7,7 +7,10 @@ import {
   TicketScanResult,
   CheckInData,
   CheckOutData,
-  TicketValidationResult
+  TicketValidationResult,
+  TicketBulkCheckInRequest,
+  TicketBulkCheckOutRequest,
+  TicketBulkActionResult
 } from '@/types/ticket';
 
 /**
@@ -59,13 +62,18 @@ export class TicketService {
   }
 
   /**
-   * Scan a ticket QR code
-   * POST /organizer/tickets/scan
+   * Scan a ticket QR code (Check-in)
+   * POST /organizer/tickets/scan -> POST /organizer/tickets/checkin
    */
-  static async scanTicket(ticketCode: string): Promise<TicketScanResult> {
-    return await api.post<TicketScanResult>(
-      '/organizer/tickets/scan',
-      { ticket_code: ticketCode },
+  static async scanTicket(ticketCode: string, eventId?: string): Promise<TicketScanResult> {
+    const payload: { qr_code: string; event_id?: string } = { qr_code: ticketCode };
+    if (eventId) {
+      payload.event_id = eventId;
+    }
+
+    return await api.post<{ success: boolean; message: string; data?: any }>(
+      '/organizer/tickets/checkin',
+      payload,
       {
         requiresAuth: true,
       }
@@ -156,5 +164,37 @@ export class TicketService {
       valid: true,
       ticket,
     };
+  }
+
+  /**
+   * Bulk check-in tickets
+   * POST /organizer/tickets/bulk-checkin
+   */
+  static async bulkCheckIn(
+    data: TicketBulkCheckInRequest
+  ): Promise<TicketBulkActionResult> {
+    return await api.post<TicketBulkActionResult>(
+      '/organizer/tickets/bulk-checkin',
+      data,
+      {
+        requiresAuth: true,
+      }
+    );
+  }
+
+  /**
+   * Bulk check-out tickets
+   * POST /organizer/tickets/bulk-checkout
+   */
+  static async bulkCheckOut(
+    data: TicketBulkCheckOutRequest
+  ): Promise<TicketBulkActionResult> {
+    return await api.post<TicketBulkActionResult>(
+      '/organizer/tickets/bulk-checkout',
+      data,
+      {
+        requiresAuth: true,
+      }
+    );
   }
 }

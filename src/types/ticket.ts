@@ -86,3 +86,21 @@ export interface TicketValidationResult {
   ticket?: Ticket;
   reason?: string;
 }
+
+export interface TicketBulkCheckInRequest {
+  event_id: string;
+  qr_codes: string[];
+}
+
+export interface TicketBulkCheckOutRequest {
+  event_id: string;
+  qr_codes: string[];
+}
+
+export interface TicketBulkActionResult {
+  success: boolean;
+  message: string;
+  data?: {
+    [key: string]: any;
+  }[];
+}

@@ -11,8 +11,13 @@ import type {
   TicketsResponse,
   TicketScanResult,
   CheckInData,
-  CheckOutData
+  CheckOutData,
+  TicketBulkActionResult,
+  TicketBulkCheckInRequest,
+  TicketBulkCheckOutRequest
 } from '@/types/ticket';
+import { useTranslation } from './useTranslation';
+import { useLanguageStore } from '@/store/languageStore';
 
 /**
  * Hook for fetching tickets for a specific event
@@ -60,39 +65,39 @@ export function useTicketDetails(ticketId: string, enabled: boolean = true) {
  */
 export function useScanTicket() {
   const queryClient = useQueryClient();
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
-  return useMutation<TicketScanResult, Error, string>({
-    mutationFn: (ticketCode: string) => TicketService.scanTicket(ticketCode),
+  return useMutation<TicketScanResult, Error, { ticketCode: string; eventId?: string }>({
+    mutationFn: ({ ticketCode, eventId }) => TicketService.scanTicket(ticketCode, eventId),
     onSuccess: (data) => {
       if (data.success && data.ticket) {
         // Show success message
         toast.success(
           data.already_checked_in
-            ? 'Ticket already checked in'
-            : 'Ticket scanned successfully!',
-          data.message
+            ? "scanner.ticket_already_checked_in"
+            : "scanner.ticket_scanned_successfully",
+          data.already_checked_in
+            ? "Ticket already checked in."
+            : "Ticket scanned successfully.",
+          data.message || ""
         );
 
         // Update the ticket in cache if we have it
-        queryClient.setQueryData<Ticket>(
-          queryKeys.tickets.detail(data.ticket.id),
-          data.ticket
-        );
+        // queryClient.setQueryData<Ticket>(
+        //   queryKeys.tickets.detail(data.ticket.id),
+        //   data.ticket
+        // );
 
-        // Invalidate stats and list for the event
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tickets.stats(data.ticket.event_id),
-        });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tickets.list(data.ticket.event_id),
-        });
-      } else {
-        toast.error('Scan failed', data.message || data.error || 'Invalid ticket');
+        // // Invalidate stats and list for the event
+        // queryClient.invalidateQueries({
+        //   queryKey: queryKeys.tickets.stats(data.ticket.event_id),
+        // });
+        // queryClient.invalidateQueries({
+        //   queryKey: queryKeys.tickets.list(data.ticket.event_id),
+        // });
       }
-    },
-    onError: (error) => {
-      toast.error('Scan failed', error.message || 'Failed to scan ticket');
-    },
+    }
   });
 }
 
@@ -111,7 +116,7 @@ export function useCheckInTicket() {
     mutationFn: ({ ticketId, data }) =>
       TicketService.checkInTicket(ticketId, data),
     onSuccess: (updatedTicket) => {
-      toast.success('Check-in successful', 'Ticket checked in successfully');
+      toast.success("scanner.ticket_checked_in_successfully", "Ticket checked in successfully");
 
       // Update the ticket in cache
       queryClient.setQueryData<Ticket>(
@@ -166,6 +171,72 @@ export function useCheckOutTicket() {
     },
     onError: (error) => {
       toast.error('Check-out failed', error.message || 'Failed to check out ticket');
+    },
+  });
+}
+
+/**
+ * Hook for bulk check-in
+ */
+export function useBulkCheckIn() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    TicketBulkActionResult,
+    Error,
+    TicketBulkCheckInRequest
+  >({
+    mutationFn: (data) => TicketService.bulkCheckIn(data),
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        toast.success('Bulk check-in successful', result.message);
+
+        // Invalidate stats and list for the event
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tickets.stats(variables.event_id),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tickets.list(variables.event_id),
+        });
+      } else {
+        toast.error('Bulk check-in failed', result.message);
+      }
+    },
+    onError: (error) => {
+      toast.error('Bulk check-in failed', error.message || 'Failed to process bulk check-in');
+    },
+  });
+}
+
+/**
+ * Hook for bulk check-out
+ */
+export function useBulkCheckOut() {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    TicketBulkActionResult,
+    Error,
+    TicketBulkCheckOutRequest
+  >({
+    mutationFn: (data) => TicketService.bulkCheckOut(data),
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        toast.success('Bulk check-out successful', result.message);
+
+        // Invalidate stats and list for the event
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tickets.stats(variables.event_id),
+        });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tickets.list(variables.event_id),
+        });
+      } else {
+        toast.error('Bulk check-out failed', result.message);
+      }
+    },
+    onError: (error) => {
+      toast.error('Bulk check-out failed', error.message || 'Failed to process bulk check-out');
     },
   });
 }

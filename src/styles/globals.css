@@ -390,3 +390,17 @@ button {
   width: 182px;
   height: 182px;
 }
+@media (width > 767px) {
+  .scanner-wrapper {
+    width: 500px !important;
+    height: 500px !important;
+  }
+
+  .scanner-wrapper video {
+    width: 500px !important;
+    height: 500px !important;
+    object-fit: cover;
+    border-radius: 0.75rem;
+    /* rounded-xl */
+  }
+}

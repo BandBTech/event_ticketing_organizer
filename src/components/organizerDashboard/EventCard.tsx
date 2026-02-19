@@ -28,9 +28,11 @@ function parseCategories(category: string | string[]): string[] {
 
 interface EventCardProps {
   event: EventMinimal;
+  onClick?: () => void;
+  customActions?: React.ReactNode;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, onClick, customActions }: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const router = useRouter();
@@ -39,7 +41,12 @@ export default function EventCard({ event }: EventCardProps) {
   const handleCardClick = (e: React.MouseEvent) => {
     // Prevent navigation if text selection is happening
     if (window.getSelection()?.toString()) return;
-    router.push(`/organizerDashboard/event/details?id=${event.id}`);
+
+    if (onClick) {
+      onClick();
+    } else {
+      router.push(`/organizerDashboard/event/details?id=${event.id}`);
+    }
   };
 
   return (
@@ -98,26 +105,31 @@ export default function EventCard({ event }: EventCardProps) {
 
         <div className="mt-auto">
           <div className="my-4 border-t border-gray-300" />
-          <div className="flex justify-between items-center">
-            <Link
-              href={`/organizerDashboard/event/details?id=${event.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
-            >
-              {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
-            </Link>
-            <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
-              {(event.status === "pending" || event.status === "draft") && (
+
+          {customActions ? (
+            customActions
+          ) : (
+              <div className="flex justify-between items-center">
                 <Link
-                  href={`/organizerDashboard/event/edit?id=${event.id}`}
+                  href={`/organizerDashboard/event/details?id=${event.id}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+                  className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
                 >
-                  <PencilLine className="w-4 h-4" />
+                  {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
                 </Link>
-              )}
-            </PermissionGuard>
-          </div>
+                <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
+                  {(event.status === "pending" || event.status === "draft") && (
+                    <Link
+                      href={`/organizerDashboard/event/edit?id=${event.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+                    >
+                      <PencilLine className="w-4 h-4" />
+                    </Link>
+                  )}
+                </PermissionGuard>
+              </div>
+          )}
         </div>
       </div>
     </div>

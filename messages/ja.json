@@ -88,7 +88,11 @@
     },
     "continue": "続く",
     "sending": "送信中...",
-    "notSpecified": "指定されていない"
+    "notSpecified": "指定されていない",
+    "done": "終わり",
+    "bulkOperation": "一括操作",
+    "hideList": "リストを非表示にする",
+    "viewList": "リストを見る"
   },
   "navigation": {
     "events": "イベント",
@@ -611,7 +615,12 @@
   "staffDashboard": {
     "readyToScan": "スキャンする準備はできましたか?",
     "readyToScanDescription": "チケットのスキャンを開始して、イベントの参加者をチェックインします。",
-    "readyToScanButton": "チケットスキャンの開始"
+    "readyToScanButton": "チケットスキャンの開始",
+    "selectEvent": "チケットのスキャンを開始するには、以下のイベントを選択してください。",
+    "welcome": "いらっしゃいませ",
+    "scan": "チケットをスキャンする",
+    "bulkScan": "一括スキャン",
+    "noEvents": "進行中のイベントは見つかりませんでした。"
   },
   "staffScanner": {
     "cameraErrorDescription": "ブラウザの設定でカメラへのアクセスを許可し、ページを更新してください。",
@@ -622,7 +631,19 @@
     "cameraInUse": "カメラは現在別のアプリケーションによって使用されているか、許可が拒否されています。",
     "cameraConstraints": "カメラの制約が満たされていません。",
     "insecureContext": "カメラへのアクセスには安全なコンテキスト (HTTPS) が必要です。",
-    "retryCameraAccess": "カメラアクセスを再試行します"
+    "retryCameraAccess": "カメラアクセスを再試行します",
+    "single": "シングル",
+    "bulk": "バルク",
+    "alreadyInQueue": "チケットはすでにキューにあります",
+    "selectEventFirst": "スキャンを開始するには、ダッシュボードからイベントを選択してください。",
+    "backToDashboard": "ダッシュボードに戻る",
+    "submitBulkCheckIn": "一括チェックインを送信する",
+    "pendingCheckIn": "チェックイン保留中",
+    "inQueue": "キュー中",
+    "scanTicketInfo": "チケットをスキャンしてチェックインします",
+    "scanMultipleTicketsInfo": "複数のチケットをスキャンしてキューに入れる",
+    "queueLimitReached": "キューの制限に達しました (最大 10)",
+    "submitQueue": "まずチェックインのために現在のキューを送信してください"
   },
   "rte": {
     "image": {
@@ -645,5 +666,10 @@
       "toggle_strikethrough": "取り消し線の切り替え",
       "toggle_code": "トグルコード"
     }
+  },
+  "scanner": {
+    "ticket_scanned_successfully": "チケットは正常にチェックインされました",
+    "ticket_checked_in_successfully": "チェックイン成功",
+    "ticket_already_checked_in": "チケットはすでにチェックインされています。"
   }
 }

@@ -88,7 +88,11 @@
     },
     "continue": "Continuare",
     "sending": "Invio...",
-    "notSpecified": "Non specificato"
+    "notSpecified": "Non specificato",
+    "done": "Fatto",
+    "bulkOperation": "Operazione in blocco",
+    "hideList": "Nascondi elenco",
+    "viewList": "Visualizza elenco"
   },
   "navigation": {
     "events": "Eventi",
@@ -607,7 +611,12 @@
   "staffDashboard": {
     "readyToScan": "Pronto per la scansione?",
     "readyToScanDescription": "Inizia a scansionare i biglietti per effettuare il check-in dei partecipanti all'evento.",
-    "readyToScanButton": "Avvia la scansione del biglietto"
+    "readyToScanButton": "Avvia la scansione del biglietto",
+    "selectEvent": "Seleziona un evento qui sotto per avviare la scansione dei biglietti.",
+    "welcome": "Benvenuto",
+    "scan": "Scansiona i biglietti",
+    "bulkScan": "Scansione in blocco",
+    "noEvents": "Nessun evento in corso trovato."
   },
   "staffScanner": {
     "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",
@@ -619,7 +628,19 @@
     "cameraInUse": "La fotocamera è attualmente utilizzata da un'altra applicazione o l'autorizzazione è negata.",
     "cameraConstraints": "Vincoli della fotocamera non soddisfatti.",
     "insecureContext": "L'accesso alla telecamera richiede un contesto sicuro (HTTPS).",
-    "retryCameraAccess": "Riprovare l'accesso alla fotocamera"
+    "retryCameraAccess": "Riprovare l'accesso alla fotocamera",
+    "single": "Separare",
+    "bulk": "Massa",
+    "alreadyInQueue": "Biglietto già in coda",
+    "selectEventFirst": "Seleziona un evento dalla dashboard per avviare la scansione.",
+    "backToDashboard": "Torna alla dashboard",
+    "submitBulkCheckIn": "Invia check-in collettivo",
+    "pendingCheckIn": "Check-in in sospeso",
+    "inQueue": "In coda",
+    "scanTicketInfo": "Scansiona un biglietto per effettuare il check-in",
+    "scanMultipleTicketsInfo": "Scansiona più biglietti per metterli in coda",
+    "queueLimitReached": "Limite coda raggiunto (max 10)",
+    "submitQueue": "Si prega di inviare prima la coda attuale per il check-in"
   },
   "rte": {
     "image": {
@@ -643,5 +664,10 @@
       "toggle_strikethrough": "Attiva/disattiva barrato",
       "toggle_code": "Attiva/disattiva il codice"
     }
+  },
+  "scanner": {
+    "ticket_scanned_successfully": "Il biglietto è stato registrato con successo",
+    "ticket_checked_in_successfully": "Check-in riuscito",
+    "ticket_already_checked_in": "Biglietto già registrato."
   }
 }

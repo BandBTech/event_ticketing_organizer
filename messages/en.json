@@ -97,7 +97,11 @@
     },
     "continue": "Continue",
     "sending": "Sending...",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "done": "Done",
+    "bulkOperation": "Bulk Operation",
+    "hideList": "Hide List",
+    "viewList": "View List"
   },
   "navigation": {
     "events": "Events",
@@ -716,7 +720,12 @@
   "staffDashboard": {
     "readyToScan": "Ready to Scan?",
     "readyToScanDescription": "Start scanning tickets to check in attendees for the event.",
-    "readyToScanButton": "Start Ticket Scan"
+    "readyToScanButton": "Start Ticket Scan",
+    "selectEvent": "Select an event below to start scanning tickets.",
+    "welcome": "Welcome",
+    "scan": "Scan Tickets",
+    "bulkScan": "Bulk Scan",
+    "noEvents": "No ongoing events found."
   },
   "staffScanner": {
     "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",
@@ -728,7 +737,19 @@
     "cameraInUse": "Camera is currently in use by another application or permission is denied.",
     "cameraConstraints": "Camera constraints not satisfied.",
     "insecureContext": "Camera access requires a secure context (HTTPS).",
-    "retryCameraAccess": "Retry Camera Access"
+    "retryCameraAccess": "Retry Camera Access",
+    "single": "Single",
+    "bulk": "Bulk",
+    "alreadyInQueue": "Ticket already in queue",
+    "selectEventFirst": "Please select an event from the dashboard to start scanning.",
+    "backToDashboard": "Back to Dashboard",
+    "submitBulkCheckIn": "Submit Bulk Check-in",
+    "pendingCheckIn": "Pending Check-in",
+    "inQueue": "In Queue",
+    "scanTicketInfo": "Scan a ticket to check in",
+    "scanMultipleTicketsInfo": "Scan multiple tickets to queue",
+    "queueLimitReached": "Queue limit reached (Max 10)",
+    "submitQueue": "Please submit current queue for checkin first"
   },
   "rte": {
     "image": {
@@ -752,5 +773,10 @@
       "toggle_strikethrough": "Toggle strikethrough",
       "toggle_code": "Toggle code"
     }
+  },
+  "scanner": {
+    "ticket_already_checked_in": "Ticket already checked in.",
+    "ticket_scanned_successfully": "Ticket checked in succesfully",
+    "ticket_checked_in_successfully": "Check-in successful"
   }
 }
