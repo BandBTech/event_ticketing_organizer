@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CurrencyDollarIcon } from "@phosphor-icons/react";
+import {
+  CurrencyDollarIcon,
+  PencilSimpleIcon,
+  LockIcon,
+} from "@phosphor-icons/react";
 import {
   Dialog,
   DialogContent,
@@ -21,20 +25,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useCreatePayoutRequest } from "@/hooks/usePayouts";
-import { useOrganizerEvents } from "@/hooks/useOrganizerEvents";
-import { PayoutRequestCreateSchema } from "@/types/payout";
+import { useEventAnalytics } from "@/hooks/useOrganizerEvents";
+import { OrganizerEventSelectField } from "@/components/organizerDashboard/OrganizerEventSelectField";
+
+// Schema — request_type is always "event_payout" so it's not a form field
+const PayoutRequestFormSchema = z.object({
+  event_id: z.string().min(1, "Please select an event"),
+  amount: z.number().min(0.01, "Amount must be greater than 0"),
+  description: z.string().optional(),
+});
+
+type PayoutRequestFormValues = z.infer<typeof PayoutRequestFormSchema>;
 
 interface PayoutRequestDialogProps {
   open: boolean;
@@ -48,143 +55,200 @@ export function PayoutRequestDialog({
   defaultEventId,
 }: PayoutRequestDialogProps) {
   const { t } = useTranslation();
-  const { events } = useOrganizerEvents({ limit: 100 });
   const createPayoutMutation = useCreatePayoutRequest();
 
-  const form = useForm<z.infer<typeof PayoutRequestCreateSchema>>({
-    resolver: zodResolver(PayoutRequestCreateSchema),
+  // Track whether the user wants to override the analytics-derived amount
+  const [isManualAmount, setIsManualAmount] = useState(false);
+
+  const form = useForm<PayoutRequestFormValues>({
+    resolver: zodResolver(PayoutRequestFormSchema),
     defaultValues: {
+      event_id: defaultEventId ?? "",
       amount: 0,
-      request_type: defaultEventId ? "event_payout" : "event_payout",
-      event_id: defaultEventId,
       description: "",
     },
   });
 
-  // Reset form when dialog opens or defaultEventId changes
+  const watchedEventId = form.watch("event_id");
+
+  // Fetch analytics when an event is selected
+  const { data: analytics, isFetching: isAnalyticsFetching } =
+    useEventAnalytics(watchedEventId || undefined);
+
+  // Auto-fill amount from analytics whenever it loads (and user hasn't opted to enter manually)
+  useEffect(() => {
+    if (analytics && !isManualAmount) {
+      const revenue = analytics.total_revenue ?? 0;
+      form.setValue("amount", revenue, { shouldValidate: true });
+    }
+  }, [analytics, isManualAmount, form]);
+
+  // Reset everything when dialog opens / defaultEventId changes
   useEffect(() => {
     if (open) {
+      setIsManualAmount(false);
       form.reset({
+        event_id: defaultEventId ?? "",
         amount: 0,
-        request_type: defaultEventId ? "event_payout" : "event_payout",
-        event_id: defaultEventId,
         description: "",
       });
     }
   }, [open, defaultEventId, form]);
 
-  const onSubmit = (data: z.infer<typeof PayoutRequestCreateSchema>) => {
-    createPayoutMutation.mutate(data, {
-      onSuccess: () => {
-        onOpenChange(false);
-        form.reset();
-      },
-    });
+  // When a new event is selected, clear amount and reset manual flag
+  const handleEventChange = (eventId: string) => {
+    form.setValue("event_id", eventId, { shouldValidate: true });
+    setIsManualAmount(false);
+    form.setValue("amount", 0);
   };
+
+  const handleManualToggle = () => {
+    setIsManualAmount(true);
+  };
+
+  const onSubmit = (data: PayoutRequestFormValues) => {
+    createPayoutMutation.mutate(
+      {
+        amount: data.amount,
+        request_type: "event_payout",
+        event_id: data.event_id,
+        description: data.description,
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          form.reset();
+          setIsManualAmount(false);
+        },
+      },
+    );
+  };
+
+  // Amount is auto-filled from analytics → disable unless user opts to enter manually
+  const isAmountLocked = !!watchedEventId && !isManualAmount;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md text-gray-900">
         <DialogHeader>
-          <DialogTitle>{t("payouts.create.title", "Create Payout Request")}</DialogTitle>
+          <DialogTitle>
+            {t("payouts.create.title", "Create Payout Request")}
+          </DialogTitle>
           <DialogDescription>
-            {t("payouts.create.description", "Submit a request to withdraw your earnings.")}
+            {t(
+              "payouts.create.description",
+              "Submit a request to withdraw your earnings.",
+            )}
           </DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-4"
+          >
+            {/* Event — first field, backed by /organizer/list-all */}
+            <FormField
+              control={form.control}
+              name="event_id"
+              render={({ field }) => (
+                <OrganizerEventSelectField
+                  value={field.value}
+                  onChange={handleEventChange}
+                  disabled={!!defaultEventId}
+                  label={t("payouts.create.event", "Event")}
+                  placeholder={t(
+                    "payouts.create.eventPlaceholder",
+                    "Select an event",
+                  )}
+                />
+              )}
+            />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payouts.create.amount", "Amount")}</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <CurrencyDollarIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                        <Input
-                          type="number"
-                          placeholder="0.00"
-                          className="pl-9"
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="request_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payouts.create.type", "Request Type")}</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={!!defaultEventId} // Disable type selection if pre-filled with event
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t("payouts.create.typePlaceholder", "Select type")} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="event_payout">{t("payouts.type.event_payout", "Event Payout")}</SelectItem>
-                        <SelectItem value="bulk_payout">{t("payouts.type.bulk_payout", "Bulk Payout")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Amount — auto-populated from analytics, lockable */}
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>
+                      {t("payouts.create.amount", "Amount")}
+                    </FormLabel>
+                    {isAmountLocked && (
+                      <button
+                        type="button"
+                        onClick={handleManualToggle}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <PencilSimpleIcon className="h-3.5 w-3.5" />
+                        {t("payouts.create.enterManually", "Enter manually")}
+                      </button>
+                    )}
+                  </div>
+                  <FormControl>
+                    <div className="relative">
+                      <CurrencyDollarIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        className="pl-9 pr-9"
+                        disabled={isAmountLocked || isAnalyticsFetching}
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                      {isAmountLocked && (
+                        <LockIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                  </FormControl>
+                  {isAnalyticsFetching && (
+                    <p className="text-xs text-muted-foreground animate-pulse">
+                      {t(
+                        "payouts.create.loadingAnalytics",
+                        "Fetching event revenue…",
+                      )}
+                    </p>
+                  )}
+                  {analytics && !isManualAmount && (
+                    <p className="text-xs text-muted-foreground">
+                      {t(
+                        "payouts.create.analyticsNote",
+                        "Pre-filled from event total revenue.",
+                      )}{" "}
+                      <Badge variant="secondary" className="text-xs">
+                        {analytics.sold_seats}/{analytics.total_seats}{" "}
+                        {t("payouts.create.ticketsSold", "tickets sold")}
+                      </Badge>
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {form.watch("request_type") === "event_payout" && (
-              <FormField
-                control={form.control}
-                name="event_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payouts.create.event", "Event (Optional)")}</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={!!defaultEventId}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t("payouts.create.eventPlaceholder", "Select event")} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {events?.map((event) => (
-                          <SelectItem key={event.id} value={event.id}>
-                            {event.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
+            {/* Description */}
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("payouts.create.descriptionLabel", "Description (Optional)")}</FormLabel>
+                  <FormLabel>
+                    {t(
+                      "payouts.create.descriptionLabel",
+                      "Description (Optional)",
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("payouts.create.descriptionPlaceholder", "Add notes...")}
+                      placeholder={t(
+                        "payouts.create.descriptionPlaceholder",
+                        "Add notes…",
+                      )}
                       className="resize-none"
+                      rows={3}
                       {...field}
                     />
                   </FormControl>
@@ -203,9 +267,11 @@ export function PayoutRequestDialog({
               </Button>
               <Button
                 type="submit"
-                disabled={createPayoutMutation.isPending}
+                disabled={createPayoutMutation.isPending || isAnalyticsFetching}
               >
-                {createPayoutMutation.isPending ? t("common.processing", "Processing...") : t("payouts.create.submit", "Submit Request")}
+                {createPayoutMutation.isPending
+                  ? t("common.processing", "Processing…")
+                  : t("payouts.create.submit", "Submit Request")}
               </Button>
             </DialogFooter>
           </form>
