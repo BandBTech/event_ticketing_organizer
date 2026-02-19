@@ -174,6 +174,20 @@ export interface EventListResponse {
   total_pages: number;
 }
 
+// Types for /organizer/list-all endpoint
+export type ListAllType = 'events' | 'users';
+
+export interface MinimalUserResponse {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface MinimalEventResponse {
+  id: string;
+  title: string;
+}
+
 export interface EventSearchParams {
   page?: number;
   limit?: number;
