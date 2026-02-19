@@ -1,6 +1,4 @@
-
-
-import StaffDashboardHome from "@/components/staffDashboard/StaffDashboardHome";
+import StaffDashboardHome from "@/pages/staffDashboard/components/StaffDashboardHome";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Head from "next/head";
 
