@@ -43,6 +43,7 @@ import {
   Heading3,
   BoldIcon,
   Link as LinkIcon,
+  ImageIcon,
 } from "lucide-react"
 import { Toggle } from "@/components/ui/toggle"
 import { Button } from "@/components/ui/button"
@@ -67,8 +68,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowUUpLeftIcon, ArrowUUpRightIcon, CodeBlockIcon, CodeIcon, LinkSimpleIcon, ListDashesIcon, ListNumbersIcon, QuotesIcon, TextAlignCenterIcon, TextAlignJustifyIcon, TextAlignLeftIcon, TextAlignRightIcon, TextBolderIcon, TextHOneIcon, TextHTwoIcon, TextHThreeIcon, TextItalicIcon, TextStrikethroughIcon, TextTIcon, TextUnderlineIcon } from "@phosphor-icons/react"
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link"
+import { INSERT_IMAGE_COMMAND } from "./images-plugin"
+import { toast } from "sonner"
+import { useLanguageStore } from "@/store/languageStore"
+import { useTranslation } from "@/hooks/useTranslation"
+
+const RTE_IMAGE_MAX_SIZE_MB = 1
+const RTE_IMAGE_MAX_WIDTH = 1000
+const RTE_IMAGE_MAX_HEIGHT = 1000
+const RTE_IMAGE_ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"]
 
 export function ToolbarPlugin() {
+  const { locale } = useLanguageStore()
+  const { t } = useTranslation(locale)
   const [editor] = useLexicalComposerContext()
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
@@ -175,31 +187,31 @@ export function ToolbarPlugin() {
           <SelectItem value="paragraph">
             <div className="flex items-center gap-2">
               <TextTIcon weight="bold" className="h-4 w-4 text-gray-500" />
-              <span>Paragraph</span>
+              <span>{t("rte.toolbar.paragraph", "Paragraph")}</span>
             </div>
           </SelectItem>
           <SelectItem value="h1">
             <div className="flex items-center gap-2">
               <TextHOneIcon weight="bold" className="h-4 w-4 text-gray-500" />
-              <span>Heading 1</span>
+              <span>{t("rte.toolbar.heading_1", "Heading 1")}</span>
             </div>
           </SelectItem>
           <SelectItem value="h2">
             <div className="flex items-center gap-2">
               <TextHTwoIcon weight="bold" className="h-4 w-4 text-gray-500" />
-              <span>Heading 2</span>
+              <span>{t("rte.toolbar.heading_2", "Heading 2")}</span>
             </div>
           </SelectItem>
           <SelectItem value="h3">
             <div className="flex items-center gap-2">
               <TextHThreeIcon weight="bold" className="h-4 w-4 text-gray-500" />
-              <span>Heading 3</span>
+              <span>{t("rte.toolbar.heading_3", "Heading 3")}</span>
             </div>
           </SelectItem>
           <SelectItem value="quote">
             <div className="flex items-center gap-2">
               <QuotesIcon weight="bold" className="h-4 w-4 text-gray-500" />
-              <span>Quote</span>
+              <span>{t("rte.toolbar.quote", "Quote")}</span>
             </div>
           </SelectItem>
         </SelectContent>
@@ -209,52 +221,57 @@ export function ToolbarPlugin() {
 
       {/* Text Formatting */}
       <Toggle
+        type="button"
         size="sm"
         pressed={isBold}
         onPressedChange={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
         }}
-        aria-label="Toggle bold"
+        aria-label={t("rte.toolbar.toggle_bold", "Toggle bold")}
       >
         <TextBolderIcon weight="bold" />
       </Toggle>
       <Toggle
+        type="button"
         size="sm"
         pressed={isItalic}
         onPressedChange={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
         }}
-        aria-label="Toggle italic"
+        aria-label={t("rte.toolbar.toggle_italic", "Toggle italic")}
       >
         <TextItalicIcon weight="bold" />
       </Toggle>
       <Toggle
+        type="button"
         size="sm"
         pressed={isUnderline}
         onPressedChange={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
         }}
-        aria-label="Toggle underline"
+        aria-label={t("rte.toolbar.toggle_underline", "Toggle underline")}
       >
         <TextUnderlineIcon weight="bold" />
       </Toggle>
       <Toggle
-        size="sm"
+        type="button"
+        size="sm" 
         pressed={isStrikethrough}
         onPressedChange={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
         }}
-        aria-label="Toggle strikethrough"
+        aria-label={t("rte.toolbar.toggle_strikethrough", "Toggle strikethrough")}
       >
         <TextStrikethroughIcon weight="bold" />
       </Toggle>
       <Toggle
+        type="button"
         size="sm"
         pressed={isCode}
         onPressedChange={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
         }}
-        aria-label="Toggle code"
+        aria-label={t("rte.toolbar.toggle_code", "Toggle code")}
       >
         <CodeIcon weight="bold" />
       </Toggle>
@@ -263,6 +280,7 @@ export function ToolbarPlugin() {
 
       {/* Link */}
       <Toggle
+        type="button"
         size="sm"
         pressed={isLink}
         onPressedChange={() => {
@@ -272,7 +290,7 @@ export function ToolbarPlugin() {
             setLinkDialogOpen(true)
           }
         }}
-        aria-label="Insert link"
+        aria-label={t("rte.toolbar.insert_link", "Insert link")}
       >
         <LinkSimpleIcon weight="bold" />
       </Toggle>
@@ -281,6 +299,7 @@ export function ToolbarPlugin() {
 
       {/* Text Alignment */}
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -292,6 +311,7 @@ export function ToolbarPlugin() {
         <TextAlignLeftIcon weight="bold" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -303,6 +323,7 @@ export function ToolbarPlugin() {
         <TextAlignCenterIcon weight="bold" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -314,6 +335,7 @@ export function ToolbarPlugin() {
         <TextAlignRightIcon weight="bold" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -329,6 +351,7 @@ export function ToolbarPlugin() {
 
       {/* Lists */}
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -340,6 +363,7 @@ export function ToolbarPlugin() {
         <ListDashesIcon weight="bold" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => {
@@ -353,8 +377,80 @@ export function ToolbarPlugin() {
 
       <Separator orientation="vertical" className="mx-1 h-6" />
 
+      {/* Image Upload */}
+      <div className="relative">
+        <input
+          type="file"
+          accept={RTE_IMAGE_ACCEPTED_TYPES.join(",")}
+          className="hidden"
+          id="rte-image-upload"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            // Reset so the same file can be re-selected
+            e.target.value = ""
+            if (!file) return
+
+            // Validate file type
+            if (!RTE_IMAGE_ACCEPTED_TYPES.includes(file.type)) {
+              toast.error(t("rte.image.invalid_type", "Invalid image type. Please upload PNG, JPG, WebP, or GIF."))
+              return
+            }
+
+            // Validate file size
+            if (file.size > RTE_IMAGE_MAX_SIZE_MB * 1024 * 1024) {
+              toast.error(t("rte.image.size_exceeded", `Image size exceeds ${RTE_IMAGE_MAX_SIZE_MB}MB limit.`, { value: RTE_IMAGE_MAX_SIZE_MB }))
+              return
+            }
+
+            // Validate dimensions then insert
+            const objectUrl = URL.createObjectURL(file)
+            const img = new window.Image()
+            img.onload = () => {
+              URL.revokeObjectURL(objectUrl)
+              if (img.width > RTE_IMAGE_MAX_WIDTH || img.height > RTE_IMAGE_MAX_HEIGHT) {
+                toast.error(t("rte.image.dimensions_exceeded", `Image dimensions exceed ${RTE_IMAGE_MAX_WIDTH}×${RTE_IMAGE_MAX_HEIGHT}px.`, { width: RTE_IMAGE_MAX_WIDTH, height: RTE_IMAGE_MAX_HEIGHT }))
+                return
+              }
+              // All checks passed — read and insert
+              const reader = new FileReader()
+              reader.onload = () => {
+                if (typeof reader.result === "string") {
+                  editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+                    altText: file.name,
+                    src: reader.result,
+                    width: img.width,
+                    height: img.height,
+                  })
+                }
+              }
+              reader.readAsDataURL(file)
+            }
+            img.onerror = () => {
+              URL.revokeObjectURL(objectUrl)
+              toast.error(t("rte.image.failed_to_load", "Failed to load image. Please try a different file."))
+            }
+            img.src = objectUrl
+          }}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            document.getElementById("rte-image-upload")?.click()
+          }}
+          className="h-8 w-8 p-0"
+          aria-label="Insert image"
+        >
+          <ImageIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <Separator orientation="vertical" className="mx-1 h-6" />
+
       {/* Undo/Redo */}
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         disabled={!canUndo}
@@ -367,6 +463,7 @@ export function ToolbarPlugin() {
         <ArrowUUpLeftIcon weight="bold" />
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         disabled={!canRedo}
@@ -383,14 +480,14 @@ export function ToolbarPlugin() {
       <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Insert Link</DialogTitle>
+            <DialogTitle>{t("rte.toolbar.insert_link", "Insert Link")}</DialogTitle>
             <DialogDescription>
-              Enter the URL you want to link to
+              {t("rte.toolbar.insert_link_description", "Enter the URL you want to link to")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="url">URL</Label>
+              <Label htmlFor="url">{t("rte.toolbar.url", "URL")}</Label>
               <Input
                 id="url"
                 placeholder="https://example.com"
@@ -413,9 +510,9 @@ export function ToolbarPlugin() {
                 setLinkUrl("")
               }}
             >
-              Cancel
+              {t("common.cancel", "Cancel")}
             </Button>
-            <Button onClick={handleInsertLink}>Insert Link</Button>
+            <Button onClick={handleInsertLink}>{t("rte.toolbar.insert_link", "Insert Link")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

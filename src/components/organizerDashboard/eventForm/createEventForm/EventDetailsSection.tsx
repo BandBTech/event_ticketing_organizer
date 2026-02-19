@@ -59,7 +59,8 @@ export function EventDetailsSection({
   const handleHtmlChange = useCallback(
     (html: string) => {
       const textContent = html.replace(/<[^>]*>/g, '').trim();
-      const valueToSet = textContent ? html : "";
+      const hasImage = /<img\s/i.test(html);
+      const valueToSet = (textContent || hasImage) ? html : "";
       onDescriptionChange(valueToSet);
       if (valueToSet) {
         onDescriptionClearError();

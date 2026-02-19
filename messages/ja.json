@@ -442,7 +442,11 @@
       "discountPercentageRequired": "割引率は必須です。",
       "salesStart24Hrs": "販売開始日は今から 24 時間以上後である必要があります。",
       "salesEnd24Hrs": "販売終了日は今から 24 時間以上後である必要があります。",
-      "duplicateTag": "タグはすでに存在します"
+      "duplicateTag": "タグはすでに存在します",
+      "latitudeRange": "緯度は -90 ～ 90 でなければなりません。",
+      "longitudeRange": "経度は -180 ～ 180 である必要があります。",
+      "longitudeRequired": "経度は必須です。",
+      "latitudeRequired": "緯度は必須です。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -477,6 +481,10 @@
     },
     "status": {
       "on_sale": "セールスライブ"
+    },
+    "action": {
+      "enterAddress": "住所を入力してください",
+      "enterCoordinates": "座標を入力してください"
     }
   },
   "tierTemplates": {
@@ -657,6 +665,28 @@
   "events": {
     "fields": {
       "eventEndsOn": "イベント終了日"
+    }
+  },
+  "rte": {
+    "image": {
+      "invalid_type": "無効な画像タイプです。 \nPNG、JPG、WebP、または GIF をアップロードしてください。",
+      "size_exceeded": "画像サイズが {value} MB 制限を超えています。",
+      "dimensions_exceeded": "画像のサイズが {width} × {height} ピクセルを超えています。",
+      "failed_to_load": "画像の読み込みに失敗しました。\n別のファイルを試してください。"
+    },
+    "toolbar": {
+      "insert_link": "リンクを挿入",
+      "insert_link_description": "リンクしたいURLを入力してください",
+      "url": "URL",
+      "paragraph": "段落",
+      "heading_1": "見出し1",
+      "heading_2": "見出し2",
+      "heading_3": "見出し 3",
+      "toggle_bold": "太字に切り替える",
+      "toggle_italic": "斜体を切り替えます",
+      "toggle_underline": "下線の切り替え",
+      "toggle_strikethrough": "取り消し線の切り替え",
+      "toggle_code": "トグルコード"
     }
   }
 }

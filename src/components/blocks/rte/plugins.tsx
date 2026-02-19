@@ -8,6 +8,7 @@ import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin"
 
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable"
 import { ToolbarPlugin } from "./toolbar-plugin"
+import ImagesPlugin from "./images-plugin"
 
 const URL_MATCHER =
   /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
@@ -71,6 +72,7 @@ export function Plugins({ placeholder = "Start typing ..." }: { placeholder?: st
         <HistoryPlugin />
         <LinkPlugin />
         <AutoLinkPlugin matchers={MATCHERS} />
+        <ImagesPlugin />
       </div>
     </div>
   )

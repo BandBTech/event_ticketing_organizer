@@ -24,7 +24,7 @@ import {
   EventDetailsSection,
   VenueScheduleSection,
   TicketingSection,
-  DiscountsPromoSection,
+  // DiscountsPromoSection,
   FormActionButtons,
   UnsavedChangesDialog,
 } from "./createEventForm";
@@ -71,6 +71,7 @@ export default function CreateEventsForm({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
     defaultValues: getEventFormDefaults(initialData, tierTemplates),
     mode: "onChange",
+    criteriaMode: "all",
   });
 
   const { isDirty } = form.formState;
@@ -268,7 +269,7 @@ export default function CreateEventsForm({
             onCreateNewTier={handleCreateNewTier}
           />
 
-          <DiscountsPromoSection control={form.control} />
+          {/* <DiscountsPromoSection control={form.control} /> */}
 
           <FormActionButtons
             isEditing={isEditing}
