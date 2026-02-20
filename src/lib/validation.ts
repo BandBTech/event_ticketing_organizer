@@ -226,37 +226,38 @@ export const createTicketSchema = (t: (key: string, fallback?: string, params?: 
     message: t('event.validation.salesEndAfterStart', "Sales End Date must be after Sales Start Date."),
     path: ["salesEnd"],
   })
-  .superRefine((data, ctx) => {
-    // Skip 24hr validation if editing an existing ticket (has ID)
-    if (data.id) return;
+  // .superRefine((data, ctx) => {
+  //   // Skip 24hr validation if editing an existing ticket (has ID)
+  //   if (data.id) return;
 
-    const now = new Date();
-    // 24 hours from now
-    const bufferTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  //   const now = new Date();
+  //   // 24 hours from now
+  //   const bufferTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    if (data.salesStart) {
-      const startDate = new Date(data.salesStart);
-      if (startDate < bufferTime) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('event.validation.salesStart24Hrs', "Sales Start Date must be at least 24 hours from now."),
-          path: ["salesStart"],
-        });
-      }
-    }
+  //   if (data.salesStart) {
+  //     const startDate = new Date(data.salesStart);
+  //     if (startDate < bufferTime) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         message: t('event.validation.salesStart24Hrs', "Sales Start Date must be at least 24 hours from now."),
+  //         path: ["salesStart"],
+  //       });
+  //     }
+  //   }
 
-    if (data.salesEnd) {
-      const endDate = new Date(data.salesEnd);
+  //   if (data.salesEnd) {
+  //     const endDate = new Date(data.salesEnd);
 
-      if (endDate < bufferTime) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t('event.validation.salesEnd24Hrs', "Sales End Date must be at least 24 hours from now."),
-          path: ["salesEnd"],
-        });
-      }
-    }
-  });
+  //     if (endDate < bufferTime) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         message: t('event.validation.salesEnd24Hrs', "Sales End Date must be at least 24 hours from now."),
+  //         path: ["salesEnd"],
+  //       });
+  //     }
+  //   }
+  // })
+  ;
 
 export const createPromoCodeSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
   code: z

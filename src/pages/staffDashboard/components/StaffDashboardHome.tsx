@@ -20,7 +20,7 @@ export default function StaffDashboardHome() {
   });
 
   const liveEvents =
-    eventsData?.events.filter((e) => e.status === "live") || [];
+    eventsData?.events.filter((e) => e.status === "on_sale") || [];
 
   return (
     <div className="space-y-6 p-6">

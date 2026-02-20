@@ -12,6 +12,9 @@ import {
   EventListResponse,
   EventSearchParams,
   EventTicketsListResponse,
+  ListAllType,
+  MinimalUserResponse,
+  MinimalEventResponse,
 } from '@/types/event';
 
 
@@ -143,5 +146,17 @@ export const eventService = {
       endpoint += `&search=${search}`;
     }
     return api.get<EventTicketsListResponse>(endpoint, { requiresAuth: true });
+  },
+
+  // List all entities without pagination
+  // GET /organizer/list-all?type=events  → MinimalEventResponse[]
+  // GET /organizer/list-all?type=users   → MinimalUserResponse[]
+  listAll: async (
+    type: ListAllType
+  ): Promise<MinimalUserResponse[] | MinimalEventResponse[]> => {
+    return api.get<MinimalUserResponse[] | MinimalEventResponse[]>(
+      `/organizer/list-all?type=${type}`,
+      { requiresAuth: true }
+    );
   },
 };

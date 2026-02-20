@@ -39,10 +39,11 @@ import { SalesStatusBadge } from "./SalesStatusBadge";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { useTranslation } from "@/hooks/useTranslation";
 import { format, isValid } from "date-fns";
-import { CalendarBlankIcon, ClockIcon, FireIcon, MapPinIcon, PauseIcon, PencilSimpleLineIcon, PlayIcon, ShieldCheckIcon, StopIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CalendarBlankIcon, ClockIcon, FireIcon, MapPinIcon, PauseIcon, PencilSimpleLineIcon, PlayIcon, ShieldCheckIcon, StopIcon, XCircleIcon, CurrencyDollarIcon } from "@phosphor-icons/react/dist/ssr";
 import { Loader2 } from "lucide-react";
 import StatusHistoryFetcher from "./StatusHistoryFetcher";
 import { Suspense } from "react";
+import { PayoutRequestDialog } from "@/components/organizerDashboard/PayoutRequestDialog";
 
 interface EventDetailsProps {
   event: Event;
@@ -56,6 +57,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
 
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
+  const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
   const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
 
   const totalTicketsSold = analytics?.sold_seats ??
@@ -187,7 +189,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
                       ) : (
-                          <PauseIcon weight="duotone" size={18} />
+                        <PauseIcon weight="duotone" size={18} />
                       )}
                       {t("event.button.pauseSales", "Pause Sales")}
                     </Button>
@@ -202,7 +204,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {salesControlMutation.isPending ? (
                         <Loader2 size={16} className="animate-spin" />
                       ) : (
-                          <PlayIcon weight="duotone" size={18} />
+                        <PlayIcon weight="duotone" size={18} />
                       )}
                       {t("event.button.resumeSales", "Resume Sales")}
                     </Button>
@@ -220,6 +222,16 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   )}
                 </>
               )}
+
+              <Button
+                onClick={() => setPayoutDialogOpen(true)}
+                variant="outline"
+                className="gap-2"
+              >
+                <CurrencyDollarIcon weight="duotone" size={18} />
+                {t("payouts.requestPayout", "Request Payout")}
+              </Button>
+
               {canEdit && (
                 <Link
                   href={`/organizerDashboard/event/edit?id=${event.id}`}
@@ -288,8 +300,8 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   <div>
                     <h4 className="text-sm font-medium text-gray-900 mb-3">{t("event.field.tags", "Tags")}</h4>
                     <div className="flex flex-wrap gap-2">
-                       {/* Category parsing logic same as EventCard or similar utility */}
-                       {(Array.isArray(event.category)
+                      {/* Category parsing logic same as EventCard or similar utility */}
+                      {(Array.isArray(event.category)
                         ? (event.category as string[])
                         : typeof event.category === "string"
                           ? (event.category as string).split(",")
@@ -410,36 +422,36 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         );
                       })
                     ) : (
-                        event.tiers?.map((tier) => {
-                          const sold = tier.sold || 0;
-                          const soldPercent = tier.quantity > 0 ? (sold / tier.quantity) * 100 : 0;
-                          const tierRevenue = sold * tier.price;
-                          return (
-                            <div key={tier.id} className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <p className="font-medium text-gray-900">{tier.tier_name}</p>
-                                  <p className="text-xs text-gray-500">
-                                    {tier.currency || 'NPR'} {tier.price.toLocaleString()} / {t("common.ticket", "ticket")}
-                                  </p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="font-medium text-emerald-600">
-                                    {tier.currency || 'NPR'} {tierRevenue.toLocaleString()}
-                                  </p>
-                                </div>
+                      event.tiers?.map((tier) => {
+                        const sold = tier.sold || 0;
+                        const soldPercent = tier.quantity > 0 ? (sold / tier.quantity) * 100 : 0;
+                        const tierRevenue = sold * tier.price;
+                        return (
+                          <div key={tier.id} className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="font-medium text-gray-900">{tier.tier_name}</p>
+                                <p className="text-xs text-gray-500">
+                                  {tier.currency || 'NPR'} {tier.price.toLocaleString()} / {t("common.ticket", "ticket")}
+                                </p>
                               </div>
-                              <div className="space-y-1">
-                                <div className="flex justify-end text-xs text-gray-600">
-                                  <span>{sold} / {tier.quantity} {t("common.sold", "sold")}</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${Math.min(soldPercent, 100)}%` }} />
-                                </div>
+                              <div className="text-right">
+                                <p className="font-medium text-emerald-600">
+                                  {tier.currency || 'NPR'} {tierRevenue.toLocaleString()}
+                                </p>
                               </div>
                             </div>
-                          );
-                        })
+                            <div className="space-y-1">
+                              <div className="flex justify-end text-xs text-gray-600">
+                                <span>{sold} / {tier.quantity} {t("common.sold", "sold")}</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                <div className="bg-blue-500 h-full rounded-full" style={{ width: `${Math.min(soldPercent, 100)}%` }} />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
                     )}
                   </div>
                 </div>
@@ -511,7 +523,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {t("common.canceling", "Canceling...")}
                     </>
                   ) : (
-                      t("event.dialog.cancelEvent.title", "Cancel Event")
+                    t("event.dialog.cancelEvent.title", "Cancel Event")
                   )}
                 </Button>
               </DialogFooter>
@@ -580,6 +592,12 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <PayoutRequestDialog
+        open={payoutDialogOpen}
+        onOpenChange={setPayoutDialogOpen}
+        defaultEventId={event.id}
+      />
     </>
   );
 }

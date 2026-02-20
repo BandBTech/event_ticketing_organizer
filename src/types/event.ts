@@ -152,8 +152,8 @@ export interface EventMinimal {
   id: string;
   title: string;
   banner_image?: string;
-  category: string | string[]; // API might return string or string[]
-  venue_name: string;
+  category: string; // API returns comma-separated string e.g. "Music,Concert"
+  venue_name?: string;
   address: string;
   start_date: string;
   end_date: string;
@@ -162,16 +162,35 @@ export interface EventMinimal {
   sales_status?: string;
   available?: number;
   capacity?: number;
+  created_at?: string;
 }
 
-export interface EventListResponse {
-  events: EventMinimal[];
+export interface EventListPagination {
   has_next: boolean;
-  has_previous: boolean;
+  has_prev: boolean;
   limit: number;
   page: number;
   total: number;
   total_pages: number;
+}
+
+export interface EventListResponse {
+  events: EventMinimal[];
+  pagination: EventListPagination;
+}
+
+// Types for /organizer/list-all endpoint
+export type ListAllType = 'events' | 'users';
+
+export interface MinimalUserResponse {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface MinimalEventResponse {
+  id: string;
+  title: string;
 }
 
 export interface EventSearchParams {
