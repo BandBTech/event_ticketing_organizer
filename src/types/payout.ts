@@ -55,14 +55,18 @@ export interface PayoutSummary {
   available_balance: number;
 }
 
+export interface PayoutPagination {
+  has_next: boolean;
+  has_prev: boolean;
+  limit: number;
+  page: number;
+  total: number;
+  total_pages: number;
+}
+
 export interface PayoutRequestsListResponse {
-  data: PayoutRequest[];
-  meta?: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-  };
+  pagination: PayoutPagination;
+  requests: PayoutRequest[];
 }
 
 export interface PayoutSearchParams {

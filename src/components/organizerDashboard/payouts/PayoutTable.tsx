@@ -85,12 +85,14 @@ export function PayoutTable({
             <TableHead>
               {t("payouts.table.requestNumber", "Request #")}
             </TableHead>
-            <TableHead>{t("payouts.table.amount", "Amount")}</TableHead>
-            <TableHead>{t("payouts.table.type", "Type")}</TableHead>
+            <TableHead>{t("payouts.table.event", "Event")}</TableHead>
             <TableHead>{t("payouts.table.status", "Status")}</TableHead>
             <TableHead>{t("payouts.table.date", "Date")}</TableHead>
             <TableHead>
               {t("payouts.table.description", "Description")}
+            </TableHead>
+            <TableHead className="text-right">
+              {t("payouts.table.amount", "Amount")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -102,17 +104,9 @@ export function PayoutTable({
             >
               <TableCell className="font-medium text-gray-900">
                 {request.request_number}
-                {request.event && (
-                  <div className="text-xs text-gray-400 mt-0.5 truncate max-w-[150px]">
-                    {request.event.title}
-                  </div>
-                )}
               </TableCell>
-              <TableCell className="font-semibold">
-                Rs. {request.amount.toLocaleString()}
-              </TableCell>
-              <TableCell className="capitalize text-gray-600">
-                {request.request_type.replace("_", " ")}
+              <TableCell className="text-gray-700 truncate max-w-[180px]">
+                {request.event?.title || "-"}
               </TableCell>
               <TableCell>
                 <Badge
@@ -133,6 +127,9 @@ export function PayoutTable({
                     Admin: {request.admin_notes}
                   </div>
                 )}
+              </TableCell>
+              <TableCell className="font-semibold text-right">
+                Rs. {request.amount.toLocaleString()}
               </TableCell>
             </TableRow>
           ))}

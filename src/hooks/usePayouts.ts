@@ -33,13 +33,13 @@ export function usePayoutRequests(options: UsePayoutRequestsOptions = {}) {
 
   return {
     ...query,
-    payouts: response?.data ?? [],
-    meta: response?.meta,
+    payouts: response?.requests ?? [],
+    pagination: response?.pagination,
     // Helper to check if there are more pages
-    hasNextPage: response?.meta ? response.meta.current_page < response.meta.last_page : false,
-    hasPreviousPage: response?.meta ? response.meta.current_page > 1 : false,
-    totalPages: response?.meta?.last_page ?? 0,
-    total: response?.meta?.total ?? 0,
+    hasNextPage: response?.pagination?.has_next ?? false,
+    hasPreviousPage: response?.pagination?.has_prev ?? false,
+    totalPages: response?.pagination?.total_pages ?? 0,
+    total: response?.pagination?.total ?? 0,
   };
 }
 

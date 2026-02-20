@@ -19,7 +19,8 @@ export default function StaffDashboardHome() {
     queryFn: () => eventService.getEvents({ limit: 50 }),
   });
 
-  const liveEvents = eventsData?.events.filter(e => e.status === 'on_sale') || [];
+  const liveEvents =
+    eventsData?.events.filter((e) => e.status === "on_sale") || [];
 
   return (
     <div className="space-y-6 p-6">
