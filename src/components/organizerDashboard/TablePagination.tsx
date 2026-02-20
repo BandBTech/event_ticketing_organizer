@@ -2,34 +2,57 @@
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  CaretRight,
+  CaretDoubleLeft,
+  CaretDoubleRight,
+} from "@phosphor-icons/react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TablePaginationProps {
   currentPage: number;
   totalPages: number;
   total?: number;
-  hasNext: boolean;
-  hasPrev: boolean;
+  hasNext?: boolean;
+  hasPrev?: boolean;
   onPageChange: (page: number) => void;
   className?: string;
+  limit?: number;
+  onLimitChange?: (limit: number) => void;
 }
 
 export default function TablePagination({
   currentPage,
   totalPages,
+  total,
   onPageChange,
+  limit,
+  onLimitChange,
   className = "",
 }: TablePaginationProps) {
   const { t } = useTranslation();
 
-  if (totalPages <= 1) return null;
-
-  const goToPrevious = () => {
+  const handlePrevious = () => {
     if (currentPage > 1) onPageChange(currentPage - 1);
   };
 
-  const goToNext = () => {
+  const handleNext = () => {
     if (currentPage < totalPages) onPageChange(currentPage + 1);
+  };
+
+  const handleFirst = () => {
+    if (currentPage > 1) onPageChange(1);
+  };
+
+  const handleLast = () => {
+    if (currentPage < totalPages && totalPages > 0) onPageChange(totalPages);
   };
 
   // Build page numbers to show (current ± 1, always show first and last)
@@ -53,58 +76,122 @@ export default function TablePagination({
     lastPage = page;
   }
 
+  const startItem =
+    total && total > 0 ? (currentPage - 1) * (limit || 10) + 1 : 0;
+  const endItem =
+    total && total > 0 ? Math.min(currentPage * (limit || 10), total) : 0;
+
   return (
     <div
-      className={`flex items-center justify-center space-x-2 py-4 ${className}`}
+      className={`flex items-center justify-between py-4 px-4 w-full ${className}`}
     >
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={goToPrevious}
-        disabled={currentPage === 1}
-        className="h-8 rounded-full px-4"
-      >
-        <ArrowLeftIcon className="h-4 w-4 mr-2" />
-        {t("common.previous", "Previous")}
-      </Button>
-
-      <div className="flex gap-2">
-        {pagesWithEllipsis.map((item, idx) =>
-          item === "..." ? (
-            <span
-              key={`ellipsis-${idx}`}
-              className="flex items-center justify-center w-8 text-gray-400"
-            >
-              ...
+      <div className="flex items-center gap-3">
+        {onLimitChange && limit ? (
+          <>
+            <span className="text-sm font-medium text-gray-600">
+              {t("common.rowsPerPage", "Rows per page")}
             </span>
-          ) : (
-            <Button
-              key={item}
-              variant={currentPage === item ? "default" : "outline"}
-              size="sm"
-              onClick={() => onPageChange(item as number)}
-              className={`h-8 w-8 rounded-full p-0 ${
-                currentPage === item
-                  ? "bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                  : ""
-              }`}
+            <Select
+              value={limit.toString()}
+              onValueChange={(val) => onLimitChange(Number(val))}
             >
-              {item}
-            </Button>
-          ),
-        )}
+              <SelectTrigger className="h-8 w-[70px] bg-white text-sm">
+                <SelectValue placeholder={String(limit)} />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 50, 100].map((pageSize) => (
+                  <SelectItem key={pageSize} value={pageSize.toString()}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
+        ) : null}
       </div>
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={goToNext}
-        disabled={currentPage === totalPages}
-        className="h-8 rounded-full px-4"
-      >
-        {t("common.next", "Next")}
-        <ArrowRightIcon className="h-4 w-4 ml-2" />
-      </Button>
+      <div className="flex items-center gap-6">
+        {total !== undefined && limit !== undefined && total > 0 ? (
+          <span className="text-sm font-medium text-gray-600">
+            {t(
+              "common.startItemToEndItemOfTotal",
+              `${startItem}-${endItem} of ${total}`,
+              {
+                startItem,
+                endItem,
+                total,
+              },
+            )}
+          </span>
+        ) : null}
+
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleFirst}
+            disabled={currentPage === 1 || totalPages === 0}
+            className="h-8 w-8 text-gray-500 hover:text-gray-900"
+          >
+            <CaretDoubleLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePrevious}
+            disabled={currentPage === 1 || totalPages === 0}
+            className="h-8 w-8 text-gray-500 hover:text-gray-900"
+          >
+            <CaretLeft className="h-4 w-4" />
+          </Button>
+
+          <div className="flex gap-1 mx-2">
+            {pagesWithEllipsis.map((item, idx) =>
+              item === "..." ? (
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="flex items-center justify-center w-6 text-gray-400 text-sm"
+                >
+                  ..
+                </span>
+              ) : (
+                <Button
+                  key={item}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onPageChange(item as number)}
+                  className={`h-8 min-w-8 p-0 text-sm hover:bg-gray-100 rounded-md ${
+                    currentPage === item
+                      ? "font-bold text-gray-900"
+                      : "font-medium text-gray-500"
+                  }`}
+                >
+                  {item}
+                </Button>
+              ),
+            )}
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNext}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="h-8 w-8 text-gray-500 hover:text-gray-900"
+          >
+            <CaretRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLast}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="h-8 w-8 text-gray-500 hover:text-gray-900"
+          >
+            <CaretDoubleRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

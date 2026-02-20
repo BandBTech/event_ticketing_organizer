@@ -47,17 +47,10 @@ export function usePayoutRequests(options: UsePayoutRequestsOptions = {}) {
  * Custom hook for fetching payout summary statistics
  */
 export function usePayoutSummary() {
-  const query = useQuery({
+  return useQuery({
     queryKey: queryKeys.payouts.summary,
     queryFn: () => payoutService.getPayoutSummary(),
   });
-
-  const response = query.data as { data: PayoutSummary } | undefined;
-
-  return {
-    ...query,
-    summary: response?.data,
-  };
 }
 
 /**

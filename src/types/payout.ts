@@ -48,11 +48,27 @@ export interface PayoutRequest {
   };
 }
 
-export interface PayoutSummary {
+export interface PayoutSummaryEvent {
+  event_id: string;
+  event_title: string;
   total_earnings: number;
-  total_withdrawn: number;
+  paid_amount: number;
+  due_amount: number;
+  pending_requests: number;
+  approved_requests: number;
+  paid_requests: number;
+}
+
+export interface PayoutSummary {
+  approved_requests: number;
+  available_amount: number;
+  paid_requests: number;
   pending_amount: number;
-  available_balance: number;
+  pending_requests: number;
+  total_earnings: number;
+  total_received: number;
+  events: PayoutSummaryEvent[];
+  filtered_by_event: boolean;
 }
 
 export interface PayoutPagination {

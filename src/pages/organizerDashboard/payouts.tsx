@@ -27,19 +27,22 @@ export default function PayoutsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const [limit, setLimit] = useState(10);
+
   const {
     payouts,
     totalPages,
+    total,
     hasNextPage,
     hasPreviousPage,
     isLoading: isPayoutsLoading,
   } = usePayoutRequests({
     page: currentPage,
-    limit: 10,
+    limit,
     status: activeTab === "all" ? undefined : activeTab,
   });
 
-  const { summary, isLoading: isSummaryLoading } = usePayoutSummary();
+  const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -84,7 +87,7 @@ export default function PayoutsPage() {
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
-          <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+          <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
@@ -101,7 +104,7 @@ export default function PayoutsPage() {
 
               <Button
                 onClick={() => setIsDialogOpen(true)}
-                className="gap-2 w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+                className="gap-2 w-full sm:w-auto "
               >
                 <PlusIcon size={18} weight="bold" />
                 {t("payouts.requestPayout", "Request Payout")}
@@ -110,6 +113,7 @@ export default function PayoutsPage() {
               <PayoutRequestDialog
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
+                events={summary?.events}
               />
             </div>
 
@@ -120,7 +124,7 @@ export default function PayoutsPage() {
             />
 
             {/* Payout Requests Table */}
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="glass-card-lowest rounded-2xl">
               <PayoutFilterTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
@@ -130,6 +134,9 @@ export default function PayoutsPage() {
                 isLoading={isPayoutsLoading}
                 currentPage={currentPage}
                 totalPages={totalPages}
+                total={total}
+                limit={limit}
+                onLimitChange={setLimit}
                 hasNextPage={hasNextPage}
                 hasPreviousPage={hasPreviousPage}
                 onPageChange={setCurrentPage}

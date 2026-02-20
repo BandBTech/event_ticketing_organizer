@@ -101,7 +101,13 @@
     "done": "Done",
     "bulkOperation": "Bulk Operation",
     "hideList": "Hide List",
-    "viewList": "View List"
+    "viewList": "View List",
+    "rowsPerPage": "Rows per page",
+    "startItemToEndItemOfTotal": "{startItem}-{endItem} of {total}",
+    "adminNotes": "Admin Notes",
+    "noData": "No data found",
+    "noDataDescription": "There are no records to display.",
+    "backToEvent": "Back to Event"
   },
   "navigation": {
     "events": "Events",
@@ -125,7 +131,11 @@
       "earnings": "Total Earnings",
       "withdrawn": "Amount Withdrawn",
       "pending": "Pending Requests",
-      "balance": "Available Balance"
+      "balance": "Available Balance",
+      "received": "Total Received",
+      "available": "Available Amount",
+      "approvedRequests": "Approved Requests",
+      "paidRequests": "Paid Requests"
     },
     "tabs": {
       "all": "All Requests",
@@ -140,7 +150,8 @@
       "type": "Type",
       "status": "Status",
       "date": "Date",
-      "description": "Description"
+      "description": "Description",
+      "event": "Event"
     },
     "status": {
       "pending": "Pending",
@@ -169,12 +180,15 @@
         "amountRequired": "Amount is required",
         "amountMin": "Amount must be greater than 0",
         "typeRequired": "Request type is required"
-      }
+      },
+      "enterManually": "Enter manually",
+      "analyticsNote": "Pre-filled from event due amount."
     },
     "empty": {
       "title": "No payout requests found",
       "description": "You haven't made any payout requests yet."
-    }
+    },
+    "subtitle": "Manage your withdrawals and view financial summary"
   },
   "profile": {
     "title": "My Profile",
@@ -731,7 +745,8 @@
     "activeAccountDescription": "When disabled, user cannot access the system.",
     "delete": {
       "success": "User removed successfully",
-      "error": "Failed to remove user"
+      "error": "Failed to remove user",
+      "title": "Remove User"
     },
     "generatePassword": {
       "successCopy": "Password generated and copied to clipboard!",
@@ -837,5 +852,14 @@
     "ticket_already_checked_in": "Ticket already checked in.",
     "ticket_scanned_successfully": "Ticket checked in succesfully",
     "ticket_checked_in_successfully": "Check-in successful"
+  },
+  "tickets": {
+    "empty": {
+      "title": "No tickets found",
+      "description": "No tickets match your search criteria or none have been sold yet."
+    },
+    "pageTitle": "Event Tickets",
+    "pageSubtitle": "View and manage all tickets purchased for this event.",
+    "search": "Search by ticket number, name or email..."
   }
 }
