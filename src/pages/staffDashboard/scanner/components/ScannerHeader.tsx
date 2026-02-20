@@ -9,6 +9,7 @@ interface ScannerHeaderProps {
   onModeChange: (mode: ScanMode) => void;
   singleLabel: string;
   bulkLabel: string;
+  eventTitle?: string | null;
 }
 
 export function ScannerHeader({
@@ -17,6 +18,7 @@ export function ScannerHeader({
   onModeChange,
   singleLabel,
   bulkLabel,
+  eventTitle,
 }: ScannerHeaderProps) {
   return (
     <div className="absolute top-0 left-0 right-0 z-20 p-4 max-md:bg-linear-to-b from-black/80 to-transparent">
@@ -58,6 +60,22 @@ export function ScannerHeader({
         {/* Spacer to keep the toggle centred */}
         <div className="w-10" />
       </div>
+
+      {/* Event title badge */}
+      {eventTitle && (
+        <div className="flex justify-center mt-3 md:mt-6">
+          <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-1.5 flex items-center gap-2 border border-white/10">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+            </span>
+            <span className="text-white/90 text-sm font-medium truncate max-w-[220px]">
+              {eventTitle}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

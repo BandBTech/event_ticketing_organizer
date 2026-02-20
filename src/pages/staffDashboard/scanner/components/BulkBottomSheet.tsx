@@ -20,16 +20,16 @@ interface BulkBottomSheetProps {
 
 export function BulkBottomSheet({
   queue,
-  showList,
+  // showList,
   isSubmitting,
   onToggleList,
-  onRemoveItem,
+  // onRemoveItem,
   onSubmit,
   onClear,
   inQueueLabel,
   pendingCheckInLabel,
-  viewListLabel,
-  hideListLabel,
+  // viewListLabel,
+  // hideListLabel,
   submitLabel,
 }: BulkBottomSheetProps) {
   if (queue.length === 0) return null;
@@ -48,13 +48,13 @@ export function BulkBottomSheet({
             </div>
             <p className="text-sm text-gray-600">{pendingCheckInLabel}</p>
           </div>
-          <Button variant="ghost" size="sm">
+          {/* <Button variant="ghost" size="sm">
             {showList ? hideListLabel : viewListLabel}
-          </Button>
+          </Button> */}
         </div>
 
         {/* Expandable ticket list */}
-        {showList && (
+        {/* {showList && (
           <div className="max-h-48 overflow-y-auto mb-4 border rounded-lg divide-y">
             {queue.map((item, idx) => (
               <div
@@ -74,7 +74,7 @@ export function BulkBottomSheet({
               </div>
             ))}
           </div>
-        )}
+        )} */}
 
         {/* Action row */}
         <div className="flex gap-2">

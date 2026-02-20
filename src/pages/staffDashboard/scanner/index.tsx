@@ -20,6 +20,7 @@ export default function ScannerPage() {
     setMode,
     bulkQueue,
     eventId,
+    currentEventTitle,
     showBulkList,
     setShowBulkList,
     bulkResult,
@@ -58,6 +59,7 @@ export default function ScannerPage() {
               onModeChange={setMode}
               singleLabel={t("staffScanner.single", "Single")}
               bulkLabel={t("staffScanner.bulk", "Bulk")}
+              eventTitle={currentEventTitle}
             />
 
             {/* ── Camera area ──────────────────────────────────────────── */}

@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
 import { useScanTicket, useBulkCheckIn } from "@/hooks/useTickets";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
+import { eventService } from "@/services/eventService";
+import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 
 export type ScanMode = "single" | "bulk";
@@ -48,12 +51,22 @@ export function useScannerState() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
 
   // ─── Mutations ───────────────────────────────────────────────────────────────
   const scanMutation = useScanTicket();
   const bulkCheckInMutation = useBulkCheckIn();
 
   const isProcessing = scanMutation.isPending || bulkCheckInMutation.isPending;
+
+  // ─── Fetch event details when eventId is available ──────────────────────────
+  const { data: eventData } = useQuery({
+    queryKey: queryKeys.events.detail(eventId ?? ""),
+    queryFn: () => eventService.getEvent(eventId!),
+    enabled: !!eventId && !scannedEventTitle,
+  });
+
+  const currentEventTitle = scannedEventTitle || eventData?.title || null;
 
   // ─── Navigation Guard ────────────────────────────────────────────────────────
   const hasUnsavedChanges = useCallback(
@@ -159,6 +172,7 @@ export function useScannerState() {
               const newEventId = data.ticket.event_id;
               const newItem = { code, timestamp: new Date().toISOString() };
               updateQueue([newItem], newEventId);
+              setScannedEventTitle(data.ticket.event_title || null);
               toast.success(
                 "Event detected",
                 `Ready to scan for: ${data.ticket.event_title}`,
@@ -288,6 +302,7 @@ export function useScannerState() {
     setMode,
     bulkQueue,
     eventId,
+    currentEventTitle,
     showBulkList,
     setShowBulkList,
     bulkResult,
