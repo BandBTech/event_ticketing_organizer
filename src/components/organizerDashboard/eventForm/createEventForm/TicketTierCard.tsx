@@ -38,7 +38,8 @@ const TicketTierCard = ({
 }: TicketTierCardProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
 
-  const minDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+  const minDate = new Date();
+  // const minDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
@@ -48,7 +49,10 @@ const TicketTierCard = ({
           name={`tickets.${index}.name`}
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.tierName", "Tier Name")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.tierName", "Tier Name")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <TierNameSelector
                   value={field.value}
@@ -70,7 +74,10 @@ const TicketTierCard = ({
           name={`tickets.${index}.price`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.ticketPrice", "Price")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.ticketPrice", "Price")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   className="h-13 md:text-md"
@@ -101,12 +108,18 @@ const TicketTierCard = ({
           name={`tickets.${index}.quantity`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.ticketQuantity", "Quantity")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.ticketQuantity", "Quantity")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   className="h-13 md:text-md"
                   type="number"
-                  placeholder={t("event.placeholder.quantity", "Enter number of quantity")}
+                  placeholder={t(
+                    "event.placeholder.quantity",
+                    "Enter number of quantity",
+                  )}
                   {...field}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -132,12 +145,18 @@ const TicketTierCard = ({
           name={`tickets.${index}.gst`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.gst", "GST (%)")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.gst", "GST (%)")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   className="h-13 md:text-md"
                   type="number"
-                  placeholder={t("event.placeholder.gst", "Enter GST in percentage")}
+                  placeholder={t(
+                    "event.placeholder.gst",
+                    "Enter GST in percentage",
+                  )}
                   {...field}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -163,7 +182,10 @@ const TicketTierCard = ({
           name={`tickets.${index}.salesStart`}
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.salesStart", "Sales Start Date")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.salesStart", "Sales Start Date")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <ShadcnDateTimePicker
                   value={field.value ? new Date(field.value) : null}
@@ -187,7 +209,10 @@ const TicketTierCard = ({
           name={`tickets.${index}.salesEnd`}
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel className="inline-block">{t("event.field.salesEnd", "Sales End Date")} <span className="text-red-500">*</span></FormLabel>
+              <FormLabel className="inline-block">
+                {t("event.field.salesEnd", "Sales End Date")}{" "}
+                <span className="text-red-500">*</span>
+              </FormLabel>
               <FormControl>
                 <ShadcnDateTimePicker
                   value={field.value ? new Date(field.value) : null}
