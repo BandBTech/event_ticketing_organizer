@@ -8,7 +8,6 @@ import { queryKeys } from "@/lib/queryKeys";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useDebounce } from "@/hooks/useDebounce";
 import { PaginationState } from "@tanstack/react-table";
-import { DataTable } from "@/components/organizerDashboard/tickets/data-table";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
 import { Input } from "@/components/ui/input";
 import { TicketIcon, Search, ArrowLeft, Loader2 } from "lucide-react";
@@ -17,7 +16,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { PERMISSIONS } from "@/lib/permissions";
 import Head from "next/head";
-import TablePagination from "@/components/organizerDashboard/TablePagination";
+import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 
 function EventTicketsTable({
   eventId,
@@ -63,42 +62,43 @@ function EventTicketsTable({
   );
 
   return (
-    <>
-      <DataTable
-        columns={columns}
-        data={tickets}
-        isLoading={isLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        pageCount={totalPages}
-        emptyState={
-          <div className="flex flex-col items-center justify-center text-gray-500 py-12">
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-              <TicketIcon className="h-6 w-6 text-gray-400" />
-            </div>
-            <p className="text-lg font-medium mb-1">
-              {t("tickets.empty.title", "No tickets found")}
-            </p>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              {t(
-                "tickets.empty.description",
-                "No tickets match your search criteria or none have been sold yet.",
-              )}
-            </p>
+    <ReusableTable
+      columns={columns}
+      data={tickets}
+      isLoading={isLoading}
+      currentPage={pagination.pageIndex + 1}
+      totalPages={totalPages}
+      total={paginationData?.total}
+      limit={pagination.pageSize}
+      onLimitChange={(limit) =>
+        setPagination((prev) => ({
+          ...prev,
+          pageSize: limit,
+          pageIndex: 0,
+        }))
+      }
+      hasNextPage={pagination.pageIndex < totalPages - 1}
+      hasPreviousPage={pagination.pageIndex > 0}
+      onPageChange={(page) =>
+        setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
+      }
+      emptyState={
+        <div className="flex flex-col items-center justify-center text-gray-500 py-12">
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+            <TicketIcon className="h-6 w-6 text-gray-400" />
           </div>
-        }
-      />
-
-      <TablePagination
-        currentPage={pagination.pageIndex + 1}
-        totalPages={totalPages}
-        hasNext={pagination.pageIndex < totalPages - 1}
-        hasPrev={pagination.pageIndex > 0}
-        onPageChange={(page) =>
-          setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
-        }
-      />
-    </>
+          <p className="text-lg font-medium mb-1">
+            {t("tickets.empty.title", "No tickets found")}
+          </p>
+          <p className="text-sm text-muted-foreground max-w-sm text-center">
+            {t(
+              "tickets.empty.description",
+              "No tickets match your search criteria or none have been sold yet.",
+            )}
+          </p>
+        </div>
+      }
+    />
   );
 }
 
@@ -158,35 +158,36 @@ export default function EventTicketsPage() {
                 </div>
               </div>
             </div>
+            <div className="glass-card-lowest rounded-2xl">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4">
+                <div className="relative w-full sm:w-80">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder={t(
+                      "tickets.search",
+                      "Search by ticket number, name or email...",
+                    )}
+                    value={globalFilter}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="pl-9 bg-white border-gray-200"
+                  />
+                </div>
+              </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="relative w-full sm:w-80">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder={t(
-                    "tickets.search",
-                    "Search by ticket number, name or email...",
-                  )}
-                  value={globalFilter}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-9 bg-white border-gray-200"
+              {!router.isReady || (isEventLoading && !event) ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                </div>
+              ) : (
+                <EventTicketsTable
+                  eventId={eventId}
+                  pagination={pagination}
+                  search={debouncedSearch}
+                  setPagination={setPagination}
+                  t={t}
                 />
-              </div>
+              )}
             </div>
-
-            {!router.isReady || (isEventLoading && !event) ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-              </div>
-            ) : (
-              <EventTicketsTable
-                eventId={eventId}
-                pagination={pagination}
-                search={debouncedSearch}
-                setPagination={setPagination}
-                t={t}
-              />
-            )}
           </div>
         </ProtectedRoute>
       </DashboardLayout>

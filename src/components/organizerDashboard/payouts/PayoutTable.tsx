@@ -1,18 +1,11 @@
+import { useMemo } from "react";
 import { format } from "date-fns";
-import { MagnifyingGlassIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { WarningCircleIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import TablePagination from "@/components/organizerDashboard/TablePagination";
+import { ColumnDef } from "@tanstack/react-table";
 import { PayoutRequest } from "@/types/payout";
 import { useTranslation } from "@/hooks/useTranslation";
+import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -32,6 +25,9 @@ interface PayoutTableProps {
   isLoading: boolean;
   currentPage: number;
   totalPages: number;
+  total?: number;
+  limit?: number;
+  onLimitChange?: (limit: number) => void;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   onPageChange: (page: number) => void;
@@ -42,111 +38,127 @@ export function PayoutTable({
   isLoading,
   currentPage,
   totalPages,
+  total,
+  limit,
+  onLimitChange,
   hasNextPage,
   hasPreviousPage,
   onPageChange,
 }: PayoutTableProps) {
   const { t } = useTranslation();
 
-  if (isLoading) {
-    return (
-      <div className="p-8 space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-12 w-full" />
-        ))}
-      </div>
-    );
-  }
-
-  if (payouts.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="bg-gray-50 p-4 rounded-full mb-4">
-          <MagnifyingGlassIcon className="w-8 h-8 text-gray-400" />
-        </div>
-        <h3 className="text-lg font-medium text-gray-900">
-          {t("payouts.empty.title", "No payout requests found")}
-        </h3>
-        <p className="text-gray-500 mt-1 max-w-sm">
-          {t(
-            "payouts.empty.description",
-            "You haven't made any payout requests yet.",
-          )}
-        </p>
-      </div>
-    );
-  }
+  const columns = useMemo<ColumnDef<PayoutRequest>[]>(
+    () => [
+      {
+        accessorKey: "request_number",
+        header: t("payouts.table.requestNumber", "Request #"),
+        cell: ({ row }) => (
+          <span className="font-medium text-gray-900">
+            {row.original.request_number}
+          </span>
+        ),
+      },
+      {
+        id: "event",
+        header: t("payouts.table.event", "Event"),
+        cell: ({ row }) => (
+          <span className="text-gray-700 truncate max-w-[180px] inline-block">
+            {row.original.event?.title || "-"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: t("payouts.table.status", "Status"),
+        cell: ({ row }) => (
+          <Badge
+            variant="outline"
+            className={`${getStatusColor(row.original.status)} border-0 px-2.5 py-0.5 capitalize`}
+          >
+            {row.original.status}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "created_at",
+        header: t("payouts.table.date", "Date"),
+        cell: ({ row }) => (
+          <span className="text-gray-500">
+            {format(new Date(row.original.created_at), "MMM d, yyyy")}
+          </span>
+        ),
+      },
+      {
+        id: "description",
+        header: t("payouts.table.description", "Description"),
+        cell: ({ row }) => (
+          <div className="max-w-[200px] text-gray-500">
+            <div className="truncate">{row.original.description || "-"}</div>
+            {row.original.admin_notes && (
+              <div className="flex items-center gap-1 text-xs text-orange-600 mt-1">
+                <WarningCircleIcon weight="fill" />
+                {t("common.adminNotes", "Admin Notes")}:{" "}
+                {row.original.admin_notes}
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "amount",
+        header: () => (
+          <div className="text-right">
+            {t("payouts.table.amount", "Amount")}
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="font-semibold text-right">
+            {row.original.amount.toLocaleString()}
+          </div>
+        ),
+      },
+    ],
+    [t],
+  );
 
   return (
-    <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              {t("payouts.table.requestNumber", "Request #")}
-            </TableHead>
-            <TableHead>{t("payouts.table.event", "Event")}</TableHead>
-            <TableHead>{t("payouts.table.status", "Status")}</TableHead>
-            <TableHead>{t("payouts.table.date", "Date")}</TableHead>
-            <TableHead>
-              {t("payouts.table.description", "Description")}
-            </TableHead>
-            <TableHead className="text-right">
-              {t("payouts.table.amount", "Amount")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {payouts.map((request) => (
-            <TableRow
-              key={request.id}
-              className="group hover:bg-gray-50/50 transition-colors"
+    <ReusableTable
+      columns={columns}
+      data={payouts}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      total={total}
+      limit={limit}
+      onLimitChange={onLimitChange}
+      hasNextPage={hasNextPage}
+      hasPreviousPage={hasPreviousPage}
+      onPageChange={onPageChange}
+      emptyState={
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="bg-gray-50 p-4 rounded-full mb-4">
+            <svg
+              className="w-8 h-8 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              fill="currentColor"
+              viewBox="0 0 256 256"
             >
-              <TableCell className="font-medium text-gray-900">
-                {request.request_number}
-              </TableCell>
-              <TableCell className="text-gray-700 truncate max-w-[180px]">
-                {request.event?.title || "-"}
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant="outline"
-                  className={`${getStatusColor(request.status)} border-0 px-2.5 py-0.5 capitalize`}
-                >
-                  {request.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-gray-500">
-                {format(new Date(request.created_at), "MMM d, yyyy")}
-              </TableCell>
-              <TableCell className="max-w-[200px] truncate text-gray-500">
-                {request.description || "-"}
-                {request.admin_notes && (
-                  <div className="flex items-center gap-1 text-xs text-orange-600 mt-1">
-                    <WarningCircleIcon weight="fill" />
-                    Admin: {request.admin_notes}
-                  </div>
-                )}
-              </TableCell>
-              <TableCell className="font-semibold text-right">
-                Rs. {request.amount.toLocaleString()}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      {totalPages > 1 && (
-        <div className="border-t border-gray-100 bg-gray-50/30">
-          <TablePagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            hasNext={hasNextPage}
-            hasPrev={hasPreviousPage}
-            onPageChange={onPageChange}
-          />
+              <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900">
+            {t("payouts.empty.title", "No payout requests found")}
+          </h3>
+          <p className="text-gray-500 mt-1 max-w-sm">
+            {t(
+              "payouts.empty.description",
+              "You haven't made any payout requests yet.",
+            )}
+          </p>
         </div>
-      )}
-    </>
+      }
+    />
   );
 }

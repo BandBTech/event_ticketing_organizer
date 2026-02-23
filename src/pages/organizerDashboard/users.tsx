@@ -29,7 +29,6 @@ import Head from "next/head";
 // Icons
 import { Plus, Search, Users } from "lucide-react";
 import { FunnelIcon } from "@phosphor-icons/react";
-import TablePagination from "@/components/organizerDashboard/TablePagination";
 
 // Permissions
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
@@ -42,7 +41,7 @@ import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 
 // Local Components
 import { getColumns } from "@/components/organizerDashboard/users/columns";
-import { DataTable } from "@/components/organizerDashboard/users/data-table";
+import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 import UserFormDialog from "@/components/organizerDashboard/users/UserFormDialog";
 import { DeleteConfirmationDialog } from "@/components/organizerDashboard/DeleteConfirmationDialog";
 
@@ -214,68 +213,73 @@ function UsersPageContent() {
         </PermissionGuard>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-          <Input
-            placeholder={t("users.search", "Search users...")}
-            value={globalFilter}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 bg-white border-gray-100"
-          />
+      <div className="glass-card-lowest rounded-2xl">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder={t("users.search", "Search users...")}
+              value={globalFilter}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-9 shadow-sm"
+            />
+          </div>
+
+          <div className="relative">
+            <Select value={roleFilter} onValueChange={handleRoleChange}>
+              <SelectTrigger className="w-full sm:w-40 pl-9">
+                <FunnelIcon
+                  weight="duotone"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"
+                />
+                <SelectValue
+                  placeholder={t("users.filterByRole", "Filter by role")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("common.allRoles", "All Roles")}
+                </SelectItem>
+                <SelectItem value="manager">
+                  {t("common.manager", "Manager")}
+                </SelectItem>
+                <SelectItem value="staff">
+                  {t("common.staff", "Staff")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="relative">
-          <Select value={roleFilter} onValueChange={handleRoleChange}>
-            <SelectTrigger className="bg-white border-gray-100 w-full sm:w-40 pl-9">
-              <FunnelIcon
-                weight="duotone"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"
-              />
-              <SelectValue
-                placeholder={t("users.filterByRole", "Filter by role")}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {t("common.allRoles", "All Roles")}
-              </SelectItem>
-              <SelectItem value="manager">
-                {t("common.manager", "Manager")}
-              </SelectItem>
-              <SelectItem value="staff">
-                {t("common.staff", "Staff")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <ReusableTable
+          columns={columns}
+          data={users}
+          isLoading={isUsersLoading}
+          currentPage={pagination.pageIndex + 1}
+          totalPages={totalPages}
+          total={usersResponse?.total}
+          limit={pagination.pageSize}
+          onLimitChange={(limit) =>
+            setPagination((prev) => ({
+              ...prev,
+              pageSize: limit,
+              pageIndex: 0,
+            }))
+          }
+          hasNextPage={pagination.pageIndex < totalPages - 1}
+          hasPreviousPage={pagination.pageIndex > 0}
+          onPageChange={(page) =>
+            setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
+          }
+          emptyState={
+            <EmptyState
+              hasUsers={users.length > 0}
+              onCreateClick={openCreateUserModal}
+              t={t}
+            />
+          }
+        />
       </div>
-
-      <DataTable
-        columns={columns}
-        data={users}
-        isLoading={isUsersLoading}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        pageCount={totalPages}
-        emptyState={
-          <EmptyState
-            hasUsers={users.length > 0}
-            onCreateClick={openCreateUserModal}
-            t={t}
-          />
-        }
-      />
-
-      <TablePagination
-        currentPage={pagination.pageIndex + 1}
-        totalPages={totalPages}
-        hasNext={pagination.pageIndex < totalPages - 1}
-        hasPrev={pagination.pageIndex > 0}
-        onPageChange={(page) =>
-          setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
-        }
-      />
 
       <UserFormDialog
         key={editingUser?.id ?? "create"}

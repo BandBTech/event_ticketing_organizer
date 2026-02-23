@@ -92,7 +92,13 @@
     "done": "Fatto",
     "bulkOperation": "Operazione in blocco",
     "hideList": "Nascondi elenco",
-    "viewList": "Visualizza elenco"
+    "viewList": "Visualizza elenco",
+    "rowsPerPage": "Righe per pagina",
+    "startItemToEndItemOfTotal": "{startItem}-{endItem} di {total}",
+    "adminNotes": "Note dell'amministratore",
+    "noData": "Nessun dato trovato",
+    "noDataDescription": "Non ci sono record da visualizzare.",
+    "backToEvent": "Torna all'evento"
   },
   "navigation": {
     "events": "Eventi",
@@ -110,28 +116,33 @@
     "logout": "Disconnettersi"
   },
   "payouts": {
-    "title": "Payout Requests",
-    "requestPayout": "Request Payout",
+    "title": "Richieste di pagamento",
+    "requestPayout": "Richiedi pagamento",
     "summary": {
-      "earnings": "Total Earnings",
+      "earnings": "Guadagni totali",
       "withdrawn": "Amount Withdrawn",
-      "pending": "Pending Requests",
-      "balance": "Available Balance"
+      "pending": "Richieste in sospeso",
+      "balance": "Available Balance",
+      "received": "Totale ricevuto",
+      "available": "Importo disponibile",
+      "approvedRequests": "Richieste approvate",
+      "paidRequests": "Richieste a pagamento"
     },
     "tabs": {
-      "all": "All Requests",
-      "pending": "Pending",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "paid": "Paid"
+      "all": "Tutte le richieste",
+      "pending": "In attesa di",
+      "approved": "Approvato",
+      "rejected": "Respinto",
+      "paid": "Pagato"
     },
     "table": {
-      "requestNumber": "Request #",
-      "amount": "Amount",
+      "requestNumber": "Richiesta",
+      "amount": "Quantità",
       "type": "Type",
-      "status": "Status",
-      "date": "Date",
-      "description": "Description"
+      "status": "Stato",
+      "date": "Data",
+      "description": "Descrizione",
+      "event": "Evento"
     },
     "status": {
       "pending": "Pending",
@@ -160,12 +171,15 @@
         "amountRequired": "Amount is required",
         "amountMin": "Amount must be greater than 0",
         "typeRequired": "Request type is required"
-      }
+      },
+      "enterManually": "Inserisci manualmente",
+      "analyticsNote": "Precompilato dall'importo dovuto per l'evento."
     },
     "empty": {
       "title": "No payout requests found",
       "description": "You haven't made any payout requests yet."
-    }
+    },
+    "subtitle": "Gestisci i tuoi prelievi e visualizza il riepilogo finanziario"
   },
   "auth": {
     "login": {
@@ -622,7 +636,8 @@
     "activeAccountDescription": "Quando disabilitato, l'utente non può accedere al sistema.",
     "delete": {
       "success": "Utente rimosso con successo",
-      "error": "Impossibile rimuovere l'utente"
+      "error": "Impossibile rimuovere l'utente",
+      "title": "Rimuovi utente"
     },
     "generatePassword": {
       "successCopy": "Password generata e copiata negli appunti!",
@@ -728,5 +743,14 @@
     "ticket_scanned_successfully": "Il biglietto è stato registrato con successo",
     "ticket_checked_in_successfully": "Check-in riuscito",
     "ticket_already_checked_in": "Biglietto già registrato."
+  },
+  "tickets": {
+    "empty": {
+      "title": "Nessun biglietto trovato",
+      "description": "Nessun biglietto corrisponde ai tuoi criteri di ricerca o nessuno è stato ancora venduto."
+    },
+    "pageTitle": "Biglietti per eventi",
+    "pageSubtitle": "Visualizza e gestisci tutti i biglietti acquistati per questo evento.",
+    "search": "Cerca per numero biglietto, nome o email..."
   }
 }

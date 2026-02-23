@@ -8,6 +8,8 @@ import {
   CurrencyDollarIcon,
   PencilSimpleIcon,
   LockIcon,
+  CalendarBlankIcon,
+  CashRegisterIcon,
 } from "@phosphor-icons/react";
 import {
   Dialog,
@@ -25,13 +27,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "@/hooks/useTranslation";
-import { useCreatePayoutRequest } from "@/hooks/usePayouts";
-import { PayoutEventSummary } from "@/types/payout";
 import {
   Select,
   SelectContent,
@@ -39,7 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarBlankIcon } from "@phosphor-icons/react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useCreatePayoutRequest } from "@/hooks/usePayouts";
+import { PayoutSummaryEvent } from "@/types/payout";
 
 // Schema — request_type is always "event_payout" so it's not a form field
 const PayoutRequestFormSchema = z.object({
@@ -54,7 +54,7 @@ interface PayoutRequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultEventId?: string;
-  events?: PayoutEventSummary[];
+  events?: PayoutSummaryEvent[];
 }
 
 export function PayoutRequestDialog({
@@ -80,16 +80,16 @@ export function PayoutRequestDialog({
 
   const watchedEventId = form.watch("event_id");
 
-  // Find the selected event to auto-fill details
-  const selectedEvent = events.find((e) => e.event_id === watchedEventId);
+  // Find the selected event's summary data
+  const selectedEventInfo = events.find((e) => e.event_id === watchedEventId);
 
-  // Auto-fill amount from selected event's due amount whenever it changes (and user hasn't opted to enter manually)
+  // Auto-fill amount from event data whenever it changes (and user hasn't opted to enter manually)
   useEffect(() => {
-    if (selectedEvent && !isManualAmount) {
-      const dueAmount = selectedEvent.due_amount ?? 0;
-      form.setValue("amount", dueAmount, { shouldValidate: true });
+    if (selectedEventInfo && !isManualAmount) {
+      const revenue = selectedEventInfo.due_amount ?? 0;
+      form.setValue("amount", revenue, { shouldValidate: true });
     }
-  }, [selectedEvent, isManualAmount, form]);
+  }, [selectedEventInfo, isManualAmount, form]);
 
   // Reset everything when dialog opens / defaultEventId changes
   useEffect(() => {
@@ -155,7 +155,7 @@ export function PayoutRequestDialog({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 pt-4"
           >
-            {/* Event — first field, backed by summary events array */}
+            {/* Event — first field, backed by summary events */}
             <FormField
               control={form.control}
               name="event_id"
@@ -164,7 +164,7 @@ export function PayoutRequestDialog({
                   <FormLabel>{t("payouts.create.event", "Event")}</FormLabel>
                   <Select
                     onValueChange={handleEventChange}
-                    value={field.value ?? ""}
+                    value={field.value}
                     disabled={!!defaultEventId}
                   >
                     <FormControl>
@@ -177,7 +177,11 @@ export function PayoutRequestDialog({
                         >
                           {field.value
                             ? (events.find((e) => e.event_id === field.value)
-                                ?.event_title ?? "Select an event")
+                                ?.event_title ??
+                              t(
+                                "payouts.create.eventPlaceholder",
+                                "Select an event",
+                              ))
                             : undefined}
                         </SelectValue>
                       </SelectTrigger>
@@ -234,7 +238,7 @@ export function PayoutRequestDialog({
                         step="0.01"
                         min="0"
                         placeholder="0.00"
-                        className="pl-9 pr-9"
+                        className="pl-9 pr-3"
                         disabled={isAmountLocked}
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -244,16 +248,12 @@ export function PayoutRequestDialog({
                       )}
                     </div>
                   </FormControl>
-                  {selectedEvent && !isManualAmount && (
+                  {selectedEventInfo && !isManualAmount && (
                     <p className="text-xs text-muted-foreground">
                       {t(
                         "payouts.create.analyticsNote",
                         "Pre-filled from event due amount.",
-                      )}{" "}
-                      <Badge variant="secondary" className="text-xs">
-                        Rs. {selectedEvent.total_earnings.toLocaleString()}{" "}
-                        {t("payouts.create.earned", "earned")}
-                      </Badge>
+                      )}
                     </p>
                   )}
                   <FormMessage />
@@ -289,7 +289,7 @@ export function PayoutRequestDialog({
               )}
             />
 
-            <DialogFooter className="gap-2 sm:gap-0 mt-6">
+            <DialogFooter className="gap-2 mt-6">
               <Button
                 type="button"
                 variant="outline"

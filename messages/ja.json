@@ -92,7 +92,13 @@
     "done": "終わり",
     "bulkOperation": "一括操作",
     "hideList": "リストを非表示にする",
-    "viewList": "リストを見る"
+    "viewList": "リストを見る",
+    "rowsPerPage": "ページあたりの行数",
+    "startItemToEndItemOfTotal": "{startItem}-{endItem}/{total}",
+    "adminNotes": "管理者メモ",
+    "noData": "データが見つかりませんでした",
+    "noDataDescription": "表示するレコードはありません。",
+    "backToEvent": "イベントに戻る"
   },
   "navigation": {
     "events": "イベント",
@@ -110,28 +116,33 @@
     "logout": "ログアウト"
   },
   "payouts": {
-    "title": "Payout Requests",
-    "requestPayout": "Request Payout",
+    "title": "支払いリクエスト",
+    "requestPayout": "支払いのリクエスト",
     "summary": {
-      "earnings": "Total Earnings",
+      "earnings": "総収益",
       "withdrawn": "Amount Withdrawn",
-      "pending": "Pending Requests",
-      "balance": "Available Balance"
+      "pending": "保留中のリクエスト",
+      "balance": "Available Balance",
+      "received": "合計受信額",
+      "available": "利用可能量",
+      "approvedRequests": "承認されたリクエスト",
+      "paidRequests": "有料リクエスト"
     },
     "tabs": {
-      "all": "All Requests",
-      "pending": "Pending",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "paid": "Paid"
+      "all": "すべてのリクエスト",
+      "pending": "保留中",
+      "approved": "承認された",
+      "rejected": "拒否されました",
+      "paid": "有料"
     },
     "table": {
-      "requestNumber": "Request #",
-      "amount": "Amount",
+      "requestNumber": "リクエスト",
+      "amount": "額",
       "type": "Type",
-      "status": "Status",
-      "date": "Date",
-      "description": "Description"
+      "status": "状態",
+      "date": "日付",
+      "description": "説明",
+      "event": "イベント"
     },
     "status": {
       "pending": "Pending",
@@ -160,12 +171,15 @@
         "amountRequired": "Amount is required",
         "amountMin": "Amount must be greater than 0",
         "typeRequired": "Request type is required"
-      }
+      },
+      "enterManually": "手動で入力",
+      "analyticsNote": "イベント予定金額から事前に入力されます。"
     },
     "empty": {
       "title": "No payout requests found",
       "description": "You haven't made any payout requests yet."
-    }
+    },
+    "subtitle": "出金を管理し、財務概要を表示します"
   },
   "auth": {
     "login": {
@@ -621,7 +635,8 @@
     "activeAccountDescription": "無効にすると、ユーザーはシステムにアクセスできなくなります。",
     "delete": {
       "success": "ユーザーは正常に削除されました",
-      "error": "ユーザーの削除に失敗しました"
+      "error": "ユーザーの削除に失敗しました",
+      "title": "ユーザーの削除"
     },
     "generatePassword": {
       "successCopy": "パスワードが生成され、クリップボードにコピーされました。",
@@ -730,5 +745,14 @@
     "ticket_scanned_successfully": "チケットは正常にチェックインされました",
     "ticket_checked_in_successfully": "チェックイン成功",
     "ticket_already_checked_in": "チケットはすでにチェックインされています。"
+  },
+  "tickets": {
+    "empty": {
+      "title": "チケットが見つかりませんでした",
+      "description": "検索条件に一致するチケットがないか、まだ販売されていません。"
+    },
+    "pageTitle": "イベントチケット",
+    "pageSubtitle": "このイベント用に購入したすべてのチケットを表示および管理します。",
+    "search": "チケット番号、名前、メールアドレスで検索..."
   }
 }
