@@ -13,7 +13,7 @@ import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
 import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 import { Button } from "@/components/ui/button";
-import { PayoutRequestDialog } from "@/components/organizerDashboard/PayoutRequestDialog";
+import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/PayoutRequestDialog";
 import { PayoutSummaryCards } from "@/components/organizerDashboard/payouts/PayoutSummaryCards";
 import { PayoutFilterTabs } from "@/components/organizerDashboard/payouts/PayoutFilterTabs";
 import { PayoutTable } from "@/components/organizerDashboard/payouts/PayoutTable";
@@ -39,8 +39,8 @@ export default function PayoutsPage() {
     status: activeTab === "all" ? undefined : activeTab,
   });
 
-  const { summary, isLoading: isSummaryLoading } = usePayoutSummary();
-
+  const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary();
+  console.log(summary);
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setCurrentPage(1);
@@ -110,6 +110,7 @@ export default function PayoutsPage() {
               <PayoutRequestDialog
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
+                events={summary?.events}
               />
             </div>
 
