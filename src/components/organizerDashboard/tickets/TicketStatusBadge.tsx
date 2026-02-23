@@ -17,15 +17,24 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
           variant: "success",
           label: t("tickets.status.valid", "Valid"),
           icon: CheckCircle,
-          className: "bg-green-50 text-green-700 border-green-600 hover:bg-green-100",
+          className:
+            "bg-green-50 text-green-700 border-green-600 hover:bg-green-100",
         };
       case "used":
-      case "checked_in":
         return {
           variant: "secondary",
           label: t("tickets.status.used", "Used"),
           icon: Clock,
-          className: "bg-blue-50 text-blue-700 border-blue-600 hover:bg-blue-100",
+          className:
+            "bg-blue-50 text-blue-700 border-blue-600 hover:bg-blue-100",
+        };
+      case "checked_in":
+        return {
+          variant: "secondary",
+          label: t("tickets.status.checkedIn", "Checked In"),
+          icon: Clock,
+          className:
+            "bg-blue-50 text-blue-700 border-blue-600 hover:bg-blue-100",
         };
       case "cancelled":
         return {
@@ -39,14 +48,16 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
           variant: "destructive",
           label: t("tickets.status.refunded", "Refunded"),
           icon: AlertCircle,
-          className: "bg-orange-50 text-orange-700 border-orange-600 hover:bg-orange-100",
+          className:
+            "bg-orange-50 text-orange-700 border-orange-600 hover:bg-orange-100",
         };
       default:
         return {
           variant: "outline",
           label: status,
           icon: AlertCircle,
-          className: "bg-gray-50 text-gray-700 border-gray-600 hover:bg-gray-100",
+          className:
+            "bg-gray-50 text-gray-700 border-gray-600 hover:bg-gray-100",
         };
     }
   };

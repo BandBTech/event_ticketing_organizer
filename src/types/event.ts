@@ -222,36 +222,31 @@ export interface UserResponse {
 }
 
 export interface Attendee {
+  id: string;
   name: string;
   email: string;
   type: string;
 }
 
+export interface TicketTier {
+  id: string;
+  name: string;
+}
+
 export interface TicketResponse {
   id: string;
   event_id: string;
-  user_id?: string;
-  guest_user_id?: string;
   ticket_number: string;
-  qr_data: string;
-  status: string; // 'valid', 'used', 'cancelled', 'refunded'
-  purchase_date: string;
-  price: number;
-  currency: string;
-  check_in_time?: string;
-  check_out_time?: string;
-  checked_in_by?: string;
-  checked_out_by?: string;
-  checked_in_count: number;
-  tier_id: string;
-  tier_name?: string;
-  user?: UserResponse;
-  guest_user?: GuestUserResponse;
-  attendee?: Attendee;
-  quantity: number;
+  tier: TicketTier;
   total_amount: number;
+  payment_gateway: string;
+  status: string; // 'active', 'cancelled', 'refunded'
   is_guest_purchase: boolean;
-  order_id: string;
+  attendee?: Attendee;
+  check_in_time?: string;
+  checked_in_by_name?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface EventTicketsListResponse {

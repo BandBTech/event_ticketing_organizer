@@ -15,72 +15,100 @@ export function getColumns({ t, pageIndex, pageSize }: ColumnProps): ColumnDef<T
   return [
     {
       id: "sn",
-      header: t('common.columns.sn', "S.N."),
+      header: t("common.columns.sn", "S.N."),
       cell: (info) => info.row.index + 1 + pageIndex * pageSize,
       size: 50,
     },
     {
       accessorKey: "ticket_number",
-      header: t('tickets.columns.ticketNumber', "Ticket Number"),
-      cell: (info) => <span className="font-mono text-sm font-medium">{info.getValue<string>()}</span>,
+      header: t("tickets.columns.ticketNumber", "Ticket Number"),
+      cell: (info) => (
+        <span className="font-mono text-sm font-medium">
+          {info.getValue<string>()}
+        </span>
+      ),
     },
     {
       id: "purchaser",
-      header: t('tickets.columns.purchaser', "Purchaser"),
+      header: t("tickets.columns.purchaser", "Purchased By"),
       cell: (info) => {
-        const attendee = info.row.original.attendee;
-        const user = info.row.original.user;
-        const guest = info.row.original.guest_user;
-
-        const name = attendee?.name || (user ? `${user.first_name} ${user.last_name}` : guest ? guest.name : "-");
         const isGuest = info.row.original.is_guest_purchase;
+        const attendee = info.row.original.attendee;
+        const name = isGuest
+          ? t("common.guest", "Guest")
+          : attendee?.name || "-";
+        const email = attendee?.email || "-";
 
         return (
           <div className="flex flex-col">
             <span className="font-medium text-gray-900">{name}</span>
-            {isGuest && <span className="text-xs text-gray-500 italic">({t('common.guest', "Guest")})</span>}
+            <span className="text-xs text-gray-500">{email}</span>
           </div>
         );
       },
     },
     {
-      id: "email",
-      header: t('common.columns.email', "Email"),
-      cell: (info) => {
-        const attendee = info.row.original.attendee;
-        const user = info.row.original.user;
-        const guest = info.row.original.guest_user;
-        return <span className="text-gray-600 font-medium">{attendee?.email || user?.email || guest?.email || "-"}</span>;
-      },
+      accessorKey: "created_at",
+      header: t("tickets.columns.purchaseDate", "Purchase Date"),
+      cell: (info) => (
+        <span className="text-gray-500 whitespace-nowrap">
+          {formatDateTime(info.getValue<string>())}
+        </span>
+      ),
     },
     {
-      accessorKey: "tier_name",
-      header: t('tickets.columns.tier', "Tier"),
-      cell: (info) => <span className="font-medium text-gray-900">{info.getValue<string>() || "-"}</span>,
-    },
-    {
-      accessorKey: "quantity",
-      header: t('tickets.columns.quantity', "Quantity"),
-      cell: (info) => <span className="font-medium">{info.getValue<number>()}</span>,
+      id: "tier",
+      header: t("tickets.columns.tier", "Tier"),
+      cell: (info) => (
+        <span className="font-medium text-gray-900">
+          {info.row.original.tier?.name || "-"}
+        </span>
+      ),
     },
     {
       id: "amount",
-      header: t('tickets.columns.amount', "Amount"),
+      header: t("tickets.columns.amount", "Amount"),
       cell: (info) => {
         const amount = info.row.original.total_amount;
-        const currency = info.row.original.currency || "NPR";
-        return <span className="font-medium text-emerald-600">{currency} {amount.toLocaleString()}</span>;
+        return (
+          <span className="font-medium text-emerald-600">
+            NPR {amount.toLocaleString()}
+          </span>
+        );
       },
     },
     {
-      accessorKey: "status",
-      header: t('common.status', "Status"),
-      cell: (info) => <TicketStatusBadge status={info.getValue<string>()} />,
+      id: "status",
+      header: t("common.status", "Status"),
+      cell: (info) => {
+        const checkInTime = info.row.original.check_in_time;
+        const status = checkInTime ? "checked_in" : info.row.original.status;
+        return <TicketStatusBadge status={status} />;
+      },
     },
     {
-      accessorKey: "purchase_date",
-      header: t('tickets.columns.purchaseDate', "Purchase Date"),
-      cell: (info) => <span className="text-gray-500 whitespace-nowrap">{formatDateTime(info.getValue<string>())}</span>,
+      id: "check_in_time",
+      header: t("tickets.columns.checkInTime", "Check-In Time"),
+      cell: (info) => {
+        const checkInTime = info.row.original.check_in_time;
+        return (
+          <span className="text-gray-500 whitespace-nowrap">
+            {checkInTime ? formatDateTime(checkInTime) : "-"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "checked_in_by",
+      header: t("tickets.columns.checkedInBy", "Checked In By"),
+      cell: (info) => {
+        const checkedInBy = info.row.original.checked_in_by_name;
+        return (
+          <span className="text-gray-600 font-medium">
+            {checkedInBy || "-"}
+          </span>
+        );
+      },
     },
   ];
 }

@@ -98,7 +98,8 @@
     "adminNotes": "Note dell'amministratore",
     "noData": "Nessun dato trovato",
     "noDataDescription": "Non ci sono record da visualizzare.",
-    "backToEvent": "Torna all'evento"
+    "backToEvent": "Torna all'evento",
+    "guest": "Ospite"
   },
   "navigation": {
     "events": "Eventi",
@@ -336,7 +337,9 @@
       "discountType": "Tipo di sconto",
       "promoCode": "Codice promozionale",
       "discountAmount": "Importo dello sconto",
-      "discountPercentage": "Percentuale di sconto (%)"
+      "discountPercentage": "Percentuale di sconto (%)",
+      "salesStartsOn": "Le vendite iniziano il",
+      "salesEndsOn": "Le vendite terminano il"
     },
     "helperText": {
       "bannerImage": "Carica l'immagine del banner o trascinala",
@@ -387,7 +390,8 @@
       "createEvent": "Crea evento",
       "addTicketTier": "Aggiungi livello di biglietto",
       "addPromoCode": "Aggiungi il codice promozionale",
-      "createNewTier": "Crea nuovo livello"
+      "createNewTier": "Crea nuovo livello",
+      "viewTickets": "Visualizza tutti i biglietti"
     },
     "label": {
       "totalRevenue": "Entrate totali",
@@ -751,6 +755,21 @@
     },
     "pageTitle": "Biglietti per eventi",
     "pageSubtitle": "Visualizza e gestisci tutti i biglietti acquistati per questo evento.",
-    "search": "Cerca per numero biglietto, nome o email..."
+    "search": "Cerca per numero biglietto, nome o email...",
+    "columns": {
+      "ticketNumber": "Numero del biglietto",
+      "purchaser": "Acquistato da",
+      "tier": "Livello",
+      "quantity": "Quantità",
+      "amount": "Quantità",
+      "purchaseDate": "Data di acquisto",
+      "checkedInBy": "Check-in effettuato da",
+      "checkInTime": "Orario di check-in"
+    }
+  },
+  "events": {
+    "analytics": {
+      "progress": "Avanzamento delle vendite"
+    }
   }
 }

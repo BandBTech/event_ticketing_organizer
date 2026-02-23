@@ -149,7 +149,7 @@ export function ReusableTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
+      <div className="border-t border-gray-100 bg-gray-50/30 rounded-b-2xl mt-auto">
         <TablePagination
           currentPage={currentPage}
           totalPages={totalPages}

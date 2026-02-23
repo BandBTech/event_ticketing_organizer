@@ -133,7 +133,7 @@ export default function EventTicketsPage() {
       </Head>
       <DashboardLayout>
         <ProtectedRoute permission={[PERMISSIONS.EVENT_READ]}>
-          <div className="flex-1 space-y-6 p-6 container mx-auto max-w-7xl">
+          <div className="flex-1 space-y-6 p-6 @container mx-auto w-full h-full flex flex-col">
             <div className="flex flex-col gap-4">
               <Link
                 href={`/organizerDashboard/event/details?id=${eventId}`}
@@ -158,7 +158,7 @@ export default function EventTicketsPage() {
                 </div>
               </div>
             </div>
-            <div className="glass-card-lowest rounded-2xl">
+            <div className="glass-card-lowest rounded-2xl flex-1 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4">
                 <div className="relative w-full sm:w-80">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />

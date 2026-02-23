@@ -98,7 +98,8 @@
     "adminNotes": "管理者メモ",
     "noData": "データが見つかりませんでした",
     "noDataDescription": "表示するレコードはありません。",
-    "backToEvent": "イベントに戻る"
+    "backToEvent": "イベントに戻る",
+    "guest": "ゲスト"
   },
   "navigation": {
     "events": "イベント",
@@ -336,7 +337,9 @@
       "discountType": "割引タイプ",
       "promoCode": "プロモーションコード",
       "discountAmount": "割引額",
-      "discountPercentage": "割引率 (%)"
+      "discountPercentage": "割引率 (%)",
+      "salesStartsOn": "販売開始日",
+      "salesEndsOn": "販売終了日"
     },
     "helperText": {
       "bannerImage": "バナー画像をアップロードまたはドラッグ",
@@ -387,7 +390,8 @@
       "createEvent": "イベントの作成",
       "addTicketTier": "チケット層を追加する",
       "addPromoCode": "プロモーションコードを追加する",
-      "createNewTier": "新しい階層の作成"
+      "createNewTier": "新しい階層の作成",
+      "viewTickets": "すべてのチケットを見る"
     },
     "label": {
       "totalRevenue": "総収益",
@@ -684,6 +688,9 @@
   "events": {
     "fields": {
       "eventEndsOn": "イベント終了日"
+    },
+    "analytics": {
+      "progress": "販売進捗状況"
     }
   },
   "staffDashboard": {
@@ -753,6 +760,16 @@
     },
     "pageTitle": "イベントチケット",
     "pageSubtitle": "このイベント用に購入したすべてのチケットを表示および管理します。",
-    "search": "チケット番号、名前、メールアドレスで検索..."
+    "search": "チケット番号、名前、メールアドレスで検索...",
+    "columns": {
+      "ticketNumber": "チケット番号",
+      "purchaser": "購入者",
+      "tier": "階層",
+      "quantity": "量",
+      "amount": "額",
+      "purchaseDate": "購入日",
+      "checkedInBy": "チェックイン者",
+      "checkInTime": "チェックイン時間"
+    }
   }
 }

@@ -107,7 +107,8 @@
     "adminNotes": "Admin Notes",
     "noData": "No data found",
     "noDataDescription": "There are no records to display.",
-    "backToEvent": "Back to Event"
+    "backToEvent": "Back to Event",
+    "guest": "Guest"
   },
   "navigation": {
     "events": "Events",
@@ -514,7 +515,9 @@
       "categoryTags": "Category Tags",
       "bannerImageHelperTextSize": "PNG/JPG file of 1920x1200px with size up to 5MB",
       "bannerImageHelperText": "Upload banner image or drag & drop",
-      "discountPercentage": "Discount Percentage (%)"
+      "discountPercentage": "Discount Percentage (%)",
+      "salesStartsOn": "Sales starts on",
+      "salesEndsOn": "Sales ends on"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
@@ -569,7 +572,8 @@
       "createEvent": "Create Event",
       "addTicketTier": "Add ticket tier",
       "addPromoCode": "Add promo code",
-      "createNewTier": "Create New Tier"
+      "createNewTier": "Create New Tier",
+      "viewTickets": "View All Tickets"
     },
     "label": {
       "totalRevenue": "Total Revenue",
@@ -860,6 +864,21 @@
     },
     "pageTitle": "Event Tickets",
     "pageSubtitle": "View and manage all tickets purchased for this event.",
-    "search": "Search by ticket number, name or email..."
+    "search": "Search by ticket number, name or email...",
+    "columns": {
+      "ticketNumber": "Ticket Number",
+      "purchaser": "Purchased By",
+      "tier": "Tier",
+      "quantity": "Quantity",
+      "amount": "Amount",
+      "purchaseDate": "Purchase Date",
+      "checkedInBy": "Checked In By",
+      "checkInTime": "Check-In Time"
+    }
+  },
+  "events": {
+    "analytics": {
+      "progress": "Sales Progress"
+    }
   }
 }

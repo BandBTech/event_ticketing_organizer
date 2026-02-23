@@ -189,7 +189,7 @@ function UsersPageContent() {
     );
 
   return (
-    <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
+    <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">

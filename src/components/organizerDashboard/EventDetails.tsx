@@ -35,7 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatDateTimeLong } from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
 import { queryKeys } from "@/lib/queryKeys";
 import StatusHistorySidebar from "./StatusHistorySidebar";
@@ -530,6 +530,66 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
+                                {(() => {
+                                  if (!tier.sales_start && !tier.sales_end)
+                                    return null;
+
+                                  const now = new Date();
+                                  const salesStart = tier.sales_start
+                                    ? new Date(tier.sales_start)
+                                    : null;
+                                  const salesEnd = tier.sales_end
+                                    ? new Date(tier.sales_end)
+                                    : null;
+
+                                  let displayText = null;
+                                  let displayDate = null;
+
+                                  if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesStartsOn",
+                                      "Sales starts on",
+                                    );
+                                    displayDate = salesStart;
+                                  } else if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart < now &&
+                                    salesEnd &&
+                                    isValid(salesEnd) &&
+                                    salesEnd > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesEndsOn",
+                                      "Sales ends on",
+                                    );
+                                    displayDate = salesEnd;
+                                  }
+
+                                  if (!displayText || !displayDate) return null;
+
+                                  return (
+                                    <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
+                                      <div className="flex items-start gap-1">
+                                        <ClockIcon
+                                          size={12}
+                                          weight="duotone"
+                                          className="mt-0.5"
+                                        />
+                                        <span>
+                                          {displayText}:{" "}
+                                          <span className="font-medium text-gray-600">
+                                            {formatDateTime(displayDate)}
+                                          </span>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             </div>
                           );
@@ -579,6 +639,66 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     }}
                                   />
                                 </div>
+                                {(() => {
+                                  if (!tier.sales_start && !tier.sales_end)
+                                    return null;
+
+                                  const now = new Date();
+                                  const salesStart = tier.sales_start
+                                    ? new Date(tier.sales_start)
+                                    : null;
+                                  const salesEnd = tier.sales_end
+                                    ? new Date(tier.sales_end)
+                                    : null;
+
+                                  let displayText = null;
+                                  let displayDate = null;
+
+                                  if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesStartsOn",
+                                      "Sales starts on",
+                                    );
+                                    displayDate = salesStart;
+                                  } else if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart < now &&
+                                    salesEnd &&
+                                    isValid(salesEnd) &&
+                                    salesEnd > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesEndsOn",
+                                      "Sales ends on",
+                                    );
+                                    displayDate = salesEnd;
+                                  }
+
+                                  if (!displayText || !displayDate) return null;
+
+                                  return (
+                                    <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
+                                      <div className="flex items-start gap-1">
+                                        <ClockIcon
+                                          size={12}
+                                          weight="duotone"
+                                          className="mt-0.5"
+                                        />
+                                        <span>
+                                          {displayText}:{" "}
+                                          <span className="font-medium text-gray-600">
+                                            {formatDateTime(displayDate)}
+                                          </span>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                               </div>
                             </div>
                           );
