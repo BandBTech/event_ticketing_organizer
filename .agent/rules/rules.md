@@ -64,6 +64,7 @@ These rules are non-negotiable and designed to maintain a clean, testable separa
 
 - **Enforcement:** Components in `src/components/ui` and `src/components/layout` cannot be marked `'use client'` unless absolutely necessary (e.g., a theme provider), and they must not import any service or store.
 - **Action:** State and data fetching hooks must be imported and used only in Page components (`src/app`) or Feature-specific components.
+- Follow react component model with page and its components together
 
 ## 5. Coding Conventions
 
