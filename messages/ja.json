@@ -465,6 +465,7 @@
       "salesStart24Hrs": "販売開始日は今から 24 時間以上後である必要があります。",
       "salesEnd24Hrs": "販売終了日は今から 24 時間以上後である必要があります。",
       "duplicateTag": "タグはすでに存在します",
+      "tagAdded": "タグはすでに追加されています",
       "latitudeRange": "緯度は -90 ～ 90 でなければなりません。",
       "longitudeRange": "経度は -180 ～ 180 である必要があります。",
       "longitudeRequired": "経度は必須です。",
