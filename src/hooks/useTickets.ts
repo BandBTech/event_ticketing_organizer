@@ -209,6 +209,20 @@ export function useBulkCheckIn() {
 }
 
 /**
+ * Hook for validating a ticket for check-in without actually checking it in
+ */
+export function useValidateCheckIn() {
+  return useMutation<
+    { valid: boolean; can_checkin: boolean; message: string; qr_code?: string; ticket_info?: Record<string, unknown> & { ticket_number?: string }; event_id?: string; event_title?: string },
+    Error,
+    { qrCode: string; eventId?: string }
+  >({
+    mutationFn: ({ qrCode, eventId }) => TicketService.validateCheckIn(qrCode, eventId),
+  });
+}
+
+
+/**
  * Hook for bulk check-out
  */
 export function useBulkCheckOut() {

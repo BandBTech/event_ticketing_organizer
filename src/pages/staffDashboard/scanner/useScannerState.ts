@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { useScanTicket, useBulkCheckIn } from "@/hooks/useTickets";
+import { useScanTicket, useBulkCheckIn, useValidateCheckIn } from "@/hooks/useTickets";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -56,8 +56,12 @@ export function useScannerState() {
   // ─── Mutations ───────────────────────────────────────────────────────────────
   const scanMutation = useScanTicket();
   const bulkCheckInMutation = useBulkCheckIn();
+  const validateCheckInMutation = useValidateCheckIn();
 
-  const isProcessing = scanMutation.isPending || bulkCheckInMutation.isPending;
+  const isProcessing =
+    scanMutation.isPending ||
+    bulkCheckInMutation.isPending ||
+    validateCheckInMutation.isPending;
 
   // ─── Fetch event details when eventId is available ──────────────────────────
   const { data: eventData } = useQuery({
@@ -162,35 +166,46 @@ export function useScannerState() {
       return;
     }
 
-    // First scan determines the event context when none is present
-    if (bulkQueue.length === 0 && !eventId) {
-      scanMutation.mutate(
-        { ticketCode: code },
-        {
-          onSuccess: (data) => {
-            if (data.ticket?.event_id) {
-              const newEventId = data.ticket.event_id;
-              const newItem = { code, timestamp: new Date().toISOString() };
-              updateQueue([newItem], newEventId);
-              setScannedEventTitle(data.ticket.event_title || null);
-              toast.success(
-                "Event detected",
-                `Ready to scan for: ${data.ticket.event_title}`,
-              );
+    // Validate the ticket via API before adding to the queue
+    validateCheckInMutation.mutate(
+      { qrCode: code, eventId: eventId ?? undefined },
+      {
+        onSuccess: (data) => {
+          if (!data.can_checkin) {
+            // Validation failed – show reason and do NOT add to queue
+            toast.error(
+              t("staffScanner.ticketInvalid", "Invalid ticket"),
+              data.message || "Ticket cannot be checked in",
+            );
+            return;
+          }
+
+          // Validation passed – add to queue
+          const newItem = { code, timestamp: new Date().toISOString() };
+
+          // If there's no event context yet, attempt to extract it from the response
+          const responseEventId = data.event_id;
+          const responseEventTitle = data.event_title;
+
+          if (!eventId && responseEventId) {
+            updateQueue([newItem], responseEventId);
+            if (responseEventTitle) {
+              setScannedEventTitle(responseEventTitle);
             }
-          },
-        },
-      );
-      return;
-    }
-
-    const newItem = { code, timestamp: new Date().toISOString() };
-    updateQueue([...bulkQueue, newItem], undefined);
-
-    if (navigator.vibrate) navigator.vibrate(50);
-    toast.success(
-      "Added to queue",
-      `#${bulkQueue.length + 1}: ${code.substring(0, 8)}...`,
+            toast.success(
+              "Event detected",
+              `Ready to scan for: ${responseEventTitle ?? responseEventId}`,
+            );
+          } else {
+            updateQueue([...bulkQueue, newItem], undefined);
+            if (navigator.vibrate) navigator.vibrate(50);
+            toast.success(
+              "staffScanner.addedToQueue", "Added to queue",
+              `#${bulkQueue.length + 1}: ${data.ticket_info?.ticket_number}`,
+            );
+          }
+        }
+      },
     );
   };
 

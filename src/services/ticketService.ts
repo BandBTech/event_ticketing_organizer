@@ -167,6 +167,25 @@ export class TicketService {
   }
 
   /**
+   * Validate a ticket for check-in without actually checking it in
+   * POST /organizer/tickets/validate-checkin
+   */
+  static async validateCheckIn(
+    qrCode: string,
+    eventId?: string
+  ): Promise<{ valid: boolean; can_checkin: boolean; message: string; qr_code?: string; ticket_info?: Record<string, unknown> & { ticket_number?: string }; event_id?: string; event_title?: string }> {
+    const payload: { qr_code: string; event_id?: string } = { qr_code: qrCode };
+    if (eventId) {
+      payload.event_id = eventId;
+    }
+    return await api.post(
+      '/organizer/tickets/validate-checkin',
+      payload,
+      { requiresAuth: true }
+    );
+  }
+
+  /**
    * Bulk check-in tickets
    * POST /organizer/tickets/bulk-checkin
    */

@@ -719,7 +719,10 @@
     "scanTicketInfo": "Scansiona un biglietto per effettuare il check-in",
     "scanMultipleTicketsInfo": "Scansiona più biglietti per metterli in coda",
     "queueLimitReached": "Limite coda raggiunto (max 10)",
-    "submitQueue": "Si prega di inviare prima la coda attuale per il check-in"
+    "submitQueue": "Si prega di inviare prima la coda attuale per il check-in",
+    "ticketInvalid": "Biglietto non valido",
+    "addedToQueue": "Aggiunto alla coda",
+    "validationFailed": "Convalida non riuscita"
   },
   "rte": {
     "image": {

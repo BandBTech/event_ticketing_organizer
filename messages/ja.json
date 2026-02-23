@@ -725,7 +725,10 @@
     "scanTicketInfo": "チケットをスキャンしてチェックインします",
     "scanMultipleTicketsInfo": "複数のチケットをスキャンしてキューに入れる",
     "queueLimitReached": "キューの制限に達しました (最大 10)",
-    "submitQueue": "まずチェックインのために現在のキューを送信してください"
+    "submitQueue": "まずチェックインのために現在のキューを送信してください",
+    "ticketInvalid": "無効なチケット",
+    "addedToQueue": "キューに追加されました",
+    "validationFailed": "検証に失敗しました"
   },
   "rte": {
     "image": {

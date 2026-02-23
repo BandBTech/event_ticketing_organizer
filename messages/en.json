@@ -828,7 +828,10 @@
     "scanTicketInfo": "Scan a ticket to check in",
     "scanMultipleTicketsInfo": "Scan multiple tickets to queue",
     "queueLimitReached": "Queue limit reached (Max 10)",
-    "submitQueue": "Please submit current queue for checkin first"
+    "submitQueue": "Please submit current queue for checkin first",
+    "ticketInvalid": "Invalid ticket",
+    "addedToQueue": "Added to queue",
+    "validationFailed": "Validation failed"
   },
   "rte": {
     "image": {
