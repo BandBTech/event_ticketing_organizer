@@ -12,7 +12,6 @@ import { CameraErrorView } from "./components/CameraErrorView";
 import { ProcessingOverlay } from "./components/ProcessingOverlay";
 import { BulkBottomSheet } from "./components/BulkBottomSheet";
 import { SingleScanResult } from "./components/SingleScanResult";
-import { BulkResultOverlay } from "./components/BulkResultOverlay";
 
 export default function ScannerPage() {
   const {
@@ -23,8 +22,6 @@ export default function ScannerPage() {
     currentEventTitle,
     showBulkList,
     setShowBulkList,
-    bulkResult,
-    setBulkResult,
     scanResult,
     cameraError,
     mounted,
@@ -132,13 +129,6 @@ export default function ScannerPage() {
 
       {/* ── Overlays (above everything) ──────────────────────────────────── */}
       {mode === "single" && <SingleScanResult result={scanResult} />}
-
-      <BulkResultOverlay
-        result={bulkResult}
-        onDismiss={() => setBulkResult(null)}
-        bulkOperationLabel={t("common.bulkOperation", "Bulk Operation")}
-        doneLabel={t("common.done", "Done")}
-      />
 
       <UnsavedChangesDialog
         open={showLeaveDialog}

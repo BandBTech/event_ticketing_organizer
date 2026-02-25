@@ -16,6 +16,12 @@ export type ScanMode = "single" | "bulk";
 export interface BulkScanItem {
   code: string;
   timestamp: string;
+  ticketNumber?: string;
+  attendeeName?: string;
+  attendeeEmail?: string;
+  // check-in result (set after bulk submit)
+  checkinResult?: "success" | "failed";
+  checkinMessage?: string;
 }
 
 export interface ScanResult {
@@ -181,7 +187,14 @@ export function useScannerState() {
           }
 
           // Validation passed – add to queue
-          const newItem = { code, timestamp: new Date().toISOString() };
+          const ticketInfo = data.ticket_info as any;
+          const newItem: BulkScanItem = {
+            code,
+            timestamp: new Date().toISOString(),
+            ticketNumber: ticketInfo?.ticket_number,
+            attendeeName: ticketInfo?.attendee?.name,
+            attendeeEmail: ticketInfo?.attendee?.email,
+          };
 
           // If there's no event context yet, attempt to extract it from the response
           const responseEventId = data.event_id;
@@ -200,8 +213,9 @@ export function useScannerState() {
             updateQueue([...bulkQueue, newItem], undefined);
             if (navigator.vibrate) navigator.vibrate(50);
             toast.success(
-              "staffScanner.addedToQueue", "Added to queue",
-              `#${bulkQueue.length + 1}: ${data.ticket_info?.ticket_number}`,
+              "staffScanner.addedToQueue",
+              "Added to queue",
+              `#${bulkQueue.length + 1}: ${newItem.ticketNumber}`,
             );
           }
         }
@@ -292,13 +306,26 @@ export function useScannerState() {
       { event_id: eventId, qr_codes: codes },
       {
         onSuccess: (data) => {
-          setBulkResult({
-            success: data.success,
-            message: data.message,
-            items: data.data as BulkResultItem[] | undefined,
+          const results = data.data as BulkResultItem[] | undefined;
+
+          // Update each item in the queue with its check-in result
+          const updatedQueue = bulkQueue.map((item) => {
+            const result = results?.find(
+              (r) => r.code === item.code || r.ticket_number === item.ticketNumber,
+            );
+            return {
+              ...item,
+              checkinResult: result?.success ? ("success" as const) : ("failed" as const),
+              checkinMessage: result?.message || (result?.success ? "Checked in" : "Failed"),
+            };
           });
+
+          setBulkQueue(updatedQueue);
+
           if (data.success) {
-            updateQueue([], null);
+            toast.success("Bulk check-in complete");
+          } else {
+            toast.error("Bulk check-in completed with issues");
           }
         },
         onError: (error) => {

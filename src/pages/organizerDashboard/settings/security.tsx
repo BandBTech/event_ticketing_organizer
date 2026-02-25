@@ -96,7 +96,7 @@ export default function SecuritySettingsPage() {
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {
-        toast.error('', error.message || 'Failed to change password', error.details);
+        toast.error("", "Failed to change password", error.details);
       } else {
         toast.error('auth.toast.passwordChangeFailed', 'Failed to change password');
       }
