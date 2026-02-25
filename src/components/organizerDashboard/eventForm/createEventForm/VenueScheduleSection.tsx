@@ -84,7 +84,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
     if (nextMode) {
       // If switching to coord mode, try to parse current value or clear it
       const match = (venueAddress || "").match(
-        /^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/
+        /^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/,
       );
       if (match) {
         setLat(match[1]);
@@ -94,6 +94,9 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
         setLng("");
         setValue("venueAddress", ",", { shouldDirty: true });
       }
+    } else {
+      // Switching back to address mode — reset address
+      setValue("venueAddress", "", { shouldDirty: true });
     }
   };
 

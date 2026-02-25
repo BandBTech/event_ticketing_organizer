@@ -49,6 +49,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Login action
   login: async (credentials: LoginRequest, rememberMe: boolean = false) => {
     set({ isLoading: true, error: null });
+    localStorage.removeItem("profile_popup_dismissed");
 
     try {
       // tokenManager.setTokens is called inside authService.login
@@ -84,6 +85,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     try {
       const result = await authService.logout();
       // authService.logout calls tokenManager.clearTokens in finally block
+      localStorage.removeItem("profile_popup_dismissed");
       set({
         user: null,
         organizerProfile: null,
@@ -270,6 +272,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
   // Reset state (called when tokens are cleared)
   resetState: () => {
+    localStorage.removeItem("profile_popup_dismissed");
     set({
       user: null,
       organizerProfile: null,

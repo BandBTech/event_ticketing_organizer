@@ -26,14 +26,15 @@ export function CompleteProfileDialog() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check sessionStorage for tab-specific state
-    const dismissed = sessionStorage.getItem("profile_popup_dismissed") === "true";
+    // Check localStorage for tab-specific state
+    const dismissed =
+      localStorage.getItem("profile_popup_dismissed") === "true";
 
     // Only show if authenticated, profile is incomplete, and hasn't been dismissed
     if (isAuthenticated && isOrganizerComplete === false && !dismissed) {
       setIsOpen(true);
       // Mark as dismissed for this tab
-      sessionStorage.setItem("profile_popup_dismissed", "true");
+      localStorage.setItem("profile_popup_dismissed", "true");
     } else if (isOrganizerComplete !== false) {
       // If profile becomes complete, close it
       setIsOpen(false);
@@ -64,7 +65,7 @@ export function CompleteProfileDialog() {
   };
 
   const handleSkip = () => {
-    sessionStorage.setItem("profile_popup_dismissed", "true");
+    localStorage.setItem("profile_popup_dismissed", "true");
     setIsOpen(false);
   };
 
@@ -72,7 +73,7 @@ export function CompleteProfileDialog() {
     setIsOpen(open);
     // If the user manually closes the dialog (e.g., clicking backdrop), count it as dismissed
     if (!open) {
-      sessionStorage.setItem("profile_popup_dismissed", "true");
+      localStorage.setItem("profile_popup_dismissed", "true");
     }
   };
 
