@@ -5,7 +5,7 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import type { BulkScanItem } from "../useScannerState";
+import type { BulkScanItem } from "@/hooks/useScannerState";
 
 interface BulkBottomSheetProps {
   queue: BulkScanItem[];
@@ -154,3 +154,5 @@ export function BulkBottomSheet({
     </div>
   );
 }
+
+export default BulkBottomSheet;

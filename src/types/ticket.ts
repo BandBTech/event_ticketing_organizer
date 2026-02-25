@@ -100,7 +100,5 @@ export interface TicketBulkCheckOutRequest {
 export interface TicketBulkActionResult {
   success: boolean;
   message: string;
-  data?: {
-    [key: string]: any;
-  }[];
+  data?: Record<string, unknown>[];
 }

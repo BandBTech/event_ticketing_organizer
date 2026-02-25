@@ -71,7 +71,7 @@ export class TicketService {
       payload.event_id = eventId;
     }
 
-    return await api.post<{ success: boolean; message: string; data?: any }>(
+    return await api.post<{ success: boolean; message: string; data?: unknown }>(
       '/organizer/tickets/checkin',
       payload,
       {

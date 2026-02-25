@@ -17,3 +17,5 @@ export function ProcessingOverlay({ visible, label }: ProcessingOverlayProps) {
     </div>
   );
 }
+
+export default ProcessingOverlay;

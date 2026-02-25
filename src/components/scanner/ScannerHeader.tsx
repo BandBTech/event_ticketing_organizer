@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import type { ScanMode } from "../useScannerState";
+import type { ScanMode } from "@/hooks/useScannerState";
 
 interface ScannerHeaderProps {
   mode: ScanMode;
@@ -79,3 +79,4 @@ export function ScannerHeader({
   );
 }
 
+export default ScannerHeader;

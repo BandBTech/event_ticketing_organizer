@@ -1,6 +1,6 @@
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { QrCode } from "@phosphor-icons/react";
-import type { ScanMode } from "../useScannerState";
+import type { ScanMode } from "@/hooks/useScannerState";
 
 interface QRCameraViewProps {
   mode: ScanMode;
@@ -63,3 +63,5 @@ export function QRCameraView({
     </>
   );
 }
+
+export default QRCameraView;

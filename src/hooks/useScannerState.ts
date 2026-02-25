@@ -187,7 +187,10 @@ export function useScannerState() {
           }
 
           // Validation passed – add to queue
-          const ticketInfo = data.ticket_info as any;
+          const ticketInfo = data.ticket_info as Record<string, unknown> & {
+            ticket_number?: string;
+            attendee?: { name?: string; email?: string };
+          };
           const newItem: BulkScanItem = {
             code,
             timestamp: new Date().toISOString(),
@@ -367,3 +370,5 @@ export function useScannerState() {
     t,
   };
 }
+
+export default useScannerState;

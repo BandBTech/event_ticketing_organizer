@@ -1,5 +1,5 @@
 import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
-import type { ScanResult } from "../useScannerState";
+import type { ScanResult } from "@/hooks/useScannerState";
 
 interface SingleScanResultProps {
   result: ScanResult | null;
@@ -46,3 +46,5 @@ export function SingleScanResult({ result }: SingleScanResultProps) {
     </div>
   );
 }
+
+export default SingleScanResult;

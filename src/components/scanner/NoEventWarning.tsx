@@ -30,3 +30,5 @@ export function NoEventWarning({
     </div>
   );
 }
+
+export default NoEventWarning;

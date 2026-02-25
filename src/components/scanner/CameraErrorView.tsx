@@ -26,3 +26,5 @@ export function CameraErrorView({
     </div>
   );
 }
+
+export default CameraErrorView;

@@ -4,14 +4,14 @@ import { PERMISSIONS } from "@/lib/permissions";
 import StaffDashboardLayout from "@/components/layout/StaffDashboardLayout";
 import { UnsavedChangesDialog } from "@/components/organizerDashboard/eventForm/createEventForm/UnsavedChangesDialog";
 
-import { useScannerState } from "./useScannerState";
-import { ScannerHeader } from "./components/ScannerHeader";
-import { QRCameraView } from "./components/QRCameraView";
-import { NoEventWarning } from "./components/NoEventWarning";
-import { CameraErrorView } from "./components/CameraErrorView";
-import { ProcessingOverlay } from "./components/ProcessingOverlay";
-import { BulkBottomSheet } from "./components/BulkBottomSheet";
-import { SingleScanResult } from "./components/SingleScanResult";
+import useScannerState from "@/hooks/useScannerState";
+import ScannerHeader from "@/components/scanner/ScannerHeader";
+import QRCameraView from "@/components/scanner/QRCameraView";
+import NoEventWarning from "@/components/scanner/NoEventWarning";
+import CameraErrorView from "@/components/scanner/CameraErrorView";
+import ProcessingOverlay from "@/components/scanner/ProcessingOverlay";
+import BulkBottomSheet from "@/components/scanner/BulkBottomSheet";
+import SingleScanResult from "@/components/scanner/SingleScanResult";
 
 export default function ScannerPage() {
   const {
