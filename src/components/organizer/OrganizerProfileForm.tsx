@@ -62,6 +62,7 @@ export function OrganizerProfileForm({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialLogoUrl || null);
+  const [logoError, setLogoError] = useState<string | null>(null);
 
   // Create schema with translation function - uses translation keys
   const organizerProfileSchema = useMemo(() => createOrganizerProfileSchema((key, fallback) => key), []);
@@ -107,15 +108,33 @@ export function OrganizerProfileForm({
     }
   }, [defaultValues, form]);
 
+  const validateLogo = () => {
+    if (!selectedFile && !previewUrl) {
+      setLogoError("settings.organizerProfile.logoRequired");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (data: OrganizerProfileFormValues) => {
+    // Validate logo is present
+    if (!validateLogo()) {
+      return;
+    }
     // If we have no selected file and previewUrl is null, it means the user explicitly removed the logo
     const logo = selectedFile ? selectedFile : (previewUrl ? undefined : null);
     onSubmit(data, logo);
   };
 
+  const handleInvalid = () => {
+    // Manually trigger logo validation even if other fields fail
+    validateLogo();
+  };
+
   const handleCancel = () => {
     setSelectedFile(null);
     setPreviewUrl(initialLogoUrl || null);
+    setLogoError(null);
     form.reset({
       business_name: defaultValues?.business_name || "",
       business_description: defaultValues?.business_description || "",
@@ -127,6 +146,7 @@ export function OrganizerProfileForm({
     if (file) {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      setLogoError(null);
     } else {
       setSelectedFile(null);
       setPreviewUrl(null);
@@ -140,7 +160,7 @@ export function OrganizerProfileForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit, handleInvalid)} className="space-y-6">
         {/* Logo Uploader */}
         {showLogoUploader && isEditing && (
           <div className="space-y-2 organizer-profile-form">
@@ -152,6 +172,8 @@ export function OrganizerProfileForm({
               maxSizeMB={2}
               maxWidth={500}
               maxHeight={500}
+              required={true}
+              error={logoError || undefined}
               helperText={t("settings.organizerProfile.logoHelperText", "Recommended size: 500x500px.")}
               helperTextSize={t("settings.organizerProfile.logoHelperTextSize", "Max size: 2MB.")}
             />

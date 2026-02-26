@@ -199,12 +199,12 @@ export function ImageUploader({
         <input {...getInputProps()} ref={fileInputRef} />
 
         {value ? (
-          <div className="relative group overflow-hidden rounded-lg mx-auto">
+          <div className="relative group overflow-hidden rounded-lg mx-auto h-full">
             {/* Using img tag directly for flexibility with blob URLs and simplicity, optimized next/image requires width/height or fill */}
             <img
               src={value}
               alt="Preview"
-              className={cn("w-full h-full object-cover", imageClassName)}
+              className={cn("w-full h-full object-contain", imageClassName)}
             />
 
             {/* Remove Button */}

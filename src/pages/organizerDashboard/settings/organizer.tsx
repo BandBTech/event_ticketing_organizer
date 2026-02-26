@@ -149,7 +149,7 @@ export default function OrganizerProfileSettings() {
                           src={org.business_logo_url}
                           alt="Business Logo"
                           fill
-                          className="object-cover"
+                              className="object-contain"
                         />
                       ) : (
                         <BuildingOfficeIcon size={48} className="text-gray-300" />

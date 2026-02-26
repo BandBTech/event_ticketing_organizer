@@ -455,7 +455,8 @@
       "businessName": "Business Name",
       "about": "About",
       "businessNamePlaceholder": "Enter your business name",
-      "aboutPlaceholder": "Write about your organization..."
+      "aboutPlaceholder": "Write about your organization...",
+      "logoRequired": "Business logo is required."
     },
     "profile": {
       "title": "Profile Settings",

@@ -557,7 +557,8 @@
       "about": "について",
       "businessNamePlaceholder": "あなたのビジネス名を入力してください",
       "aboutPlaceholder": "あなたの組織について書いてください...",
-      "description": "組織の詳細とブランディングを管理します」"
+      "description": "組織の詳細とブランディングを管理します」",
+      "logoRequired": "企業ロゴは必須です。"
     },
     "security": {
       "title": "セキュリティ設定",

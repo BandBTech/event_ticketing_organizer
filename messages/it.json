@@ -558,7 +558,8 @@
       "businessName": "Nome dell'azienda",
       "about": "Di",
       "businessNamePlaceholder": "Inserisci il nome della tua attività",
-      "aboutPlaceholder": "Scrivi della tua organizzazione..."
+      "aboutPlaceholder": "Scrivi della tua organizzazione...",
+      "logoRequired": "Il logo aziendale è obbligatorio."
     },
     "security": {
       "title": "Impostazioni di sicurezza",
