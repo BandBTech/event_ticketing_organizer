@@ -763,6 +763,12 @@
     "pageSubtitle": "Manage your organization team and user access.",
     "validation": {
       "roleRequired": "Role is required"
+    },
+    "empty": {
+      "title": "No team members yet"
+    },
+    "noResults": {
+      "title": "No users found"
     }
   },
   "greeting": {

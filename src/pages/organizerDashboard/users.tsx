@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
@@ -63,6 +64,7 @@ function UsersPageContent() {
   } = useUser();
 
   const [globalFilter, setGlobalFilter] = useState("");
+  const debouncedSearch = useDebounce(globalFilter, 500);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [deleteUser, setDeleteUser] = useState<OrgUser | null>(null);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -74,14 +76,14 @@ function UsersPageContent() {
     queryKey: queryKeys.orgUsers.list({
       page: pagination.pageIndex + 1,
       limit: pagination.pageSize,
-      search: globalFilter,
+      search: debouncedSearch,
       role: roleFilter !== "all" ? roleFilter : undefined,
     }),
     queryFn: () =>
       organizerUserService.getUsers(
         pagination.pageIndex + 1,
         pagination.pageSize,
-        globalFilter || undefined,
+        debouncedSearch || undefined,
         roleFilter !== "all" ? roleFilter : undefined,
       ),
   });
@@ -324,17 +326,6 @@ function EmptyState({
         {!hasUsers
           ? t("users.empty.title", "No team members yet")
           : t("users.noResults.title", "No users found")}
-      </p>
-      <p className="text-sm text-muted-foreground max-w-sm">
-        {!hasUsers
-          ? t(
-              "users.empty.description",
-              "Add your first team member by clicking the 'Add User' button above.",
-            )
-          : t(
-              "users.noResults.description",
-              "Try adjusting your search or filters.",
-            )}
       </p>
       {!hasUsers && (
         <PermissionGuard permission={PERMISSIONS.USER_CREATE}>

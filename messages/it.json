@@ -654,6 +654,12 @@
     "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti.",
     "validation": {
       "roleRequired": "Il ruolo è richiesto"
+    },
+    "empty": {
+      "title": "Nessun membro del team ancora"
+    },
+    "noResults": {
+      "title": "Nessun utente trovato"
     }
   },
   "greeting": {

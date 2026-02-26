@@ -653,6 +653,12 @@
     "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。",
     "validation": {
       "roleRequired": "役割は必須です"
+    },
+    "empty": {
+      "title": "まだチームメンバーがいません"
+    },
+    "noResults": {
+      "title": "ユーザーが見つかりませんでした"
     }
   },
   "greeting": {
