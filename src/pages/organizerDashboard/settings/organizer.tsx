@@ -41,7 +41,7 @@ export default function OrganizerProfileSettings() {
   const { t } = useTranslation(locale);
   const { isOrganizerRejected } = useAuthStore();
 
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile, isFetching: isFetchingProfile } = useQuery({
     queryKey: queryKeys.organizerProfile.all,
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();
@@ -119,7 +119,7 @@ export default function OrganizerProfileSettings() {
             {isOrganizerRejected() && <RejectionNotice />}
 
             <div className="glass-card rounded-xl p-6 bg-white/60 shadow-blur-subtle-md">
-              {isLoadingProfile ? (
+              {isLoadingProfile || isFetchingProfile ? (
                 <div className="flex justify-center items-center h-64">
                   <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
                 </div>
