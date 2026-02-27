@@ -26,6 +26,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  TranslatedFormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -43,8 +44,8 @@ import { PayoutSummaryEvent } from "@/types/payout";
 
 // Schema — request_type is always "event_payout" so it's not a form field
 const PayoutRequestFormSchema = z.object({
-  event_id: z.string().min(1, "Please select an event"),
-  amount: z.number().min(0.01, "Amount must be greater than 0"),
+  event_id: z.string().min(1, "payouts.validation.selectEvent"),
+  amount: z.number().min(0.01, "payouts.validation.amountMustBeGreaterThanZero"),
   description: z.string().optional(),
 });
 
@@ -79,9 +80,10 @@ export function PayoutRequestDialog({
   });
 
   const watchedEventId = form.watch("event_id");
+  const safeEvents = events || [];
 
   // Find the selected event's summary data
-  const selectedEventInfo = events.find((e) => e.event_id === watchedEventId);
+  const selectedEventInfo = safeEvents.find((e) => e.event_id === watchedEventId);
 
   // Auto-fill amount from event data whenever it changes (and user hasn't opted to enter manually)
   useEffect(() => {
@@ -161,7 +163,7 @@ export function PayoutRequestDialog({
               name="event_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("payouts.create.event", "Event")}</FormLabel>
+                  <FormLabel required>{t("payouts.create.event", "Event")}</FormLabel>
                   <Select
                     onValueChange={handleEventChange}
                     value={field.value}
@@ -176,7 +178,7 @@ export function PayoutRequestDialog({
                           )}
                         >
                           {field.value
-                            ? (events.find((e) => e.event_id === field.value)
+                            ? (safeEvents.find((e) => e.event_id === field.value)
                                 ?.event_title ??
                               t(
                                 "payouts.create.eventPlaceholder",
@@ -187,13 +189,13 @@ export function PayoutRequestDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {events.length === 0 ? (
+                      {safeEvents.length === 0 ? (
                         <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground text-sm">
                           <CalendarBlankIcon className="h-5 w-5" />
-                          <span>No events found</span>
+                          <span>{t("event.noEventsFound", "No events found")}</span>
                         </div>
                       ) : (
-                        events.map((event) => (
+                          safeEvents.map((event) => (
                           <SelectItem
                             key={event.event_id}
                             value={event.event_id}
@@ -204,7 +206,7 @@ export function PayoutRequestDialog({
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <TranslatedFormMessage t={t} />
                 </FormItem>
               )}
             />
@@ -216,7 +218,7 @@ export function PayoutRequestDialog({
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>
+                    <FormLabel required>
                       {t("payouts.create.amount", "Amount")}
                     </FormLabel>
                     {isAmountLocked && (
@@ -256,7 +258,7 @@ export function PayoutRequestDialog({
                       )}
                     </p>
                   )}
-                  <FormMessage />
+                  <TranslatedFormMessage t={t} />
                 </FormItem>
               )}
             />
@@ -270,7 +272,7 @@ export function PayoutRequestDialog({
                   <FormLabel>
                     {t(
                       "payouts.create.descriptionLabel",
-                      "Description (Optional)",
+                      "Description",
                     )}
                   </FormLabel>
                   <FormControl>
@@ -284,7 +286,7 @@ export function PayoutRequestDialog({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <TranslatedFormMessage t={t} />
                 </FormItem>
               )}
             />
@@ -295,12 +297,12 @@ export function PayoutRequestDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                {t("payouts.create.cancel", "Cancel")}
+                {t("common.cancel", "Cancel")}
               </Button>
               <Button type="submit" disabled={createPayoutMutation.isPending}>
                 {createPayoutMutation.isPending
                   ? t("common.processing", "Processing…")
-                  : t("payouts.create.submit", "Submit Request")}
+                  : t("common.submit", "Submit")}
               </Button>
             </DialogFooter>
           </form>

@@ -99,7 +99,8 @@
     "noData": "Nessun dato trovato",
     "noDataDescription": "Non ci sono record da visualizzare.",
     "backToEvent": "Torna all'evento",
-    "guest": "Ospite"
+    "guest": "Ospite",
+    "submit": "Invia"
   },
   "navigation": {
     "events": "Eventi",
@@ -113,7 +114,7 @@
     "signIn": "Accedi",
     "organizeEvent": "Organizzare l'evento",
     "profile": "Il mio profilo",
-    "payouts": "Payouts",
+    "payouts": "Pagamenti",
     "logout": "Disconnettersi"
   },
   "payouts": {
@@ -156,16 +157,16 @@
       "bulk_payout": "Bulk Payout"
     },
     "create": {
-      "title": "Create Payout Request",
-      "description": "Submit a request to withdraw your earnings.",
-      "amount": "Amount",
+      "title": "Crea richiesta di pagamento",
+      "description": "Invia una richiesta per ritirare i tuoi guadagni.",
+      "amount": "Quantità",
       "amountPlaceholder": "Enter amount",
       "type": "Request Type",
       "typePlaceholder": "Select type",
-      "event": "Event (Optional)",
-      "eventPlaceholder": "Select event",
-      "descriptionLabel": "Description (Optional)",
-      "descriptionPlaceholder": "Add notes...",
+      "event": "Evento",
+      "eventPlaceholder": "Seleziona evento",
+      "descriptionLabel": "Descrizione",
+      "descriptionPlaceholder": "Aggiungi note...",
       "submit": "Submit Request",
       "cancel": "Cancel",
       "validation": {
@@ -177,10 +178,14 @@
       "analyticsNote": "Precompilato dall'importo dovuto per l'evento."
     },
     "empty": {
-      "title": "No payout requests found",
-      "description": "You haven't made any payout requests yet."
+      "title": "Nessuna richiesta di pagamento trovata",
+      "description": "Non hai ancora effettuato alcuna richiesta di pagamento."
     },
-    "subtitle": "Gestisci i tuoi prelievi e visualizza il riepilogo finanziario"
+    "subtitle": "Gestisci i tuoi prelievi e visualizza il riepilogo finanziario",
+    "validation": {
+      "selectEvent": "Seleziona un evento.",
+      "amountMustBeGreaterThanZero": "L'importo deve essere maggiore di 0."
+    }
   },
   "auth": {
     "login": {
@@ -288,7 +293,8 @@
       "signupSuccess": "Account creato con successo!",
       "signupError": "La registrazione non è riuscita. \nPer favore riprova.",
       "accountInactive": "Il tuo account è inattivo.",
-      "contactSupportToReactivate": "Contatta l'assistenza per riattivare il tuo account."
+      "contactSupportToReactivate": "Contatta l'assistenza per riattivare il tuo account.",
+      "loginSuccess": "Bentornato!"
     },
     "passwordRequirements": {
       "minLength": "Deve essere composto da almeno 8 caratteri",
@@ -782,5 +788,7 @@
     "analytics": {
       "progress": "Avanzamento delle vendite"
     }
-  }
+  },
+  "Your account is inactive.": "Il tuo account è inattivo.",
+  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account."
 }

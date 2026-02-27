@@ -191,7 +191,7 @@ export default function LoginForm() {
                               className={cn(
                                 "h-12 pl-16 pr-4 login-input",
                                 form.formState.errors.email &&
-                                  "border-destructive",
+                                "border-destructive",
                               )}
                               {...field}
                             />
@@ -233,7 +233,7 @@ export default function LoginForm() {
                               className={cn(
                                 "h-12 pl-16 pr-16 login-input",
                                 form.formState.errors.password &&
-                                  "border-destructive",
+                                "border-destructive",
                               )}
                               {...field}
                             />
@@ -243,13 +243,13 @@ export default function LoginForm() {
                               aria-label={
                                 showPassword
                                   ? t(
-                                      "auth.login.hidePassword",
-                                      "Hide password",
-                                    )
+                                    "auth.login.hidePassword",
+                                    "Hide password",
+                                  )
                                   : t(
-                                      "auth.login.showPassword",
-                                      "Show password",
-                                    )
+                                    "auth.login.showPassword",
+                                    "Show password",
+                                  )
                               }
                               className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                             >

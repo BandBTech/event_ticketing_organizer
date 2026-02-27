@@ -108,7 +108,8 @@
     "noData": "No data found",
     "noDataDescription": "There are no records to display.",
     "backToEvent": "Back to Event",
-    "guest": "Guest"
+    "guest": "Guest",
+    "submit": "Submit"
   },
   "navigation": {
     "events": "Events",
@@ -189,7 +190,11 @@
       "title": "No payout requests found",
       "description": "You haven't made any payout requests yet."
     },
-    "subtitle": "Manage your withdrawals and view financial summary"
+    "subtitle": "Manage your withdrawals and view financial summary",
+    "validation": {
+      "selectEvent": "Please select an event.",
+      "amountMustBeGreaterThanZero": "Amount must be greater than 0."
+    }
   },
   "profile": {
     "title": "My Profile",
@@ -891,5 +896,7 @@
     "analytics": {
       "progress": "Sales Progress"
     }
-  }
+  },
+  "Your account is inactive.": "Your account is inactive.",
+  "Please contact support to reactivate your account.": "Please contact support to reactivate your account."
 }

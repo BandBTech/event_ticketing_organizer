@@ -248,7 +248,7 @@ export default function UserFormDialog({
                     name="first_name"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-900">
+                        <FormLabel required className="text-sm font-medium">
                           {t('auth.signup.firstName', "First Name")}
                         </FormLabel>
                         <div className="relative">
@@ -278,7 +278,7 @@ export default function UserFormDialog({
                     name="last_name"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-900">
+                        <FormLabel required className="text-sm font-medium">
                           {t('auth.signup.lastName', "Last Name")}
                         </FormLabel>
                         <div className="relative">
@@ -310,7 +310,7 @@ export default function UserFormDialog({
                   name="email"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-900">
+                      <FormLabel required className="text-sm font-medium">
                         {t('auth.signup.email', "Email")}
                       </FormLabel>
                       <div className="relative">
@@ -342,7 +342,7 @@ export default function UserFormDialog({
                   name="password"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-900">
+                      <FormLabel required className="text-sm font-medium">
                         {t('auth.signup.password', "Password")}
                       </FormLabel>
                       <div className="relative">
@@ -386,9 +386,8 @@ export default function UserFormDialog({
                   name="phone"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-900">
+                      <FormLabel className="text-sm font-medium">
                         {t('auth.signup.phone', "Contact Number")}
-                        <span className="text-muted-foreground text-xs font-normal ml-1">{t('common.optional', "(optional)")}</span>
                       </FormLabel>
                       <FormControl>
                         <PhoneInput

@@ -99,7 +99,8 @@
     "noData": "データが見つかりませんでした",
     "noDataDescription": "表示するレコードはありません。",
     "backToEvent": "イベントに戻る",
-    "guest": "ゲスト"
+    "guest": "ゲスト",
+    "submit": "提出する"
   },
   "navigation": {
     "events": "イベント",
@@ -113,7 +114,7 @@
     "signIn": "サインイン",
     "organizeEvent": "イベントを開催",
     "profile": "プロフィール",
-    "payouts": "Payouts",
+    "payouts": "支払い",
     "logout": "ログアウト"
   },
   "payouts": {
@@ -156,16 +157,16 @@
       "bulk_payout": "Bulk Payout"
     },
     "create": {
-      "title": "Create Payout Request",
-      "description": "Submit a request to withdraw your earnings.",
-      "amount": "Amount",
+      "title": "支払いリクエストの作成",
+      "description": "収益の出金リクエストを送信します。",
+      "amount": "額",
       "amountPlaceholder": "Enter amount",
       "type": "Request Type",
       "typePlaceholder": "Select type",
-      "event": "Event (Optional)",
-      "eventPlaceholder": "Select event",
-      "descriptionLabel": "Description (Optional)",
-      "descriptionPlaceholder": "Add notes...",
+      "event": "イベント",
+      "eventPlaceholder": "イベントを選択",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "メモを追加...",
       "submit": "Submit Request",
       "cancel": "Cancel",
       "validation": {
@@ -177,10 +178,14 @@
       "analyticsNote": "イベント予定金額から事前に入力されます。"
     },
     "empty": {
-      "title": "No payout requests found",
-      "description": "You haven't made any payout requests yet."
+      "title": "支払いリクエストが見つかりませんでした",
+      "description": "まだ支払いリクエストを行っていません。"
     },
-    "subtitle": "出金を管理し、財務概要を表示します"
+    "subtitle": "出金を管理し、財務概要を表示します",
+    "validation": {
+      "selectEvent": "イベントを選択してください。",
+      "amountMustBeGreaterThanZero": "金額は 0 より大きくなければなりません。"
+    }
   },
   "auth": {
     "login": {
@@ -288,7 +293,8 @@
       "signupSuccess": "アカウントが正常に作成されました。",
       "signupError": "登録に失敗しました。\nもう一度試してください。",
       "accountInactive": "あなたのアカウントは非アクティブです。",
-      "contactSupportToReactivate": "アカウントを再開するにはサポートにお問い合わせください。"
+      "contactSupportToReactivate": "アカウントを再開するにはサポートにお問い合わせください。",
+      "loginSuccess": "おかえり！"
     },
     "passwordRequirements": {
       "minLength": "8文字以上で構成する必要があります",
@@ -782,5 +788,7 @@
       "checkedInBy": "チェックイン者",
       "checkInTime": "チェックイン時間"
     }
-  }
+  },
+  "Your account is inactive.": "アカウントが非アクティブです。",
+  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。"
 }

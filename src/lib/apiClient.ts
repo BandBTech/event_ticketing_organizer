@@ -145,21 +145,6 @@ export async function apiRequest<T>(
       const errorCode = data?.error?.code || "UNKNOWN_ERROR";
       const errorDetails = data?.error?.details;
 
-      // Handle inactive account - clear tokens and force logout
-      if (
-        errorCode === "ACCOUNT_INACTIVE" ||
-        (errorCode === "GENERIC_ERROR" &&
-          (errorDetails === "ACCOUNT_INACTIVE." ||
-            errorDetails === "ACCOUNT_INACTIVE"))
-      ) {
-        tokenManager.clearTokens();
-      }
-
-      // Show error toast if enabled
-      if (showErrorToast) {
-        const displayMessage = errorMessage || errorMsg;
-        toast.error("api.error", displayMessage, errorDetails);
-      }
 
       throw new AuthError(errorMsg, errorCode, response.status, errorDetails);
     }
@@ -181,6 +166,19 @@ export async function apiRequest<T>(
     // Handle network errors
     if (error instanceof AuthError) {
       // Show error toast if not already shown and enabled
+      // Handle inactive account - clear tokens and force logout
+      if (showErrorToast &&
+        error.code === "ACCOUNT_INACTIVE"
+      ) {
+        tokenManager.clearTokens();
+        toast.error(
+          "auth.toast.accountInactive",
+          error.details || "Account is inactive. Please contact support.",
+          "auth.toast.contactSupportToReactivate",
+        );
+        throw error;
+      }
+
       if (showErrorToast && error.code === "NETWORK_ERROR") {
         const displayMessage = errorMessage || error.message;
         toast.error("api.networkError", displayMessage);
