@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -35,6 +35,15 @@ const CategoryTagsSelector = ({
 
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [inputWidth, setInputWidth] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (measureRef.current) {
+      // Add a small buffer (2px) to prevent text from clipping
+      setInputWidth(measureRef.current.scrollWidth + 2);
+    }
+  }, [inputValue, value]);
 
   const handleAddTag = () => {
     const trimmedValue = inputValue.trim();
@@ -139,6 +148,15 @@ const CategoryTagsSelector = ({
         </span>
       ))}
 
+      {/* Hidden span for measuring input text width */}
+      <span
+        ref={measureRef}
+        className="invisible absolute whitespace-pre text-sm"
+        aria-hidden="true"
+      >
+        {inputValue || (value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more..."))}
+      </span>
+
       {!isMaxReached && (
         <input
           ref={inputRef}
@@ -147,12 +165,9 @@ const CategoryTagsSelector = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onBlur={handleAddTag}
-          placeholder={
-            value.length === 0
-              ? effectivePlaceholder
-              : t("event.placeholder.addMore", "Add more...")
-          }
-          className="flex-1 min-w-[120px] bg-transparent outline-none placeholder:text-muted-foreground"
+          placeholder={value.length === 0 ? effectivePlaceholder : t("event.placeholder.addMore", "Add more...")}
+          style={{ width: inputWidth ? `${inputWidth}px` : undefined }}
+          className="min-w-[120px] max-w-full bg-transparent outline-none placeholder:text-muted-foreground"
         />
       )}
     </div>
