@@ -17,6 +17,8 @@ import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/Pay
 import { PayoutSummaryCards } from "@/components/organizerDashboard/payouts/PayoutSummaryCards";
 import { PayoutFilterTabs } from "@/components/organizerDashboard/payouts/PayoutFilterTabs";
 import { PayoutTable } from "@/components/organizerDashboard/payouts/PayoutTable";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/lib/permissions";
 
 export default function PayoutsPage() {
   const { t } = useTranslation();
@@ -102,10 +104,11 @@ export default function PayoutsPage() {
                 </p>
               </div>
 
-              <Button
-                onClick={() => setIsDialogOpen(true)}
-                className="gap-2 w-full sm:w-auto "
-              >
+              <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
+                <Button
+                  onClick={() => setIsDialogOpen(true)}
+                  className="gap-2 w-full sm:w-auto "
+                >
                 <PlusIcon size={18} weight="bold" />
                 {t("payouts.requestPayout", "Request Payout")}
               </Button>
@@ -114,7 +117,8 @@ export default function PayoutsPage() {
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
                 events={summary?.events}
-              />
+                />
+              </PermissionGuard>
             </div>
 
             {/* Summary Cards */}

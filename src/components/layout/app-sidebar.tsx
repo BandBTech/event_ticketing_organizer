@@ -34,16 +34,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { PermissionGuard } from "../auth/PermissionGuard";
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const { can, canAny, is } = usePermission();
+  const { can, canAny, isAny } = usePermission();
   const { t } = useTranslation();
 
-  const { isCollapsed: collapsed, toggleCollapse: onToggle, sidebarOpen, setSidebarOpen } = useUIStore();
-
+  const {
+    isCollapsed: collapsed,
+    toggleCollapse: onToggle,
+    sidebarOpen,
+    setSidebarOpen,
+  } = useUIStore();
 
   const navLinks = [
     // Staff Links
@@ -52,7 +57,7 @@ export function AppSidebar() {
       label: "Home",
       icon: HouseIcon,
       permission: PERMISSIONS.PROFILE_VIEW,
-      role: "staff"
+      role: ["staff"],
     },
 
     // Organizer Links
@@ -61,53 +66,59 @@ export function AppSidebar() {
       label: t("navigation.dashboard", "Dashboard"),
       icon: SpeedometerIcon,
       permission: PERMISSIONS.PROFILE_VIEW,
-      role: "organizer"
+      role: ["organizer", "manager"],
     },
     {
       href: "/organizerDashboard/event",
       label: t("navigation.events", "Events"),
       icon: CalendarStarIcon,
       permission: PERMISSIONS.EVENT_READ,
-      role: "organizer"
+      role: ["organizer", "manager"],
     },
     {
       href: "/organizerDashboard/reports",
       label: t("navigation.reports", "Reports"),
       icon: ChartLineIcon,
       permission: [PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCIAL_SUMMARY],
-      role: "organizer"
+      role: ["organizer", "manager"],
     },
     {
       href: "/organizerDashboard/users",
       label: t("navigation.users", "Users"),
       icon: UsersIcon,
       permission: PERMISSIONS.USER_READ,
-      role: "organizer"
+      role: ["organizer", "manager"],
     },
     {
       href: "/organizerDashboard/payouts",
       label: t("navigation.payouts", "Payouts"),
       icon: WalletIcon,
-      permission: PERMISSIONS.PAYOUT_READ
+      permission: PERMISSIONS.PAYOUT_READ,
+      role: ["organizer", "manager"],
     },
     {
       href: "/organizerDashboard/settings",
       label: t("navigation.settings", "Settings"),
       icon: GearIcon,
-      permission: PERMISSIONS.PROFILE_VIEW
+      permission: PERMISSIONS.PROFILE_VIEW,
     },
   ];
 
-  const filteredNavLinks = navLinks.filter(link => {
+  const filteredNavLinks = navLinks.filter((link) => {
     // If user is rejected, pending, or inactive, only allow dashboard and settings
-    if (user && (useAuthStore.getState().isOrganizerRejected() || useAuthStore.getState().isOrganizerPending() || useAuthStore.getState().isOrganizerInactive())) {
-      return ['/organizerDashboard', '/organizerDashboard/settings'].includes(link.href);
+    if (
+      user &&
+      (useAuthStore.getState().isOrganizerRejected() ||
+        useAuthStore.getState().isOrganizerPending() ||
+        useAuthStore.getState().isOrganizerInactive())
+    ) {
+      return ["/organizerDashboard", "/organizerDashboard/settings"].includes(
+        link.href,
+      );
     }
 
     // Role check
-    if (link.role && !is(link.role)) {
-      return false;
-    }
+    if (link.role && !isAny(link.role)) return false;
 
     if (!link.permission) return true;
     if (Array.isArray(link.permission)) {
@@ -126,7 +137,9 @@ export function AppSidebar() {
   };
 
   // Get user display name
-  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : "User";
+  const displayName = user
+    ? `${user.firstName} ${user.lastName}`.trim()
+    : "User";
   const displayEmail = user?.email || "";
   const displayLogo = user?.organization?.logo_url || "/john.jpg";
 
@@ -148,7 +161,11 @@ export function AppSidebar() {
         <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
           {collapsed ? (
             <div className="flex justify-center w-full">
-              <TicketIcon size={28} className="text-blue-600" weight="duotone" />
+              <TicketIcon
+                size={28}
+                className="text-blue-600"
+                weight="duotone"
+              />
             </div>
           ) : (
             <>
@@ -176,11 +193,19 @@ export function AppSidebar() {
           {filteredNavLinks.map(({ href, label, icon: Icon }) => {
             // Check if current path matches or starts with the nav item path
             // specific handling for multiple dashboard roots
-            const isActive = pathname === href ||
-              (pathname.startsWith(`${href}/`) && href !== "/organizerDashboard" && href !== "/staffDashboard");
+            const isActive =
+              pathname === href ||
+              (pathname.startsWith(`${href}/`) &&
+                href !== "/organizerDashboard" &&
+                href !== "/staffDashboard");
 
             return (
-              <Link key={href} href={href} className="no-underline" onClick={() => setSidebarOpen(false)}>
+              <Link
+                key={href}
+                href={href}
+                className="no-underline"
+                onClick={() => setSidebarOpen(false)}
+              >
                 <div
                   className={`group flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all relative ${isActive
                     ? "active-menu text-primary font-medium before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-primary before:shadow-md"
@@ -193,7 +218,9 @@ export function AppSidebar() {
                     weight={isActive ? "fill" : "duotone"}
                   />
                   {!collapsed && (
-                    <span className={`text-sm ${isActive ? "text-primary font-medium" : "text-gray-700 font-normal"}`}>
+                    <span
+                      className={`text-sm ${isActive ? "text-primary font-medium" : "text-gray-700 font-normal"}`}
+                    >
                       {label}
                     </span>
                   )}
@@ -250,21 +277,27 @@ export function AppSidebar() {
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {displayName}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {displayEmail}
+                  </p>
                 </div>
               </div>
 
               {/* Payouts */}
-              <DropdownMenuItem
-                onClick={() => {
-                  router.push("/organizerDashboard/payouts");
-                  setSidebarOpen(false);
-                }}
-                className="cursor-pointer"
-              >
-                <WalletIcon className="mr-2 h-4 w-4 text-gray-600" />
-                <span className="text-gray-700">{t("navigation.payouts", "Payouts")}</span>
-              </DropdownMenuItem>
+              <PermissionGuard permission={PERMISSIONS.PAYOUT_READ}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    router.push("/organizerDashboard/payouts");
+                    setSidebarOpen(false);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <WalletIcon className="mr-2 h-4 w-4 text-gray-600" />
+                  <span className="text-gray-700">
+                    {t("navigation.payouts", "Payouts")}
+                  </span>
+                </DropdownMenuItem>
+              </PermissionGuard>
 
               {/* Profile */}
               <DropdownMenuItem
@@ -275,7 +308,9 @@ export function AppSidebar() {
                 className="cursor-pointer"
               >
                 <UserIcon className="mr-2 h-4 w-4 text-gray-600" />
-                <span className="text-gray-700">{t("navigation.profile", "Profile")}</span>
+                <span className="text-gray-700">
+                  {t("navigation.profile", "Profile")}
+                </span>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />

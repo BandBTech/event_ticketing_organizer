@@ -13,7 +13,7 @@ export default function Home() {
     if (!_authChecked) return;
 
     if (isAuthenticated && user) {
-      if (user.roles?.includes('staff') || user.roles?.includes('manager')) {
+      if (user.roles?.includes('staff')) {
         router.replace("/staffDashboard");
       } else {
         router.replace("/organizerDashboard");
