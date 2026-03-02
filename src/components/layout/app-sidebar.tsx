@@ -283,22 +283,6 @@ export function AppSidebar() {
                 </div>
               </div>
 
-              {/* Payouts */}
-              <PermissionGuard permission={PERMISSIONS.PAYOUT_READ}>
-                <DropdownMenuItem
-                  onClick={() => {
-                    router.push("/organizerDashboard/payouts");
-                    setSidebarOpen(false);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <WalletIcon className="mr-2 h-4 w-4 text-gray-600" />
-                  <span className="text-gray-700">
-                    {t("navigation.payouts", "Payouts")}
-                  </span>
-                </DropdownMenuItem>
-              </PermissionGuard>
-
               {/* Profile */}
               <DropdownMenuItem
                 onClick={() => {
