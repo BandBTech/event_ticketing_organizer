@@ -92,7 +92,7 @@ export default function UserFormDialog({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const isEditing = !!userToEdit;
-  const [defaultCountry, setDefaultCountry] = useState<Country>("NP");
+  const [defaultCountry, setDefaultCountry] = useState<Country>("JP");
 
   const schema = isEditing ? updateOrgUserSchema(t) : createOrgUserSchema(t);
   type FormData = CreateOrgUserFormData | UpdateOrgUserFormData;
@@ -133,7 +133,7 @@ export default function UserFormDialog({
           }
         }
       } catch (error) {
-        console.log("Could not detect country, using default (NP)", error);
+        console.log("Could not detect country, using default (JP)", error);
       }
     };
 
