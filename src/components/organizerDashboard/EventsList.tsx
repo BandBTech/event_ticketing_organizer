@@ -22,7 +22,6 @@ const ITEMS_PER_PAGE = 9;
 
 const EVENT_STATUSES = [
   { value: "all", label: "All Statuses" },
-  { value: "draft", label: "Draft" },
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },

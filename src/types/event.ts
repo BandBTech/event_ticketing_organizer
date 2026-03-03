@@ -163,6 +163,7 @@ export interface EventMinimal {
   available?: number;
   capacity?: number;
   created_at?: string;
+  is_featured?: boolean;
 }
 
 export interface EventListPagination {

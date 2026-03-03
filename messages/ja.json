@@ -384,7 +384,8 @@
       "ticketing": "発券業務",
       "discountsPromo": "割引",
       "templates": "テンプレート",
-      "statusHistory": "ステータス履歴"
+      "statusHistory": "ステータス履歴",
+      "ticketSalesDuration": "チケット販売期間"
     },
     "button": {
       "pauseSales": "販売の一時停止",
@@ -499,7 +500,8 @@
       "sold_out": "完売",
       "sales_ended": "販売終了",
       "rejected": "拒否されました",
-      "on_sale": "販売中"
+      "on_sale": "販売中",
+      "featured": "注目の"
     },
     "option": {
       "amountFixed": "金額（固定）",

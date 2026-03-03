@@ -13,6 +13,9 @@ import { SalesStatusBadge } from "./SalesStatusBadge";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { EventStatusBadge } from "./EventStatusBadge";
+import { Badge } from "../ui/badge";
+import { CrownIcon } from "@phosphor-icons/react";
+import FeaturedBadge from "./FeaturedBadge";
 
 function parseCategories(category: string | string[]): string[] {
   const rawCategories = Array.isArray(category)
@@ -73,6 +76,11 @@ export default function EventCard({ event, onClick, customActions }: EventCardPr
             status={event.sales_status}
             className="absolute top-2 right-2"
           />
+        )}
+        {event.is_featured && (
+          <div className="absolute top-2 right-2">
+            <FeaturedBadge />
+          </div>
         )}
       </div>
 

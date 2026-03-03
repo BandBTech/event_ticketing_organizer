@@ -384,7 +384,8 @@
       "ticketing": "biglietteria",
       "discountsPromo": "Sconti",
       "templates": "Modelli",
-      "statusHistory": "Cronologia dello stato"
+      "statusHistory": "Cronologia dello stato",
+      "ticketSalesDuration": "Durata della vendita dei biglietti"
     },
     "button": {
       "pauseSales": "Metti in pausa le vendite",
@@ -500,7 +501,8 @@
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
       "sales_ended": "Vendite terminate",
-      "on_sale": "In vendita"
+      "on_sale": "In vendita",
+      "featured": "In primo piano"
     },
     "option": {
       "amountFixed": "Importo (fisso)",
