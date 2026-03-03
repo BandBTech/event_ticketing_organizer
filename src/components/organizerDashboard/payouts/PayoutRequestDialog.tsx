@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -20,14 +20,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  TranslatedFormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from "@/components/ui/field";
 import {
   Select,
   SelectContent,
@@ -41,11 +38,14 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useCreatePayoutRequest } from "@/hooks/usePayouts";
 import { PayoutSummaryEvent } from "@/types/payout";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 // Schema — request_type is always "event_payout" so it's not a form field
 const PayoutRequestFormSchema = z.object({
   event_id: z.string().min(1, "payouts.validation.selectEvent"),
-  amount: z.number().min(0.01, "payouts.validation.amountMustBeGreaterThanZero"),
+  amount: z
+    .number()
+    .min(0.01, "payouts.validation.amountMustBeGreaterThanZero"),
   description: z.string().optional(),
 });
 
@@ -83,7 +83,9 @@ export function PayoutRequestDialog({
   const safeEvents = events || [];
 
   // Find the selected event's summary data
-  const selectedEventInfo = safeEvents.find((e) => e.event_id === watchedEventId);
+  const selectedEventInfo = safeEvents.find(
+    (e) => e.event_id === watchedEventId,
+  );
 
   // Auto-fill amount from event data whenever it changes (and user hasn't opted to enter manually)
   useEffect(() => {
@@ -152,53 +154,57 @@ export function PayoutRequestDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 pt-4"
-          >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <FieldGroup>
             {/* Event — first field, backed by summary events */}
-            <FormField
+            <Controller
               control={form.control}
               name="event_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel required>{t("payouts.create.event", "Event")}</FormLabel>
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="payout-event-id">
+                    {t("payouts.create.event", "Event")}
+                    <span className="text-destructive"> *</span>
+                  </FieldLabel>
                   <Select
                     onValueChange={handleEventChange}
                     value={field.value}
                     disabled={!!defaultEventId}
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={t(
-                            "payouts.create.eventPlaceholder",
-                            "Select an event",
-                          )}
-                        >
-                          {field.value
-                            ? (safeEvents.find((e) => e.event_id === field.value)
-                                ?.event_title ??
-                              t(
-                                "payouts.create.eventPlaceholder",
-                                "Select an event",
-                              ))
-                            : undefined}
-                        </SelectValue>
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
+                    <SelectTrigger
+                      id="payout-event-id"
+                      aria-invalid={fieldState.invalid}
+                    >
+                      <SelectValue
+                        placeholder={t(
+                          "payouts.create.eventPlaceholder",
+                          "Select an event",
+                        )}
+                      >
+                        {field.value
+                          ? (safeEvents.find((e) => e.event_id === field.value)
+                              ?.event_title ??
+                            t(
+                              "payouts.create.eventPlaceholder",
+                              "Select an event",
+                            ))
+                          : undefined}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[400px]">
                       {safeEvents.length === 0 ? (
                         <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground text-sm">
                           <CalendarBlankIcon className="h-5 w-5" />
-                          <span>{t("event.noEventsFound", "No events found")}</span>
+                          <span>
+                            {t("event.noEventsFound", "No events found")}
+                          </span>
                         </div>
                       ) : (
-                          safeEvents.map((event) => (
+                        safeEvents.map((event) => (
                           <SelectItem
                             key={event.event_id}
                             value={event.event_id}
+                            className="max-w-[390px] truncate line-clamp-1"
                           >
                             {event.event_title}
                           </SelectItem>
@@ -206,21 +212,26 @@ export function PayoutRequestDialog({
                       )}
                     </SelectContent>
                   </Select>
-                  <TranslatedFormMessage t={t} />
-                </FormItem>
+                  {fieldState.invalid && fieldState.error?.message && (
+                    <FieldError>
+                      {t(fieldState.error.message, fieldState.error.message)}
+                    </FieldError>
+                  )}
+                </Field>
               )}
             />
 
             {/* Amount — auto-populated from analytics, lockable */}
-            <FormField
+            <Controller
               control={form.control}
               name="amount"
-              render={({ field }) => (
-                <FormItem>
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
                   <div className="flex items-center justify-between">
-                    <FormLabel required>
+                    <FieldLabel htmlFor="payout-amount">
                       {t("payouts.create.amount", "Amount")}
-                    </FormLabel>
+                      <span className="text-destructive"> *</span>
+                    </FieldLabel>
                     {isAmountLocked && (
                       <button
                         type="button"
@@ -232,24 +243,24 @@ export function PayoutRequestDialog({
                       </button>
                     )}
                   </div>
-                  <FormControl>
-                    <div className="relative">
-                      <CurrencyDollarIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        className="pl-9 pr-3"
-                        disabled={isAmountLocked}
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                      {isAmountLocked && (
-                        <LockIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                  </FormControl>
+                  <div className="relative">
+                    <CurrencyDollarIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                    <Input
+                      id="payout-amount"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      className="pl-9 pr-3"
+                      disabled={isAmountLocked}
+                      aria-invalid={fieldState.invalid}
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                    {isAmountLocked && (
+                      <LockIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
                   {selectedEventInfo && !isManualAmount && (
                     <p className="text-xs text-muted-foreground">
                       {t(
@@ -258,55 +269,60 @@ export function PayoutRequestDialog({
                       )}
                     </p>
                   )}
-                  <TranslatedFormMessage t={t} />
-                </FormItem>
+                  {fieldState.invalid && fieldState.error?.message && (
+                    <FieldError>
+                      {t(fieldState.error.message, fieldState.error.message)}
+                    </FieldError>
+                  )}
+                </Field>
               )}
             />
 
             {/* Description */}
-            <FormField
+            <Controller
               control={form.control}
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t(
-                      "payouts.create.descriptionLabel",
-                      "Description",
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="payout-description">
+                    {t("payouts.create.descriptionLabel", "Description")}
+                  </FieldLabel>
+                  <Textarea
+                    id="payout-description"
+                    placeholder={t(
+                      "payouts.create.descriptionPlaceholder",
+                      "Add notes…",
                     )}
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t(
-                        "payouts.create.descriptionPlaceholder",
-                        "Add notes…",
-                      )}
-                      className="resize-none"
-                      rows={3}
-                      {...field}
-                    />
-                  </FormControl>
-                  <TranslatedFormMessage t={t} />
-                </FormItem>
+                    className="resize-none"
+                    rows={3}
+                    aria-invalid={fieldState.invalid}
+                    {...field}
+                  />
+                  {fieldState.invalid && fieldState.error?.message && (
+                    <FieldError>
+                      {t(fieldState.error.message, fieldState.error.message)}
+                    </FieldError>
+                  )}
+                </Field>
               )}
             />
+          </FieldGroup>
 
-            <DialogFooter className="gap-2 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                {t("common.cancel", "Cancel")}
-              </Button>
-              <Button type="submit" disabled={createPayoutMutation.isPending}>
-                {createPayoutMutation.isPending
-                  ? t("common.processing", "Processing…")
-                  : t("common.submit", "Submit")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+          <DialogFooter className="gap-2 mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button type="submit" disabled={createPayoutMutation.isPending}>
+              {createPayoutMutation.isPending
+                ? t("common.processing", "Processing…")
+                : t("common.submit", "Submit")}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

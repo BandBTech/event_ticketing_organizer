@@ -22,7 +22,6 @@ export function PayoutSummaryCards({
   isLoading,
 }: PayoutSummaryCardsProps) {
   const { t } = useTranslation();
-  console.log(summary);
   const cards = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" />,
