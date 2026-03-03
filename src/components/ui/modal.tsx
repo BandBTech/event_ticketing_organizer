@@ -34,7 +34,7 @@ export function Modal({
         )}
       >
         {(title || description) && (
-          <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
+          <DialogHeader className="px-6 pt-6 pb-4 shrink-0 border-b">
             {title && <DialogTitle>{title}</DialogTitle>}
             {description && (
               <DialogDescription>{description}</DialogDescription>

@@ -101,17 +101,17 @@ export default function UserFormDialog({
     resolver: zodResolver(schema),
     defaultValues: isEditing
       ? {
-          role_type: "staff",
-          active: true,
-        }
+        role_type: "staff",
+        active: true,
+      }
       : {
-          first_name: "",
-          last_name: "",
-          email: "",
-          password: "",
-          phone: "",
-          role_name: "staff",
-        },
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        phone: "",
+        role_name: "staff",
+      },
     mode: "onChange",
   });
 
@@ -245,13 +245,13 @@ export default function UserFormDialog({
       description={
         isEditing
           ? t(
-              "users.edit.description",
-              "Update team member's role and access status.",
-            )
+            "users.edit.description",
+            "Update team member's role and access status.",
+          )
           : t(
-              "users.create.description",
-              "Add a new staff or manager to your organization.",
-            )
+            "users.create.description",
+            "Add a new staff or manager to your organization.",
+          )
       }
     >
       <Form {...form}>
@@ -647,31 +647,32 @@ export default function UserFormDialog({
                     </FormItem>
                   )}
                 />
+              </>
             )}
           </div>
 
           <DialogFooter className="px-6 py-4 border-t bg-background shrink-0 gap-2 sm:justify-end">
             <Button
-                variant="outline"
-                type="button"
-                onClick={() => onOpenChange(false)}
-                disabled={isPending}
-              >
-                {t("common.cancel", "Cancel")}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing
-                  ? t("common.saveChanges", "Save Changes")
-                  : t("users.create.label", "Add Team Member")}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              variant="outline"
+              type="button"
+              onClick={() => onOpenChange(false)}
+              disabled={isPending}
+            >
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isEditing
+                ? t("common.saveChanges", "Save Changes")
+                : t("users.create.label", "Add Team Member")}
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
     </Modal>
   );
 }
