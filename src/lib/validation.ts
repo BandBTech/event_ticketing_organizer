@@ -3,41 +3,60 @@ import { z } from "zod";
 
 // import { useTranslation } from '@/hooks/useTranslation';
 
-
-
 // Helper for required date string
 // fieldNameKey should be in format "translationKey:FallbackName" for translation support
-const createRequiredDateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string, fieldNameKey?: string) =>
-  z.string().min(1, fieldNameKey ? `event.validation.dateTimeRequired|field:${fieldNameKey}` : 'This field is required.').superRefine((val, ctx) => {
-    const date = new Date(val);
-    if (isNaN(date.getTime())) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('common.validation.invalidDatetime', 'Enter valid datetime.'),
-      });
-      return;
-    }
-    if (date.getFullYear() > 9999) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('common.validation.yearLimit', 'Year cannot be more than 4 digits.'),
-      });
-      return;
-    }
+const createRequiredDateSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+  fieldNameKey?: string,
+) =>
+  z
+    .string()
+    .min(
+      1,
+      fieldNameKey
+        ? `event.validation.dateTimeRequired|field:${fieldNameKey}`
+        : "This field is required.",
+    )
+    .superRefine((val, ctx) => {
+      const date = new Date(val);
+      if (isNaN(date.getTime())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t(
+            "common.validation.invalidDatetime",
+            "Enter valid datetime.",
+          ),
+        });
+        return;
+      }
+      if (date.getFullYear() > 9999) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t(
+            "common.validation.yearLimit",
+            "Year cannot be more than 4 digits.",
+          ),
+        });
+        return;
+      }
 
-    // Check for past date (previous date validation)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (date < today) {
-      const message = fieldNameKey
-        ? `event.validation.fieldPastDate|field:${fieldNameKey}`
-        : t('event.validation.pastDate', 'Date cannot be in the past.');
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message,
-      });
-    }
-  });
+      // Check for past date (previous date validation)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (date < today) {
+        const message = fieldNameKey
+          ? `event.validation.fieldPastDate|field:${fieldNameKey}`
+          : t("event.validation.pastDate", "Date cannot be in the past.");
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message,
+        });
+      }
+    });
 
 // Field Validation Limits
 export const EVENT_TITLE_MAX = 200;
@@ -69,100 +88,304 @@ export const PROMO_CODE_AMOUNT_MAX = 100000;
 export const PROMO_CODE_QUANTITY_MAX = 100000;
 
 // Auth Schemas
-export const loginSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  email: z
-    .string()
-    .min(1, t('auth.login.validation.emailRequired', 'Email is required.'))
-    .email(t('auth.login.validation.emailInvalid', 'Email is invalid.')),
-  password: z.string().min(1, t('auth.login.validation.passwordRequired', 'Password is required.')),
-  rememberMe: z.boolean(),
-});
+export const loginSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    email: z
+      .string()
+      .min(1, t("auth.login.validation.emailRequired", "Email is required."))
+      .email(t("auth.login.validation.emailInvalid", "Email is invalid.")),
+    password: z
+      .string()
+      .min(
+        1,
+        t("auth.login.validation.passwordRequired", "Password is required."),
+      ),
+    rememberMe: z.boolean(),
+  });
 
 export type LoginFormData = z.infer<ReturnType<typeof loginSchema>>;
 
 // Registration Schemas
-export const registerBasicInfoSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  firstName: z
-    .string()
-    .min(1, t('auth.signup.validation.firstNameRequired', 'First name is required.'))
-    .min(FIRST_NAME_MIN, t('auth.signup.validation.firstNameTooShort', 'First name must be at least {min} characters.', { min: FIRST_NAME_MIN }))
-    .max(FIRST_NAME_MAX, t('auth.signup.validation.firstNameTooLong', 'First name must not exceed {max} characters.', { max: FIRST_NAME_MAX })),
-  lastName: z
-    .string()
-    .min(1, t('auth.signup.validation.lastNameRequired', 'Last name is required.'))
-    .min(LAST_NAME_MIN, t('auth.signup.validation.lastNameTooShort', 'Last name must be at least {min} characters.', { min: LAST_NAME_MIN }))
-    .max(LAST_NAME_MAX, t('auth.signup.validation.lastNameTooLong', 'Last name must not exceed {max} characters.', { max: LAST_NAME_MAX })),
-  email: z
-    .string()
-    .min(1, t('auth.signup.validation.emailRequired', 'Email is required.'))
-    .email(t('auth.signup.validation.emailInvalid', 'Invalid email address.')),
-  phone: z
-    .string()
-    .min(1, t('auth.signup.validation.phoneRequired', 'Contact number is required.'))
-    .refine((val) => isValidPhoneNumber(val), t('auth.signup.validation.phoneInvalid', 'Invalid phone number.')),
-});
+export const registerBasicInfoSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    firstName: z
+      .string()
+      .min(
+        1,
+        t(
+          "auth.signup.validation.firstNameRequired",
+          "First name is required.",
+        ),
+      )
+      .min(
+        FIRST_NAME_MIN,
+        t(
+          "auth.signup.validation.firstNameTooShort",
+          "First name must be at least {min} characters.",
+          { min: FIRST_NAME_MIN },
+        ),
+      )
+      .max(
+        FIRST_NAME_MAX,
+        t(
+          "auth.signup.validation.firstNameTooLong",
+          "First name must not exceed {max} characters.",
+          { max: FIRST_NAME_MAX },
+        ),
+      ),
+    lastName: z
+      .string()
+      .min(
+        1,
+        t("auth.signup.validation.lastNameRequired", "Last name is required."),
+      )
+      .min(
+        LAST_NAME_MIN,
+        t(
+          "auth.signup.validation.lastNameTooShort",
+          "Last name must be at least {min} characters.",
+          { min: LAST_NAME_MIN },
+        ),
+      )
+      .max(
+        LAST_NAME_MAX,
+        t(
+          "auth.signup.validation.lastNameTooLong",
+          "Last name must not exceed {max} characters.",
+          { max: LAST_NAME_MAX },
+        ),
+      ),
+    email: z
+      .string()
+      .min(1, t("auth.signup.validation.emailRequired", "Email is required."))
+      .email(
+        t("auth.signup.validation.emailInvalid", "Invalid email address."),
+      ),
+    phone: z
+      .string()
+      .min(
+        1,
+        t(
+          "auth.signup.validation.phoneRequired",
+          "Contact number is required.",
+        ),
+      )
+      .refine(
+        (val) => isValidPhoneNumber(val),
+        t("auth.signup.validation.phoneInvalid", "Invalid phone number."),
+      ),
+  });
 
-export type RegisterBasicInfoFormData = z.infer<ReturnType<typeof registerBasicInfoSchema>>;
+export type RegisterBasicInfoFormData = z.infer<
+  ReturnType<typeof registerBasicInfoSchema>
+>;
 
-export const registerOTPSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  otp: z.string().length(6, t('auth.verifyOTP.validation.otpLength', 'OTP must be 6 digits.')),
-});
+export const registerOTPSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    otp: z
+      .string()
+      .length(
+        6,
+        t("auth.verifyOTP.validation.otpLength", "OTP must be 6 digits."),
+      ),
+  });
 
 export type RegisterOTPFormData = z.infer<ReturnType<typeof registerOTPSchema>>;
 
-export const registerPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
-  .object({
-    password: z
-      .string()
-      .min(1, t('auth.signup.validation.passwordRequired', 'Password is required.'))
-      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', 'Password must be at least {min} characters.', { min: PASSWORD_MIN }))
-      .max(PASSWORD_MAX, t('auth.signup.validation.passwordMax', 'Password cannot exceed {max} characters.', { max: PASSWORD_MAX }))
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', 'Password must contain at least one uppercase and one lowercase letter.'))
-      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', 'Password must contain at least one special character.'))
-      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', 'Password must contain at least one number.')),
-    confirmPassword: z.string().min(1, t('auth.signup.validation.confirmPasswordRequired', 'Confirm password is required.')),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: t('auth.signup.validation.passwordMismatch', 'Passwords do not match.'),
-    path: ["confirmPassword"],
-  });
+export const registerPasswordSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z
+    .object({
+      password: z
+        .string()
+        .min(
+          1,
+          t("auth.signup.validation.passwordRequired", "Password is required."),
+        )
+        .min(
+          PASSWORD_MIN,
+          t(
+            "auth.signup.validation.passwordMin",
+            "Password must be at least {min} characters.",
+            { min: PASSWORD_MIN },
+          ),
+        )
+        .max(
+          PASSWORD_MAX,
+          t(
+            "auth.signup.validation.passwordMax",
+            "Password cannot exceed {max} characters.",
+            { max: PASSWORD_MAX },
+          ),
+        )
+        .regex(
+          /(?=.*[a-z])(?=.*[A-Z])/,
+          t(
+            "auth.signup.validation.passwordUpperLower",
+            "Password must contain at least one uppercase and one lowercase letter.",
+          ),
+        )
+        .regex(
+          /[^A-Za-z0-9]/,
+          t(
+            "auth.signup.validation.passwordSpecialChar",
+            "Password must contain at least one special character.",
+          ),
+        )
+        .regex(
+          /[0-9]/,
+          t(
+            "auth.signup.validation.passwordNumber",
+            "Password must contain at least one number.",
+          ),
+        ),
+      confirmPassword: z
+        .string()
+        .min(
+          1,
+          t(
+            "auth.signup.validation.confirmPasswordRequired",
+            "Confirm password is required.",
+          ),
+        ),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t(
+        "auth.signup.validation.passwordMismatch",
+        "Passwords do not match.",
+      ),
+      path: ["confirmPassword"],
+    });
 
-export type RegisterPasswordFormData = z.infer<ReturnType<typeof registerPasswordSchema>>;
+export type RegisterPasswordFormData = z.infer<
+  ReturnType<typeof registerPasswordSchema>
+>;
 
 // Forgot Password Schema
-export const forgotPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  email: z
-    .string()
-    .min(1, t('auth.login.validation.emailRequired', 'Email is required.'))
-    .email(t('auth.login.validation.emailInvalid', 'Invalid email address.')),
-});
-
-export type ForgotPasswordFormData = z.infer<ReturnType<typeof forgotPasswordSchema>>;
-
-// Reset Password Schema
-export const resetPasswordSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
-  .object({
-    newPassword: z
+export const forgotPasswordSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    email: z
       .string()
-      .min(1, t('auth.login.validation.passwordRequired', 'Password is required.'))
-      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', 'Password must be at least {min} characters.', { min: PASSWORD_MIN }))
-      .max(PASSWORD_MAX, t('auth.signup.validation.passwordMax', 'Password cannot exceed {max} characters.', { max: PASSWORD_MAX }))
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', 'Password must contain at least one uppercase and one lowercase letter.'))
-      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', 'Password must contain at least one special character.'))
-      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', 'Password must contain at least one number.')),
-    confirmPassword: z.string().min(1, t('auth.signup.validation.confirmPasswordRequired', 'Confirm password is required.')),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: t('auth.signup.validation.passwordMismatch', 'Passwords do not match.'),
-    path: ["confirmPassword"],
+      .min(1, t("auth.login.validation.emailRequired", "Email is required."))
+      .email(t("auth.login.validation.emailInvalid", "Invalid email address.")),
   });
 
-export type ResetPasswordFormData = z.infer<ReturnType<typeof resetPasswordSchema>>;
+export type ForgotPasswordFormData = z.infer<
+  ReturnType<typeof forgotPasswordSchema>
+>;
+
+// Reset Password Schema
+export const resetPasswordSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z
+    .object({
+      newPassword: z
+        .string()
+        .min(
+          1,
+          t("auth.login.validation.passwordRequired", "Password is required."),
+        )
+        .min(
+          PASSWORD_MIN,
+          t(
+            "auth.signup.validation.passwordMin",
+            "Password must be at least {min} characters.",
+            { min: PASSWORD_MIN },
+          ),
+        )
+        .max(
+          PASSWORD_MAX,
+          t(
+            "auth.signup.validation.passwordMax",
+            "Password cannot exceed {max} characters.",
+            { max: PASSWORD_MAX },
+          ),
+        )
+        .regex(
+          /(?=.*[a-z])(?=.*[A-Z])/,
+          t(
+            "auth.signup.validation.passwordUpperLower",
+            "Password must contain at least one uppercase and one lowercase letter.",
+          ),
+        )
+        .regex(
+          /[^A-Za-z0-9]/,
+          t(
+            "auth.signup.validation.passwordSpecialChar",
+            "Password must contain at least one special character.",
+          ),
+        )
+        .regex(
+          /[0-9]/,
+          t(
+            "auth.signup.validation.passwordNumber",
+            "Password must contain at least one number.",
+          ),
+        ),
+      confirmPassword: z
+        .string()
+        .min(
+          1,
+          t(
+            "auth.signup.validation.confirmPasswordRequired",
+            "Confirm password is required.",
+          ),
+        ),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t(
+        "auth.signup.validation.passwordMismatch",
+        "Passwords do not match.",
+      ),
+      path: ["confirmPassword"],
+    });
+
+export type ResetPasswordFormData = z.infer<
+  ReturnType<typeof resetPasswordSchema>
+>;
 
 // Helper to create a required number schema with proper "is required" message
 // fieldNameKey should be in format "translationKey:FallbackName" for translation support
 const createRequiredNumberSchema = (
-  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string,
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
   fieldNameKey: string,
   minValue: number = 1,
   maxValue: number = Number.MAX_SAFE_INTEGER,
@@ -171,7 +394,7 @@ const createRequiredNumberSchema = (
   return z.preprocess(
     (val) => {
       // Convert empty string or NaN to undefined so z.number() treats it as missing
-      if (val === '' || val === null || val === undefined) return undefined;
+      if (val === "" || val === null || val === undefined) return undefined;
       const num = Number(val);
       return isNaN(num) ? undefined : num;
     },
@@ -179,174 +402,264 @@ const createRequiredNumberSchema = (
       .number({
         message: `common.validation.required|field:${fieldNameKey}`,
       })
-      .min(minValue, `common.validation.min|field:${fieldNameKey},value:${minValue}`)
-      .max(maxValue, `common.validation.max|field:${fieldNameKey},value:${maxValue}`)
+      .min(
+        minValue,
+        `common.validation.min|field:${fieldNameKey},value:${minValue}`,
+      )
+      .max(
+        maxValue,
+        `common.validation.max|field:${fieldNameKey},value:${maxValue}`,
+      ),
   );
 };
 
-export const createTicketSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z
-  .object({
-    id: z.string().optional(),
-    name: z
-      .string()
-      .min(1, t('event.validation.tierNameRequired', "Tier Name is required."))
-      .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.", { max: TIER_NAME_MAX.toString() })),
-    price: createRequiredNumberSchema(
-      t,
-      'event.field.ticketPrice:Price',
-      1,
-      MAX_PRICE,
-    ),
-    quantity: createRequiredNumberSchema(
-      t,
-      'event.field.ticketQuantity:Quantity',
-      1,
-      MAX_QUANTITY,
-    ),
-    gst: z.preprocess(
-      (val) => {
-        if (val === '' || val === null || val === undefined) return undefined;
+export const createTicketSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z
+    .object({
+      id: z.string().optional(),
+      name: z
+        .string()
+        .min(
+          1,
+          t("event.validation.tierNameRequired", "Tier Name is required."),
+        )
+        .max(
+          TIER_NAME_MAX,
+          t(
+            "event.validation.tierNameLength",
+            "Tier Name must be under {max} characters.",
+            { max: TIER_NAME_MAX.toString() },
+          ),
+        ),
+      price: createRequiredNumberSchema(
+        t,
+        "event.field.ticketPrice:Price",
+        1,
+        MAX_PRICE,
+      ),
+      quantity: createRequiredNumberSchema(
+        t,
+        "event.field.ticketQuantity:Quantity",
+        1,
+        MAX_QUANTITY,
+      ),
+      gst: z.preprocess(
+        (val) => {
+          if (val === "" || val === null || val === undefined) return undefined;
+          const num = Number(val);
+          return isNaN(num) ? undefined : num;
+        },
+        z
+          .number({
+            message: "GST is required. Set to 0 if not applicable.",
+          })
+          .min(0, t("event.validation.gstPositive", "GST must be positive."))
+          .max(100, t("event.validation.gstMax", "GST cannot exceed 100%.")),
+      ),
+      salesStart: createRequiredDateSchema(
+        t,
+        "event.field.salesStart:Sales Start Date",
+      ),
+      salesEnd: createRequiredDateSchema(
+        t,
+        "event.field.salesEnd:Sales End Date",
+      ),
+    })
+    .refine(
+      (data) => {
+        if (!data.salesEnd || !data.salesStart) return true;
+        return new Date(data.salesEnd) > new Date(data.salesStart);
+      },
+      {
+        message: t(
+          "event.validation.salesEndAfterStart",
+          "Sales End Date must be after Sales Start Date.",
+        ),
+        path: ["salesEnd"],
+      },
+    );
+// .superRefine((data, ctx) => {
+//   // Skip 24hr validation if editing an existing ticket (has ID)
+//   if (data.id) return;
+
+//   const now = new Date();
+//   // 24 hours from now
+//   const bufferTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+//   if (data.salesStart) {
+//     const startDate = new Date(data.salesStart);
+//     if (startDate < bufferTime) {
+//       ctx.addIssue({
+//         code: z.ZodIssueCode.custom,
+//         message: t('event.validation.salesStart24Hrs', "Sales Start Date must be at least 24 hours from now."),
+//         path: ["salesStart"],
+//       });
+//     }
+//   }
+
+//   if (data.salesEnd) {
+//     const endDate = new Date(data.salesEnd);
+
+//     if (endDate < bufferTime) {
+//       ctx.addIssue({
+//         code: z.ZodIssueCode.custom,
+//         message: t('event.validation.salesEnd24Hrs', "Sales End Date must be at least 24 hours from now."),
+//         path: ["salesEnd"],
+//       });
+//     }
+//   }
+// })
+
+export const createPromoCodeSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z
+    .object({
+      code: z
+        .string()
+        .min(
+          1,
+          t("event.validation.promoCodeRequired", "Promo Code is required."),
+        )
+        .max(
+          PROMO_CODE_NAME_MAX,
+          t(
+            "event.validation.promoCodeMaxLength",
+            "Promo Code must be under {max} characters.",
+            { max: PROMO_CODE_NAME_MAX.toString() },
+          ),
+        )
+        .regex(
+          /^[A-Z0-9_-]+$/,
+          t(
+            "event.validation.promoCodeFormat",
+            "Promo Code may only contain A-Z , 0-9, _ or -",
+          ),
+        ),
+      discountType: z
+        .string()
+        .min(
+          1,
+          t(
+            "event.validation.discountTypeRequired",
+            "Discount Type is required.",
+          ),
+        ),
+      amount: z.preprocess((val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
         const num = Number(val);
         return isNaN(num) ? undefined : num;
-      },
-      z
-        .number({
-          message: "GST is required. Set to 0 if not applicable.",
-        })
-        .min(0, t('event.validation.gstPositive', "GST must be positive."))
-        .max(100, t('event.validation.gstMax', "GST cannot exceed 100%."))
-    ),
-    salesStart: createRequiredDateSchema(t, 'event.field.salesStart:Sales Start Date'),
-    salesEnd: createRequiredDateSchema(t, 'event.field.salesEnd:Sales End Date'),
-  })
-  .refine((data) => {
-    if (!data.salesEnd || !data.salesStart) return true;
-    return new Date(data.salesEnd) > new Date(data.salesStart);
-  }, {
-    message: t('event.validation.salesEndAfterStart', "Sales End Date must be after Sales Start Date."),
-    path: ["salesEnd"],
-  })
-  // .superRefine((data, ctx) => {
-  //   // Skip 24hr validation if editing an existing ticket (has ID)
-  //   if (data.id) return;
+      }, z.number().optional()),
+      quantity: createRequiredNumberSchema(
+        t,
+        "event.field.discountQuantity:Quantity",
+        1,
+        PROMO_CODE_QUANTITY_MAX,
+      ),
+    })
+    .superRefine((data, ctx) => {
+      const { discountType, amount } = data;
 
-  //   const now = new Date();
-  //   // 24 hours from now
-  //   const bufferTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      // Handle empty amount based on discount type
+      if (amount === undefined || amount === null) {
+        const message =
+          discountType === "percentage"
+            ? t(
+              "event.validation.discountPercentageRequired",
+              "Discount Percentage is required.",
+            )
+            : t(
+              "event.validation.discountAmountRequired",
+              "Discount Amount is required.",
+            );
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message,
+          path: ["amount"],
+        });
+        return;
+      }
 
-  //   if (data.salesStart) {
-  //     const startDate = new Date(data.salesStart);
-  //     if (startDate < bufferTime) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         message: t('event.validation.salesStart24Hrs', "Sales Start Date must be at least 24 hours from now."),
-  //         path: ["salesStart"],
-  //       });
-  //     }
-  //   }
-
-  //   if (data.salesEnd) {
-  //     const endDate = new Date(data.salesEnd);
-
-  //     if (endDate < bufferTime) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         message: t('event.validation.salesEnd24Hrs', "Sales End Date must be at least 24 hours from now."),
-  //         path: ["salesEnd"],
-  //       });
-  //     }
-  //   }
-  // })
-  ;
-
-export const createPromoCodeSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  code: z
-    .string()
-    .min(1, t('event.validation.promoCodeRequired', "Promo Code is required."))
-    .max(PROMO_CODE_NAME_MAX, t('event.validation.promoCodeMaxLength', "Promo Code must be under {max} characters.", { max: PROMO_CODE_NAME_MAX.toString() }))
-    .regex(/^[A-Z0-9_-]+$/, t('event.validation.promoCodeFormat', "Promo Code may only contain A-Z , 0-9, _ or -")),
-  discountType: z.string().min(1, t('event.validation.discountTypeRequired', "Discount Type is required.")),
-  amount: z.preprocess(
-    (val) => {
-      if (val === '' || val === null || val === undefined) return undefined;
-      const num = Number(val);
-      return isNaN(num) ? undefined : num;
-    },
-    z.number().optional()
-  ),
-  quantity: createRequiredNumberSchema(
-    t,
-    'event.field.discountQuantity:Quantity',
-    1,
-    PROMO_CODE_QUANTITY_MAX,
-  ),
-}).superRefine((data, ctx) => {
-  const { discountType, amount } = data;
-
-  // Handle empty amount based on discount type
-  if (amount === undefined || amount === null) {
-    const message = discountType === 'percentage'
-      ? t('event.validation.discountPercentageRequired', 'Discount Percentage is required.')
-      : t('event.validation.discountAmountRequired', 'Discount Amount is required.');
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message,
-      path: ['amount'],
+      if (discountType === "percentage") {
+        if (!amount) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.discountPercentageRequired",
+              "Discount Percentage is required.",
+            ),
+            path: ["amount"],
+          });
+        }
+        // Percentage validation: 0.01 - 100, max 2 decimal places
+        if (amount < 0.01) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.percentageMin",
+              "Percentage must be at least 0.01%.",
+            ),
+            path: ["amount"],
+          });
+        }
+        if (amount > 100) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.percentageMax",
+              "Percentage cannot exceed 100%.",
+            ),
+            path: ["amount"],
+          });
+        }
+        // Check for max 2 decimal places
+        const decimalStr = amount.toString();
+        const decimalPart = decimalStr.split(".")[1];
+        if (decimalPart && decimalPart.length > 2) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.percentageDecimals",
+              "Percentage can have at most 2 decimal places.",
+            ),
+            path: ["amount"],
+          });
+        }
+      } else {
+        // Amount (fixed) validation: 1 - PROMO_CODE_AMOUNT_MAX
+        if (amount < 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.amountRequired",
+              "Amount must be at least 1.",
+            ),
+            path: ["amount"],
+          });
+        }
+        if (amount > PROMO_CODE_AMOUNT_MAX) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.amountMax",
+              "Amount cannot exceed {max}.",
+              { max: PROMO_CODE_AMOUNT_MAX.toLocaleString() },
+            ),
+            path: ["amount"],
+          });
+        }
+      }
     });
-    return;
-  }
-
-  if (discountType === 'percentage') {
-    if (!amount) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.discountPercentageRequired', 'Discount Percentage is required.'),
-        path: ['amount'],
-      });
-    }
-    // Percentage validation: 0.01 - 100, max 2 decimal places
-    if (amount < 0.01) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.percentageMin', "Percentage must be at least 0.01%."),
-        path: ['amount'],
-      });
-    }
-    if (amount > 100) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.percentageMax', "Percentage cannot exceed 100%."),
-        path: ['amount'],
-      });
-    }
-    // Check for max 2 decimal places
-    const decimalStr = amount.toString();
-    const decimalPart = decimalStr.split('.')[1];
-    if (decimalPart && decimalPart.length > 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.percentageDecimals', "Percentage can have at most 2 decimal places."),
-        path: ['amount'],
-      });
-    }
-  } else {
-    // Amount (fixed) validation: 1 - PROMO_CODE_AMOUNT_MAX
-    if (amount < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.amountRequired', "Amount must be at least 1."),
-        path: ['amount'],
-      });
-    }
-    if (amount > PROMO_CODE_AMOUNT_MAX) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('event.validation.amountMax', "Amount cannot exceed {max}.", { max: PROMO_CODE_AMOUNT_MAX.toLocaleString() }),
-        path: ['amount'],
-      });
-    }
-  }
-});
 
 export const createEventSchema = (
   t: (
@@ -628,76 +941,231 @@ export const createEventSchema = (
       }
     });
 
-
-export const createTierTemplateSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  template_name: z.string()
-    .min(1, t('event.validation.tierNameRequired', "Tier Name is required."))
-    .max(TIER_NAME_MAX, t('event.validation.tierNameLength', "Tier Name must be under {max} characters.", { max: TIER_NAME_MAX.toString() })),
-  description: z.string()
-    .max(TIER_DESC_MAX, t('event.validation.tierDescLength', "Tier Description must be under {max} characters.", { max: TIER_DESC_MAX.toString() }))
-    .optional(),
-});
+export const createTierTemplateSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    template_name: z
+      .string()
+      .min(1, t("event.validation.tierNameRequired", "Tier Name is required."))
+      .max(
+        TIER_NAME_MAX,
+        t(
+          "event.validation.tierNameLength",
+          "Tier Name must be under {max} characters.",
+          { max: TIER_NAME_MAX.toString() },
+        ),
+      ),
+    description: z
+      .string()
+      .max(
+        TIER_DESC_MAX,
+        t(
+          "event.validation.tierDescLength",
+          "Tier Description must be under {max} characters.",
+          { max: TIER_DESC_MAX.toString() },
+        ),
+      )
+      .optional(),
+  });
 
 export type EventFormData = z.infer<ReturnType<typeof createEventSchema>>;
 export type TicketFormData = z.infer<ReturnType<typeof createTicketSchema>>;
-export type PromoCodeFormData = z.infer<ReturnType<typeof createPromoCodeSchema>>;
-export type TierTemplateFormData = z.infer<ReturnType<typeof createTierTemplateSchema>>;
+export type PromoCodeFormData = z.infer<
+  ReturnType<typeof createPromoCodeSchema>
+>;
+export type TierTemplateFormData = z.infer<
+  ReturnType<typeof createTierTemplateSchema>
+>;
 
-export const createOrgUserSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => {
+export const createOrgUserSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) => {
   const v = createValidationHelpers(t);
 
   return z.object({
-    first_name: z.string()
+    first_name: z
+      .string()
       .trim()
-      .min(1, t('auth.signup.validation.firstNameRequired', "First Name is required."))
-      .min(FIRST_NAME_MIN, t('auth.signup.validation.firstNameTooShort', "First Name must be at least {min} characters.", { min: FIRST_NAME_MIN.toString() }))
-      .max(FIRST_NAME_MAX, t('auth.signup.validation.firstNameTooLong', "First Name must not exceed {max} characters.", { max: FIRST_NAME_MAX.toString() })),
-    last_name: z.string()
+      .min(
+        1,
+        t(
+          "auth.signup.validation.firstNameRequired",
+          "First Name is required.",
+        ),
+      )
+      .min(
+        FIRST_NAME_MIN,
+        t(
+          "auth.signup.validation.firstNameTooShort",
+          "First Name must be at least {min} characters.",
+          { min: FIRST_NAME_MIN.toString() },
+        ),
+      )
+      .max(
+        FIRST_NAME_MAX,
+        t(
+          "auth.signup.validation.firstNameTooLong",
+          "First Name must not exceed {max} characters.",
+          { max: FIRST_NAME_MAX.toString() },
+        ),
+      ),
+    last_name: z
+      .string()
       .trim()
-      .min(1, t('auth.signup.validation.lastNameRequired', "Last Name is required."))
-      .min(LAST_NAME_MIN, t('auth.signup.validation.lastNameTooShort', "Last Name must be at least {min} characters.", { min: LAST_NAME_MIN.toString() }))
-      .max(LAST_NAME_MAX, t('auth.signup.validation.lastNameTooLong', "Last Name must not exceed {max} characters.", { max: LAST_NAME_MAX.toString() })),
-    email: z.string()
-      .min(1, t('auth.signup.validation.emailRequired', "Email is required."))
-      .email(t('auth.signup.validation.emailInvalid', "Invalid email address.")),
-    password: z.string()
-      .min(1, t('auth.signup.validation.passwordRequired', "Password is required."))
-      .min(PASSWORD_MIN, t('auth.signup.validation.passwordMin', "Password must be at least {min} characters.", { min: PASSWORD_MIN.toString() }))
-      .regex(/(?=.*[a-z])(?=.*[A-Z])/, t('auth.signup.validation.passwordUpperLower', "Password must contain at least one uppercase and one lowercase letter."))
-      .regex(/[^A-Za-z0-9]/, t('auth.signup.validation.passwordSpecialChar', "Password must contain at least one special character."))
-      .regex(/[0-9]/, t('auth.signup.validation.passwordNumber', "Password must contain at least one number.")),
-    phone: z.string()
+      .min(
+        1,
+        t("auth.signup.validation.lastNameRequired", "Last Name is required."),
+      )
+      .min(
+        LAST_NAME_MIN,
+        t(
+          "auth.signup.validation.lastNameTooShort",
+          "Last Name must be at least {min} characters.",
+          { min: LAST_NAME_MIN.toString() },
+        ),
+      )
+      .max(
+        LAST_NAME_MAX,
+        t(
+          "auth.signup.validation.lastNameTooLong",
+          "Last Name must not exceed {max} characters.",
+          { max: LAST_NAME_MAX.toString() },
+        ),
+      ),
+    email: z
+      .string()
+      .min(1, t("auth.signup.validation.emailRequired", "Email is required."))
+      .email(
+        t("auth.signup.validation.emailInvalid", "Invalid email address."),
+      ),
+    password: z
+      .string()
+      .min(
+        1,
+        t("auth.signup.validation.passwordRequired", "Password is required."),
+      )
+      .min(
+        PASSWORD_MIN,
+        t(
+          "auth.signup.validation.passwordMin",
+          "Password must be at least {min} characters.",
+          { min: PASSWORD_MIN.toString() },
+        ),
+      )
+      .regex(
+        /(?=.*[a-z])(?=.*[A-Z])/,
+        t(
+          "auth.signup.validation.passwordUpperLower",
+          "Password must contain at least one uppercase and one lowercase letter.",
+        ),
+      )
+      .regex(
+        /[^A-Za-z0-9]/,
+        t(
+          "auth.signup.validation.passwordSpecialChar",
+          "Password must contain at least one special character.",
+        ),
+      )
+      .regex(
+        /[0-9]/,
+        t(
+          "auth.signup.validation.passwordNumber",
+          "Password must contain at least one number.",
+        ),
+      ),
+    phone: z
+      .string()
       .optional()
-      .refine((val) => !val || isValidPhoneNumber(val), t('auth.signup.validation.phoneInvalid', "Invalid phone number.")),
-    role_name: z.enum(['staff', 'manager']),
+      .refine(
+        (val) => !val || isValidPhoneNumber(val),
+        t("auth.signup.validation.phoneInvalid", "Invalid phone number."),
+      ),
+    role_name: z.enum(["staff", "manager"]),
   });
 };
 
 // Update schema uses t for consistency and potential future validation messages
-export const updateOrgUserSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  role_type: z.enum(['staff', 'manager'], {
-    message: t('users.validation.roleRequired', 'Role is required')
-  }),
-  active: z.boolean().optional(),
-});
+export const updateOrgUserSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    role_type: z.enum(["staff", "manager"], {
+      message: t("users.validation.roleRequired", "Role is required"),
+    }),
+    active: z.boolean().optional(),
+  });
 
-export type CreateOrgUserFormData = z.infer<ReturnType<typeof createOrgUserSchema>>;
-export type UpdateOrgUserFormData = z.infer<ReturnType<typeof updateOrgUserSchema>>;
+export type CreateOrgUserFormData = z.infer<
+  ReturnType<typeof createOrgUserSchema>
+>;
+export type UpdateOrgUserFormData = z.infer<
+  ReturnType<typeof updateOrgUserSchema>
+>;
 
-export const stopSalesSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  reason: z.string()
-    .max(STOP_SALES_REASON_MAX, t('event.validation.stopSalesReasonMaxLength', "Reason cannot exceed {max} characters.", { max: STOP_SALES_REASON_MAX.toString() }))
-    .optional(),
-});
+export const stopSalesSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    reason: z
+      .string()
+      .max(
+        STOP_SALES_REASON_MAX,
+        t(
+          "event.validation.stopSalesReasonMaxLength",
+          "Reason cannot exceed {max} characters.",
+          { max: STOP_SALES_REASON_MAX.toString() },
+        ),
+      )
+      .optional(),
+  });
 
 export type StopSalesFormData = z.infer<ReturnType<typeof stopSalesSchema>>;
 
-export const cancelEventSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  reason: z.string()
-    .min(1, t('event.validation.cancelReasonRequired', "Reason is required."))
-    .min(CANCEL_REASON_MIN, t('event.validation.cancelReasonMinLength', "Reason must be at least {min} characters.", { min: CANCEL_REASON_MIN.toString() }))
-    .max(CANCEL_REASON_MAX, t('event.validation.cancelReasonMaxLength', "Reason cannot exceed {max} characters.", { max: CANCEL_REASON_MAX.toString() })),
-});
+export const cancelEventSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    reason: z
+      .string()
+      .min(1, t("event.validation.cancelReasonRequired", "Reason is required."))
+      .min(
+        CANCEL_REASON_MIN,
+        t(
+          "event.validation.cancelReasonMinLength",
+          "Reason must be at least {min} characters.",
+          { min: CANCEL_REASON_MIN.toString() },
+        ),
+      )
+      .max(
+        CANCEL_REASON_MAX,
+        t(
+          "event.validation.cancelReasonMaxLength",
+          "Reason cannot exceed {max} characters.",
+          { max: CANCEL_REASON_MAX.toString() },
+        ),
+      ),
+  });
 
 export type CancelEventFormData = z.infer<ReturnType<typeof cancelEventSchema>>;
 
@@ -728,14 +1196,20 @@ export interface ValidationHelpers {
  * @returns Object with validation helper methods
  */
 export const createValidationHelpers = (
-  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
 ): ValidationHelpers => ({
   /**
    * Required field validation
    * Uses: common.validation.required
    */
   required: (field: string) => {
-    const message = t('common.validation.required', '{field} is required.', { field });
+    const message = t("common.validation.required", "{field} is required.", {
+      field,
+    });
     return message;
   },
 
@@ -744,7 +1218,9 @@ export const createValidationHelpers = (
    * Uses: common.validation.invalid
    */
   invalid: (field: string) => {
-    const message = t('common.validation.invalid', '{field} is invalid.', { field });
+    const message = t("common.validation.invalid", "{field} is invalid.", {
+      field,
+    });
     return message;
   },
 
@@ -753,7 +1229,11 @@ export const createValidationHelpers = (
    * Uses: common.validation.minLength
    */
   minLength: (field: string, length: number) => {
-    const message = t('common.validation.minLength', '{field} must be at least {length} characters long.', { field, length });
+    const message = t(
+      "common.validation.minLength",
+      "{field} must be at least {length} characters long.",
+      { field, length },
+    );
     return message;
   },
 
@@ -762,7 +1242,11 @@ export const createValidationHelpers = (
    * Uses: common.validation.maxLength
    */
   maxLength: (field: string, length: number) => {
-    const message = t('common.validation.maxLength', '{field} cannot exceed {length} characters.', { field, length });
+    const message = t(
+      "common.validation.maxLength",
+      "{field} cannot exceed {length} characters.",
+      { field, length },
+    );
     return message;
   },
 
@@ -771,7 +1255,11 @@ export const createValidationHelpers = (
    * Uses: common.validation.min
    */
   min: (field: string, value: number) => {
-    const message = t('common.validation.min', '{field} must be at least {value}.', { field, value });
+    const message = t(
+      "common.validation.min",
+      "{field} must be at least {value}.",
+      { field, value },
+    );
     return message;
   },
 
@@ -780,7 +1268,11 @@ export const createValidationHelpers = (
    * Uses: common.validation.max
    */
   max: (field: string, value: number) => {
-    const message = t('common.validation.max', '{field} cannot exceed {value}.', { field, value });
+    const message = t(
+      "common.validation.max",
+      "{field} cannot exceed {value}.",
+      { field, value },
+    );
     return message;
   },
 
@@ -789,7 +1281,11 @@ export const createValidationHelpers = (
    * Uses: common.validation.pattern
    */
   pattern: (field: string) => {
-    const message = t('common.validation.pattern', '{field} format is invalid.', { field });
+    const message = t(
+      "common.validation.pattern",
+      "{field} format is invalid.",
+      { field },
+    );
     return message;
   },
 
@@ -797,21 +1293,30 @@ export const createValidationHelpers = (
    * Email specific validation
    */
   email: () => {
-    return t('auth.signup.validation.emailInvalid', 'Please enter a valid email address');
+    return t(
+      "auth.signup.validation.emailInvalid",
+      "Please enter a valid email address",
+    );
   },
 
   /**
    * Phone specific validation
    */
   phone: () => {
-    return t('auth.signup.validation.phoneInvalid', 'Please enter a valid phone number');
+    return t(
+      "auth.signup.validation.phoneInvalid",
+      "Please enter a valid phone number",
+    );
   },
 
   /**
    * Password match validation
    */
   passwordMatch: () => {
-    return t('auth.signup.validation.passwordMismatch', 'Passwords do not match');
+    return t(
+      "auth.signup.validation.passwordMismatch",
+      "Passwords do not match",
+    );
   },
 
   /**
@@ -819,8 +1324,8 @@ export const createValidationHelpers = (
    */
   passwordUpperLower: () => {
     return t(
-      'auth.signup.validation.passwordUpperLower',
-      'Must contain at least one uppercase and one lowercase'
+      "auth.signup.validation.passwordUpperLower",
+      "Must contain at least one uppercase and one lowercase",
     );
   },
 
@@ -829,8 +1334,8 @@ export const createValidationHelpers = (
    */
   passwordSpecialChar: () => {
     return t(
-      'auth.signup.validation.passwordSpecialChar',
-      'Must contain at least one special character'
+      "auth.signup.validation.passwordSpecialChar",
+      "Must contain at least one special character",
     );
   },
 
@@ -839,18 +1344,18 @@ export const createValidationHelpers = (
    */
   passwordNumber: () => {
     return t(
-      'auth.signup.validation.passwordNumber',
-      'Must contain at least one numeric digit'
+      "auth.signup.validation.passwordNumber",
+      "Must contain at least one numeric digit",
     );
   },
 });
 
 /**
  * Example usage:
- * 
+ *
  * const { t } = useTranslation(locale);
  * const v = createValidationHelpers(t);
- * 
+ *
  * const schema = z.object({
  *   firstName: z.string()
  *     .min(1, v.required('First name'))
@@ -867,16 +1372,79 @@ export const createValidationHelpers = (
  * });
  */
 
-export const createOrganizerProfileSchema = (t: (key: string, fallback?: string, params?: Record<string, string | number>) => string) => z.object({
-  business_name: z
-    .string()
-    .min(1, t('profile.validation.businessNameRequired', 'Business name is required.'))
-    .min(BUSINESS_NAME_MIN, t('profile.validation.businessNameMinLength', 'Business name must be at least {min} characters.', { min: BUSINESS_NAME_MIN.toString() }))
-    .max(BUSINESS_NAME_MAX, t('profile.validation.businessNameMaxLength', 'Business name must be less than {max} characters.', { max: BUSINESS_NAME_MAX.toString() })),
-  business_description: z
-    .string()
-    .max(BUSINESS_DESC_MAX, t('profile.validation.descriptionMaxLength', 'Description must be less than {max} characters.', { max: BUSINESS_DESC_MAX.toString() }))
-    .optional(),
-});
+export const createOrganizerProfileSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    business_name: z
+      .string()
+      .min(
+        1,
+        t(
+          "profile.validation.businessNameRequired",
+          "Business name is required.",
+        ),
+      )
+      .min(
+        BUSINESS_NAME_MIN,
+        t(
+          "profile.validation.businessNameMinLength",
+          "Business name must be at least {min} characters.",
+          { min: BUSINESS_NAME_MIN.toString() },
+        ),
+      )
+      .max(
+        BUSINESS_NAME_MAX,
+        t(
+          "profile.validation.businessNameMaxLength",
+          "Business name must be less than {max} characters.",
+          { max: BUSINESS_NAME_MAX.toString() },
+        ),
+      ),
+    business_description: z
+      .string()
+      .max(
+        BUSINESS_DESC_MAX,
+        t(
+          "profile.validation.descriptionMaxLength",
+          "Description must be less than {max} characters.",
+          { max: BUSINESS_DESC_MAX.toString() },
+        ),
+      )
+      .optional(),
+  });
 
-export type OrganizerProfileFormValues = z.infer<ReturnType<typeof createOrganizerProfileSchema>>;
+export type OrganizerProfileFormValues = z.infer<
+  ReturnType<typeof createOrganizerProfileSchema>
+>;
+
+// const PayoutRequestFormSchema = z.object({
+//   event_id: z.string().min(1, "payouts.validation.selectEvent"),
+//   amount: z
+//     .number()
+//     .min(0.01, "payouts.validation.amountMustBeGreaterThanZero"),
+//   description: z.string().optional(),
+// });
+
+export const createPayoutRequestSchema = (
+  t: (
+    key: string,
+    fallback?: string,
+    params?: Record<string, string | number>,
+  ) => string,
+) =>
+  z.object({
+    event_id: z.string().min(1, "payouts.validation.selectEvent"),
+    amount: createRequiredNumberSchema(
+      t,
+      "payouts.validation.amountRequired:Amount",
+      1,
+    ),
+    description: z.string().optional(),
+  });
+
+export type PayoutRequestFormData = z.infer<ReturnType<typeof createPayoutRequestSchema>>;

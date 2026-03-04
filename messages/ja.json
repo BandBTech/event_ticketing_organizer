@@ -184,7 +184,8 @@
     "subtitle": "出金を管理し、財務概要を表示します",
     "validation": {
       "selectEvent": "イベントを選択してください。",
-      "amountMustBeGreaterThanZero": "金額は 0 より大きくなければなりません。"
+      "amountMustBeGreaterThanZero": "金額は 0 より大きくなければなりません。",
+      "amountRequired": "額"
     }
   },
   "auth": {

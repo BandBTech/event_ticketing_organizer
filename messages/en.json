@@ -193,7 +193,8 @@
     "subtitle": "Manage your withdrawals and view financial summary",
     "validation": {
       "selectEvent": "Please select an event.",
-      "amountMustBeGreaterThanZero": "Amount must be greater than 0."
+      "amountMustBeGreaterThanZero": "Amount must be greater than 0.",
+      "amountRequired": "Amount"
     }
   },
   "profile": {

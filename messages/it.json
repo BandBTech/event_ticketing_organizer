@@ -184,7 +184,8 @@
     "subtitle": "Gestisci i tuoi prelievi e visualizza il riepilogo finanziario",
     "validation": {
       "selectEvent": "Seleziona un evento.",
-      "amountMustBeGreaterThanZero": "L'importo deve essere maggiore di 0."
+      "amountMustBeGreaterThanZero": "L'importo deve essere maggiore di 0.",
+      "amountRequired": "Quantità"
     }
   },
   "auth": {

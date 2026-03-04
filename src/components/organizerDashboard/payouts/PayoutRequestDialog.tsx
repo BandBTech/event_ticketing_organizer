@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { useForm, Controller, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -39,17 +39,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useCreatePayoutRequest } from "@/hooks/usePayouts";
 import { PayoutSummaryEvent } from "@/types/payout";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { createPayoutRequestSchema, PayoutRequestFormData } from "@/lib/validation";
 
-// Schema — request_type is always "event_payout" so it's not a form field
-const PayoutRequestFormSchema = z.object({
-  event_id: z.string().min(1, "payouts.validation.selectEvent"),
-  amount: z
-    .number()
-    .min(0.01, "payouts.validation.amountMustBeGreaterThanZero"),
-  description: z.string().optional(),
-});
-
-type PayoutRequestFormValues = z.infer<typeof PayoutRequestFormSchema>;
 
 interface PayoutRequestDialogProps {
   open: boolean;
@@ -65,13 +56,14 @@ export function PayoutRequestDialog({
   events = [],
 }: PayoutRequestDialogProps) {
   const { t } = useTranslation();
+  const payoutRequestFormSchema = useMemo(() => createPayoutRequestSchema(t), [t]);
   const createPayoutMutation = useCreatePayoutRequest();
 
   // Track whether the user wants to override the analytics-derived amount
   const [isManualAmount, setIsManualAmount] = useState(false);
 
-  const form = useForm<PayoutRequestFormValues>({
-    resolver: zodResolver(PayoutRequestFormSchema),
+  const form = useForm<PayoutRequestFormData>({
+    resolver: zodResolver(payoutRequestFormSchema) as Resolver<PayoutRequestFormData>,
     defaultValues: {
       event_id: defaultEventId ?? "",
       amount: 0,
@@ -118,7 +110,7 @@ export function PayoutRequestDialog({
     setIsManualAmount(true);
   };
 
-  const onSubmit = (data: PayoutRequestFormValues) => {
+  const onSubmit = (data: PayoutRequestFormData) => {
     createPayoutMutation.mutate(
       {
         amount: data.amount,
@@ -230,7 +222,6 @@ export function PayoutRequestDialog({
                   <div className="flex items-center justify-between">
                     <FieldLabel htmlFor="payout-amount">
                       {t("payouts.create.amount", "Amount")}
-                      <span className="text-destructive"> *</span>
                     </FieldLabel>
                     {isAmountLocked && (
                       <button
@@ -255,7 +246,16 @@ export function PayoutRequestDialog({
                       disabled={isAmountLocked}
                       aria-invalid={fieldState.invalid}
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "") {
+                          field.onChange("");
+                          return;
+                        }
+                        const num = Number(val);
+                        if (isNaN(num)) return;
+                        field.onChange(num);
+                      }}
                     />
                     {isAmountLocked && (
                       <LockIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
