@@ -133,7 +133,7 @@ export default function UserFormDialog({
           }
         }
       } catch (error) {
-        console.log("Could not detect country, using default (JP)", error);
+        console.log("Could not detect country, default selected (JP)", error);
       }
     };
 
