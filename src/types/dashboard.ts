@@ -13,8 +13,20 @@ export interface DashboardUpcomingEvent {
   updated_at: string;
 }
 
+export interface DashboardEventsStats {
+  approved: number;
+  cancelled: number;
+  completed: number;
+  // draft: number;
+  live: number;
+  on_sale: number;
+  pending: number;
+  rejected: number;
+  total: number;
+}
+
 export interface OrganizerDashboardResponse {
-  total_events_organized: number;
+  events: DashboardEventsStats;
   total_revenue: number;
   total_tickets_sold: number;
   upcoming_events: number;

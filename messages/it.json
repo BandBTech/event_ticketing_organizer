@@ -128,7 +128,8 @@
       "received": "Totale ricevuto",
       "available": "Importo disponibile",
       "approvedRequests": "Richieste approvate",
-      "paidRequests": "Richieste a pagamento"
+      "paidRequests": "Richieste a pagamento",
+      "pendingRequests": "Richieste in sospeso"
     },
     "tabs": {
       "all": "Tutte le richieste",
@@ -689,7 +690,11 @@
     "accountInactive": {
       "title": "Account disattivato",
       "description": "Il tuo account organizzatore è stato disattivato da un amministratore. L'accesso alle funzionalità della piattaforma è sospeso."
-    }
+    },
+    "eventStatusOverview": "Panoramica sullo stato degli eventi",
+    "failedToLoadData": "Impossibile caricare i dati del dashboard. \nPer favore riprova.",
+    "upcomingEvents": "Prossimi eventi",
+    "noUpcomingEvents": "Nessun evento imminente trovato."
   },
   "All Statuses": "Tutti gli stati",
   "Draft": "Bozza",

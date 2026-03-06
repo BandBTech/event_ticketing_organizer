@@ -20,7 +20,17 @@ export function useOrganizerDashboard() {
     ...query,
     data: response,
     stats: {
-      totalEvents: response?.total_events_organized ?? 0,
+      events: response?.events ?? {
+        approved: 0,
+        cancelled: 0,
+        completed: 0,
+        draft: 0,
+        live: 0,
+        on_sale: 0,
+        pending: 0,
+        rejected: 0,
+        total: 0,
+      },
       totalRevenue: response?.total_revenue ?? 0,
       totalTicketsSold: response?.total_tickets_sold ?? 0,
       upcomingEventsCount: response?.upcoming_events ?? 0,

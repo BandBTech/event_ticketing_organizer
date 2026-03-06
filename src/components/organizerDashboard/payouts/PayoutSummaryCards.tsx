@@ -6,7 +6,7 @@ import {
   WalletIcon,
   CheckCircleIcon,
   ReceiptIcon,
-  ChartLineUpIcon,
+  HourglassIcon,
 } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PayoutSummary } from "@/types/payout";
@@ -32,14 +32,14 @@ export function PayoutSummaryCards({
     },
     {
       icon: <BankIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.received", "Total Received"),
+      label: t("payouts.summary.received", "Total Paid Out"),
       value: isLoading
         ? null
         : `Rs. ${summary?.total_received.toLocaleString() ?? "0"}`,
     },
     {
       icon: <WalletIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.available", "Available Amount"),
+      label: t("payouts.summary.available", "Available for Payout"),
       value: isLoading
         ? null
         : `Rs. ${summary?.available_amount.toLocaleString() ?? "0"}`,
@@ -52,6 +52,13 @@ export function PayoutSummaryCards({
         : `Rs. ${summary?.pending_amount.toLocaleString() ?? "0"}`,
     },
     {
+      icon: <HourglassIcon className="w-6 h-6 text-primary" />,
+      label: t("payouts.summary.pendingRequests", "Pending Requests"),
+      value: isLoading
+        ? null
+        : `${summary?.pending_requests.toLocaleString() ?? "0"}`,
+    },
+    {
       icon: <CheckCircleIcon className="w-6 h-6 text-primary" />,
       label: t("payouts.summary.approvedRequests", "Approved Requests"),
       value: isLoading
@@ -60,7 +67,7 @@ export function PayoutSummaryCards({
     },
     {
       icon: <ReceiptIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.paidRequests", "Paid Requests"),
+      label: t("payouts.summary.paidRequests", "Completed Payouts"),
       value: isLoading
         ? null
         : `${summary?.paid_requests.toLocaleString() ?? "0"}`,
@@ -69,7 +76,7 @@ export function PayoutSummaryCards({
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 @5xl:grid-cols-7 gap-4">
         {cards.map((card, i) => (
           <motion.div
             key={i}
@@ -90,6 +97,7 @@ export function PayoutSummaryCards({
                     {card.value}
                   </h2>
                 )}
+
               </div>
             </div>
           </motion.div>
@@ -98,3 +106,4 @@ export function PayoutSummaryCards({
     </div>
   );
 }
+

@@ -128,7 +128,8 @@
       "received": "合計受信額",
       "available": "利用可能量",
       "approvedRequests": "承認されたリクエスト",
-      "paidRequests": "有料リクエスト"
+      "paidRequests": "有料リクエスト",
+      "pendingRequests": "保留中のリクエスト"
     },
     "tabs": {
       "all": "すべてのリクエスト",
@@ -688,7 +689,11 @@
     "accountInactive": {
       "title": "アカウントが無効化されました",
       "description": "あなたの主催者アカウントは管理者によって無効化されました。プラットフォーム機能へのアクセスが停止されています。"
-    }
+    },
+    "eventStatusOverview": "イベントステータスの概要",
+    "failedToLoadData": "ダッシュボードデータのロードに失敗しました。\nもう一度試してください。",
+    "upcomingEvents": "今後のイベント",
+    "noUpcomingEvents": "今後のイベントは見つかりませんでした。"
   },
   "All Statuses": "すべてのステータス",
   "Draft": "下書き",
