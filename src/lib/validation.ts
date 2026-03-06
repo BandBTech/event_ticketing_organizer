@@ -1441,7 +1441,7 @@ export const createPayoutRequestSchema = (
     event_id: z.string().min(1, "payouts.validation.selectEvent"),
     amount: createRequiredNumberSchema(
       t,
-      "payouts.validation.amountRequired:Amount",
+      "payouts.table.amount:Amount",
       1,
     ),
     description: z.string().optional(),

@@ -154,10 +154,10 @@ export async function apiRequest<T>(
       const responseMessage = data?.message;
       const displayMessage = successMessage || responseMessage || "Success";
       toast.success("api.success", displayMessage);
+    }
 
-      if (returnFullResponse) {
-        return data as T;
-      }
+    if (returnFullResponse) {
+      return data as T;
     }
 
     // Return successful response data

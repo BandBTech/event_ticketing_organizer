@@ -202,9 +202,6 @@ export function useBulkCheckIn() {
         toast.error('Bulk check-in failed', result.message);
       }
     },
-    onError: (error) => {
-      toast.error('Bulk check-in failed', error.message || 'Failed to process bulk check-in');
-    },
   });
 }
 

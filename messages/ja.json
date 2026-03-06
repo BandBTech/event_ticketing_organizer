@@ -749,7 +749,8 @@
     "submitQueue": "まずチェックインのために現在のキューを送信してください",
     "ticketInvalid": "無効なチケット",
     "addedToQueue": "キューに追加されました",
-    "validationFailed": "検証に失敗しました"
+    "validationFailed": "検証に失敗しました",
+    "scanFailed": "チケットのスキャンに失敗しました"
   },
   "rte": {
     "image": {

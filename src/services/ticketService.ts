@@ -197,6 +197,7 @@ export class TicketService {
       data,
       {
         requiresAuth: true,
+        returnFullResponse: true,
       }
     );
   }
@@ -213,6 +214,7 @@ export class TicketService {
       data,
       {
         requiresAuth: true,
+        returnFullResponse: true,
       }
     );
   }

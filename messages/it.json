@@ -743,7 +743,8 @@
     "submitQueue": "Si prega di inviare prima la coda attuale per il check-in",
     "ticketInvalid": "Biglietto non valido",
     "addedToQueue": "Aggiunto alla coda",
-    "validationFailed": "Convalida non riuscita"
+    "validationFailed": "Convalida non riuscita",
+    "scanFailed": "Impossibile scansionare il biglietto"
   },
   "rte": {
     "image": {

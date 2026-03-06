@@ -851,7 +851,8 @@
     "submitQueue": "Please submit current queue for checkin first",
     "ticketInvalid": "Invalid ticket",
     "addedToQueue": "Added to queue",
-    "validationFailed": "Validation failed"
+    "validationFailed": "Validation failed",
+    "scanFailed": "Failed to scan ticket"
   },
   "rte": {
     "image": {

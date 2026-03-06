@@ -35,6 +35,7 @@ export interface BulkResultItem {
   message?: string;
   ticket_number?: string;
   code?: string;
+  qr_code?: string;
 }
 
 export interface BulkResult {
@@ -68,6 +69,13 @@ export function useScannerState() {
     scanMutation.isPending ||
     bulkCheckInMutation.isPending ||
     validateCheckInMutation.isPending;
+
+  // Disable scanning when all bulk items are successfully checked-in and the results drawer is open
+  const isScanDisabled =
+    mode === "bulk" &&
+    showBulkList &&
+    bulkQueue.length > 0 &&
+    bulkQueue.every((item) => item.checkinResult === "success");
 
   // ─── Fetch event details when eventId is available ──────────────────────────
   const { data: eventData } = useQuery({
@@ -146,9 +154,18 @@ export function useScannerState() {
           setScanResult({
             success: data.success,
             message: data.message,
-            ticketNumber: code,
           });
           // Auto-clear result after 3 s so the camera is ready for the next scan
+          setTimeout(() => setScanResult(null), 3000);
+        },
+        onError: (error) => {
+          setScanResult({
+            success: false,
+            message:
+              error.message ||
+              t("staffScanner.scanFailed", "Failed to scan ticket"),
+          });
+          // Auto-clear so the camera is ready for the next scan
           setTimeout(() => setScanResult(null), 3000);
         },
       },
@@ -238,8 +255,9 @@ export function useScannerState() {
   };
 
   const handleQRScan = (result: unknown[]) => {
-    // Prevent multiple scans while a result is displayed or a request is in-flight
-    if (isProcessing || scanResult) return;
+    // Prevent multiple scans while a result is displayed, a request is in-flight,
+    // or all bulk tickets are already successfully checked in
+    if (isProcessing || scanResult || isScanDisabled) return;
 
     if (result && result.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -309,12 +327,16 @@ export function useScannerState() {
       { event_id: eventId, qr_codes: codes },
       {
         onSuccess: (data) => {
-          const results = data.data as BulkResultItem[] | undefined;
+          const results: BulkResultItem[] = (data.data ?? []).map((r) => ({
+            success: r.success as boolean,
+            message: r.message as string | undefined,
+            qr_code: r.qr_code as string | undefined,
+          }));
 
           // Update each item in the queue with its check-in result
           const updatedQueue = bulkQueue.map((item) => {
             const result = results?.find(
-              (r) => r.code === item.code || r.ticket_number === item.ticketNumber,
+              (r) => r.qr_code === item.code,
             );
             return {
               ...item,
@@ -324,12 +346,13 @@ export function useScannerState() {
           });
 
           setBulkQueue(updatedQueue);
+          setShowBulkList(true);
 
-          if (data.success) {
-            toast.success("Bulk check-in complete");
-          } else {
-            toast.error("Bulk check-in completed with issues");
-          }
+          // if (data.success) {
+          //   toast.success("Bulk check-in complete");
+          // } else {
+          //   toast.error("Bulk check-in completed with issues");
+          // }
         },
         onError: (error) => {
           setBulkResult({
@@ -341,8 +364,11 @@ export function useScannerState() {
     );
   };
 
+  const clearScanResult = useCallback(() => setScanResult(null), []);
+
   return {
     // State
+    isScanDisabled,
     mode,
     setMode,
     bulkQueue,
@@ -353,6 +379,7 @@ export function useScannerState() {
     bulkResult,
     setBulkResult,
     scanResult,
+    clearScanResult,
     cameraError,
     mounted,
     isProcessing,

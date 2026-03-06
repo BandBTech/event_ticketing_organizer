@@ -61,6 +61,7 @@ import { Loader2 } from "lucide-react";
 import StatusHistoryFetcher from "./StatusHistoryFetcher";
 import { Suspense } from "react";
 import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/PayoutRequestDialog";
+import { usePayoutSummary } from "@/hooks/usePayouts";
 import { Separator } from "../ui/separator";
 import FeaturedBadge from "./FeaturedBadge";
 
@@ -78,6 +79,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
   const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
+  const { data: payoutSummary } = usePayoutSummary();
 
   const totalTicketsSold =
     analytics?.sold_seats ??
@@ -929,6 +931,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
         open={payoutDialogOpen}
         onOpenChange={setPayoutDialogOpen}
         defaultEventId={event.id}
+        events={payoutSummary?.events}
       />
     </>
   );

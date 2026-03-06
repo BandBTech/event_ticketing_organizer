@@ -15,6 +15,7 @@ import SingleScanResult from "@/components/scanner/SingleScanResult";
 
 export default function ScannerPage() {
   const {
+    isScanDisabled,
     mode,
     setMode,
     bulkQueue,
@@ -23,6 +24,7 @@ export default function ScannerPage() {
     showBulkList,
     setShowBulkList,
     scanResult,
+    clearScanResult,
     cameraError,
     mounted,
     isProcessing,
@@ -77,8 +79,11 @@ export default function ScannerPage() {
                   mode={mode}
                   onScan={handleQRScan}
                   onError={handleCameraError}
+                    disabled={isScanDisabled}
                   scanHintText={
-                    mode === "single"
+                    isScanDisabled
+                      ? t("staffScanner.allCheckedIn", "All tickets checked in — tap Done to finish")
+                      : mode === "single"
                       ? t(
                           "staffScanner.scanTicketInfo",
                           "Scan a ticket to check in",
@@ -128,7 +133,7 @@ export default function ScannerPage() {
       </StaffDashboardLayout>
 
       {/* ── Overlays (above everything) ──────────────────────────────────── */}
-      {mode === "single" && <SingleScanResult result={scanResult} />}
+      {mode === "single" && <SingleScanResult result={scanResult} onClose={clearScanResult} />}
 
       <UnsavedChangesDialog
         open={showLeaveDialog}
