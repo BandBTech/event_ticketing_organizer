@@ -1399,7 +1399,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Get a list of all entities of a specific type without pagination. Supported types: users, events, organizers, guest_users, payment_gateways",
+        "description": "Get a list of all entities of a specific type without pagination. Supported types: users, events, organizers, guest_users. For events, you can optionally filter by organizer_id.",
         "consumes": [
           "application/json"
         ],
@@ -1416,19 +1416,24 @@
               "users",
               "events",
               "organizers",
-              "guest_users",
-              "payment_gateways"
+              "guest_users"
             ],
             "type": "string",
             "description": "Entity type to list",
             "name": "type",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Filter events by organizer ID (only applicable when type=events)",
+            "name": "organizer_id",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "List of payment gateways",
+            "description": "List of guest users",
             "schema": {
               "allOf": [
                 {
@@ -1440,7 +1445,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/definitions/handlers.MinimalPaymentGatewayResponse"
+                        "$ref": "#/definitions/handlers.MinimalGuestUserResponse"
                       }
                     }
                   }
@@ -1514,7 +1519,7 @@
           },
           {
             "type": "string",
-            "description": "Search term for first_name, last_name, or email",
+            "description": "Search term for first_name, last_name, email, business_name, or full name",
             "name": "search",
             "in": "query"
           },
@@ -1863,402 +1868,6 @@
         }
       }
     },
-    "/api/v1/admin/payment-gateways": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Get all gateways (paginated) or supported gateway types using ?type=supported",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Manage payment gateway configurations (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Query type: 'supported' for gateway types",
-            "name": "type",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 1,
-            "description": "Page number",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 10,
-            "description": "Items per page",
-            "name": "limit",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Create a new payment gateway configuration with API keys, secrets, and settings. All credentials will be encrypted before storage. Requires admin password verification.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Create payment gateway configuration (Admin)",
-        "parameters": [
-          {
-            "description": "Gateway configuration with required API keys, settings, and password verification",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.CreatePaymentGatewayConfigRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Gateway configuration created successfully",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.PaymentGatewayConfig"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid request payload or missing required fields",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Admin access required or invalid password",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "409": {
-            "description": "Gateway with this name already exists",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payment-gateways/{gateway_id}": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Retrieve a specific payment gateway configuration",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Get payment gateway by ID (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Gateway ID",
-            "name": "gateway_id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.PaymentGatewayConfig"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      },
-      "put": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Update gateway API keys, secrets, settings, or configuration. Only provided fields will be updated. Requires admin password verification.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Update payment gateway configuration (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "example": "550e8400-e29b-41d4-a716-446655440000",
-            "description": "Gateway configuration ID",
-            "name": "gateway_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Gateway configuration updates with password verification",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.UpdatePaymentGatewayConfigRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Gateway configuration updated successfully",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.PaymentGatewayConfig"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Invalid gateway ID or request payload",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Admin access required or invalid password",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Gateway configuration not found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "409": {
-            "description": "Gateway name already exists",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      },
-      "delete": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Delete a payment gateway configuration. Requires admin password verification.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Delete payment gateway (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Gateway ID",
-            "name": "gateway_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "description": "Password verification for deletion",
-            "name": "request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/models.DeletePaymentGatewayConfigRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Admin access required or invalid password",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Gateway not found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      },
-      "patch": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Execute actions: toggle (enable/disable), test (connection), reload, validate",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payment Gateways"
-        ],
-        "summary": "Perform actions on payment gateway (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Gateway ID (use 'all' for reload action)",
-            "name": "gateway_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "Action: toggle, test, reload, validate",
-            "name": "action",
-            "in": "query",
-            "required": true
-          },
-          {
-            "description": "Action parameters",
-            "name": "request",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
     "/api/v1/admin/payments": {
       "get": {
         "security": [
@@ -2322,147 +1931,6 @@
                     "data": {
                       "type": "object",
                       "additionalProperties": true
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payments/analytics": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Get payment statistics and analytics",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
-        "summary": "Get payment analytics (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Start date (YYYY-MM-DD)",
-            "name": "start_date",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "End date (YYYY-MM-DD)",
-            "name": "end_date",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payments/audit-logs": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Query payment audit logs with filtering",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
-        "summary": "Get payment audit logs (Admin)",
-        "parameters": [
-          {
-            "type": "integer",
-            "description": "Page number",
-            "name": "page",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "description": "Items per page",
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Filter by action (e.g., payment_created, refund_approved)",
-            "name": "action",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Filter by entity type (e.g., payment_intent, refund)",
-            "name": "entity_type",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Filter by entity ID",
-            "name": "entity_id",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "description": "Filter by actor ID",
-            "name": "actor_id",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/models.PaymentAuditLog"
-                      }
                     }
                   }
                 }
@@ -2809,6 +2277,76 @@
         }
       }
     },
+    "/api/v1/admin/payments/bills/{bill_id}/history": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get all payment records made against a specific bill, ordered by payment date (newest first)",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Financial"
+        ],
+        "summary": "Get payment history for a bill",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "UUID of the bill",
+            "name": "bill_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment history for the bill",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/models.PaymentHistoryResponse"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/payments/bills/{bill_id}/payments": {
       "post": {
         "security": [
@@ -2901,43 +2439,6 @@
           },
           "404": {
             "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payments/gateways/reencrypt": {
-      "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Re-encrypt all gateway credentials with the current encryption key",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
-        "summary": "Re-encrypt all gateway configs (Admin)",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -3151,122 +2652,6 @@
           },
           "401": {
             "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payments/transactions/{id}/retry": {
-      "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Retry processing a failed payment intent",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
-        "summary": "Retry failed transaction (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Payment Intent ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/admin/payments/webhooks/{id}/retry": {
-      "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Retry processing a failed webhook event",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
-        "summary": "Retry failed webhook (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Webhook Event ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -3867,6 +3252,78 @@
         }
       }
     },
+    "/api/v1/admin/refunds": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Retrieve all refund requests with filters",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin - Payments"
+        ],
+        "summary": "Get all refunds (Admin)",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "Page number",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "Items per page",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by status (pending, succeeded, failed, canceled)",
+            "name": "status",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/roles": {
       "get": {
         "security": [
@@ -4287,21 +3744,34 @@
         "security": [
           {
             "ApiKeyAuth": []
+          },
+          {
+            "ApiKeyAuth": []
           }
         ],
-        "description": "Get detailed information about a specific transaction",
+        "description": "Get detailed information about a specific transaction (including soft-deleted ones for admin)\nGet detailed information about a specific transaction for admin",
         "consumes": [
+          "application/json",
           "application/json"
         ],
         "produces": [
+          "application/json",
           "application/json"
         ],
         "tags": [
           "Admin",
-          "Financial"
+          "Financial",
+          "Admin"
         ],
-        "summary": "Get transaction by ID",
+        "summary": "Get transaction by ID (Admin)",
         "parameters": [
+          {
+            "type": "string",
+            "description": "Transaction ID",
+            "name": "transaction_id",
+            "in": "path",
+            "required": true
+          },
           {
             "type": "string",
             "description": "Transaction ID",
@@ -4322,7 +3792,7 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "#/definitions/models.TransactionResponse"
+                      "$ref": "#/definitions/models.TransactionSummaryResponse"
                     }
                   }
                 }
@@ -4331,6 +3801,18 @@
           },
           "400": {
             "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -4417,6 +3899,73 @@
         }
       }
     },
+    "/api/v1/admin/transactions/{transaction_id}/payment-details": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get comprehensive payment information including transaction, payment intent, and related details",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Financial"
+        ],
+        "summary": "Get payment details for transaction (Admin)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Transaction ID",
+            "name": "transaction_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.TransactionPaymentDetailsResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/users": {
       "get": {
         "security": [
@@ -4438,7 +3987,7 @@
         "parameters": [
           {
             "type": "string",
-            "description": "Search by name or email",
+            "description": "Search by name, full name, or email",
             "name": "search",
             "in": "query"
           },
@@ -7997,6 +7546,12 @@
             "name": "type",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Search term for users (email, first name, last name, or full name)",
+            "name": "search",
+            "in": "query"
           }
         ],
         "responses": {
@@ -8951,6 +8506,13 @@
             "description": "Filter by role (staff, manager)",
             "name": "role",
             "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "\"-created_at\"",
+            "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'first_name')",
+            "name": "sort",
+            "in": "query"
           }
         ],
         "responses": {
@@ -9225,63 +8787,6 @@
           },
           "500": {
             "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/payments/gateways": {
-      "get": {
-        "description": "Get list of available and enabled payment gateways for optional currency and country filtering",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
-        "summary": "Get available payment gateways",
-        "parameters": [
-          {
-            "type": "string",
-            "example": "US",
-            "description": "Country code (ISO 3166-1 alpha-2) for gateway filtering",
-            "name": "country",
-            "in": "query"
-          },
-          {
-            "type": "string",
-            "example": "USD",
-            "description": "Currency code (ISO 4217) for gateway filtering",
-            "name": "currency",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of available payment gateways",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/gateways.GatewayInfo"
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "500": {
-            "description": "Internal server error retrieving gateways",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -9625,7 +9130,7 @@
     },
     "/api/v1/public/events": {
       "get": {
-        "description": "Get a list of all public events (on_sale, live, and recent completed) with pagination, search, and filtering",
+        "description": "Get a list of all public events (on_sale, live, and recent completed) with pagination, search, and filtering. Results are sorted with featured events first, then by creation date (newest first).",
         "produces": [
           "application/json"
         ],
@@ -9687,7 +9192,7 @@
           {
             "type": "string",
             "default": "\"-created_at\"",
-            "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'title')",
+            "description": "Sort parameter (currently fixed to prioritize featured events first, then by newest)",
             "name": "sort",
             "in": "query"
           }
@@ -10503,6 +10008,50 @@
         }
       }
     },
+    "/api/v1/user/dashboard": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get dashboard statistics and upcoming events for regular users",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get user dashboard data",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/user/events/{event_id}/tickets": {
       "get": {
         "security": [
@@ -11178,7 +10727,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Get paginated list of transactions for the authenticated user with detailed information for invoice generation",
+        "description": "Get paginated list of transactions for the authenticated user",
         "consumes": [
           "application/json"
         ],
@@ -11186,8 +10735,7 @@
           "application/json"
         ],
         "tags": [
-          "User",
-          "Financial"
+          "User"
         ],
         "summary": "Get user transactions",
         "parameters": [
@@ -11218,9 +10766,17 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/models.UserTransactionListingResponse"
+                      "type": "object",
+                      "properties": {
+                        "pagination": {
+                          "type": "object"
+                        },
+                        "transactions": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/definitions/models.UserTransactionListingResponse"
+                          }
+                        }
                       }
                     }
                   }
@@ -11258,8 +10814,7 @@
           "application/json"
         ],
         "tags": [
-          "User",
-          "Financial"
+          "User"
         ],
         "summary": "Get user transaction by ID",
         "parameters": [
@@ -11323,9 +10878,9 @@
         }
       }
     },
-    "/api/v1/webhooks/{gateway}": {
+    "/api/v1/webhooks/stripe": {
       "post": {
-        "description": "Process webhook events from any configured payment gateway",
+        "description": "Process webhook events from Stripe for payment processing with comprehensive security and audit logging",
         "consumes": [
           "application/json"
         ],
@@ -11333,33 +10888,51 @@
           "application/json"
         ],
         "tags": [
-          "Payments"
+          "Webhooks"
         ],
-        "summary": "Handle payment gateway webhooks (Dynamic)",
+        "summary": "Handle Stripe webhook events",
         "parameters": [
           {
             "type": "string",
-            "description": "Gateway name (stripe, paypal, esewa, khalti, etc.)",
-            "name": "gateway",
-            "in": "path",
+            "description": "Stripe webhook signature",
+            "name": "Stripe-Signature",
+            "in": "header",
             "required": true
+          },
+          {
+            "type": "string",
+            "description": "Idempotency key for webhook processing",
+            "name": "X-Webhook-ID",
+            "in": "header"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Webhook processed successfully",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Invalid webhook signature or payload",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "409": {
+            "description": "Webhook already processed",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Internal server error",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -11369,38 +10942,6 @@
     }
   },
   "definitions": {
-    "gateways.GatewayInfo": {
-      "type": "object",
-      "properties": {
-        "display_name": {
-          "description": "Human-readable gateway name\nexample: Stripe",
-          "type": "string"
-        },
-        "fixed_fee": {
-          "description": "Fixed fee charged by gateway\nexample: 0.30",
-          "type": "number"
-        },
-        "name": {
-          "description": "Gateway identifier\nexample: stripe",
-          "type": "string"
-        },
-        "percentage_fee": {
-          "description": "Percentage fee charged by gateway\nexample: 2.9",
-          "type": "number"
-        },
-        "priority": {
-          "description": "Gateway priority (lower = higher priority)\nexample: 1",
-          "type": "integer"
-        },
-        "supported_methods": {
-          "description": "Supported payment methods\nexample: [\"card\", \"bank_transfer\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "handlers.MinimalEventResponse": {
       "type": "object",
       "properties": {
@@ -11423,23 +10964,6 @@
         },
         "name": {
           "type": "string"
-        }
-      }
-    },
-    "handlers.MinimalPaymentGatewayResponse": {
-      "type": "object",
-      "properties": {
-        "display_name": {
-          "type": "string"
-        },
-        "gateway_name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "is_enabled": {
-          "type": "boolean"
         }
       }
     },
@@ -11599,6 +11123,57 @@
           "type": "string",
           "minLength": 8,
           "example": "NewPassword123!"
+        }
+      }
+    },
+    "models.CheckoutSession": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "checkout_token": {
+          "description": "Unique token for security",
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "currency": {
+          "description": "Default to NPR",
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string"
+        },
+        "gateway_data": {
+          "description": "Store gateway-specific data (session_id, payment_intent_id, etc.)",
+          "type": "object",
+          "additionalProperties": true
+        },
+        "guest_user_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "payment_gateway": {
+          "description": "stripe, paypal, esewa, etc.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/models.PaymentGateway"
+            }
+          ]
+        },
+        "status": {
+          "description": "pending, processing, completed, failed, expired",
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
         }
       }
     },
@@ -11811,113 +11386,6 @@
         }
       }
     },
-    "models.CreatePaymentGatewayConfigRequest": {
-      "type": "object",
-      "required": [
-        "api_key",
-        "api_secret",
-        "display_name",
-        "gateway_name",
-        "password",
-        "webhook_secret"
-      ],
-      "properties": {
-        "api_key": {
-          "description": "API Key for the payment gateway (will be encrypted)\nrequired: true\nexample: sk_test_...",
-          "type": "string",
-          "example": "sk_test_..."
-        },
-        "api_secret": {
-          "description": "API Secret for the payment gateway (will be encrypted)\nrequired: true\nexample: sk_secret_...",
-          "type": "string",
-          "example": "sk_secret_..."
-        },
-        "config": {
-          "description": "Additional gateway-specific configuration\nrequired: false",
-          "type": "object",
-          "additionalProperties": true
-        },
-        "display_name": {
-          "description": "Human-readable display name\nrequired: true\nexample: Stripe Payment Gateway",
-          "type": "string",
-          "example": "Stripe Payment Gateway"
-        },
-        "fixed_fee": {
-          "description": "Fixed fee charged by the gateway (e.g., 0.30)\nrequired: false\nexample: 0.30",
-          "type": "number",
-          "example": 0.3
-        },
-        "gateway_name": {
-          "description": "Gateway type identifier (stripe, paypal, esewa, khalti)\nrequired: true\nexample: stripe",
-          "type": "string",
-          "example": "stripe"
-        },
-        "is_enabled": {
-          "description": "Whether this gateway is enabled for use\nrequired: false\nexample: true",
-          "type": "boolean",
-          "example": true
-        },
-        "is_test_mode": {
-          "description": "Whether this gateway is in test/sandbox mode\nrequired: false\nexample: false",
-          "type": "boolean",
-          "example": false
-        },
-        "max_amount": {
-          "description": "Maximum transaction amount allowed\nrequired: false\nexample: 10000.00",
-          "type": "number",
-          "example": 10000
-        },
-        "min_amount": {
-          "description": "Minimum transaction amount allowed\nrequired: false\nexample: 1.00",
-          "type": "number",
-          "example": 1
-        },
-        "password": {
-          "description": "Admin password for verification (required for security)\nrequired: true\nexample: mySecurePassword123",
-          "type": "string",
-          "example": "mySecurePassword123"
-        },
-        "percentage_fee": {
-          "description": "Percentage fee charged by the gateway (e.g., 2.9 for 2.9%)\nrequired: false\nexample: 2.9",
-          "type": "number",
-          "example": 2.9
-        },
-        "priority": {
-          "description": "Priority for gateway selection (lower = higher priority)\nrequired: false\nexample: 1",
-          "type": "integer",
-          "example": 1
-        },
-        "supported_countries": {
-          "description": "List of supported country codes (ISO 3166-1 alpha-2)\nrequired: false\nexample: [\"US\",\"GB\",\"NP\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "example": [
-            "US",
-            "GB",
-            "NP"
-          ]
-        },
-        "supported_currencies": {
-          "description": "List of supported currency codes (ISO 4217)\nrequired: false\nexample: [\"USD\",\"EUR\",\"NPR\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "example": [
-            "USD",
-            "EUR",
-            "NPR"
-          ]
-        },
-        "webhook_secret": {
-          "description": "Webhook Secret for verifying gateway callbacks (will be encrypted)\nrequired: true\nexample: whsec_...",
-          "type": "string",
-          "example": "whsec_..."
-        }
-      }
-    },
     "models.CreatePermissionRequest": {
       "type": "object",
       "required": [
@@ -11971,19 +11439,6 @@
         "phone": {
           "type": "string",
           "example": "8765432109"
-        }
-      }
-    },
-    "models.DeletePaymentGatewayConfigRequest": {
-      "type": "object",
-      "required": [
-        "password"
-      ],
-      "properties": {
-        "password": {
-          "description": "Admin password for verification (required for security)\nrequired: true\nexample: mySecurePassword123",
-          "type": "string",
-          "example": "mySecurePassword123"
         }
       }
     },
@@ -12315,6 +11770,9 @@
         "id": {
           "type": "string"
         },
+        "is_featured": {
+          "type": "boolean"
+        },
         "price": {
           "type": "number"
         },
@@ -12508,40 +11966,7 @@
       }
     },
     "models.EventStatusUpdateRequest": {
-      "type": "object",
-      "required": [
-        "status"
-      ],
-      "properties": {
-        "admin_remark": {
-          "type": "string",
-          "maxLength": 500,
-          "example": "Event approved with standard commission rate"
-        },
-        "commission_rate": {
-          "description": "Optional: Admin can set commission rate during status update",
-          "type": "number",
-          "maximum": 50,
-          "minimum": 0,
-          "example": 15.5
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "pending",
-            "approved",
-            "rejected",
-            "on_sale",
-            "live",
-            "hold",
-            "scheduled",
-            "cancelled",
-            "draft",
-            "completed"
-          ],
-          "example": "approved"
-        }
-      }
+      "type": "object"
     },
     "models.EventSummaryResponse": {
       "type": "object",
@@ -12710,7 +12135,7 @@
         "commission_rate": {
           "description": "Only admin can update",
           "type": "number",
-          "maximum": 50,
+          "maximum": 100,
           "minimum": 0
         },
         "description": {
@@ -12786,7 +12211,7 @@
           "type": "string"
         },
         "payment_gateway": {
-          "description": "Required for payment processing",
+          "description": "Required for payment processing - only stripe and cash allowed",
           "allOf": [
             {
               "$ref": "#/definitions/models.PaymentGateway"
@@ -13287,70 +12712,6 @@
         }
       }
     },
-    "models.PaymentAuditLog": {
-      "type": "object",
-      "properties": {
-        "action": {
-          "description": "payment_created, refund_issued, etc.",
-          "type": "string"
-        },
-        "actor": {
-          "$ref": "#/definitions/models.User"
-        },
-        "actor_id": {
-          "description": "Actor Info",
-          "type": "string"
-        },
-        "actor_type": {
-          "description": "user, admin, system, webhook",
-          "type": "string"
-        },
-        "changes_after": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "changes_before": {
-          "description": "Changes",
-          "type": "object",
-          "additionalProperties": true
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "entity_id": {
-          "type": "string"
-        },
-        "entity_type": {
-          "description": "payment_intent, transaction, refund",
-          "type": "string"
-        },
-        "event": {
-          "$ref": "#/definitions/models.Event"
-        },
-        "event_id": {
-          "description": "Event Details",
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "ip_address": {
-          "description": "Context",
-          "type": "string"
-        },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "timestamp": {
-          "description": "Timestamps",
-          "type": "string"
-        },
-        "user_agent": {
-          "type": "string"
-        }
-      }
-    },
     "models.PaymentBillResponse": {
       "type": "object",
       "properties": {
@@ -13482,92 +12843,31 @@
         "PaymentGatewayIMEPay"
       ]
     },
-    "models.PaymentGatewayConfig": {
+    "models.PaymentHistoryResponse": {
       "type": "object",
-      "required": [
-        "api_key",
-        "api_secret",
-        "display_name",
-        "gateway_name"
-      ],
       "properties": {
-        "api_key": {
-          "description": "API Key for the payment gateway (will be encrypted)\nrequired: true\nexample: sk_test_...",
-          "type": "string"
-        },
-        "api_secret": {
-          "description": "API Secret for the payment gateway (will be encrypted)\nrequired: true\nexample: sk_secret_...",
-          "type": "string"
-        },
-        "config": {
-          "description": "Additional gateway-specific configuration\nrequired: false",
-          "type": "object",
-          "additionalProperties": true
-        },
-        "created_at": {
-          "description": "When this configuration was created\nreadOnly: true",
-          "type": "string"
-        },
-        "display_name": {
-          "description": "Human-readable display name\nrequired: true\nexample: Stripe Payment Gateway",
-          "type": "string"
-        },
-        "fixed_fee": {
-          "description": "Fixed fee charged by the gateway (e.g., 0.30)\nrequired: false\nexample: 0.30",
+        "amount": {
           "type": "number"
         },
-        "gateway_name": {
-          "description": "Gateway type identifier (stripe, paypal, esewa, khalti)\nrequired: true\nexample: stripe",
+        "created_at": {
           "type": "string"
         },
         "id": {
-          "description": "Unique identifier for the gateway configuration\nrequired: true\nexample: 550e8400-e29b-41d4-a716-446655440000",
-          "type": "string"
-        },
-        "is_enabled": {
-          "description": "Whether this gateway is enabled for use\nrequired: true\nexample: true",
-          "type": "boolean"
-        },
-        "is_test_mode": {
-          "description": "Whether this gateway is in test/sandbox mode\nrequired: true\nexample: false",
-          "type": "boolean"
-        },
-        "max_amount": {
-          "description": "Maximum transaction amount allowed\nrequired: false\nexample: 10000.00",
-          "type": "number"
-        },
-        "min_amount": {
-          "description": "Minimum transaction amount allowed\nrequired: false\nexample: 1.00",
-          "type": "number"
-        },
-        "percentage_fee": {
-          "description": "Percentage fee charged by the gateway (e.g., 2.9 for 2.9%)\nrequired: false\nexample: 2.9",
-          "type": "number"
-        },
-        "priority": {
-          "description": "Priority for gateway selection (lower = higher priority)\nrequired: false\nexample: 1",
           "type": "integer"
         },
-        "supported_countries": {
-          "description": "List of supported country codes (ISO 3166-1 alpha-2)\nrequired: false\nexample: [\"US\",\"GB\",\"NP\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "supported_currencies": {
-          "description": "List of supported currency codes (ISO 4217)\nrequired: false\nexample: [\"USD\",\"EUR\",\"NPR\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "updated_at": {
-          "description": "When this configuration was last updated\nreadOnly: true",
+        "notes": {
           "type": "string"
         },
-        "webhook_secret": {
-          "description": "Webhook Secret for verifying gateway callbacks (will be encrypted)\nrequired: false\nexample: whsec_...",
+        "payment_date": {
+          "type": "string"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/models.PaymentMethod"
+        },
+        "payment_ref": {
+          "type": "string"
+        },
+        "processed_by": {
           "type": "string"
         }
       }
@@ -13633,20 +12933,12 @@
         "failed_at": {
           "type": "string"
         },
-        "gateway_client_secret": {
-          "description": "For client-side completion",
-          "type": "string"
-        },
         "gateway_fee": {
           "type": "number"
         },
         "gateway_metadata": {
           "type": "object",
           "additionalProperties": true
-        },
-        "gateway_payment_id": {
-          "description": "stripe_pi_xxx, paypal_order_xxx, etc.",
-          "type": "string"
         },
         "gateway_response": {
           "type": "object",
@@ -14433,7 +13725,7 @@
           "type": "string"
         },
         "payment_gateway": {
-          "description": "Required for payment processing",
+          "description": "Required for payment processing - only stripe and cash allowed",
           "allOf": [
             {
               "$ref": "#/definitions/models.PaymentGateway"
@@ -14680,7 +13972,44 @@
         }
       }
     },
-    "models.TransactionResponse": {
+    "models.TransactionEventInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "checkout_session": {
+          "$ref": "#/definitions/models.CheckoutSession"
+        },
+        "payment_intent": {
+          "$ref": "#/definitions/models.PaymentIntent"
+        },
+        "refunds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.Refund"
+          }
+        },
+        "tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.Ticket"
+          }
+        },
+        "transaction": {
+          "$ref": "#/definitions/models.Transaction"
+        }
+      }
+    },
+    "models.TransactionSummaryResponse": {
       "type": "object",
       "properties": {
         "amount": {
@@ -14698,23 +14027,13 @@
         "currency": {
           "type": "string"
         },
-        "event_id": {
-          "type": "string"
-        },
-        "event_title": {
-          "type": "string"
+        "event": {
+          "$ref": "#/definitions/models.TransactionEventInfo"
         },
         "gateway_txn_id": {
           "type": "string"
         },
-        "guest_user_id": {
-          "type": "string"
-        },
-        "guest_user_name": {
-          "type": "string"
-        },
         "has_payment_details": {
-          "description": "Whether payment intent details are available",
           "type": "boolean"
         },
         "id": {
@@ -14726,19 +14045,28 @@
         "payment_gateway": {
           "$ref": "#/definitions/models.PaymentGateway"
         },
-        "processed_at": {
-          "type": "string"
-        },
         "status": {
           "type": "string"
         },
         "ticket_count": {
           "type": "integer"
         },
-        "user_id": {
+        "updated_at": {
           "type": "string"
         },
-        "user_name": {
+        "user": {
+          "$ref": "#/definitions/models.TransactionUserInfo"
+        }
+      }
+    },
+    "models.TransactionUserInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "description": "registered user full name or guest name",
           "type": "string"
         }
       }
@@ -14881,103 +14209,6 @@
             "overdue"
           ],
           "example": "partially_paid"
-        }
-      }
-    },
-    "models.UpdatePaymentGatewayConfigRequest": {
-      "type": "object",
-      "required": [
-        "password"
-      ],
-      "properties": {
-        "api_key": {
-          "description": "API Key for the payment gateway (will be encrypted)\nrequired: false\nexample: sk_test_...",
-          "type": "string",
-          "example": "sk_test_..."
-        },
-        "api_secret": {
-          "description": "API Secret for the payment gateway (will be encrypted)\nrequired: false\nexample: sk_secret_...",
-          "type": "string",
-          "example": "sk_secret_..."
-        },
-        "config": {
-          "description": "Additional gateway-specific configuration\nrequired: false",
-          "type": "object",
-          "additionalProperties": true
-        },
-        "display_name": {
-          "description": "Human-readable display name\nrequired: false\nexample: Stripe Payment Gateway",
-          "type": "string",
-          "example": "Stripe Payment Gateway"
-        },
-        "fixed_fee": {
-          "description": "Fixed fee charged by the gateway (e.g., 0.30)\nrequired: false\nexample: 0.30",
-          "type": "number",
-          "example": 0.3
-        },
-        "is_enabled": {
-          "description": "Whether this gateway is enabled for use\nrequired: false\nexample: true",
-          "type": "boolean",
-          "example": true
-        },
-        "is_test_mode": {
-          "description": "Whether this gateway is in test/sandbox mode\nrequired: false\nexample: false",
-          "type": "boolean",
-          "example": false
-        },
-        "max_amount": {
-          "description": "Maximum transaction amount allowed\nrequired: false\nexample: 10000.00",
-          "type": "number",
-          "example": 10000
-        },
-        "min_amount": {
-          "description": "Minimum transaction amount allowed\nrequired: false\nexample: 1.00",
-          "type": "number",
-          "example": 1
-        },
-        "password": {
-          "description": "Admin password for verification (required for security)\nrequired: true\nexample: mySecurePassword123",
-          "type": "string",
-          "example": "mySecurePassword123"
-        },
-        "percentage_fee": {
-          "description": "Percentage fee charged by the gateway (e.g., 2.9 for 2.9%)\nrequired: false\nexample: 2.9",
-          "type": "number",
-          "example": 2.9
-        },
-        "priority": {
-          "description": "Priority for gateway selection (lower = higher priority)\nrequired: false\nexample: 1",
-          "type": "integer",
-          "example": 1
-        },
-        "supported_countries": {
-          "description": "List of supported country codes (ISO 3166-1 alpha-2)\nrequired: false\nexample: [\"US\",\"GB\",\"NP\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "example": [
-            "US",
-            "GB",
-            "NP"
-          ]
-        },
-        "supported_currencies": {
-          "description": "List of supported currency codes (ISO 4217)\nrequired: false\nexample: [\"USD\",\"EUR\",\"NPR\"]",
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "example": [
-            "USD",
-            "EUR",
-            "NPR"
-          ]
-        },
-        "webhook_secret": {
-          "description": "Webhook Secret for verifying gateway callbacks (will be encrypted)\nrequired: false\nexample: whsec_...",
-          "type": "string",
-          "example": "whsec_..."
         }
       }
     },
@@ -15267,6 +14498,9 @@
         "customer_email": {
           "type": "string"
         },
+        "deleted_at": {
+          "type": "string"
+        },
         "event_id": {
           "type": "string"
         },
@@ -15542,20 +14776,12 @@
           "description": "Total payment amount\nexample: 25.50",
           "type": "number"
         },
-        "client_secret": {
-          "description": "Client secret for frontend integration (Stripe, etc.)\nexample: pi_secret_...",
-          "type": "string"
-        },
         "currency": {
           "description": "Payment currency\nexample: USD",
           "type": "string"
         },
         "expires_at": {
           "description": "Payment expiration timestamp\nexample: 2026-02-10T16:30:00Z",
-          "type": "string"
-        },
-        "gateway_payment_id": {
-          "description": "Payment ID from the gateway\nexample: pi_1234567890",
           "type": "string"
         },
         "payment_gateway": {

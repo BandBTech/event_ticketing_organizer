@@ -108,11 +108,8 @@ export default function TablePagination({
             </Select>
           </>
         ) : null}
-      </div>
-
-      <div className="flex items-center gap-6">
         {total !== undefined && limit !== undefined && total > 0 ? (
-          <span className="text-sm font-medium text-gray-600">
+          <span className="ml-4 text-sm font-medium text-gray-600">
             {t(
               "common.startItemToEndItemOfTotal",
               `${startItem}-${endItem} of ${total}`,
@@ -124,6 +121,9 @@ export default function TablePagination({
             )}
           </span>
         ) : null}
+      </div>
+
+      <div className="flex items-center gap-6">
 
         <div className="flex items-center gap-1">
           <Button

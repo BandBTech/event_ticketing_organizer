@@ -145,6 +145,11 @@ export async function apiRequest<T>(
       const errorCode = data?.error?.code || "UNKNOWN_ERROR";
       const errorDetails = data?.error?.details;
 
+      // Show error toast if enabled
+      if (showErrorToast) {
+        const displayMessage = errorMessage || errorMsg;
+        toast.error("api.error", displayMessage, errorDetails);
+      }
 
       throw new AuthError(errorMsg, errorCode, response.status, errorDetails);
     }

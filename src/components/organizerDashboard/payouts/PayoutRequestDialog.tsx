@@ -41,6 +41,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useCreatePayoutRequest } from "@/hooks/usePayouts";
 import { PayoutSummaryEvent } from "@/types/payout";
 import { createPayoutRequestSchema, PayoutRequestFormData } from "@/lib/validation";
+import { queryKeys } from "@/lib/queryKeys";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PayoutRequestDialogProps {
   open: boolean;
@@ -56,6 +58,7 @@ export function PayoutRequestDialog({
   events = [],
 }: PayoutRequestDialogProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const payoutRequestFormSchema = useMemo(() => createPayoutRequestSchema(t), [t]);
   const createPayoutMutation = useCreatePayoutRequest();
 
@@ -72,7 +75,14 @@ export function PayoutRequestDialog({
   });
 
   const watchedEventId = form.watch("event_id");
-  const safeEvents = events || [];
+  const safeEvents = useMemo(() => {
+    return (events || []).filter(
+      (e) =>
+        e.pending_requests === 0 &&
+        e.approved_requests === 0 &&
+        e.paid_requests === 0
+    );
+  }, [events]);
 
   // Find the selected event's summary data
   const selectedEventInfo = safeEvents.find(
@@ -128,6 +138,7 @@ export function PayoutRequestDialog({
           onOpenChange(false);
           form.reset();
           setIsManualAmount(false);
+          queryClient.invalidateQueries({ queryKey: queryKeys.payouts.summary });
         },
       },
     );

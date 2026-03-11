@@ -272,14 +272,26 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 </>
               )}
 
-              <Button
-                onClick={() => setPayoutDialogOpen(true)}
-                variant="outline"
-                className="gap-2"
-              >
-                <CurrencyDollarIcon weight="duotone" size={18} />
-                {t("payouts.requestPayout", "Request Payout")}
-              </Button>
+              {event.status === "completed" && (() => {
+                const eventPayoutInfo = payoutSummary?.events?.find((e) => e.event_id === event.id);
+                console.log(eventPayoutInfo)
+                const hasRequestedPayout = eventPayoutInfo
+                  ? (eventPayoutInfo.pending_requests > 0 || eventPayoutInfo.approved_requests > 0 || eventPayoutInfo.paid_requests > 0)
+                  : false;
+
+                if (hasRequestedPayout) return null;
+
+                return (
+                  <Button
+                    onClick={() => setPayoutDialogOpen(true)}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <CurrencyDollarIcon weight="duotone" size={18} />
+                    {t("payouts.requestPayout", "Request Payout")}
+                  </Button>
+                );
+              })()}
 
               {canEdit && (
                 <Link href={`/organizerDashboard/event/edit?id=${event.id}`}>
@@ -289,7 +301,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </Button>
                 </Link>
               )}
-              {!isEventCancelled && event.status !== "rejected" && (
+              {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && (
                 <Button
                   onClick={() => setCancelDialogOpen(true)}
                   variant="destructive"
