@@ -451,7 +451,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                             {tier.tier_name}
                           </span>
                           <div className="flex col-span-2 flex-wrap gap-x-2 gap-y-2 text-gray-500">
-                            <span className="text-gray-900 text-">
+                            <span className="text-gray-900 font-medium">
                               {tier.sales_start && isValid(new Date(tier.sales_start))
                                 ? format(new Date(tier.sales_start), "MMM dd, yyyy h:mm a")
                                 : "—"}

@@ -146,8 +146,7 @@ const TicketTierCard = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="inline-block">
-                {t("event.field.gst", "GST (%)")}{" "}
-                <span className="text-red-500">*</span>
+                {t("event.field.gst", "GST (%)")}
               </FormLabel>
               <FormControl>
                 <Input

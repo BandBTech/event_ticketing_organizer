@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Control, useFieldArray } from "react-hook-form";
+import { Control, useFieldArray, useFormState } from "react-hook-form";
 import { EventFormData } from "@/lib/validation";
 import { TierTemplate } from "@/types/event";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -57,7 +57,7 @@ export function TicketingSection({
               name: "",
               price: 0,
               quantity: 0,
-              gst: 13,
+              gst: 0,
               salesStart: "",
               salesEnd: "",
             })

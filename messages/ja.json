@@ -17,7 +17,8 @@
       "required": "{field}は必須です。",
       "min": "{field}は少なくとも{value}でなければなりません。",
       "max": "{field}は{value}を超えることはできません。",
-      "discountPercentageRequired": "割引率は必須です。"
+      "discountPercentageRequired": "割引率は必須です。",
+      "integer": "{field}は整数（小数なし）である必要があります。"
     },
     "createdAt": "作成日",
     "updatedAt": "更新日",
@@ -478,7 +479,8 @@
       "latitudeRange": "緯度は -90 ～ 90 でなければなりません。",
       "longitudeRange": "経度は -180 ～ 180 である必要があります。",
       "longitudeRequired": "経度は必須です。",
-      "latitudeRequired": "緯度は必須です。"
+      "latitudeRequired": "緯度は必須です。",
+      "capacityExceeded": "チケットの合計数（{total}）は会場の定員（{capacity}）を超えることはできません。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",

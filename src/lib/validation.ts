@@ -389,8 +389,17 @@ const createRequiredNumberSchema = (
   fieldNameKey: string,
   minValue: number = 1,
   maxValue: number = Number.MAX_SAFE_INTEGER,
+  isInteger: boolean = false,
 ) => {
   // Use pipe format: "common.validation.required|field:translationKey:FallbackName"
+  let schema = z.number({
+    message: `common.validation.required|field:${fieldNameKey}`,
+  });
+
+  if (isInteger) {
+    schema = schema.int(`common.validation.integer|field:${fieldNameKey}`);
+  }
+
   return z.preprocess(
     (val) => {
       // Convert empty string or NaN to undefined so z.number() treats it as missing
@@ -398,10 +407,7 @@ const createRequiredNumberSchema = (
       const num = Number(val);
       return isNaN(num) ? undefined : num;
     },
-    z
-      .number({
-        message: `common.validation.required|field:${fieldNameKey}`,
-      })
+    schema
       .min(
         minValue,
         `common.validation.min|field:${fieldNameKey},value:${minValue}`,
@@ -448,20 +454,21 @@ export const createTicketSchema = (
         "event.field.ticketQuantity:Quantity",
         1,
         MAX_QUANTITY,
+        true,
       ),
       gst: z.preprocess(
         (val) => {
-          if (val === "" || val === null || val === undefined) return undefined;
+          if (val === "" || val === null || val === undefined) return 0;
           const num = Number(val);
-          return isNaN(num) ? undefined : num;
+          return isNaN(num) ? 0 : num;
         },
         z
           .number({
-            message: "GST is required. Set to 0 if not applicable.",
+            message: "GST must be a number.",
           })
           .min(0, t("event.validation.gstPositive", "GST must be positive."))
           .max(100, t("event.validation.gstMax", "GST cannot exceed 100%.")),
-      ),
+      ).optional().default(0),
       salesStart: createRequiredDateSchema(
         t,
         "event.field.salesStart:Sales Start Date",
@@ -565,6 +572,7 @@ export const createPromoCodeSchema = (
         "event.field.discountQuantity:Quantity",
         1,
         PROMO_CODE_QUANTITY_MAX,
+        true,
       ),
     })
     .superRefine((data, ctx) => {
@@ -798,6 +806,7 @@ export const createEventSchema = (
         "event.field.capacity:Capacity",
         1,
         MAX_CAPACITY,
+        true,
       ),
       timezone: z
         .string()
@@ -873,6 +882,36 @@ export const createEventSchema = (
           }
         }
       });
+
+      // Validate ticket quantities sum <= capacity
+      if (data.capacity && data.tickets && data.tickets.length > 0) {
+        const totalTickets = data.tickets.reduce((sum, ticket) => {
+          return sum + (ticket.quantity || 0);
+        }, 0);
+
+        if (totalTickets > data.capacity) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.capacityExceeded",
+              "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
+              { total: totalTickets, capacity: data.capacity }
+            ),
+            path: ["capacity"],
+          });
+          
+          // Also attach to tickets array for visibility in ticket section
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t(
+              "event.validation.capacityExceeded",
+              "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
+              { total: totalTickets, capacity: data.capacity }
+            ),
+            path: ["tickets"],
+          });
+        }
+      }
 
       // Check for duplicate promo codes
       if (data.promoCodes && data.promoCodes.length > 0) {

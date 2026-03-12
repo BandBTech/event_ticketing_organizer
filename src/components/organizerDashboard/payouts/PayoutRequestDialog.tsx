@@ -180,7 +180,16 @@ export function PayoutRequestDialog({
                         value={field.value}
                         disabled={!!defaultEventId}
                       >
-                        <SelectTrigger id="payout-event-id">
+                        <SelectTrigger
+                          id="payout-event-id"
+                          title={
+                            field.value
+                              ? safeEvents.find(
+                                (e) => e.event_id === field.value,
+                              )?.event_title
+                              : undefined
+                          }
+                        >
                           <SelectValue
                             placeholder={t(
                               "payouts.create.eventPlaceholder",
@@ -210,7 +219,8 @@ export function PayoutRequestDialog({
                               <SelectItem
                                 key={event.event_id}
                                 value={event.event_id}
-                                className="max-w-[390px] truncate line-clamp-1"
+                                title={event.event_title}
+                                className="max-w-[390px] truncate line-clamp-1 cursor-pointer"
                               >
                                 {event.event_title}
                               </SelectItem>
