@@ -101,7 +101,8 @@
     "noDataDescription": "Non ci sono record da visualizzare.",
     "backToEvent": "Torna all'evento",
     "guest": "Ospite",
-    "submit": "Invia"
+    "submit": "Invia",
+    "results": "Risultati"
   },
   "navigation": {
     "events": "Eventi",

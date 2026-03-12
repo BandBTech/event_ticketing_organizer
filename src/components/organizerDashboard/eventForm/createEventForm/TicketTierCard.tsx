@@ -121,6 +121,11 @@ const TicketTierCard = ({
                     "Enter number of quantity",
                   )}
                   {...field}
+                  onKeyDown={(e) => {
+                    if (e.key === '.' || e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                      e.preventDefault();
+                    }
+                  }}
                   onChange={(e) => {
                     const val = e.target.value;
                     if (val === "") {
@@ -140,7 +145,7 @@ const TicketTierCard = ({
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={control}
           name={`tickets.${index}.gst`}
           render={({ field }) => (
@@ -174,7 +179,7 @@ const TicketTierCard = ({
               </div>
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={control}

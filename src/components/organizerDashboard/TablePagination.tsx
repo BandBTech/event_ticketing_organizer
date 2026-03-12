@@ -121,6 +121,8 @@ export default function TablePagination({
             )}
           </span>
         ) : null}
+
+        {t("common.results", "Results")}
       </div>
 
       <div className="flex items-center gap-6">
@@ -160,11 +162,10 @@ export default function TablePagination({
                   variant="ghost"
                   size="sm"
                   onClick={() => onPageChange(item as number)}
-                  className={`h-8 min-w-8 p-0 text-sm hover:bg-gray-100 rounded-md ${
-                    currentPage === item
+                  className={`h-8 min-w-8 p-0 text-sm hover:bg-gray-100 rounded-md ${currentPage === item
                       ? "font-bold text-gray-900"
                       : "font-medium text-gray-500"
-                  }`}
+                    }`}
                 >
                   {item}
                 </Button>

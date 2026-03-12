@@ -110,7 +110,8 @@
     "noDataDescription": "There are no records to display.",
     "backToEvent": "Back to Event",
     "guest": "Guest",
-    "submit": "Submit"
+    "submit": "Submit",
+    "results": "Results"
   },
   "navigation": {
     "events": "Events",

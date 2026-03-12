@@ -282,6 +282,11 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     type="number"
                     placeholder={t("event.placeholder.capacity", "e.g 5000")}
                     {...field}
+                    onKeyDown={(e) => {
+                      if (e.key === '.' || e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                        e.preventDefault();
+                      }
+                    }}
                     onChange={(e) => {
                       const val = e.target.value;
                       if (val === "") {
@@ -301,7 +306,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={control}
             name="timezone"
             render={({ field, fieldState }) => (
@@ -321,7 +326,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                 <TranslatedFormMessage t={t} />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             control={control}

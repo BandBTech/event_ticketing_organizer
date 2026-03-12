@@ -101,7 +101,8 @@
     "noDataDescription": "表示するレコードはありません。",
     "backToEvent": "イベントに戻る",
     "guest": "ゲスト",
-    "submit": "提出する"
+    "submit": "提出する",
+    "results": "結果"
   },
   "navigation": {
     "events": "イベント",

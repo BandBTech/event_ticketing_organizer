@@ -808,12 +808,7 @@ export const createEventSchema = (
         MAX_CAPACITY,
         true,
       ),
-      timezone: z
-        .string()
-        .min(
-          1,
-          t("event.validation.timezoneRequired", "Timezone is required."),
-        ),
+      timezone: z.string().optional(),
       startDate: createRequiredDateSchema(
         t,
         "event.field.startDateTime:Event Start Date",
