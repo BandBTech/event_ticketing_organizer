@@ -6,7 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { EventMinimal } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
-import { CalendarDotsIcon, MapPinAreaIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  CalendarDotsIcon,
+  MapPinAreaIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import { SalesStatusBadge } from "./SalesStatusBadge";
@@ -35,7 +38,11 @@ interface EventCardProps {
   customActions?: React.ReactNode;
 }
 
-export default function EventCard({ event, onClick, customActions }: EventCardProps) {
+export default function EventCard({
+  event,
+  onClick,
+  customActions,
+}: EventCardProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const router = useRouter();
@@ -52,6 +59,8 @@ export default function EventCard({ event, onClick, customActions }: EventCardPr
     }
   };
 
+  console.log(event);
+
   return (
     <div
       onClick={handleCardClick}
@@ -65,12 +74,14 @@ export default function EventCard({ event, onClick, customActions }: EventCardPr
           className="w-full h-full object-cover"
           unoptimized
         />
-        {event.status && (
-          <EventStatusBadge
-            status={event.status}
-            className="absolute top-2 left-2 shadow-lg"
-          />
-        )}
+        {event.status &&
+          event?.sales_status !== "paused" &&
+          event?.sales_status !== "stopped" && (
+            <EventStatusBadge
+              status={event.status}
+              className="absolute top-2 left-2 shadow-lg"
+            />
+          )}
         {event.status === "on_sale" && event.sales_status !== "active" && (
           <SalesStatusBadge
             status={event.sales_status}
@@ -117,26 +128,26 @@ export default function EventCard({ event, onClick, customActions }: EventCardPr
           {customActions ? (
             customActions
           ) : (
-              <div className="flex justify-between items-center">
-                <Link
-                  href={`/organizerDashboard/event/details?id=${event.id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
-                >
-                  {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
-                </Link>
-                <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
-                  {(event.status === "pending" || event.status === "draft") && (
-                    <Link
-                      href={`/organizerDashboard/event/edit?id=${event.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
-                    >
-                      <PencilLine className="w-4 h-4" />
-                    </Link>
-                  )}
-                </PermissionGuard>
-              </div>
+            <div className="flex justify-between items-center">
+              <Link
+                href={`/organizerDashboard/event/details?id=${event.id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-2 border border-gray-300 hover:no-underline rounded-lg p-2 text-sm text-gray-700 font-medium hover:bg-gray-100 hover:shadow-lg"
+              >
+                {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
+              </Link>
+              <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
+                {(event.status === "pending" || event.status === "draft") && (
+                  <Link
+                    href={`/organizerDashboard/event/edit?id=${event.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 hover:shadow-lg"
+                  >
+                    <PencilLine className="w-4 h-4" />
+                  </Link>
+                )}
+              </PermissionGuard>
+            </div>
           )}
         </div>
       </div>
