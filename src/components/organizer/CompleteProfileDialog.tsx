@@ -20,18 +20,20 @@ import { OrganizerProfileForm } from "@/components/organizer/OrganizerProfileFor
 import { OrganizerProfileFormValues } from "@/lib/validation";
 
 export function CompleteProfileDialog() {
-  const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile } = useAuthStore();
+  const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile, hasRole } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const [isOpen, setIsOpen] = useState(false);
+
+  const isOrganizer = hasRole("organizer");
 
   useEffect(() => {
     // Check localStorage for tab-specific state
     const dismissed =
       localStorage.getItem("profile_popup_dismissed") === "true";
 
-    // Only show if authenticated, profile is incomplete, and hasn't been dismissed
-    if (isAuthenticated && isOrganizerComplete === false && !dismissed) {
+    // Only show if authenticated, user is an organizer (not staff/manager), profile is incomplete, and hasn't been dismissed
+    if (isAuthenticated && isOrganizer && isOrganizerComplete === false && !dismissed) {
       setIsOpen(true);
       // Mark as dismissed for this tab
       localStorage.setItem("profile_popup_dismissed", "true");
@@ -39,7 +41,7 @@ export function CompleteProfileDialog() {
       // If profile becomes complete, close it
       setIsOpen(false);
     }
-  }, [isOrganizerComplete, isAuthenticated]);
+  }, [isOrganizerComplete, isAuthenticated, isOrganizer]);
 
   const mutation = useMutation({
     mutationFn: async ({ data, logo }: { data: OrganizerProfileFormValues; logo: File | null | undefined }) => {

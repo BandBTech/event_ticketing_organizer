@@ -48,8 +48,12 @@ export default function SettingsLayout({
   ];
 
   const filteredMenuItems = menuItems.filter(item => {
-    // Hide specialized settings for staff
+    // Hide specialized settings for staff and managers appropriately
     if (is("staff") && ["/organizerDashboard/settings/organizer", "/organizerDashboard/settings/tiers"].includes(item.href)) {
+      return false;
+    }
+    
+    if (is("manager") && item.href === "/organizerDashboard/settings/organizer") {
       return false;
     }
 
