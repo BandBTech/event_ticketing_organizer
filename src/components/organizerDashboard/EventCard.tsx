@@ -59,8 +59,6 @@ export default function EventCard({
     }
   };
 
-  console.log(event);
-
   return (
     <div
       onClick={handleCardClick}
@@ -75,8 +73,9 @@ export default function EventCard({
           unoptimized
         />
         {event.status &&
-          event?.sales_status !== "paused" &&
-          event?.sales_status !== "stopped" && (
+          (event.status !== "on_sale" ||
+            (event?.sales_status !== "paused" &&
+              event?.sales_status !== "stopped")) && (
             <EventStatusBadge
               status={event.status}
               className="absolute top-2 left-2 shadow-lg"
@@ -85,7 +84,7 @@ export default function EventCard({
         {event.status === "on_sale" && event.sales_status !== "active" && (
           <SalesStatusBadge
             status={event.sales_status}
-            className="absolute top-2 right-2"
+            className="absolute top-2 left-2"
           />
         )}
         {event.is_featured && (

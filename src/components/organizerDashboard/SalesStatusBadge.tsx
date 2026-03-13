@@ -30,7 +30,7 @@ export function SalesStatusBadge({ status, className, showAlways = false }: Sale
     <Badge
       variant="outline"
       className={cn(
-        "uppercase font-bold tracking-wider px-2 py-0.5 rounded-full shadow-sm border text-[10px] flex items-center gap-1.5",
+        "uppercase font-semibold px-2 py-1 rounded-full shadow-sm border flex items-center gap-1.5",
         salesStatusColors[displayStatus] || "bg-blue-50 text-gray-700 border-gray-200 hover:bg-gray-50",
         className
       )}

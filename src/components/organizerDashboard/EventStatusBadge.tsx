@@ -16,8 +16,10 @@ const eventStatusConfig: Record<string, { color: string; variant: "default" | "s
   'rejected': { color: 'bg-red-700 text-red-100 border-red-600', variant: 'destructive' },
   'cancelled': { color: 'bg-red-700 text-white border-red-600', variant: 'destructive' },
   'draft': { color: 'bg-gray-700 text-gray-100 border-gray-600', variant: 'secondary' },
+  'completed': { color: 'bg-slate-700 text-slate-100 border-slate-600', variant: 'secondary' },
   'default': { color: 'bg-gray-700 text-gray-100 border-gray-600', variant: 'secondary' },
   'on_sale': { color: 'bg-green-700 text-green-100 border-green-600', variant: 'secondary' },
+  'live': { color: 'bg-green-100 text-green-700 border-green-600', variant: 'secondary' },
 };
 
 export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {
@@ -37,7 +39,13 @@ export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {
         className
       )}
     >
-      {t(`event.status.${status}`, status)}
+      {status === 'live' && (
+        <span className="flex h-1.5 w-1.5 relative">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+        </span>
+      )}
+      {t(`event.badge.${status}`, status)}
     </Badge>
   );
 }

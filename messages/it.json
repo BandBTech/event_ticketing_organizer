@@ -498,7 +498,7 @@
       "pending": "In attesa di",
       "cancelled": "Annullato",
       "draft": "Bozza",
-      "live": "Vivere",
+      "live": "Live",
       "ended": "Finito",
       "rejected": "Respinto",
       "active": "Vendite in diretta",
@@ -506,8 +506,9 @@
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
       "sales_ended": "Vendite terminate",
-      "on_sale": "In vendita",
-      "featured": "In primo piano"
+      "on_sale": "Vendite in diretta",
+      "featured": "In primo piano",
+      "completed": "Completato"
     },
     "option": {
       "amountFixed": "Importo (fisso)",

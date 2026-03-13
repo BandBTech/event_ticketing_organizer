@@ -194,10 +194,12 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 {event.title}
               </h1>
               <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
-                <EventStatusBadge status={event.status} />
-                {event.status === "approved" && (
+                {(event.status !== "on_sale" || salesStatus === "active") && (
+                  <EventStatusBadge status={event.status} />
+                )}
+                {event.status === "on_sale" && salesStatus !== "active" && (
                   <SalesStatusBadge
-                    status={analytics?.sales_status || "active"}
+                    status={salesStatus}
                   />
                 )}
 
@@ -274,7 +276,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
 
               {event.status === "completed" && (() => {
                 const eventPayoutInfo = payoutSummary?.events?.find((e) => e.event_id === event.id);
-                console.log(eventPayoutInfo)
                 const hasRequestedPayout = eventPayoutInfo
                   ? (eventPayoutInfo.pending_requests > 0 || eventPayoutInfo.approved_requests > 0 || eventPayoutInfo.paid_requests > 0)
                   : false;

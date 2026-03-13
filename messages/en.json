@@ -687,8 +687,9 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended",
-      "on_sale": "On Sale",
-      "featured": "Featured"
+      "on_sale": "Sales Live",
+      "featured": "Featured",
+      "completed": "Completed"
     },
     "analytics": {
       "progress": "Sales Progress",
