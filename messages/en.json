@@ -664,7 +664,8 @@
       "longitudeRange": "Longitude must be between -180 and 180.",
       "longitudeRequired": "Longitude is required.",
       "latitudeRequired": "Latitude is required.",
-      "capacityExceeded": "Total number of tickets ({total}) cannot exceed venue capacity ({capacity})."
+      "capacityExceeded": "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
+      "capacityRequiredFirst": "Please set the venue capacity before setting tickets quantity."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",

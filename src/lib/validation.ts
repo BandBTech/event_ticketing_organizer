@@ -879,31 +879,31 @@ export const createEventSchema = (
       });
 
       // Validate ticket quantities sum <= capacity
-      if (data.capacity && data.tickets && data.tickets.length > 0) {
+      if (data.tickets && data.tickets.length > 0) {
         const totalTickets = data.tickets.reduce((sum, ticket) => {
           return sum + (ticket.quantity || 0);
         }, 0);
 
-        if (totalTickets > data.capacity) {
+        if (totalTickets > 0 && !data.capacity) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: t(
-              "event.validation.capacityExceeded",
-              "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
-              { total: totalTickets, capacity: data.capacity }
+              "event.validation.capacityRequiredFirst",
+              "Please set the venue capacity before setting tickets quantity"
             ),
             path: ["capacity"],
           });
-          
-          // Also attach to tickets array for visibility in ticket section
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t(
-              "event.validation.capacityExceeded",
-              "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
-              { total: totalTickets, capacity: data.capacity }
-            ),
-            path: ["tickets"],
+        } else if (data.capacity && totalTickets > data.capacity) {
+          data.tickets.forEach((_, index) => {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: t(
+                "event.validation.capacityExceeded",
+                "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
+                { total: totalTickets, capacity: data.capacity }
+              ),
+              path: ["tickets", index, "quantity"],
+            });
           });
         }
       }
