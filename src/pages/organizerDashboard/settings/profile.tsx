@@ -44,7 +44,6 @@ const createProfileSchema = () => {
       .max(50, 'settings.profile.validation.lastNameMaxLength'),
     phone: z
       .string()
-      .min(1, 'settings.profile.validation.phoneRequired')
       .refine(
         (val) => !val || val.length === 0 || (typeof val === 'string' && isValidPhoneNumber(val)),
         { message: 'settings.profile.validation.phoneInvalid' }
@@ -216,7 +215,7 @@ export default function ProfileSettingsPage() {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-gray-900">
+                          <FormLabel required className="text-sm font-medium text-gray-900">
                             {t('settings.profile.firstName', 'First Name')}
                           </FormLabel>
                           <div className="relative">
@@ -245,7 +244,7 @@ export default function ProfileSettingsPage() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-gray-900">
+                          <FormLabel required className="text-sm font-medium text-gray-900">
                             {t('settings.profile.lastName', 'Last Name')}
                           </FormLabel>
                           <div className="relative">
