@@ -125,10 +125,9 @@
     "summary": {
       "earnings": "Guadagni totali",
       "withdrawn": "Amount Withdrawn",
-      "pending": "Richieste in sospeso",
-      "balance": "Available Balance",
-      "received": "Totale ricevuto",
-      "available": "Importo disponibile",
+      "pending": "Importo totale in sospeso",
+      "received": "Importo totale ricevuto",
+      "available": "Importo totale richiesta",
       "approvedRequests": "Richieste approvate",
       "paidRequests": "Richieste a pagamento",
       "pendingRequests": "Richieste in sospeso"

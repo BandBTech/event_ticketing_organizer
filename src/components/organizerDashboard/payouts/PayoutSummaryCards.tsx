@@ -32,21 +32,21 @@ export function PayoutSummaryCards({
     },
     {
       icon: <BankIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.received", "Total Paid Out"),
+      label: t("payouts.summary.received", "Total Received Amount"),
       value: isLoading
         ? null
         : `Rs. ${summary?.total_received.toLocaleString() ?? "0"}`,
     },
     {
       icon: <WalletIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.available", "Available for Payout"),
+      label: t("payouts.summary.available", "Total Requestable Amount"),
       value: isLoading
         ? null
         : `Rs. ${summary?.available_amount.toLocaleString() ?? "0"}`,
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.pending", "Pending Amount"),
+      label: t("payouts.summary.pending", "Total Pending Amount"),
       value: isLoading
         ? null
         : `Rs. ${summary?.pending_amount.toLocaleString() ?? "0"}`,

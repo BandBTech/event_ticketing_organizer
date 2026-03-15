@@ -125,10 +125,9 @@
     "summary": {
       "earnings": "総収益",
       "withdrawn": "Amount Withdrawn",
-      "pending": "保留中のリクエスト",
-      "balance": "Available Balance",
-      "received": "合計受信額",
-      "available": "利用可能量",
+      "pending": "保留中の合計金額",
+      "received": "受取総額",
+      "available": "申請可能合計金額",
       "approvedRequests": "承認されたリクエスト",
       "paidRequests": "有料リクエスト",
       "pendingRequests": "保留中のリクエスト"

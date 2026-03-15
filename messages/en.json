@@ -134,10 +134,9 @@
     "summary": {
       "earnings": "Total Earnings",
       "withdrawn": "Amount Withdrawn",
-      "pending": "Pending Requests",
-      "balance": "Available Balance",
-      "received": "Total Received",
-      "available": "Available Amount",
+      "pending": "Total Pending Amount",
+      "received": "Total Received Amount",
+      "available": "Total Requestable Amount",
       "approvedRequests": "Approved Requests",
       "paidRequests": "Paid Requests",
       "pendingRequests": "Pending Requests"
