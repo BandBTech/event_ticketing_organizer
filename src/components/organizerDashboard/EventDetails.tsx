@@ -302,7 +302,8 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </Button>
                 </Link>
               )}
-              {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && (
+              {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
+              {!isEventCancelled && ["pending", "draft", "on_sale", "approved"].includes(event.status) && (
                 <Button
                   onClick={() => setCancelDialogOpen(true)}
                   variant="destructive"

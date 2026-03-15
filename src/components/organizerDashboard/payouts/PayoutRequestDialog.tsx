@@ -184,6 +184,7 @@ export function PayoutRequestDialog({
                       >
                         <SelectTrigger
                           id="payout-event-id"
+                          className="max-w-100"
                           title={
                             field.value
                               ? safeEvents.find(
@@ -197,6 +198,7 @@ export function PayoutRequestDialog({
                               "payouts.create.eventPlaceholder",
                               "Select an event",
                             )}
+                            className="line-clamp-1 truncate"
                           >
                             {field.value
                               ? (safeEvents.find((e) => e.event_id === field.value)
