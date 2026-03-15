@@ -20,7 +20,11 @@ export default function StaffDashboardHome() {
   });
 
   const liveEvents =
-    eventsData?.events.filter((e) => e.status === "on_sale") || [];
+    eventsData?.events.filter((e) => {
+      if (!["approved", "on_sale", "live"].includes(e.status)) return false;
+      const scanStartTime = new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
+      return Date.now() >= scanStartTime;
+    }) || [];
 
   return (
     <div className="space-y-6 p-6">
