@@ -43,11 +43,13 @@ export default function LoginForm() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { login, isAuthenticated, clearError, user } = useAuthStore();
+  const { login, isAuthenticated, isLoading, clearError, user } = useAuthStore();
 
   // Redirect if already authenticated - role-based
+  // Also check !isLoading to avoid premature redirect during login flow
+  // (fetchProfile sets isAuthenticated=true before the full login chain completes)
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !isLoading) {
       const userRoles = user.roles || [];
       // Staff and manager go to staff dashboard, others to organizer dashboard
       if (userRoles.includes("staff") || userRoles.includes("manager")) {
@@ -56,7 +58,7 @@ export default function LoginForm() {
         router.push("/organizerDashboard");
       }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, isLoading, router]);
 
   const loginFormSchema = useMemo(
     () => loginSchema((key, fallback, params) => key),

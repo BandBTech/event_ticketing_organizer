@@ -58,8 +58,17 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       // Fetch profile data sequentially to ensure state updates are applied in order
       // fetchOrganizerProfile depends on user state being set by fetchProfile
       await get().fetchProfile();
+      // Re-assert isLoading: true because fetchProfile() internally sets isLoading: false.
+      // We need to keep loading=true until the ENTIRE login chain completes,
+      // otherwise the LoginForm redirect useEffect fires prematurely.
+      set({ isLoading: true });
       await get().fetchOrganizerProfile();
       await get().checkOrganizerCompletion();
+
+      // Mark auth as fully checked and loading complete AFTER all fetches are done.
+      // This ensures the user state (including organizerStatus) is fully ready
+      // before ProtectedRoute allows rendering dashboard content.
+      set({ isLoading: false, _authChecked: true });
     } catch (error) {
       const errorMessage =
         error instanceof AuthError
@@ -229,30 +238,30 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   },
 
   // Check if organizer is rejected
+  // Uses organizationInfo.status with fallback to organizerStatus
+  // (organizer_info may be missing for newly registered organizers)
   isOrganizerRejected: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === "rejected") {
-      return true;
-    }
-    return false;
+    const status = user?.organizationInfo?.status ?? user?.organizerStatus;
+    return status === "rejected";
   },
 
   // Check if organizer is pending
+  // Uses organizationInfo.status with fallback to organizerStatus
+  // (organizer_info may be missing for newly registered organizers)
   isOrganizerPending: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === "pending") {
-      return true;
-    }
-    return false;
+    const status = user?.organizationInfo?.status ?? user?.organizerStatus;
+    return status === "pending";
   },
 
   // Check if organizer is inactive
+  // Uses organizationInfo.status with fallback to organizerStatus
+  // (organizer_info may be missing for newly registered organizers)
   isOrganizerInactive: () => {
     const { user } = get();
-    if (user?.organizationInfo?.status === "inactive") {
-      return true;
-    }
-    return false;
+    const status = user?.organizationInfo?.status ?? user?.organizerStatus;
+    return status === "inactive";
   },
 
   // Get organization ID (primarily from organizer profile's organizer_id)
