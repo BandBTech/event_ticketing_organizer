@@ -76,12 +76,14 @@ export function PayoutRequestDialog({
 
   const watchedEventId = form.watch("event_id");
   const safeEvents = useMemo(() => {
-    return (events || []).filter(
-      (e) =>
-        e.pending_requests === 0 &&
-        e.approved_requests === 0 &&
-        e.paid_requests === 0
-    );
+    return (events || [])
+      .filter(
+        (e) =>
+          e.pending_requests === 0 &&
+          e.approved_requests === 0 &&
+          e.paid_requests === 0
+      )
+      .sort((a, b) => a.event_title.localeCompare(b.event_title));
   }, [events]);
 
   // Find the selected event's summary data
