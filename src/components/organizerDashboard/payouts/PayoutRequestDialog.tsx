@@ -71,9 +71,6 @@ export function PayoutRequestDialog({
   );
   const createPayoutMutation = useCreatePayoutRequest();
 
-  // Track whether the user wants to override the analytics-derived amount
-  const [isManualAmount, setIsManualAmount] = useState(false);
-
   const form = useForm<PayoutRequestFormData>({
     resolver: zodResolver(
       payoutRequestFormSchema,
@@ -102,18 +99,17 @@ export function PayoutRequestDialog({
     (e) => e.event_id === watchedEventId,
   );
 
-  // Auto-fill amount from event data whenever it changes (and user hasn't opted to enter manually)
+  // Auto-fill amount from event data whenever it changes
   useEffect(() => {
-    if (selectedEventInfo && !isManualAmount) {
+    if (selectedEventInfo) {
       const revenue = selectedEventInfo.due_amount ?? 0;
       form.setValue("amount", revenue, { shouldValidate: true });
     }
-  }, [selectedEventInfo, isManualAmount, form]);
+  }, [selectedEventInfo, form]);
 
   // Reset everything when dialog opens / defaultEventId changes
   useEffect(() => {
     if (open) {
-      setIsManualAmount(false);
       // If a default event is provided and we already have its summary data,
       // pre-fill the amount immediately so the user sees it on open.
       const defaultEvent = defaultEventId
@@ -127,15 +123,10 @@ export function PayoutRequestDialog({
     }
   }, [open, defaultEventId, form, safeEvents]);
 
-  // When a new event is selected, clear amount and reset manual flag
+  // When a new event is selected, clear amount
   const handleEventChange = (eventId: string) => {
     form.setValue("event_id", eventId, { shouldValidate: true });
-    setIsManualAmount(false);
     form.setValue("amount", 0);
-  };
-
-  const handleManualToggle = () => {
-    setIsManualAmount(true);
   };
 
   const onSubmit = (data: PayoutRequestFormData) => {
@@ -150,7 +141,6 @@ export function PayoutRequestDialog({
         onSuccess: () => {
           onOpenChange(false);
           form.reset();
-          setIsManualAmount(false);
           queryClient.invalidateQueries({
             queryKey: queryKeys.payouts.summary,
           });
@@ -159,8 +149,8 @@ export function PayoutRequestDialog({
     );
   };
 
-  // Amount is auto-filled from analytics → disable unless user opts to enter manually
-  const isAmountLocked = !!watchedEventId && !isManualAmount;
+  // Amount is auto-filled from analytics and cannot be changed manually
+  const isAmountLocked = !!watchedEventId;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -277,13 +267,13 @@ export function PayoutRequestDialog({
                           <span className="font-medium text-foreground">
                             {selectedEventInfo.commission_rate}%
                           </span>
-                      </div>
+                        </div>
                       </div>
                     </motion.div>
                   )}
               </AnimatePresence>
 
-              {/* Amount — auto-populated from analytics, lockable */}
+              {/* Amount — auto-populated from analytics, locked */}
               <FormField
                 control={form.control}
                 name="amount"
@@ -293,16 +283,6 @@ export function PayoutRequestDialog({
                       <FormLabel required>
                         {t("payouts.create.amount", "Amount")}
                       </FormLabel>
-                      {isAmountLocked && (
-                        <button
-                          type="button"
-                          onClick={handleManualToggle}
-                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          <PencilSimpleIcon className="h-3.5 w-3.5" />
-                          {t("payouts.create.enterManually", "Enter manually")}
-                        </button>
-                      )}
                     </div>
                     <FormControl>
                       <div className="relative">
@@ -327,12 +307,9 @@ export function PayoutRequestDialog({
                             field.onChange(num);
                           }}
                         />
-                        {isAmountLocked && (
-                          <LockIcon className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        )}
                       </div>
                     </FormControl>
-                    {selectedEventInfo && !isManualAmount && (
+                    {selectedEventInfo && (
                       <p className="text-xs text-muted-foreground">
                         {t(
                           "payouts.create.analyticsNote",

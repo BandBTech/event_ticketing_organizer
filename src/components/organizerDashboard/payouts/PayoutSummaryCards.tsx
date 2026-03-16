@@ -51,32 +51,32 @@ export function PayoutSummaryCards({
         ? null
         : `Rs. ${summary?.pending_amount.toLocaleString() ?? "0"}`,
     },
-    {
-      icon: <HourglassIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.pendingRequests", "Pending Requests"),
-      value: isLoading
-        ? null
-        : `${summary?.pending_requests.toLocaleString() ?? "0"}`,
-    },
-    {
-      icon: <CheckCircleIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.approvedRequests", "Approved Requests"),
-      value: isLoading
-        ? null
-        : `${summary?.approved_requests.toLocaleString() ?? "0"}`,
-    },
-    {
-      icon: <ReceiptIcon className="w-6 h-6 text-primary" />,
-      label: t("payouts.summary.paidRequests", "Completed Payouts"),
-      value: isLoading
-        ? null
-        : `${summary?.paid_requests.toLocaleString() ?? "0"}`,
-    },
+    // {
+    //   icon: <HourglassIcon className="w-6 h-6 text-primary" />,
+    //   label: t("payouts.summary.pendingRequests", "Pending Requests"),
+    //   value: isLoading
+    //     ? null
+    //     : `${summary?.pending_requests.toLocaleString() ?? "0"}`,
+    // },
+    // {
+    //   icon: <CheckCircleIcon className="w-6 h-6 text-primary" />,
+    //   label: t("payouts.summary.approvedRequests", "Approved Requests"),
+    //   value: isLoading
+    //     ? null
+    //     : `${summary?.approved_requests.toLocaleString() ?? "0"}`,
+    // },
+    // {
+    //   icon: <ReceiptIcon className="w-6 h-6 text-primary" />,
+    //   label: t("payouts.summary.paidRequests", "Completed Payouts"),
+    //   value: isLoading
+    //     ? null
+    //     : `${summary?.paid_requests.toLocaleString() ?? "0"}`,
+    // },
   ];
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 @5xl:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-4">
         {cards.map((card, i) => (
           <motion.div
             key={i}
@@ -97,7 +97,6 @@ export function PayoutSummaryCards({
                     {card.value}
                   </h2>
                 )}
-
               </div>
             </div>
           </motion.div>
@@ -106,4 +105,3 @@ export function PayoutSummaryCards({
     </div>
   );
 }
-
