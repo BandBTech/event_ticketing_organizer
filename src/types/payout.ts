@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 // Enums
@@ -51,6 +50,7 @@ export interface PayoutRequest {
 export interface PayoutSummaryEvent {
   event_id: string;
   event_title: string;
+  commission_rate: number;
   total_earnings: number;
   paid_amount: number;
   due_amount: number;

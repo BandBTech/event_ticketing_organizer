@@ -23,7 +23,7 @@ This document defines the coding standards, architectural patterns, and tech sta
 
 ## 2. Tech Stack
 
-- **Framework:** Next.js 15 (App Router, Static Export Mode)
+- **Framework:** Next.js 15 (Pages Router, Static Export Mode)
 - **State Management:** Zustand (for global application state, non-API related)
 - **API Management:** TanStack Query (React Query)
 - **Styling:** Tailwind CSS 4, Shadcn UI components, Radix UI (Primitives)
@@ -63,7 +63,7 @@ These rules are non-negotiable and designed to maintain a clean, testable separa
 ### 4.4. The Dumb Component Rule
 
 - **Enforcement:** Components in `src/components/ui` and `src/components/layout` cannot be marked `'use client'` unless absolutely necessary (e.g., a theme provider), and they must not import any service or store.
-- **Action:** State and data fetching hooks must be imported and used only in Page components (`src/app`) or Feature-specific components.
+- **Action:** State and data fetching hooks must be imported and used only in Page components (`src/pages`) or Feature-specific components.
 - Follow react component model with page and its components together
 
 ## 5. Coding Conventions
@@ -72,7 +72,7 @@ These rules are non-negotiable and designed to maintain a clean, testable separa
 
 - **Components:** PascalCase (e.g., `EventCard.tsx`).
 - **Services & Stores:** camelCase (e.g., `authService.ts`, `authStore.ts`).
-- **Query Keys:** Use a structured array format: `['domain', 'subdomain', id]` (e.g., `['events', eventId]`, `['users', 'current']`).
+- **Query Keys:** Use a structured array format: `['domain', 'subdomain', id]` (e.g., `['events', eventId]`, `['users', 'current']`) the querykeys should stored and retrieved from `src/lib/queryKeys.ts`.
 
 ### Architecture Patterns
 
@@ -89,11 +89,17 @@ These rules are non-negotiable and designed to maintain a clean, testable separa
 ### Internationalization (I18n)
 
 - Never hardcode strings. Always use the `t()` function provided by `next-intl`.
+```ts
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+const { locale } = useLanguageStore();
+const { t } = useTranslation(locale);
+```
 - Ensure new translation keys are added to the corresponding JSON files in the `messages/` directory.
 
 ## 6. Workflow Rules
 
 - **Before Implementing:** Always check `src/services` to see if a relevant API hook already exists.
 - **Error Handling:** Use the toast system defined in `src/lib/toast.ts`. Mutations should use the `onError` callback to display errors.
-- **Verification:** Always run linting and type checks (`pnpm lint`, `pnpm check`) after changes.
-- **Static Paths:** For any dynamic route like `app/events/[id]/page.tsx`, you must implement and export `generateStaticParams()` to pre-render the paths. If data for paths is unknown at build time, the route cannot be static and must be re-evaluated for architectural compatibility.
+<!--- **Verification:** Always run linting and type checks (`pnpm lint`, `pnpm check`) after changes.-->
+<!--- **Static Paths:** For any dynamic route like `app/events/[id]/page.tsx`, you must implement and export `generateStaticParams()` to pre-render the paths. If data for paths is unknown at build time, the route cannot be static and must be re-evaluated for architectural compatibility.-->

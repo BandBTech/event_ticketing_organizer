@@ -40,9 +40,14 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useCreatePayoutRequest } from "@/hooks/usePayouts";
 import { PayoutSummaryEvent } from "@/types/payout";
-import { createPayoutRequestSchema, PayoutRequestFormData } from "@/lib/validation";
+import {
+  createPayoutRequestSchema,
+  PayoutRequestFormData,
+} from "@/lib/validation";
 import { queryKeys } from "@/lib/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface PayoutRequestDialogProps {
   open: boolean;
@@ -57,16 +62,22 @@ export function PayoutRequestDialog({
   defaultEventId,
   events = [],
 }: PayoutRequestDialogProps) {
-  const { t } = useTranslation();
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const queryClient = useQueryClient();
-  const payoutRequestFormSchema = useMemo(() => createPayoutRequestSchema(t), [t]);
+  const payoutRequestFormSchema = useMemo(
+    () => createPayoutRequestSchema(t),
+    [t],
+  );
   const createPayoutMutation = useCreatePayoutRequest();
 
   // Track whether the user wants to override the analytics-derived amount
   const [isManualAmount, setIsManualAmount] = useState(false);
 
   const form = useForm<PayoutRequestFormData>({
-    resolver: zodResolver(payoutRequestFormSchema) as Resolver<PayoutRequestFormData>,
+    resolver: zodResolver(
+      payoutRequestFormSchema,
+    ) as Resolver<PayoutRequestFormData>,
     defaultValues: {
       event_id: defaultEventId ?? "",
       amount: 0,
@@ -81,7 +92,7 @@ export function PayoutRequestDialog({
         (e) =>
           e.pending_requests === 0 &&
           e.approved_requests === 0 &&
-          e.paid_requests === 0
+          e.paid_requests === 0,
       )
       .sort((a, b) => a.event_title.localeCompare(b.event_title));
   }, [events]);
@@ -140,7 +151,9 @@ export function PayoutRequestDialog({
           onOpenChange(false);
           form.reset();
           setIsManualAmount(false);
-          queryClient.invalidateQueries({ queryKey: queryKeys.payouts.summary });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.payouts.summary,
+          });
         },
       },
     );
@@ -165,7 +178,10 @@ export function PayoutRequestDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-4"
+          >
             <div className="space-y-4">
               {/* Event — first field, backed by summary events */}
               <FormField
@@ -188,8 +204,8 @@ export function PayoutRequestDialog({
                           title={
                             field.value
                               ? safeEvents.find(
-                                (e) => e.event_id === field.value,
-                              )?.event_title
+                                  (e) => e.event_id === field.value,
+                                )?.event_title
                               : undefined
                           }
                         >
@@ -201,8 +217,9 @@ export function PayoutRequestDialog({
                             className="line-clamp-1 truncate"
                           >
                             {field.value
-                              ? (safeEvents.find((e) => e.event_id === field.value)
-                                ?.event_title ??
+                              ? (safeEvents.find(
+                                  (e) => e.event_id === field.value,
+                                )?.event_title ??
                                 t(
                                   "payouts.create.eventPlaceholder",
                                   "Select an event",
@@ -237,6 +254,40 @@ export function PayoutRequestDialog({
                   </FormItem>
                 )}
               />
+
+              {/* Commission Rate - info display */}
+              <AnimatePresence>
+                {selectedEventInfo &&
+                  selectedEventInfo.commission_rate !== undefined && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -10 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between rounded-lg border bg-muted/50 px-4 py-3 text-sm">
+                          <span className="text-muted-foreground">
+                            {t(
+                              "payouts.create.commissionRate",
+                              "Commission Rate",
+                            )}
+                          </span>
+                          <span className="font-medium text-foreground">
+                            {selectedEventInfo.commission_rate}%
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground px-1">
+                          {t(
+                            "payouts.create.commissionHelper",
+                            "The amount below is your earnings after deducting this commission rate.",
+                          )}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+              </AnimatePresence>
 
               {/* Amount — auto-populated from analytics, lockable */}
               <FormField
