@@ -277,13 +277,7 @@ export function PayoutRequestDialog({
                           <span className="font-medium text-foreground">
                             {selectedEventInfo.commission_rate}%
                           </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground px-1">
-                          {t(
-                            "payouts.create.commissionHelper",
-                            "The amount below is your earnings after deducting this commission rate.",
-                          )}
-                        </p>
+                      </div>
                       </div>
                     </motion.div>
                   )}

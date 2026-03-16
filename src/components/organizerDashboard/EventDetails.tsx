@@ -198,9 +198,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   <EventStatusBadge status={event.status} />
                 )}
                 {event.status === "on_sale" && salesStatus !== "active" && (
-                  <SalesStatusBadge
-                    status={salesStatus}
-                  />
+                  <SalesStatusBadge status={salesStatus} />
                 )}
 
                 <div className="flex gap-4 flex-wrap ml-2">
@@ -274,25 +272,32 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 </>
               )}
 
-              {event.status === "completed" && (() => {
-                const eventPayoutInfo = payoutSummary?.events?.find((e) => e.event_id === event.id);
-                const hasRequestedPayout = eventPayoutInfo
-                  ? (eventPayoutInfo.pending_requests > 0 || eventPayoutInfo.approved_requests > 0 || eventPayoutInfo.paid_requests > 0)
-                  : false;
+              {event.status === "completed" &&
+                (() => {
+                  const eventPayoutInfo = payoutSummary?.events?.find(
+                    (e) => e.event_id === event.id,
+                  );
 
-                if (hasRequestedPayout) return null;
+                  if (!eventPayoutInfo) return null;
 
-                return (
-                  <Button
-                    onClick={() => setPayoutDialogOpen(true)}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    <CurrencyDollarIcon weight="duotone" size={18} />
-                    {t("payouts.requestPayout", "Request Payout")}
-                  </Button>
-                );
-              })()}
+                  const hasRequestedPayout =
+                    eventPayoutInfo.pending_requests > 0 ||
+                    eventPayoutInfo.approved_requests > 0 ||
+                    eventPayoutInfo.paid_requests > 0;
+
+                  if (hasRequestedPayout) return null;
+
+                  return (
+                    <Button
+                      onClick={() => setPayoutDialogOpen(true)}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <CurrencyDollarIcon weight="duotone" size={18} />
+                      {t("payouts.requestPayout", "Request Payout")}
+                    </Button>
+                  );
+                })()}
 
               {canEdit && (
                 <Link href={`/organizerDashboard/event/edit?id=${event.id}`}>
@@ -303,27 +308,31 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 </Link>
               )}
               {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
-              {!isEventCancelled && ["pending", "draft", "on_sale", "approved"].includes(event.status) && (
-                <Button
-                  onClick={() => setCancelDialogOpen(true)}
-                  variant="destructive"
-                  className="gap-2"
-                >
-                  <XCircleIcon weight="duotone" size={16} />{" "}
-                  {t("common.cancel", "Cancel")}
-                </Button>
-              )}
+              {!isEventCancelled &&
+                ["pending", "draft", "on_sale", "approved"].includes(
+                  event.status,
+                ) && (
+                  <Button
+                    onClick={() => setCancelDialogOpen(true)}
+                    variant="destructive"
+                    className="gap-2"
+                  >
+                    <XCircleIcon weight="duotone" size={16} />{" "}
+                    {t("common.cancel", "Cancel")}
+                  </Button>
+                )}
             </div>
           </div>
 
           {event.admin_remark && (
             <div
-              className={`p-4 rounded-xl border ${event.status === "approved"
-                ? "bg-green-50 border-green-200 text-green-800"
-                : event.status === "rejected"
-                  ? "bg-red-50 border-red-200 text-red-800"
-                  : "bg-gray-50 border-gray-200 text-gray-800"
-                }`}
+              className={`p-4 rounded-xl border ${
+                event.status === "approved"
+                  ? "bg-green-50 border-green-200 text-green-800"
+                  : event.status === "rejected"
+                    ? "bg-red-50 border-red-200 text-red-800"
+                    : "bg-gray-50 border-gray-200 text-gray-800"
+              }`}
             >
               <h3 className="font-semibold mb-1 flex items-center gap-2 text-gray-900">
                 <ShieldCheckIcon weight="duotone" size={16} />
@@ -441,7 +450,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 {event.tiers && event.tiers.length > 0 && (
                   <div className="pt-6 border-t border-gray-100">
                     <h4 className="text-sm font-medium text-gray-500 mb-1">
-                      {t("event.section.ticketSalesDuration", "Ticket Sales Duration")}
+                      {t(
+                        "event.section.ticketSalesDuration",
+                        "Ticket Sales Duration",
+                      )}
                     </h4>
                     <div className="gap-6">
                       {event.tiers.map((tier) => (
@@ -454,14 +466,22 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                           </span>
                           <div className="flex col-span-2 flex-wrap gap-x-2 gap-y-2 text-gray-500">
                             <span className="text-gray-900 font-medium">
-                              {tier.sales_start && isValid(new Date(tier.sales_start))
-                                ? format(new Date(tier.sales_start), "MMM dd, yyyy h:mm a")
+                              {tier.sales_start &&
+                              isValid(new Date(tier.sales_start))
+                                ? format(
+                                    new Date(tier.sales_start),
+                                    "MMM dd, yyyy h:mm a",
+                                  )
                                 : "—"}
                             </span>
                             -
                             <span className="text-gray-900 font-medium">
-                              {tier.sales_end && isValid(new Date(tier.sales_end))
-                                ? format(new Date(tier.sales_end), "MMM dd, yyyy h:mm a")
+                              {tier.sales_end &&
+                              isValid(new Date(tier.sales_end))
+                                ? format(
+                                    new Date(tier.sales_end),
+                                    "MMM dd, yyyy h:mm a",
+                                  )
                                 : "—"}
                             </span>
                           </div>
@@ -471,7 +491,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </div>
                 )}
               </div>
-
             </div>
 
             <div className="space-y-6">
@@ -536,221 +555,221 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                     </h3>
                     {analytics?.tiers
                       ? analytics.tiers.map((tier) => {
-                        const soldPercent =
-                          tier.total_seats > 0
-                            ? (tier.sold_seats / tier.total_seats) * 100
-                            : 0;
-                        return (
-                          <div
-                            key={tier.tier_id}
-                            className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-medium text-gray-900">
-                                  {tier.tier_name}
-                                </p>
+                          const soldPercent =
+                            tier.total_seats > 0
+                              ? (tier.sold_seats / tier.total_seats) * 100
+                              : 0;
+                          return (
+                            <div
+                              key={tier.tier_id}
+                              className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <p className="font-medium text-gray-900">
+                                    {tier.tier_name}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-medium text-emerald-600">
+                                    {tier.currency || "NPR"}{" "}
+                                    {tier.revenue.toLocaleString()}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium text-emerald-600">
-                                  {tier.currency || "NPR"}{" "}
-                                  {tier.revenue.toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="space-y-1">
-                              <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className="bg-blue-500 h-full rounded-full"
-                                  style={{
-                                    width: `${Math.min(soldPercent, 100)}%`,
-                                  }}
-                                />
-                              </div>
-                              <div className="flex justify-between items-center text-xs text-gray-600">
-                                <span>
-                                  {tier.sold_seats} / {tier.total_seats}{" "}
-                                  {t("common.sold", "sold")}
-                                </span>
-                                <p className="text-xs text-gray-500">
-                                  {tier.currency || "NPR"}{" "}
-                                  {tier.price.toLocaleString()} /{" "}
-                                  {t("common.ticket", "ticket")}
-                                </p>
-                              </div>
-                              {(() => {
-                                if (!tier.sales_start && !tier.sales_end)
-                                  return null;
+                              <div className="space-y-1">
+                                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                  <div
+                                    className="bg-blue-500 h-full rounded-full"
+                                    style={{
+                                      width: `${Math.min(soldPercent, 100)}%`,
+                                    }}
+                                  />
+                                </div>
+                                <div className="flex justify-between items-center text-xs text-gray-600">
+                                  <span>
+                                    {tier.sold_seats} / {tier.total_seats}{" "}
+                                    {t("common.sold", "sold")}
+                                  </span>
+                                  <p className="text-xs text-gray-500">
+                                    {tier.currency || "NPR"}{" "}
+                                    {tier.price.toLocaleString()} /{" "}
+                                    {t("common.ticket", "ticket")}
+                                  </p>
+                                </div>
+                                {(() => {
+                                  if (!tier.sales_start && !tier.sales_end)
+                                    return null;
 
-                                const now = new Date();
-                                const salesStart = tier.sales_start
-                                  ? new Date(tier.sales_start)
-                                  : null;
-                                const salesEnd = tier.sales_end
-                                  ? new Date(tier.sales_end)
-                                  : null;
+                                  const now = new Date();
+                                  const salesStart = tier.sales_start
+                                    ? new Date(tier.sales_start)
+                                    : null;
+                                  const salesEnd = tier.sales_end
+                                    ? new Date(tier.sales_end)
+                                    : null;
 
-                                let displayText = null;
-                                let displayDate = null;
+                                  let displayText = null;
+                                  let displayDate = null;
 
-                                if (
-                                  salesStart &&
-                                  isValid(salesStart) &&
-                                  salesStart > now
-                                ) {
-                                  displayText = t(
-                                    "event.field.salesStartsOn",
-                                    "Sales starts on",
-                                  );
-                                  displayDate = salesStart;
-                                } else if (
-                                  salesStart &&
-                                  isValid(salesStart) &&
-                                  salesStart < now &&
-                                  salesEnd &&
-                                  isValid(salesEnd) &&
-                                  salesEnd > now
-                                ) {
-                                  displayText = t(
-                                    "event.field.salesEndsOn",
-                                    "Sales ends on",
-                                  );
-                                  displayDate = salesEnd;
-                                }
+                                  if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesStartsOn",
+                                      "Sales starts on",
+                                    );
+                                    displayDate = salesStart;
+                                  } else if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart < now &&
+                                    salesEnd &&
+                                    isValid(salesEnd) &&
+                                    salesEnd > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesEndsOn",
+                                      "Sales ends on",
+                                    );
+                                    displayDate = salesEnd;
+                                  }
 
-                                if (!displayText || !displayDate) return null;
+                                  if (!displayText || !displayDate) return null;
 
-                                return (
-                                  <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
-                                    <div className="flex items-start gap-1">
-                                      <ClockIcon
-                                        size={12}
-                                        weight="duotone"
-                                        className="mt-0.5"
-                                      />
-                                      <span>
-                                        {displayText}:{" "}
-                                        <span className="font-medium text-gray-600">
-                                          {formatDateTime(displayDate)}
+                                  return (
+                                    <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
+                                      <div className="flex items-start gap-1">
+                                        <ClockIcon
+                                          size={12}
+                                          weight="duotone"
+                                          className="mt-0.5"
+                                        />
+                                        <span>
+                                          {displayText}:{" "}
+                                          <span className="font-medium text-gray-600">
+                                            {formatDateTime(displayDate)}
+                                          </span>
                                         </span>
-                                      </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })()}
+                                  );
+                                })()}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })
+                          );
+                        })
                       : event.tiers?.map((tier) => {
-                        const sold = tier.sold || 0;
-                        const soldPercent =
-                          tier.quantity > 0
-                            ? (sold / tier.quantity) * 100
-                            : 0;
-                        const tierRevenue = sold * tier.price;
-                        return (
-                          <div
-                            key={tier.id}
-                            className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-medium text-gray-900">
-                                  {tier.tier_name}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {tier.currency || "NPR"}{" "}
-                                  {tier.price.toLocaleString()} /{" "}
-                                  {t("common.ticket", "ticket")}
-                                </p>
+                          const sold = tier.sold || 0;
+                          const soldPercent =
+                            tier.quantity > 0
+                              ? (sold / tier.quantity) * 100
+                              : 0;
+                          const tierRevenue = sold * tier.price;
+                          return (
+                            <div
+                              key={tier.id}
+                              className="space-y-2 p-3 rounded-lg bg-gray-50 border border-gray-100"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <p className="font-medium text-gray-900">
+                                    {tier.tier_name}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {tier.currency || "NPR"}{" "}
+                                    {tier.price.toLocaleString()} /{" "}
+                                    {t("common.ticket", "ticket")}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-medium text-emerald-600">
+                                    {tier.currency || "NPR"}{" "}
+                                    {tierRevenue.toLocaleString()}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium text-emerald-600">
-                                  {tier.currency || "NPR"}{" "}
-                                  {tierRevenue.toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="space-y-1">
-                              <div className="flex justify-end text-xs text-gray-600">
-                                <span>
-                                  {sold} / {tier.quantity}{" "}
-                                  {t("common.sold", "sold")}
-                                </span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className="bg-blue-500 h-full rounded-full"
-                                  style={{
-                                    width: `${Math.min(soldPercent, 100)}%`,
-                                  }}
-                                />
-                              </div>
-                              {(() => {
-                                if (!tier.sales_start && !tier.sales_end)
-                                  return null;
+                              <div className="space-y-1">
+                                <div className="flex justify-end text-xs text-gray-600">
+                                  <span>
+                                    {sold} / {tier.quantity}{" "}
+                                    {t("common.sold", "sold")}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                  <div
+                                    className="bg-blue-500 h-full rounded-full"
+                                    style={{
+                                      width: `${Math.min(soldPercent, 100)}%`,
+                                    }}
+                                  />
+                                </div>
+                                {(() => {
+                                  if (!tier.sales_start && !tier.sales_end)
+                                    return null;
 
-                                const now = new Date();
-                                const salesStart = tier.sales_start
-                                  ? new Date(tier.sales_start)
-                                  : null;
-                                const salesEnd = tier.sales_end
-                                  ? new Date(tier.sales_end)
-                                  : null;
+                                  const now = new Date();
+                                  const salesStart = tier.sales_start
+                                    ? new Date(tier.sales_start)
+                                    : null;
+                                  const salesEnd = tier.sales_end
+                                    ? new Date(tier.sales_end)
+                                    : null;
 
-                                let displayText = null;
-                                let displayDate = null;
+                                  let displayText = null;
+                                  let displayDate = null;
 
-                                if (
-                                  salesStart &&
-                                  isValid(salesStart) &&
-                                  salesStart > now
-                                ) {
-                                  displayText = t(
-                                    "event.field.salesStartsOn",
-                                    "Sales starts on",
-                                  );
-                                  displayDate = salesStart;
-                                } else if (
-                                  salesStart &&
-                                  isValid(salesStart) &&
-                                  salesStart < now &&
-                                  salesEnd &&
-                                  isValid(salesEnd) &&
-                                  salesEnd > now
-                                ) {
-                                  displayText = t(
-                                    "event.field.salesEndsOn",
-                                    "Sales ends on",
-                                  );
-                                  displayDate = salesEnd;
-                                }
+                                  if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesStartsOn",
+                                      "Sales starts on",
+                                    );
+                                    displayDate = salesStart;
+                                  } else if (
+                                    salesStart &&
+                                    isValid(salesStart) &&
+                                    salesStart < now &&
+                                    salesEnd &&
+                                    isValid(salesEnd) &&
+                                    salesEnd > now
+                                  ) {
+                                    displayText = t(
+                                      "event.field.salesEndsOn",
+                                      "Sales ends on",
+                                    );
+                                    displayDate = salesEnd;
+                                  }
 
-                                if (!displayText || !displayDate) return null;
+                                  if (!displayText || !displayDate) return null;
 
-                                return (
-                                  <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
-                                    <div className="flex items-start gap-1">
-                                      <ClockIcon
-                                        size={12}
-                                        weight="duotone"
-                                        className="mt-0.5"
-                                      />
-                                      <span>
-                                        {displayText}:{" "}
-                                        <span className="font-medium text-gray-600">
-                                          {formatDateTime(displayDate)}
+                                  return (
+                                    <div className="flex flex-col gap-0.5 mt-2 text-xs text-gray-500 pt-1">
+                                      <div className="flex items-start gap-1">
+                                        <ClockIcon
+                                          size={12}
+                                          weight="duotone"
+                                          className="mt-0.5"
+                                        />
+                                        <span>
+                                          {displayText}:{" "}
+                                          <span className="font-medium text-gray-600">
+                                            {formatDateTime(displayDate)}
+                                          </span>
                                         </span>
-                                      </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })()}
+                                  );
+                                })()}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                   </div>
                 </div>
               </div>

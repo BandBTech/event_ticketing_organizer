@@ -171,7 +171,7 @@
       "descriptionPlaceholder": "メモを追加...",
       "submit": "Submit Request",
       "cancel": "Cancel",
-      "commissionRate": "Commission Rate",
+      "commissionRate": "手数料率",
       "validation": {
         "amountRequired": "Amount is required",
         "amountMin": "Amount must be greater than 0",

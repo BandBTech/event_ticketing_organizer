@@ -171,7 +171,7 @@
       "descriptionPlaceholder": "Aggiungi note...",
       "submit": "Submit Request",
       "cancel": "Cancel",
-      "commissionRate": "Commission Rate",
+      "commissionRate": "Tasso di commissione",
       "validation": {
         "amountRequired": "Amount is required",
         "amountMin": "Amount must be greater than 0",
