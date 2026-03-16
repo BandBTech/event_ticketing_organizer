@@ -84,16 +84,16 @@ export function PayoutSummaryCards({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
             whileHover={{ scale: 1.03 }}
-            className={`@container/card p-2 rounded-2xl glass-card-lowest transition-all`}
+            className={`@container/card p-2.5 rounded-2xl glass-card-lowest transition-all`}
           >
             <div className="flex gap-3 items-center @max-[180px]/card:flex-col @max-[180px]/card:items-start">
-              <div className="p-3 rounded-xl bg-primary/10 ">{card.icon}</div>
+              <div className="p-4 rounded-lg bg-primary/10 ">{card.icon}</div>
               <div>
-                <p className="text-xs text-gray-500">{card.label}</p>
+                <p className="text-sm text-gray-500">{card.label}</p>
                 {card.value === null ? (
                   <Skeleton className="h-7 w-24 mb-1" />
                 ) : (
-                  <h2 className="text-xl text-gray-700 font-bold">
+                  <h2 className="text-xl text-gray-700 font-bold mt-0.5">
                     {card.value}
                   </h2>
                 )}
