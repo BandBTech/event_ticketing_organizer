@@ -178,7 +178,9 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
 
   const salesStatus = analytics?.sales_status || "active";
   const isEventCancelled = event.status === "cancelled";
-  const canControlSales = event.status === "on_sale" && !isEventCancelled;
+  const canControlSales =
+    (event.status === "on_sale" || event.status === "hold") &&
+    !isEventCancelled;
   const canEdit = event.status === "pending" || event.status === "draft";
 
   const progress =
@@ -194,11 +196,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 {event.title}
               </h1>
               <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
-                {(event.status !== "on_sale" || salesStatus === "active") && (
-                  <EventStatusBadge status={event.status} />
-                )}
-                {event.status === "on_sale" && salesStatus !== "active" && (
+                {salesStatus === "stopped" &&
+                !["completed", "cancelled"].includes(event.status) ? (
                   <SalesStatusBadge status={salesStatus} />
+                ) : (
+                  <EventStatusBadge status={event.status} />
                 )}
 
                 <div className="flex gap-4 flex-wrap ml-2">
@@ -228,7 +230,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
             <div className="flex flex-col md:flex-row gap-3">
               {canControlSales && (
                 <>
-                  {salesStatus === "active" && (
+                  {salesStatus === "active" && event.status !== "hold" && (
                     <Button
                       onClick={() => handleSalesAction("pause")}
                       disabled={salesControlMutation.isPending}
@@ -243,7 +245,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {t("event.button.pauseSales", "Pause Sales")}
                     </Button>
                   )}
-                  {salesStatus === "paused" && (
+                  {(salesStatus === "paused" || event.status === "hold") && (
                     <Button
                       onClick={() => handleSalesAction("resume")}
                       disabled={salesControlMutation.isPending}
@@ -309,7 +311,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
               )}
               {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
               {!isEventCancelled &&
-                ["pending", "draft", "on_sale", "approved"].includes(
+                ["pending", "draft", "on_sale", "approved", "hold"].includes(
                   event.status,
                 ) && (
                   <Button

@@ -378,7 +378,8 @@
       "selectTier": "Seleziona o digita il nome del livello...",
       "discountType": "Seleziona il tipo di sconto",
       "discountAmount": "Inserisci l'importo dello sconto",
-      "discountPercentage": "Inserisci la percentuale di sconto"
+      "discountPercentage": "Inserisci la percentuale di sconto",
+      "currency": "Seleziona valuta"
     },
     "section": {
       "venueSchedule": "Luogo",
@@ -501,6 +502,7 @@
       "live": "Live",
       "ended": "Finito",
       "rejected": "Respinto",
+      "hold": "Vendite in sospeso",
       "active": "Vendite in diretta",
       "paused": "Vendite sospese",
       "stopped": "Le vendite si sono fermate",
@@ -706,6 +708,9 @@
   "Approved": "Approvato",
   "Rejected": "Respinto",
   "Cancelled": "Annullato",
+  "Live": "Live",
+  "On Sale": "Vendite in diretta",
+  "Completed": "Completato",
   "completeProfile": {
     "title": "Completa il tuo profilo organizzatore",
     "description": "Fornisci i dettagli della tua attività per iniziare a creare eventi.",
@@ -803,5 +808,6 @@
     }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
-  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account."
+  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",
+  "On Hold": "In attesa"
 }

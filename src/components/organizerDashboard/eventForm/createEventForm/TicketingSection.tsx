@@ -6,7 +6,38 @@ import { EventFormData } from "@/lib/validation";
 import { TierTemplate } from "@/types/event";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  TranslatedFormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import TicketTierCard from "./TicketTierCard";
+
+const SUPPORTED_CURRENCIES = [
+  { value: "usd", label: "USD ($)" },
+  { value: "eur", label: "EUR (€)" },
+  { value: "gbp", label: "GBP (£)" },
+  { value: "aud", label: "AUD ($)" },
+  { value: "cad", label: "CAD ($)" },
+  { value: "jpy", label: "JPY (¥)" },
+  { value: "nzd", label: "NZD ($)" },
+  { value: "chf", label: "CHF" },
+  { value: "sgd", label: "SGD ($)" },
+  { value: "hkd", label: "HKD ($)" },
+  { value: "sek", label: "SEK (kr)" },
+  { value: "mxn", label: "MXN ($)" },
+  { value: "inr", label: "INR (₹)" },
+  { value: "brl", label: "BRL (R$)" },
+];
 
 interface TicketingSectionProps {
   control: Control<EventFormData>;
@@ -33,9 +64,50 @@ export function TicketingSection({
   return (
     <div className="mb-6 @container">
       <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
-        <h2 className="text-md font-semibold text-primary mb-2!">
-          {t("event.section.ticketing", "Ticketing")}
-        </h2>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+          <h2 className="text-md font-semibold text-primary">
+            {t("event.section.ticketing", "Ticketing")}
+          </h2>
+          
+          <div className="md:w-64">
+            <FormField
+              control={control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3 space-y-0">
+                  <FormLabel className="whitespace-nowrap font-medium">
+                    {t("event.field.currency", "Currency")}{" "}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="bg-white">
+                        <SelectValue
+                          placeholder={t(
+                            "event.placeholder.currency",
+                            "Select currency",
+                          )}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {SUPPORTED_CURRENCIES.map((currency) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <TranslatedFormMessage t={t} className="mt-1" />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
         {ticketFields.map((field, index) => (
           <TicketTierCard

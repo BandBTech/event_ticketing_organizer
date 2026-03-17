@@ -73,19 +73,19 @@ export default function EventCard({
           unoptimized
         />
         {event.status &&
-          (event.status !== "on_sale" ||
-            (event?.sales_status !== "paused" &&
-              event?.sales_status !== "stopped")) && (
-            <EventStatusBadge
-              status={event.status}
-              className="absolute top-2 left-2 shadow-lg"
-            />
-          )}
-        {event.status === "on_sale" && event.sales_status !== "active" && (
+        event.sales_status === "stopped" &&
+        !["completed", "cancelled"].includes(event.status) ? (
           <SalesStatusBadge
             status={event.sales_status}
             className="absolute top-2 left-2"
           />
+        ) : (
+          event.status && (
+            <EventStatusBadge
+              status={event.status}
+              className="absolute top-2 left-2 shadow-lg"
+            />
+          )
         )}
         {event.is_featured && (
           <div className="absolute top-2 right-2">

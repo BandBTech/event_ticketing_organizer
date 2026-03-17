@@ -20,6 +20,7 @@ const eventStatusConfig: Record<string, { color: string; variant: "default" | "s
   'default': { color: 'bg-gray-700 text-gray-100 border-gray-600', variant: 'secondary' },
   'on_sale': { color: 'bg-green-700 text-green-100 border-green-600', variant: 'secondary' },
   'live': { color: 'bg-green-100 text-green-700 border-green-600', variant: 'secondary' },
+  'hold': { color: 'bg-amber-700 text-amber-100 border-amber-600', variant: 'secondary' },
 };
 
 export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {

@@ -560,7 +560,8 @@
       "selectTier": "Select or type tier name...",
       "discountType": "Select discount type",
       "discountAmount": "Enter discount amount",
-      "discountPercentage": "Enter discount percentage"
+      "discountPercentage": "Enter discount percentage",
+      "currency": "Select currency"
     },
     "section": {
       "venueSchedule": "Venue & Schedule",
@@ -683,6 +684,7 @@
       "live": "Live",
       "ended": "Ended",
       "rejected": "Rejected",
+      "hold": "Sales On Hold",
       "active": "Sales Live",
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
@@ -815,6 +817,9 @@
   "Approved": "Approved",
   "Rejected": "Rejected",
   "Cancelled": "Cancelled",
+  "Live": "Live",
+  "On Sale": "Sales Live",
+  "Completed": "Completed",
   "completeProfile": {
     "title": "Complete Your Organizer Profile",
     "description": "Please provide your business details to start creating events.",
@@ -912,5 +917,6 @@
     }
   },
   "Your account is inactive.": "Your account is inactive.",
-  "Please contact support to reactivate your account.": "Please contact support to reactivate your account."
+  "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
+  "On Hold": "On Hold"
 }

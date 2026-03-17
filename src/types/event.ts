@@ -22,6 +22,7 @@ export interface Event {
   category: string[];
   venue_name: string;
   address: string;
+  currency?: string;
   start_date: string;
   end_date: string;
   timezone?: string;
@@ -55,6 +56,7 @@ export interface CreateEventData {
   category: string[];
   venue_name: string;
   address: string;
+  currency?: string;
   start_date: string;
   end_date: string;
   timezone?: string;
@@ -70,6 +72,7 @@ export interface UpdateEventRequest {
   category?: string[];
   venue_name?: string;
   address?: string;
+  currency?: string;
   start_date?: string;
   end_date?: string;
   timezone?: string;

@@ -1952,6 +1952,128 @@
         }
       }
     },
+    "/api/v1/admin/payments/audit-logs": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Retrieve audit logs for financial operations with filtering and pagination",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get audit logs (Admin)",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "Page number",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 50,
+            "description": "Items per page",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by action (e.g., payment_created, refund_approved)",
+            "name": "action",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by entity type (e.g., payment, refund, gateway_config)",
+            "name": "entity_type",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by entity ID (UUID)",
+            "name": "entity_id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by actor ID (UUID)",
+            "name": "actor_id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by event ID (UUID)",
+            "name": "event_id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter logs from this date (YYYY-MM-DD)",
+            "name": "start_date",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter logs until this date (YYYY-MM-DD)",
+            "name": "end_date",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit logs retrieved successfully",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.GetAuditLogsResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/payments/bills": {
       "get": {
         "security": [
@@ -2084,10 +2206,9 @@
           },
           {
             "type": "string",
-            "description": "Payment method: bank_transfer | check | cash | mobile_payment | other",
+            "description": "Payment method: bank_transfer | check | cash | mobile_payment | other (optional)",
             "name": "payment_method",
-            "in": "formData",
-            "required": true
+            "in": "formData"
           },
           {
             "type": "file",
@@ -2789,9 +2910,21 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Payout request updated successfully with bill_id if approved",
             "schema": {
-              "$ref": "#/definitions/utils.Response"
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.PayoutRequestResponse"
+                    }
+                  }
+                }
+              ]
             }
           },
           "400": {
@@ -3605,6 +3738,147 @@
           },
           "500": {
             "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/tickets/checkout-sessions": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get paginated list of checkout sessions with filters",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin Tickets"
+        ],
+        "summary": "Get all checkout sessions (admin only)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Filter by status (pending, completed, failed, expired)",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by payment gateway",
+            "name": "payment_gateway",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by event ID",
+            "name": "event_id",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "Page number",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 20,
+            "description": "Items per page",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/tickets/process-checkout": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Manually activate tickets and record transaction for a checkout session that failed to process automatically",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Admin Tickets"
+        ],
+        "summary": "Manually process a checkout session (admin only)",
+        "parameters": [
+          {
+            "description": "Checkout token payload",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/models.AdminProcessCheckoutSessionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -9636,7 +9910,7 @@
         }
       }
     },
-    "/api/v1/public/payment/failure/{checkout_token}": {
+    "/api/v1/public/payment/failure": {
       "post": {
         "description": "Process failed payment from gateway",
         "consumes": [
@@ -9654,7 +9928,7 @@
             "type": "string",
             "description": "Checkout token",
             "name": "checkout_token",
-            "in": "path",
+            "in": "query",
             "required": true
           },
           {
@@ -9695,7 +9969,7 @@
         }
       }
     },
-    "/api/v1/public/payment/success/{checkout_token}": {
+    "/api/v1/public/payment/success": {
       "post": {
         "description": "Process successful payment from gateway and activate tickets",
         "consumes": [
@@ -9713,7 +9987,7 @@
             "type": "string",
             "description": "Checkout token",
             "name": "checkout_token",
-            "in": "path",
+            "in": "query",
             "required": true
           },
           {
@@ -9728,9 +10002,22 @@
         ],
         "responses": {
           "200": {
-            "description": "Payment processed successfully",
+            "description": "Payment processed successfully with ticket view token",
             "schema": {
-              "$ref": "#/definitions/utils.Response"
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
             }
           },
           "400": {
@@ -11021,6 +11308,17 @@
         }
       }
     },
+    "models.AdminProcessCheckoutSessionRequest": {
+      "type": "object",
+      "required": [
+        "checkout_token"
+      ],
+      "properties": {
+        "checkout_token": {
+          "type": "string"
+        }
+      }
+    },
     "models.AttendeeResponse": {
       "type": "object",
       "properties": {
@@ -11123,57 +11421,6 @@
           "type": "string",
           "minLength": 8,
           "example": "NewPassword123!"
-        }
-      }
-    },
-    "models.CheckoutSession": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "number"
-        },
-        "checkout_token": {
-          "description": "Unique token for security",
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "currency": {
-          "description": "Default to NPR",
-          "type": "string"
-        },
-        "expires_at": {
-          "type": "string"
-        },
-        "gateway_data": {
-          "description": "Store gateway-specific data (session_id, payment_intent_id, etc.)",
-          "type": "object",
-          "additionalProperties": true
-        },
-        "guest_user_id": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "payment_gateway": {
-          "description": "stripe, paypal, esewa, etc.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/models.PaymentGateway"
-            }
-          ]
-        },
-        "status": {
-          "description": "pending, processing, completed, failed, expired",
-          "type": "string"
-        },
-        "ticket_id": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
         }
       }
     },
@@ -11507,6 +11754,10 @@
         "created_at": {
           "type": "string"
         },
+        "currency": {
+          "description": "ISO 4217 currency code",
+          "type": "string"
+        },
         "description": {
           "description": "HTML content",
           "type": "string"
@@ -11809,6 +12060,9 @@
           "type": "string"
         },
         "created_at": {
+          "type": "string"
+        },
+        "currency": {
           "type": "string"
         },
         "description": {
@@ -12138,6 +12392,10 @@
           "maximum": 100,
           "minimum": 0
         },
+        "currency": {
+          "description": "ISO 4217 currency code (3 letters)",
+          "type": "string"
+        },
         "description": {
           "type": "string",
           "maxLength": 10000
@@ -12181,6 +12439,20 @@
           "type": "string",
           "maxLength": 200,
           "minLength": 3
+        }
+      }
+    },
+    "models.GetAuditLogsResponse": {
+      "type": "object",
+      "properties": {
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.PaymentAuditLog"
+          }
+        },
+        "pagination": {
+          "$ref": "#/definitions/models.PaginationResponse"
         }
       }
     },
@@ -12297,6 +12569,10 @@
           "type": "string"
         }
       }
+    },
+    "models.JSONMap": {
+      "type": "object",
+      "additionalProperties": true
     },
     "models.LoginRequest": {
       "type": "object",
@@ -12712,6 +12988,191 @@
         }
       }
     },
+    "models.PaginationResponse": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "page": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        },
+        "total_pages": {
+          "type": "integer"
+        }
+      }
+    },
+    "models.PaymentAuditLog": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "payment_created, refund_issued, etc.",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/definitions/models.User"
+        },
+        "actor_id": {
+          "description": "Actor Info",
+          "type": "string"
+        },
+        "actor_type": {
+          "description": "user, admin, system, webhook",
+          "type": "string"
+        },
+        "changes_after": {
+          "$ref": "#/definitions/models.JSONMap"
+        },
+        "changes_before": {
+          "description": "Changes",
+          "allOf": [
+            {
+              "$ref": "#/definitions/models.JSONMap"
+            }
+          ]
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "entity_id": {
+          "type": "string"
+        },
+        "entity_type": {
+          "description": "payment_intent, transaction, refund",
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/models.Event"
+        },
+        "event_id": {
+          "description": "Event Details",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "ip_address": {
+          "description": "Context",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/definitions/models.JSONMap"
+        },
+        "timestamp": {
+          "description": "Timestamps",
+          "type": "string"
+        },
+        "user_agent": {
+          "type": "string"
+        }
+      }
+    },
+    "models.PaymentBill": {
+      "type": "object",
+      "properties": {
+        "admin": {
+          "$ref": "#/definitions/models.User"
+        },
+        "admin_id": {
+          "type": "string"
+        },
+        "bill_date": {
+          "description": "Dates",
+          "type": "string"
+        },
+        "bill_number": {
+          "description": "Unique bill identifier",
+          "type": "string"
+        },
+        "bill_type": {
+          "description": "Additional tracking",
+          "type": "string"
+        },
+        "billed_amount": {
+          "description": "Amount included in this bill",
+          "type": "number"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "due_date": {
+          "description": "When payment is due",
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/models.Event"
+        },
+        "event_id": {
+          "description": "Single event per bill",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "organizer": {
+          "$ref": "#/definitions/models.User"
+        },
+        "organizer_earnings": {
+          "description": "Amount owed to organizer (after commission)",
+          "type": "number"
+        },
+        "organizer_id": {
+          "type": "string"
+        },
+        "paid_amount": {
+          "description": "Amount actually paid to organizer",
+          "type": "number"
+        },
+        "paid_date": {
+          "type": "string"
+        },
+        "payment_method": {
+          "description": "Payment details",
+          "allOf": [
+            {
+              "$ref": "#/definitions/models.PaymentMethod"
+            }
+          ]
+        },
+        "payment_ref": {
+          "description": "Transaction reference",
+          "type": "string"
+        },
+        "payment_screenshot_url": {
+          "description": "Proof of payment",
+          "type": "string"
+        },
+        "priority": {
+          "description": "low, normal, high, urgent",
+          "type": "string"
+        },
+        "remaining_amount": {
+          "description": "Remaining amount to pay organizer",
+          "type": "number"
+        },
+        "status": {
+          "description": "pending, partially_paid, paid, cancelled, overdue",
+          "type": "string"
+        },
+        "total_commission": {
+          "description": "Total commission deducted",
+          "type": "number"
+        },
+        "total_revenue": {
+          "description": "Financial tracking (organizer earnings after commission deduction)",
+          "type": "number"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
     "models.PaymentBillResponse": {
       "type": "object",
       "properties": {
@@ -12868,6 +13329,9 @@
           "type": "string"
         },
         "processed_by": {
+          "type": "string"
+        },
+        "screenshot_url": {
           "type": "string"
         }
       }
@@ -13044,6 +13508,7 @@
       "type": "object",
       "required": [
         "amount",
+        "event_id",
         "request_type"
       ],
       "properties": {
@@ -13060,8 +13525,7 @@
         "request_type": {
           "type": "string",
           "enum": [
-            "event_payout",
-            "bulk_payout"
+            "event_payout"
           ]
         }
       }
@@ -13094,6 +13558,12 @@
           "$ref": "#/definitions/models.User"
         },
         "organizer_id": {
+          "type": "string"
+        },
+        "payment_bill": {
+          "$ref": "#/definitions/models.PaymentBill"
+        },
+        "payment_bill_id": {
           "type": "string"
         },
         "processed_at": {
@@ -13129,8 +13599,7 @@
           "type": "string",
           "enum": [
             "approved",
-            "rejected",
-            "paid"
+            "rejected"
           ]
         }
       }
@@ -13934,6 +14403,13 @@
             }
           ]
         },
+        "payment_intent": {
+          "$ref": "#/definitions/models.PaymentIntent"
+        },
+        "payment_intent_id": {
+          "description": "Link to payment intent",
+          "type": "string"
+        },
         "processed_at": {
           "description": "When payment was processed",
           "type": "string"
@@ -13983,29 +14459,181 @@
         }
       }
     },
+    "models.TransactionPaymentDetailsEventSummary": {
+      "type": "object",
+      "properties": {
+        "banner": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "models.TransactionPaymentDetailsResponse": {
       "type": "object",
       "properties": {
-        "checkout_session": {
-          "$ref": "#/definitions/models.CheckoutSession"
-        },
         "payment_intent": {
-          "$ref": "#/definitions/models.PaymentIntent"
-        },
-        "refunds": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/models.Refund"
-          }
+          "$ref": "#/definitions/models.TransactionPaymentIntentSummary"
         },
         "tickets": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/models.Ticket"
+            "$ref": "#/definitions/models.TransactionPaymentDetailsTicketSummary"
           }
         },
         "transaction": {
-          "$ref": "#/definitions/models.Transaction"
+          "$ref": "#/definitions/models.TransactionPaymentDetailsTransactionSummary"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsTicketSummary": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_guest_purchase": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string"
+        },
+        "ticket_number": {
+          "type": "string"
+        },
+        "tier": {
+          "$ref": "#/definitions/models.TransactionPaymentDetailsTicketTierSummary"
+        },
+        "total_amount": {
+          "type": "number"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/models.TransactionPaymentDetailsTicketUserSummary"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsTicketTierSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tier_name": {
+          "type": "string"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsTicketUserSummary": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsTransactionSummary": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/models.TransactionPaymentDetailsEventSummary"
+        },
+        "id": {
+          "type": "string"
+        },
+        "payment_gateway": {
+          "$ref": "#/definitions/models.PaymentGateway"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/models.TransactionPaymentDetailsUserSummary"
+        }
+      }
+    },
+    "models.TransactionPaymentDetailsUserSummary": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "models.TransactionPaymentIntentSummary": {
+      "type": "object",
+      "properties": {
+        "card_brand": {
+          "type": "string"
+        },
+        "card_last4": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "customer_email": {
+          "type": "string"
+        },
+        "exp_month": {
+          "type": "integer"
+        },
+        "exp_year": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "masked_card_number": {
+          "type": "string"
+        },
+        "payment_gateway": {
+          "type": "string"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
         }
       }
     },

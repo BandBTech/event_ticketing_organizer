@@ -378,7 +378,8 @@
       "selectTier": "層名を選択または入力...",
       "discountType": "割引タイプを選択してください",
       "discountAmount": "割引額を入力してください",
-      "discountPercentage": "割引率を入力してください"
+      "discountPercentage": "割引率を入力してください",
+      "currency": "通貨を選択してください"
     },
     "section": {
       "venueSchedule": "会場",
@@ -499,6 +500,7 @@
       "draft": "下書き",
       "live": "ライブ",
       "ended": "終了しました",
+      "hold": "販売保留",
       "active": "セールスライブ",
       "paused": "販売一時停止",
       "stopped": "販売停止",
@@ -702,6 +704,9 @@
   "Approved": "承認された",
   "Rejected": "拒否されました",
   "Cancelled": "キャンセル",
+  "Live": "ライブ",
+  "On Sale": "セールスライブ",
+  "Completed": "完了",
   "completeProfile": {
     "title": "主催者プロフィールを完成させる",
     "description": "イベントの作成を開始するには、ビジネスの詳細を入力してください。",
@@ -800,5 +805,6 @@
     }
   },
   "Your account is inactive.": "アカウントが非アクティブです。",
-  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。"
+  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。",
+  "On Hold": "保留中"
 }

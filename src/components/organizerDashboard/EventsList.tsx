@@ -22,10 +22,14 @@ const ITEMS_PER_PAGE = 9;
 
 const EVENT_STATUSES = [
   { value: "all", label: "All Statuses" },
-  { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
   { value: "cancelled", label: "Cancelled" },
+  { value: "completed", label: "Completed" },
+  { value: "live", label: "Live" },
+  { value: "hold", label: "On Hold" },
+  { value: "pending", label: "Pending" },
+  { value: "rejected", label: "Rejected" },
+  { value: "on_sale", label: "On Sale" },
 ] as const;
 
 export default function EventsList() {

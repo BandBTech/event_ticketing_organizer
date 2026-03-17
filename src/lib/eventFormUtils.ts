@@ -45,6 +45,7 @@ export function getEventFormDefaults(
     return {
       name: "",
       description: "",
+      currency: "jpy",
       tags: [],
       image: "",
       venue: "",
@@ -70,6 +71,7 @@ export function getEventFormDefaults(
   return {
     name: initialData.title || "",
     description: initialData.description || "",
+    currency: initialData.currency || "jpy",
     tags: parseCategory(initialData.category),
     image: initialData.banner_image || "",
     venue: initialData.venue_name || "",
@@ -128,6 +130,9 @@ export function getChangedFields(
   }
   if (currentData.description !== initialData.description) {
     changedFields.description = currentData.description;
+  }
+  if (currentData.currency !== initialData.currency) {
+    changedFields.currency = currentData.currency;
   }
   if (JSON.stringify(currentData.tags) !== JSON.stringify(parseCategory(initialData.category))) {
     changedFields.category = currentData.tags;
@@ -196,6 +201,7 @@ export function prepareCreateEventData(
   const eventData: CreateEventData = {
     title: data.name,
     description: data.description,
+    currency: data.currency,
     category: data.tags,
     venue_name: data.venue,
     address: data.venueAddress,
