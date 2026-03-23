@@ -684,13 +684,13 @@
       "live": "Live",
       "ended": "Ended",
       "rejected": "Rejected",
-      "hold": "Sales On Hold",
-      "active": "Sales Live",
+      "hold": "On Hold",
+      "active": "On Sale",
       "paused": "Sales Paused",
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_ended": "Sales Ended",
-      "on_sale": "Sales Live",
+      "on_sale": "On Sale",
       "featured": "Featured",
       "completed": "Completed"
     },
@@ -705,7 +705,7 @@
       "percentage": "Percentage (%)"
     },
     "status": {
-      "on_sale": "Sales Live"
+      "on_sale": "On Sale"
     },
     "action": {
       "enterAddress": "Enter address",
@@ -818,7 +818,7 @@
   "Rejected": "Rejected",
   "Cancelled": "Cancelled",
   "Live": "Live",
-  "On Sale": "Sales Live",
+  "On Sale": "On Sale",
   "Completed": "Completed",
   "completeProfile": {
     "title": "Complete Your Organizer Profile",
