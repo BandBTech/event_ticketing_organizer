@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 type Locale = 'en' | 'ja' | 'it';
 
@@ -41,10 +41,10 @@ export function useTranslation(localeOverride?: Locale) {
     loadMessages();
   }, [locale]);
 
-  const t = (key: string, fallback?: string, params?: Record<string, string | number>): string => {
+  const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: string | TranslationMessages = messages;
-    
+
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
@@ -53,7 +53,7 @@ export function useTranslation(localeOverride?: Locale) {
         break;
       }
     }
-    
+
     let result = typeof value === 'string' ? value : fallback || key;
 
     if (params) {
@@ -63,7 +63,7 @@ export function useTranslation(localeOverride?: Locale) {
     }
 
     return result;
-  };
+  }, [messages]);
 
   return { t, isLoading, locale };
 }

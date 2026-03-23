@@ -94,16 +94,17 @@ export function PayoutRequestDialog({
       .sort((a, b) => a.event_title.localeCompare(b.event_title));
   }, [events]);
 
-  // Find the selected event's summary data
-  const selectedEventInfo = safeEvents.find(
-    (e) => e.event_id === watchedEventId,
+  // Find the selected event's summary data — memoized for stable reference
+  const selectedEventInfo = useMemo(
+    () => safeEvents.find((e) => e.event_id === watchedEventId),
+    [safeEvents, watchedEventId],
   );
 
   // Auto-fill amount from event data whenever it changes
   useEffect(() => {
     if (selectedEventInfo) {
       const revenue = selectedEventInfo.due_amount ?? 0;
-      form.setValue("amount", revenue, { shouldValidate: true });
+      form.setValue("amount", revenue);
     }
   }, [selectedEventInfo, form]);
 
