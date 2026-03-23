@@ -14,6 +14,7 @@ import {
   ThumbsDownIcon,
   ClockCounterClockwiseIcon,
   NoteIcon,
+  MoneyIcon,
 } from "@phosphor-icons/react";
 import { useOrganizerDashboard } from "@/hooks/useOrganizerDashboard";
 import EventCard from "./EventCard";
@@ -39,6 +40,12 @@ export default function DashboardHome() {
       gradient: "from-green-50 to-white",
     },
     {
+      icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
+      label: "Organizer Earnings",
+      value: `Rs. ${stats.organizerEarnings.toLocaleString()}`,
+      gradient: "from-emerald-50 to-white",
+    },
+    {
       icon: <TicketIcon className="w-10 h-10 text-blue-500" />,
       label: "Total Tickets Sold",
       value: stats.totalTicketsSold,
@@ -55,8 +62,8 @@ export default function DashboardHome() {
   if (isLoading) {
     return (
       <div className="space-y-6 p-4">
-        <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
-          {[...Array(4)].map((_, i) => (
+        <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-6">
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
               className="h-32 bg-gray-100 rounded-2xl animate-pulse"
@@ -82,7 +89,7 @@ export default function DashboardHome() {
   return (
     <div className="space-y-6 p-4">
       {/* Stats Cards */}
-      <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-5 sm:grid-cols-2 gap-6">
         {statCards.map((stat, i) => (
           <motion.div
             key={i}
@@ -90,7 +97,7 @@ export default function DashboardHome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
             whileHover={{ scale: 1.03 }}
-            className={`flex items-center gap-4 p-6 rounded-2xl shadow bg-linear-to-tr ${stat.gradient} transition-all`}
+            className={`flex items-center gap-2 px-3 py-4 rounded-2xl shadow bg-linear-to-tr ${stat.gradient} transition-all`}
           >
             {stat.icon}
             <div>

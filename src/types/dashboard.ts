@@ -27,6 +27,7 @@ export interface DashboardEventsStats {
 
 export interface OrganizerDashboardResponse {
   events: DashboardEventsStats;
+  organizer_earnings: number;
   total_revenue: number;
   total_tickets_sold: number;
   upcoming_events: number;

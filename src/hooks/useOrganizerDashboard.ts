@@ -31,6 +31,7 @@ export function useOrganizerDashboard() {
         rejected: 0,
         total: 0,
       },
+      organizerEarnings: response?.organizer_earnings ?? 0,
       totalRevenue: response?.total_revenue ?? 0,
       totalTicketsSold: response?.total_tickets_sold ?? 0,
       upcomingEventsCount: response?.upcoming_events ?? 0,
