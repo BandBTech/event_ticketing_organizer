@@ -703,11 +703,7 @@ export const createEventSchema = (
           if (textLength > EVENT_DESC_MAX) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: t(
-                "event.validation.descriptionMaxLength",
-                "Event Description must be under {max} characters.",
-                { max: EVENT_DESC_MAX.toString() },
-              ),
+              message: `event.validation.descriptionMaxLength|max:${EVENT_DESC_MAX}`,
             });
           }
         }),

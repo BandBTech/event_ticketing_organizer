@@ -206,12 +206,23 @@ export function EventDetailsSection({
                 "event.placeholder.eventDescription",
                 "Write about your event...",
               )}
+              maxLength={EVENT_DESC_MAX}
             />
           </div>
           <div className="flex justify-between items-center mt-1 min-h-[20px]">
             {descriptionError ? (
               <p className="text-xs font-medium text-destructive mt-0 flex items-center gap-1">
-                {t(descriptionError)}
+                {(() => {
+                  const pipeIndex = descriptionError.indexOf("|");
+                  if (pipeIndex === -1) return t(descriptionError);
+                  const key = descriptionError.substring(0, pipeIndex);
+                  const params: Record<string, string> = {};
+                  descriptionError.substring(pipeIndex + 1).split(",").forEach((pair) => {
+                    const colonIdx = pair.indexOf(":");
+                    if (colonIdx !== -1) params[pair.substring(0, colonIdx).trim()] = pair.substring(colonIdx + 1).trim();
+                  });
+                  return t(key, undefined, params);
+                })()}
               </p>
             ) : (
               <div />

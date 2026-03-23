@@ -31,6 +31,7 @@ export function Editor({
   onSerializedChange,
   onHtmlChange,
   placeholder = "Start typing ...",
+  maxLength,
 }: {
   editorState?: EditorState
   editorSerializedState?: SerializedEditorState
@@ -39,6 +40,7 @@ export function Editor({
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void
   onHtmlChange?: (html: string) => void
     placeholder?: string
+  maxLength?: number
 }) {
   const onHtmlChangeRef = useRef(onHtmlChange)
 
@@ -64,7 +66,7 @@ export function Editor({
         <HtmlInitPlugin initialHtml={initialHtml} />
 
         <TooltipProvider>
-          <Plugins placeholder={placeholder} />
+          <Plugins placeholder={placeholder} maxLength={maxLength} />
 
           <OnChangePlugin
             ignoreSelectionChange={true}
