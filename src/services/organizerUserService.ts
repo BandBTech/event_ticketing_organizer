@@ -34,7 +34,8 @@ export const organizerUserService = {
   createUser: async (data: CreateOrgUserRequest): Promise<OrgUser> => {
     return api.post<OrgUser>(`/organizer/users`, data, {
       requiresAuth: true,
-      showSuccessToast: false,  
+      showSuccessToast: false,
+      showErrorToast: false,
     });
   },
 

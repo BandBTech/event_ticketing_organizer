@@ -203,6 +203,11 @@ export default function UserFormDialog({
       queryClient.invalidateQueries({ queryKey: queryKeys.orgUsers.all });
       onOpenChange(false);
     },
+    onError: (error: Error) => {
+      toast.error(
+        error.message || t("users.create.error", "Failed to create user"),
+      );
+    },
   });
 
   const updateMutation = useMutation({
