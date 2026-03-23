@@ -274,33 +274,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 </>
               )}
 
-              {event.status === "completed" &&
-                (() => {
-                  const eventPayoutInfo = payoutSummary?.events?.find(
-                    (e) => e.event_id === event.id,
-                  );
-
-                  if (!eventPayoutInfo) return null;
-
-                  const hasRequestedPayout =
-                    eventPayoutInfo.pending_requests > 0 ||
-                    eventPayoutInfo.approved_requests > 0 ||
-                    eventPayoutInfo.paid_requests > 0;
-
-                  if (hasRequestedPayout) return null;
-
-                  return (
-                    <Button
-                      onClick={() => setPayoutDialogOpen(true)}
-                      variant="outline"
-                      className="gap-2"
-                    >
-                      <CurrencyDollarIcon weight="duotone" size={18} />
-                      {t("payouts.requestPayout", "Request Payout")}
-                    </Button>
-                  );
-                })()}
-
               {canEdit && (
                 <Link href={`/organizerDashboard/event/edit?id=${event.id}`}>
                   <Button variant="outline" className="gap-2 w-full">
@@ -775,6 +748,80 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </div>
                 </div>
               </div>
+
+              {event.commission_rate != null &&
+                ["on_sale", "hold", "completed", "live"].includes(event.status) && (
+                <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {t("event.section.organizerEarnings", "Organizer Earnings")}
+                  </h3>
+                  {(() => {
+                    const commissionRate = event.commission_rate!;
+                    const commissionAmount = totalRevenue * (commissionRate / 100);
+                    const organizerEarnings = totalRevenue - commissionAmount;
+                    const currency = event.tiers?.[0]?.currency || "NPR";
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-500">
+                            {t("event.label.grossRevenue", "Gross Revenue")}
+                          </span>
+                          <span className="font-medium text-gray-900">
+                            {currency} {totalRevenue.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-500">
+                            {t("event.label.commissionRate", "Commission Rate")}
+                          </span>
+                          <span className="font-medium text-orange-600">
+                            {commissionRate}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-gray-500">
+                            {t("event.label.commissionAmount", "Commission")}
+                          </span>
+                          <span className="font-medium text-red-500">
+                            − {currency} {commissionAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-gray-900">
+                            {t("event.label.organizerEarnings", "Your Earnings")}
+                          </span>
+                          <span className="font-bold text-emerald-600 text-lg">
+                            {currency} {organizerEarnings.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        {(() => {
+                          if (event.status !== "completed") return null;
+                          const eventPayoutInfo = payoutSummary?.events?.find(
+                            (e) => e.event_id === event.id,
+                          );
+                          if (!eventPayoutInfo) return null;
+                          const hasRequestedPayout =
+                            eventPayoutInfo.pending_requests > 0 ||
+                            eventPayoutInfo.approved_requests > 0 ||
+                            eventPayoutInfo.paid_requests > 0;
+                          if (hasRequestedPayout) return null;
+                          return (
+                            <Button
+                              onClick={() => setPayoutDialogOpen(true)}
+                              variant="outline"
+                              className="gap-2 w-full mt-2"
+                            >
+                              <CurrencyDollarIcon weight="duotone" size={18} />
+                              {t("payouts.requestPayout", "Request Payout")}
+                            </Button>
+                          );
+                        })()}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
 
               <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">

@@ -36,6 +36,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
   is_featured?: boolean;
+  commission_rate?: number;
 }
 
 export interface CreateEventTierRequest {
