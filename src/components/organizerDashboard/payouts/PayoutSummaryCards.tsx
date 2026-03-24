@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { PayoutSummary } from "@/types/payout";
 import { useTranslation } from "@/hooks/useTranslation";
+import { formatCurrency } from "@/lib/utils";
 
 interface PayoutSummaryCardsProps {
   summary: PayoutSummary | undefined;
@@ -22,34 +23,30 @@ export function PayoutSummaryCards({
   isLoading,
 }: PayoutSummaryCardsProps) {
   const { t } = useTranslation();
+  const totalEarnings = formatCurrency(summary?.total_earnings ?? 0);
+  const totalReceived = formatCurrency(summary?.total_received ?? 0);
+  const availableAmount = formatCurrency(summary?.available_amount ?? 0);
+  const pendingAmount = formatCurrency(summary?.pending_amount ?? 0);
   const cards = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" />,
       label: t("payouts.summary.earnings", "Total Earnings"),
-      value: isLoading
-        ? null
-        : `Rs. ${summary?.total_earnings.toLocaleString() ?? "0"}`,
+      value: isLoading ? null : totalEarnings,
     },
     {
       icon: <BankIcon className="w-6 h-6 text-primary" />,
       label: t("payouts.summary.received", "Total Received Amount"),
-      value: isLoading
-        ? null
-        : `Rs. ${summary?.total_received.toLocaleString() ?? "0"}`,
+      value: isLoading ? null : totalReceived,
     },
     {
       icon: <WalletIcon className="w-6 h-6 text-primary" />,
       label: t("payouts.summary.available", "Total Requestable Amount"),
-      value: isLoading
-        ? null
-        : `Rs. ${summary?.available_amount.toLocaleString() ?? "0"}`,
+      value: isLoading ? null : availableAmount,
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" />,
       label: t("payouts.summary.pending", "Total Pending Amount"),
-      value: isLoading
-        ? null
-        : `Rs. ${summary?.pending_amount.toLocaleString() ?? "0"}`,
+      value: isLoading ? null : pendingAmount,
     },
     // {
     //   icon: <HourglassIcon className="w-6 h-6 text-primary" />,

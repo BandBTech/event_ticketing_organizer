@@ -18,14 +18,24 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { OrganizerProfileForm } from "@/components/organizer/OrganizerProfileForm";
 import { OrganizerProfileFormValues } from "@/lib/validation";
+import { useUIStore } from "@/store/uiStore";
 
 export function CompleteProfileDialog() {
   const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile, hasRole } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const [isOpen, setIsOpen] = useState(false);
+  const { showCompleteProfileDialog, setShowCompleteProfileDialog } = useUIStore();
 
   const isOrganizer = hasRole("organizer");
+
+  // Open when triggered from "Create New Event" button
+  useEffect(() => {
+    if (showCompleteProfileDialog) {
+      setIsOpen(true);
+      setShowCompleteProfileDialog(false);
+    }
+  }, [showCompleteProfileDialog]);
 
   useEffect(() => {
     // Check localStorage for tab-specific state

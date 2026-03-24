@@ -10,6 +10,7 @@ import { Event, TierTemplate, UpdateEventRequest, CreateEventData } from "@/type
 import { toast } from "@/lib/toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { Form } from "@/components/ui/form";
@@ -41,6 +42,7 @@ export default function CreateEventsForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { locale } = useLanguageStore();
 
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
   const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(null);
@@ -73,7 +75,7 @@ export default function CreateEventsForm({
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventSchema) as unknown as Resolver<EventFormData>,
-    defaultValues: getEventFormDefaults(initialData, tierTemplates),
+    defaultValues: getEventFormDefaults(initialData, tierTemplates, locale),
     mode: "onChange",
     criteriaMode: "all",
   });

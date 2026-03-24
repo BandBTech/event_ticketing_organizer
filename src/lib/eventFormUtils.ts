@@ -34,18 +34,26 @@ export function getTierName(
   return "";
 }
 
+const LOCALE_CURRENCY_MAP: Record<string, string> = {
+  ja: "jpy",
+  en: "usd",
+  it: "eur",
+};
+
 /**
  * Generate default form values from initial data
  */
 export function getEventFormDefaults(
   initialData?: Event,
-  tierTemplates: TierTemplate[] = []
+  tierTemplates: TierTemplate[] = [],
+  locale?: string
 ): EventFormData {
+  const defaultCurrency = LOCALE_CURRENCY_MAP[locale ?? ""] ?? "usd";
   if (!initialData) {
     return {
       name: "",
       description: "",
-      currency: "jpy",
+      currency: defaultCurrency,
       tags: [],
       image: "",
       venue: "",

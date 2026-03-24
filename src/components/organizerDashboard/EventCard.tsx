@@ -118,7 +118,7 @@ export default function EventCard({
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <MapPinAreaIcon className="w-4 h-4" />
-          {event.address || "Location TBA"}
+          {(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address) || "Location TBA"}
         </div>
 
         <div className="mt-auto">

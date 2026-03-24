@@ -35,7 +35,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime, formatDateTimeLong } from "@/lib/utils";
+import {
+  formatDateTime,
+  formatDateTimeLong,
+  formatCurrency,
+} from "@/lib/utils";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
 import { queryKeys } from "@/lib/queryKeys";
 import StatusHistorySidebar from "./StatusHistorySidebar";
@@ -64,6 +68,7 @@ import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/Pay
 import { usePayoutSummary } from "@/hooks/usePayouts";
 import { Separator } from "../ui/separator";
 import FeaturedBadge from "./FeaturedBadge";
+import { MoneyIcon } from "@phosphor-icons/react";
 
 interface EventDetailsProps {
   event: Event;
@@ -221,7 +226,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-600">
                     <MapPinIcon weight="duotone" size={16} />
-                    <span>{event.address}</span>
+                    <span>{/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address}</span>
                   </div>
                 </div>
               </div>
@@ -394,7 +399,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         {t("event.field.location", "Location")}
                       </h4>
                       <p className="font-medium text-gray-900">
-                        {event.address}
+                        {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address}
                       </p>
                     </div>
                   </div>
@@ -518,8 +523,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         {t("event.label.totalRevenue", "Revenue")}
                       </p>
                       <p className="text-lg font-bold text-emerald-700">
-                        {event.tiers?.[0]?.currency || "NPR"}{" "}
-                        {totalRevenue.toLocaleString()}
+                        {formatCurrency(
+                          totalRevenue,
+                          event.tiers?.[0]?.currency,
+                        )}
                       </p>
                     </div>
                   </div>
@@ -547,8 +554,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {tier.currency || "NPR"}{" "}
-                                    {tier.revenue.toLocaleString()}
+                                    {formatCurrency(
+                                      tier.revenue,
+                                      tier.currency,
+                                    )}
                                   </p>
                                 </div>
                               </div>
@@ -567,8 +576,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {t("common.sold", "sold")}
                                   </span>
                                   <p className="text-xs text-gray-500">
-                                    {tier.currency || "NPR"}{" "}
-                                    {tier.price.toLocaleString()} /{" "}
+                                    {formatCurrency(tier.price, tier.currency)}
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
@@ -654,15 +662,13 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {tier.tier_name}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    {tier.currency || "NPR"}{" "}
-                                    {tier.price.toLocaleString()} /{" "}
-                                    {t("common.ticket", "ticket")}
+                                    {formatCurrency(tier.price, tier.currency)}{" "}
+                                    / {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {tier.currency || "NPR"}{" "}
-                                    {tierRevenue.toLocaleString()}
+                                    {formatCurrency(tierRevenue, tier.currency)}
                                   </p>
                                 </div>
                               </div>
@@ -750,78 +756,90 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
               </div>
 
               {event.commission_rate != null &&
-                ["on_sale", "hold", "completed", "live"].includes(event.status) && (
-                <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {t("event.section.organizerEarnings", "Organizer Earnings")}
-                  </h3>
-                  {(() => {
-                    const commissionRate = event.commission_rate!;
-                    const commissionAmount = totalRevenue * (commissionRate / 100);
-                    const organizerEarnings = totalRevenue - commissionAmount;
-                    const currency = event.tiers?.[0]?.currency || "NPR";
-                    return (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-500">
-                            {t("event.label.grossRevenue", "Gross Revenue")}
-                          </span>
-                          <span className="font-medium text-gray-900">
-                            {currency} {totalRevenue.toLocaleString()}
-                          </span>
+                ["on_sale", "hold", "completed", "live"].includes(
+                  event.status,
+                ) && (
+                  <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {t(
+                        "event.section.organizerEarnings",
+                        "Organizer Earnings",
+                      )}
+                    </h3>
+                    {(() => {
+                      const commissionRate = event.commission_rate!;
+                      const commissionAmount =
+                        totalRevenue * (commissionRate / 100);
+                      const organizerEarnings = totalRevenue - commissionAmount;
+                      const currency = event.tiers?.[0]?.currency;
+                      return (
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500">
+                              {t("event.label.grossRevenue", "Gross Revenue")}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {formatCurrency(totalRevenue, currency)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500">
+                              {t(
+                                "event.label.commissionRate",
+                                "Commission Rate",
+                              )}
+                            </span>
+                            <span className="font-medium text-orange-600">
+                              {commissionRate}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-500">
+                              {t("event.label.commissionAmount", "Commission")}
+                            </span>
+                            <span className="font-medium text-red-500">
+                              − {formatCurrency(commissionAmount, currency)}
+                            </span>
+                          </div>
+                          <Separator />
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-gray-900">
+                              {t(
+                                "event.label.organizerEarnings",
+                                "Your Earnings",
+                              )}
+                            </span>
+                            <span className="font-bold text-emerald-600 text-lg">
+                              {formatCurrency(organizerEarnings, currency)}
+                            </span>
+                          </div>
+                          {(() => {
+                            if (event.status !== "completed") return null;
+                            const eventPayoutInfo = payoutSummary?.events?.find(
+                              (e) => e.event_id === event.id,
+                            );
+                            if (!eventPayoutInfo) return null;
+                            const hasRequestedPayout =
+                              eventPayoutInfo.pending_requests > 0 ||
+                              eventPayoutInfo.approved_requests > 0 ||
+                              eventPayoutInfo.paid_requests > 0;
+                            if (hasRequestedPayout) return null;
+                            return (
+                              <Button
+                                onClick={() => setPayoutDialogOpen(true)}
+                                variant="outline"
+                                className="gap-2 w-full mt-2"
+                              >
+                                <MoneyIcon weight="duotone" size={18} />
+                                {t("payouts.requestPayout", "Request Payout")}
+                              </Button>
+                            );
+                          })()}
                         </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-500">
-                            {t("event.label.commissionRate", "Commission Rate")}
-                          </span>
-                          <span className="font-medium text-orange-600">
-                            {commissionRate}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-gray-500">
-                            {t("event.label.commissionAmount", "Commission")}
-                          </span>
-                          <span className="font-medium text-red-500">
-                            − {currency} {commissionAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold text-gray-900">
-                            {t("event.label.organizerEarnings", "Your Earnings")}
-                          </span>
-                          <span className="font-bold text-emerald-600 text-lg">
-                            {currency} {organizerEarnings.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                        {(() => {
-                          if (event.status !== "completed") return null;
-                          const eventPayoutInfo = payoutSummary?.events?.find(
-                            (e) => e.event_id === event.id,
-                          );
-                          if (!eventPayoutInfo) return null;
-                          const hasRequestedPayout =
-                            eventPayoutInfo.pending_requests > 0 ||
-                            eventPayoutInfo.approved_requests > 0 ||
-                            eventPayoutInfo.paid_requests > 0;
-                          if (hasRequestedPayout) return null;
-                          return (
-                            <Button
-                              onClick={() => setPayoutDialogOpen(true)}
-                              variant="outline"
-                              className="gap-2 w-full mt-2"
-                            >
-                              <CurrencyDollarIcon weight="duotone" size={18} />
-                              {t("payouts.requestPayout", "Request Payout")}
-                            </Button>
-                          );
-                        })()}
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+                      );
+                    })()}
+                  </div>
+                )}
 
               <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">

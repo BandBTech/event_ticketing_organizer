@@ -29,9 +29,9 @@ export default function DashboardHeader() {
   const isEditMode = searchParams.get("edit") === "true";
   const { locale } = useLanguageStore();
   const { t } = useTranslation();
-  const { toggleSidebar } = useUIStore();
+  const { toggleSidebar, setShowCompleteProfileDialog } = useUIStore();
   // const { openCreateUserModal } = useUser();
-  const { user, isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { user, isOrganizerRejected, isOrganizerPending, isOrganizerInactive, isOrganizerComplete } = useAuthStore();
 
   /**
  * Get time-based greeting message
@@ -97,7 +97,11 @@ export default function DashboardHeader() {
   const createButtonLabel = t('event.createNewEvent', 'Create New Event');
 
   const handleCreateButton = () => {
-    router.push("/organizerDashboard/event/create");
+    if (isOrganizerComplete === false) {
+      setShowCompleteProfileDialog(true);
+    } else {
+      router.push("/organizerDashboard/event/create");
+    }
   };
 
   return (

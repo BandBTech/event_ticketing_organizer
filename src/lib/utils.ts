@@ -1,8 +1,9 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { useLanguageStore } from "@/store/languageStore";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -16,14 +17,15 @@ export function formatDateTime(
   options?: {
     includeSeconds?: boolean;
     timezone?: string;
-  }
+  },
 ): string {
   if (!date) return "";
 
   try {
-    const dateObj = typeof date === "string" || typeof date === "number"
-      ? new Date(date)
-      : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
 
     if (isNaN(dateObj.getTime())) return "";
 
@@ -49,13 +51,16 @@ export function formatDateTime(
  * @param date - Date object, ISO string, or timestamp
  * @returns Formatted date string or empty string if invalid
  */
-export function formatDate(date: Date | string | number | null | undefined): string {
+export function formatDate(
+  date: Date | string | number | null | undefined,
+): string {
   if (!date) return "";
 
   try {
-    const dateObj = typeof date === "string" || typeof date === "number"
-      ? new Date(date)
-      : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
 
     if (isNaN(dateObj.getTime())) return "";
 
@@ -74,13 +79,16 @@ export function formatDate(date: Date | string | number | null | undefined): str
  * @param date - Date object, ISO string, or timestamp
  * @returns Formatted time string or empty string if invalid
  */
-export function formatTime(date: Date | string | number | null | undefined): string {
+export function formatTime(
+  date: Date | string | number | null | undefined,
+): string {
   if (!date) return "";
 
   try {
-    const dateObj = typeof date === "string" || typeof date === "number"
-      ? new Date(date)
-      : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
 
     if (isNaN(dateObj.getTime())) return "";
 
@@ -102,14 +110,15 @@ export function formatTime(date: Date | string | number | null | undefined): str
  */
 export function formatDateTimeLong(
   date: Date | string | number | null | undefined,
-  locale: string = "en-US"
+  locale: string = "en-US",
 ): string {
   if (!date) return "";
 
   try {
-    const dateObj = typeof date === "string" || typeof date === "number"
-      ? new Date(date)
-      : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
 
     if (isNaN(dateObj.getTime())) return "";
 
@@ -130,13 +139,16 @@ export function formatDateTimeLong(
  * @param date - Date object, ISO string, or timestamp
  * @returns Relative time string or empty string if invalid
  */
-export function formatRelativeTime(date: Date | string | number | null | undefined): string {
+export function formatRelativeTime(
+  date: Date | string | number | null | undefined,
+): string {
   if (!date) return "";
 
   try {
-    const dateObj = typeof date === "string" || typeof date === "number"
-      ? new Date(date)
-      : date;
+    const dateObj =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
 
     if (isNaN(dateObj.getTime())) return "";
 
@@ -198,3 +210,27 @@ export function isValidRegistrationData(data: unknown): data is {
     typeof obj.phone === "string"
   );
 }
+
+/**
+ * Format a currency amount using the user's locale
+ * @param amount - The amount to format
+ * @param currency - The currency code (e.g. "USD", "EUR")
+ * @returns Formatted currency string
+ */
+export const formatCurrency = (amount: number, currency?: string) => {
+  const { locale } = useLanguageStore();
+  // we have three languages japaneses english and italian if currency is not available use currency based on language
+  const currencyMap: Record<string, string> = {
+    ja: "JPY",
+    en: "USD",
+    it: "EUR",
+  };
+  const resolvedCurrency = currencyMap[locale] || currency;
+
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: resolvedCurrency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};

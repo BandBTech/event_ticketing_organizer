@@ -20,6 +20,7 @@ import { useOrganizerDashboard } from "@/hooks/useOrganizerDashboard";
 import EventCard from "./EventCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardHome() {
   const { locale } = useLanguageStore();
@@ -36,13 +37,13 @@ export default function DashboardHome() {
     {
       icon: <CurrencyDollarIcon className="w-10 h-10 text-green-500" />,
       label: "Total Revenue",
-      value: `Rs. ${stats.totalRevenue.toLocaleString()}`,
+      value: formatCurrency(stats.totalRevenue),
       gradient: "from-green-50 to-white",
     },
     {
       icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
       label: "Organizer Earnings",
-      value: `Rs. ${stats.organizerEarnings.toLocaleString()}`,
+      value: formatCurrency(stats.organizerEarnings),
       gradient: "from-emerald-50 to-white",
     },
     {
