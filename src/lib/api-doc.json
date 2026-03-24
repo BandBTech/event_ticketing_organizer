@@ -1,7 +1,5 @@
 {
-  "schemes": [
-    "https"
-  ],
+  "schemes": ["https"],
   "swagger": "2.0",
   "info": {
     "description": "A scalable REST API for event ticketing system with secure authentication and role-based access control (RBAC)",
@@ -29,15 +27,9 @@
           }
         ],
         "description": "Get all categories including inactive ones for admin management",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Get all categories (Admin)",
         "responses": {
           "200": {
@@ -82,15 +74,9 @@
           }
         ],
         "description": "Create a new event category",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Create new category (Admin)",
         "parameters": [
           {
@@ -157,15 +143,9 @@
           }
         ],
         "description": "Update an existing category",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Update category (Admin)",
         "parameters": [
           {
@@ -243,15 +223,9 @@
           }
         ],
         "description": "Soft delete a category",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Delete category (Admin)",
         "parameters": [
           {
@@ -304,15 +278,9 @@
           }
         ],
         "description": "Get company information for admin management",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Get company information (Admin)",
         "responses": {
           "200": {
@@ -354,15 +322,9 @@
           }
         ],
         "description": "Update website company information with logo upload support",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Update company information (Admin)",
         "parameters": [
           {
@@ -486,12 +448,8 @@
           }
         ],
         "description": "Get comprehensive dashboard statistics for admin users",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Dashboard"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Dashboard"],
         "summary": "Get admin dashboard data",
         "responses": {
           "200": {
@@ -530,12 +488,8 @@
           }
         ],
         "description": "Get a list of all events with pagination, search, and filtering (Admin only)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get all events (Admin)",
         "parameters": [
           {
@@ -566,7 +520,7 @@
           },
           {
             "type": "string",
-            "description": "Filter by status (draft, pending, approved, held, rejected)",
+            "description": "Filter by status (draft, pending, approved, on_sale, live, completed, scheduled, hold, held, rejected, cancelled)",
             "name": "status",
             "in": "query"
           },
@@ -651,12 +605,8 @@
           }
         ],
         "description": "Get analytics for all events with pagination",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get all events analytics (Admin)",
         "parameters": [
           {
@@ -731,12 +681,8 @@
           }
         ],
         "description": "Get list of events that need admin/subadmin approval",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get events pending approval (Admin)",
         "parameters": [
           {
@@ -798,12 +744,8 @@
           }
         ],
         "description": "Get detailed event information by ID for admin",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get event by ID (Admin)",
         "parameters": [
           {
@@ -860,15 +802,9 @@
           }
         ],
         "description": "Update event details by ID (Admin only)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Update an event (Admin)",
         "parameters": [
           {
@@ -940,12 +876,8 @@
           }
         ],
         "description": "Delete an event by ID (Admin only)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Delete an event (Admin)",
         "parameters": [
           {
@@ -992,12 +924,8 @@
           }
         ],
         "description": "Get comprehensive analytics for an event including tier breakdown (Admin access - no organizer scoping)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get event analytics (Admin)",
         "parameters": [
           {
@@ -1068,15 +996,9 @@
           }
         ],
         "description": "Cancel an event with reason. Admins can cancel any event, organizers can only cancel their own events.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Cancel an event (Organizer/Admin)",
         "parameters": [
           {
@@ -1156,15 +1078,9 @@
           }
         ],
         "description": "Mark/unmark an event as featured",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Toggle event featured status (Admin)",
         "parameters": [
           {
@@ -1241,15 +1157,9 @@
           }
         ],
         "description": "Allow admin/subadmin to update event status, commission rate, and admin remarks. Available statuses: pending, approved, rejected, on_sale, live, hold, scheduled, cancelled, draft",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Update event status and commission (Admin)",
         "parameters": [
           {
@@ -1323,12 +1233,8 @@
           }
         ],
         "description": "Get the complete status change history for an event (Admin only)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get event status change history (Admin)",
         "parameters": [
           {
@@ -1400,24 +1306,13 @@
           }
         ],
         "description": "Get a list of all entities of a specific type without pagination. Supported types: users, events, organizers, guest_users. For events, you can optionally filter by organizer_id.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "List all entities without pagination (Admin only)",
         "parameters": [
           {
-            "enum": [
-              "users",
-              "events",
-              "organizers",
-              "guest_users"
-            ],
+            "enum": ["users", "events", "organizers", "guest_users"],
             "type": "string",
             "description": "Entity type to list",
             "name": "type",
@@ -1488,12 +1383,8 @@
           }
         ],
         "description": "Get list of all organizers with their current approval status (pending, approved, rejected, inactive) with search and filter capabilities. Use all_approved=true to get all approved organizers without pagination. Returns simplified organizer information.",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get all organizers with their approval status",
         "parameters": [
           {
@@ -1579,12 +1470,8 @@
           }
         ],
         "description": "Get list of organizers pending approval",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get pending organizers",
         "parameters": [
           {
@@ -1603,7 +1490,7 @@
           },
           {
             "type": "string",
-            "default": "\"-created_at\"",
+            "default": "\"created_at\"",
             "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'first_name')",
             "name": "sort",
             "in": "query"
@@ -1652,12 +1539,8 @@
           }
         ],
         "description": "Get simplified information about a specific organizer by their ID including onboarding completion status",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get organizer by ID",
         "parameters": [
           {
@@ -1716,15 +1599,9 @@
           }
         ],
         "description": "Admin/subadmin can approve, reject, or change status of organizers. Once approved, organizers cannot be rejected but can have their status changed to other values.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Approve or reject organizer",
         "parameters": [
           {
@@ -1804,12 +1681,8 @@
           }
         ],
         "description": "Get the status of OTP for a specific identifier (admin only)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get OTP status for debugging",
         "parameters": [
           {
@@ -1876,12 +1749,8 @@
           }
         ],
         "description": "Retrieve all payment intents with filters (admin only)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
         "summary": "Get all payments (Admin)",
         "parameters": [
           {
@@ -1960,15 +1829,9 @@
           }
         ],
         "description": "Retrieve audit logs for financial operations with filtering and pagination",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin"],
         "summary": "Get audit logs (Admin)",
         "parameters": [
           {
@@ -2082,15 +1945,9 @@
           }
         ],
         "description": "Get paginated list of all payment bills with filtering and search options",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get all payment bills",
         "parameters": [
           {
@@ -2177,15 +2034,9 @@
           }
         ],
         "description": "Create a payment bill to track organizer payout for a single event.\\n\\nThe system automatically calculates the outstanding organizer earnings from completed transactions (minus any previously paid bills). The bill is created with default priority 'normal' and can be updated later for additional details.",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Create payment bill",
         "parameters": [
           {
@@ -2265,15 +2116,9 @@
           }
         ],
         "description": "Get full details of a payment bill including organizer earnings breakdown,\\ncurrent paid_amount, remaining_amount, and payment history.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get payment bill by ID",
         "parameters": [
           {
@@ -2330,15 +2175,9 @@
           }
         ],
         "description": "Record a (partial) payment or change the bill status.\\n\\nWhen **payment_amount** is provided the service increments **paid_amount** and decrements **remaining_amount** then sets status automatically:\\n- remaining_amount == 0 → **paid**\\n- remaining_amount \u003E 0  → **partially_paid**\\n\\nOmit payment_amount for a status-only update (e.g. mark as cancelled or overdue).",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Update payment bill",
         "parameters": [
           {
@@ -2396,6 +2235,59 @@
             }
           }
         }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Delete a payment bill only if no payments have been recorded against it.\\nThis prevents accidental deletion of bills that have financial transactions.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
+        "summary": "Delete payment bill",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "UUID of the bill",
+            "name": "bill_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bill deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "409": {
+            "description": "Cannot delete bill with existing payments",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
       }
     },
     "/api/v1/admin/payments/bills/{bill_id}/history": {
@@ -2406,15 +2298,9 @@
           }
         ],
         "description": "Get all payment records made against a specific bill, ordered by payment date (newest first)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get payment history for a bill",
         "parameters": [
           {
@@ -2476,15 +2362,9 @@
           }
         ],
         "description": "Record an individual payment against a bill. The bill's **paid_amount**",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Add payment to bill",
         "parameters": [
           {
@@ -2581,12 +2461,8 @@
           }
         ],
         "description": "Retrieve all refund requests with filters",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
         "summary": "Get all refunds (Admin)",
         "parameters": [
           {
@@ -2653,12 +2529,8 @@
           }
         ],
         "description": "Approve a pending refund request and process the refund",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
         "summary": "Approve a refund request (Admin)",
         "parameters": [
           {
@@ -2717,15 +2589,9 @@
           }
         ],
         "description": "Reject a pending refund request",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
         "summary": "Reject a refund request (Admin)",
         "parameters": [
           {
@@ -2794,12 +2660,8 @@
           }
         ],
         "description": "Get all payout requests from all organizers",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Payouts"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin Payouts"],
         "summary": "Get all payout requests (Admin)",
         "parameters": [
           {
@@ -2817,12 +2679,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "pending",
-              "approved",
-              "rejected",
-              "paid"
-            ],
+            "enum": ["pending", "approved", "rejected", "paid"],
             "type": "string",
             "description": "Filter by status",
             "name": "status",
@@ -2880,15 +2737,9 @@
           }
         ],
         "description": "Approve, reject, or mark payout request as paid",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Payouts"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Payouts"],
         "summary": "Update payout request status (Admin)",
         "parameters": [
           {
@@ -2968,15 +2819,9 @@
           }
         ],
         "description": "Retrieve all available system permissions",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Get all system permissions (Admin Only)",
         "responses": {
           "200": {
@@ -3027,15 +2872,9 @@
           }
         ],
         "description": "Create a new custom permission",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Create custom permission (Admin Only)",
         "parameters": [
           {
@@ -3102,15 +2941,9 @@
           }
         ],
         "description": "Initialize predefined system permissions",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Initialize system permissions (Admin Only)",
         "responses": {
           "200": {
@@ -3148,15 +2981,9 @@
           }
         ],
         "description": "Initialize predefined system roles and assign permissions WITHOUT clearing existing assignments",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Initialize system roles safely (Admin Only)",
         "responses": {
           "200": {
@@ -3194,15 +3021,9 @@
           }
         ],
         "description": "Initialize both permissions and roles WITHOUT clearing existing role-permission assignments",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Initialize complete system permissions and roles safely (Admin Only)",
         "responses": {
           "200": {
@@ -3240,15 +3061,9 @@
           }
         ],
         "description": "Update an existing permission",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Update permission (Admin Only)",
         "parameters": [
           {
@@ -3326,15 +3141,9 @@
           }
         ],
         "description": "Delete a permission",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Delete permission (Admin Only)",
         "parameters": [
           {
@@ -3393,12 +3202,8 @@
           }
         ],
         "description": "Retrieve all refund requests with filters",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin - Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
         "summary": "Get all refunds (Admin)",
         "parameters": [
           {
@@ -3465,15 +3270,9 @@
           }
         ],
         "description": "Retrieve all available system roles",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Get all system roles (Admin Only)",
         "responses": {
           "200": {
@@ -3526,15 +3325,9 @@
           }
         ],
         "description": "Retrieve all permissions assigned to a specific role",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Get permissions for a role (Admin/SubAdmin)",
         "parameters": [
           {
@@ -3606,15 +3399,9 @@
           }
         ],
         "description": "Assign multiple permissions to a role",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Assign permissions to role (Admin Only)",
         "parameters": [
           {
@@ -3690,15 +3477,9 @@
           }
         ],
         "description": "Generate and email a test ticket PDF for template testing",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Management"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Management"],
         "summary": "Test ticket template generation (Admin)",
         "parameters": [
           {
@@ -3753,12 +3534,8 @@
           }
         ],
         "description": "Get paginated list of checkout sessions with filters",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Admin Tickets"],
         "summary": "Get all checkout sessions (admin only)",
         "parameters": [
           {
@@ -3837,15 +3614,9 @@
           }
         ],
         "description": "Manually activate tickets and record transaction for a checkout session that failed to process automatically",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Tickets"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Tickets"],
         "summary": "Manually process a checkout session (admin only)",
         "parameters": [
           {
@@ -3894,15 +3665,9 @@
           }
         ],
         "description": "Get paginated list of all transactions with filtering and search options",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get all transactions",
         "parameters": [
           {
@@ -4024,19 +3789,9 @@
           }
         ],
         "description": "Get detailed information about a specific transaction (including soft-deleted ones for admin)\nGet detailed information about a specific transaction for admin",
-        "consumes": [
-          "application/json",
-          "application/json"
-        ],
-        "produces": [
-          "application/json",
-          "application/json"
-        ],
-        "tags": [
-          "Admin",
-          "Financial",
-          "Admin"
-        ],
+        "consumes": ["application/json", "application/json"],
+        "produces": ["application/json", "application/json"],
+        "tags": ["Admin", "Financial", "Admin"],
         "summary": "Get transaction by ID (Admin)",
         "parameters": [
           {
@@ -4114,15 +3869,9 @@
           }
         ],
         "description": "Get payment gateway details for a specific transaction by transaction ID",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get payment intent for transaction (Admin)",
         "parameters": [
           {
@@ -4181,15 +3930,9 @@
           }
         ],
         "description": "Get comprehensive payment information including transaction, payment intent, and related details",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Financial"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Financial"],
         "summary": "Get payment details for transaction (Admin)",
         "parameters": [
           {
@@ -4248,15 +3991,9 @@
           }
         ],
         "description": "Retrieve paginated list of users with advanced search, filter, and sort options",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Get all users with comprehensive search, filtering and sorting (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4386,15 +4123,9 @@
           }
         ],
         "description": "Perform bulk actions like activate, deactivate, suspend, delete, or promote multiple users",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Perform bulk actions on users (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4449,15 +4180,9 @@
           }
         ],
         "description": "Admin can directly create an organizer account with pre-approved status, bypassing the normal registration flow",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Create and approve an organizer account (Admin/SubAdmin only)",
         "parameters": [
           {
@@ -4530,15 +4255,9 @@
           }
         ],
         "description": "Get comprehensive user statistics including counts by status and role",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Get user statistics (Admin/SubAdmin)",
         "responses": {
           "200": {
@@ -4588,15 +4307,9 @@
           }
         ],
         "description": "Retrieve detailed information about a specific user",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Get user by ID (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4665,15 +4378,9 @@
           }
         ],
         "description": "Soft delete a user account",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Soft delete user (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4732,15 +4439,9 @@
           }
         ],
         "description": "Delete a user account with specified delete type (soft or hard)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Delete user with type (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4808,15 +4509,9 @@
           }
         ],
         "description": "Retrieve all permissions for a specific user",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Get user permissions (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4890,15 +4585,9 @@
           }
         ],
         "description": "Check if a user has a specific permission",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Permissions"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Permissions"],
         "summary": "Check user permission (Admin/SubAdmin)",
         "parameters": [
           {
@@ -4975,15 +4664,9 @@
           }
         ],
         "description": "Promote a user to a different role",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Promote user role (Admin/SubAdmin)",
         "parameters": [
           {
@@ -5051,15 +4734,9 @@
           }
         ],
         "description": "Restore a soft-deleted user account",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Restore soft-deleted user (Admin Only)",
         "parameters": [
           {
@@ -5118,15 +4795,9 @@
           }
         ],
         "description": "Update a user's account status (active, inactive, suspended)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Users"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Users"],
         "summary": "Update account status (Admin/SubAdmin)",
         "parameters": [
           {
@@ -5189,15 +4860,9 @@
     "/api/v1/auth/admin/login": {
       "post": {
         "description": "Login for admin and subadmin users only",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Auth"],
         "summary": "Admin login",
         "parameters": [
           {
@@ -5259,15 +4924,9 @@
     "/api/v1/auth/admin/reset-password": {
       "post": {
         "description": "Reset admin password using OTP verification",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Auth"],
         "summary": "Reset admin password with OTP verification",
         "parameters": [
           {
@@ -5305,15 +4964,9 @@
     "/api/v1/auth/admin/reset-password-request": {
       "post": {
         "description": "Send password reset OTP to admin email",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Auth"],
         "summary": "Request password reset for admin",
         "parameters": [
           {
@@ -5351,15 +5004,9 @@
     "/api/v1/auth/admin/send-otp": {
       "post": {
         "description": "Send a new OTP for admin password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Auth"],
         "summary": "Send OTP for admin password reset",
         "parameters": [
           {
@@ -5397,15 +5044,9 @@
     "/api/v1/auth/admin/verify-otp": {
       "post": {
         "description": "Verify OTP code for admin password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Admin Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin Auth"],
         "summary": "Verify OTP for admin password reset",
         "parameters": [
           {
@@ -5448,15 +5089,9 @@
           }
         ],
         "description": "Change authenticated user's password",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
         "summary": "Change user password",
         "parameters": [
           {
@@ -5505,12 +5140,8 @@
           }
         ],
         "description": "Logout authenticated user by invalidating tokens",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Auth"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
         "summary": "Logout user",
         "responses": {
           "200": {
@@ -5537,15 +5168,9 @@
     "/api/v1/auth/organizer/login": {
       "post": {
         "description": "Login for organizer, staff, and manager users only",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Organizer login",
         "parameters": [
           {
@@ -5607,15 +5232,9 @@
     "/api/v1/auth/organizer/register": {
       "post": {
         "description": "Register as an organizer (requires approval)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Register a new organizer",
         "parameters": [
           {
@@ -5665,15 +5284,9 @@
     "/api/v1/auth/organizer/reset-password": {
       "post": {
         "description": "Reset organizer password using OTP verification",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Reset organizer password with OTP verification",
         "parameters": [
           {
@@ -5711,15 +5324,9 @@
     "/api/v1/auth/organizer/reset-password-request": {
       "post": {
         "description": "Send password reset OTP to organizer email",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Request password reset for organizer",
         "parameters": [
           {
@@ -5757,15 +5364,9 @@
     "/api/v1/auth/organizer/send-otp": {
       "post": {
         "description": "Send a new OTP for organizer password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Send OTP for organizer password reset",
         "parameters": [
           {
@@ -5803,15 +5404,9 @@
     "/api/v1/auth/organizer/set-password": {
       "post": {
         "description": "Complete organizer registration by setting password after OTP verification",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Set password for organizer registration",
         "parameters": [
           {
@@ -5861,15 +5456,9 @@
     "/api/v1/auth/organizer/verify-otp": {
       "post": {
         "description": "Verify OTP code for organizer registration or password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer Auth"],
         "summary": "Verify OTP for organizer registration or password reset",
         "parameters": [
           {
@@ -5912,12 +5501,8 @@
           }
         ],
         "description": "Get authenticated user profile",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Auth"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
         "summary": "Get user profile",
         "responses": {
           "200": {
@@ -5959,15 +5544,9 @@
           }
         ],
         "description": "Update authenticated user's profile information (first name, last name, and phone number only)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
         "summary": "Update user profile",
         "parameters": [
           {
@@ -6023,15 +5602,9 @@
     "/api/v1/auth/refresh": {
       "post": {
         "description": "Get new access and refresh tokens using a valid refresh token",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Auth"],
         "summary": "Refresh access token",
         "parameters": [
           {
@@ -6087,15 +5660,9 @@
     "/api/v1/auth/user/login": {
       "post": {
         "description": "Login for regular users only",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "User login",
         "parameters": [
           {
@@ -6157,15 +5724,9 @@
     "/api/v1/auth/user/register": {
       "post": {
         "description": "Create a new user account",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Register a new user",
         "parameters": [
           {
@@ -6215,15 +5776,9 @@
     "/api/v1/auth/user/reset-password": {
       "post": {
         "description": "Reset user password using OTP verification",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Reset user password with OTP verification",
         "parameters": [
           {
@@ -6261,15 +5816,9 @@
     "/api/v1/auth/user/reset-password-request": {
       "post": {
         "description": "Send password reset OTP to user email",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Request password reset for user",
         "parameters": [
           {
@@ -6307,15 +5856,9 @@
     "/api/v1/auth/user/send-otp": {
       "post": {
         "description": "Send a new OTP for user password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Send OTP for user password reset",
         "parameters": [
           {
@@ -6353,15 +5896,9 @@
     "/api/v1/auth/user/set-password": {
       "post": {
         "description": "Complete user registration by setting password after OTP verification",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Set password for user registration",
         "parameters": [
           {
@@ -6411,15 +5948,9 @@
     "/api/v1/auth/user/verify-otp": {
       "post": {
         "description": "Verify OTP code for user registration or password reset",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Auth"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User Auth"],
         "summary": "Verify OTP for user registration or password reset",
         "parameters": [
           {
@@ -6462,12 +5993,8 @@
           }
         ],
         "description": "Get dashboard statistics for organizer users including their events",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Dashboard"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Dashboard"],
         "summary": "Get organizer dashboard data",
         "responses": {
           "200": {
@@ -6506,15 +6033,9 @@
           }
         ],
         "description": "Get paginated list of events for the authenticated organizer with search and filter capabilities",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get all organizer events with pagination and search",
         "parameters": [
           {
@@ -6539,7 +6060,7 @@
           },
           {
             "type": "string",
-            "description": "Filter by status (draft, pending, approved, held, rejected, cancelled)",
+            "description": "Filter by status (draft, pending, approved, on_sale, live, completed, scheduled, hold, held, rejected, cancelled)",
             "name": "status",
             "in": "query"
           },
@@ -6610,15 +6131,9 @@
           }
         ],
         "description": "Create a new event with the provided details (Organizer only)",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Create a new event (Organizer)",
         "parameters": [
           {
@@ -6745,12 +6260,8 @@
           }
         ],
         "description": "Get all tier name templates for the authenticated organizer",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get organizer tier templates (Organizer)",
         "responses": {
           "200": {
@@ -6795,15 +6306,9 @@
           }
         ],
         "description": "Create a new tier name template for reuse across events",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Create tier template (Organizer)",
         "parameters": [
           {
@@ -6870,15 +6375,9 @@
           }
         ],
         "description": "Update an existing tier name template",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Update tier template (Organizer)",
         "parameters": [
           {
@@ -6962,12 +6461,8 @@
           }
         ],
         "description": "Delete a tier name template (only if not used in active events)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Delete tier template (Organizer)",
         "parameters": [
           {
@@ -7026,15 +6521,9 @@
           }
         ],
         "description": "Get detailed event information by ID for the authenticated organizer",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get event by ID with full details",
         "parameters": [
           {
@@ -7103,15 +6592,9 @@
           }
         ],
         "description": "Update event details by ID for the authenticated organizer (multipart form data)",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Update event by ID",
         "parameters": [
           {
@@ -7258,15 +6741,9 @@
           }
         ],
         "description": "Soft delete event by ID for the authenticated organizer (only draft and pending events can be deleted)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Delete event by ID",
         "parameters": [
           {
@@ -7325,12 +6802,8 @@
           }
         ],
         "description": "Get comprehensive analytics for an event including tier breakdown",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get event analytics (Organizer)",
         "parameters": [
           {
@@ -7401,15 +6874,9 @@
           }
         ],
         "description": "Cancel an event with reason. Admins can cancel any event, organizers can only cancel their own events.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Cancel an event (Organizer/Admin)",
         "parameters": [
           {
@@ -7488,16 +6955,10 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Pause, resume, or stop event sales",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "description": "Pause, resume, or stop event sales. Pause/resume actions also update event status: pause sets status to 'hold', resume sets status to 'on_sale'",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Control event sales (Organizer)",
         "parameters": [
           {
@@ -7577,12 +7038,8 @@
           }
         ],
         "description": "Get the status change history for an event owned by the organizer",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get event status change history (Organizer)",
         "parameters": [
           {
@@ -7654,12 +7111,8 @@
           }
         ],
         "description": "Get all tickets purchased for a specific event (Organizer API)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get event tickets",
         "parameters": [
           {
@@ -7735,12 +7188,8 @@
           }
         ],
         "description": "Get ticket statistics for a specific event (Organizer API)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get ticket statistics",
         "parameters": [
           {
@@ -7799,22 +7248,13 @@
           }
         ],
         "description": "Get a list of all entities of a specific type without pagination. Supported types: events (organizer's own events), users (staff/managers in organizer's organization)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "List all entities without pagination (Organizer only)",
         "parameters": [
           {
-            "enum": [
-              "events",
-              "users"
-            ],
+            "enum": ["events", "users"],
             "type": "string",
             "description": "Entity type to list",
             "name": "type",
@@ -7885,12 +7325,8 @@
           }
         ],
         "description": "Get all payout requests for the authenticated organizer",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get organizer payout requests (Organizer)",
         "parameters": [
           {
@@ -7908,12 +7344,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "pending",
-              "approved",
-              "rejected",
-              "paid"
-            ],
+            "enum": ["pending", "approved", "rejected", "paid"],
             "type": "string",
             "description": "Filter by status",
             "name": "status",
@@ -7969,15 +7400,9 @@
           }
         ],
         "description": "Create a new payout request for earned revenue",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Create payout request (Organizer)",
         "parameters": [
           {
@@ -8026,12 +7451,8 @@
           }
         ],
         "description": "Get payout summary including earnings, received amount, and pending requests. Optional event_id query parameter to filter by specific event",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get payout summary (Organizer)",
         "parameters": [
           {
@@ -8084,15 +7505,9 @@
           }
         ],
         "description": "Get the complete organizer profile information",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get organizer profile",
         "responses": {
           "200": {
@@ -8134,15 +7549,9 @@
           }
         ],
         "description": "Update preferred event categories during onboarding",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Update event categories",
         "parameters": [
           {
@@ -8213,15 +7622,9 @@
           }
         ],
         "description": "Get the current onboarding status for the authenticated organizer",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get organizer onboarding status",
         "responses": {
           "200": {
@@ -8265,15 +7668,9 @@
           }
         ],
         "description": "Check-in multiple tickets at once using QR codes (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Bulk check-in multiple tickets",
         "parameters": [
           {
@@ -8338,15 +7735,9 @@
           }
         ],
         "description": "Check-out multiple tickets at once using QR codes (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Bulk check-out multiple tickets",
         "parameters": [
           {
@@ -8411,15 +7802,9 @@
           }
         ],
         "description": "Mark a ticket as checked-in for an event (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Check-in ticket",
         "parameters": [
           {
@@ -8474,15 +7859,9 @@
           }
         ],
         "description": "Mark a ticket as checked-out from an event (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Check-out ticket",
         "parameters": [
           {
@@ -8537,15 +7916,9 @@
           }
         ],
         "description": "Scan a ticket QR code to check-in or check-out attendee (Organizer API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Scan ticket for check-in/check-out",
         "parameters": [
           {
@@ -8600,15 +7973,9 @@
           }
         ],
         "description": "Validate a ticket for check-in without actually checking it in (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Validate a single ticket for check-in",
         "parameters": [
           {
@@ -8670,15 +8037,9 @@
           }
         ],
         "description": "Validate a ticket for check-out without actually checking it out (Organizer, Manager, or Staff API)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Validate a single ticket for check-out",
         "parameters": [
           {
@@ -8740,15 +8101,9 @@
           }
         ],
         "description": "Get paginated list of users belonging to the authenticated organizer's organization",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Get all users in the organizer's organization",
         "parameters": [
           {
@@ -8772,10 +8127,7 @@
             "in": "query"
           },
           {
-            "enum": [
-              "staff",
-              "manager"
-            ],
+            "enum": ["staff", "manager"],
             "type": "string",
             "description": "Filter by role (staff, manager)",
             "name": "role",
@@ -8842,15 +8194,9 @@
           }
         ],
         "description": "Create a new staff or manager user within the authenticated organizer's organization",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Create a new user in the organizer's organization",
         "parameters": [
           {
@@ -8923,15 +8269,9 @@
           }
         ],
         "description": "Update role and status of a user within the authenticated organizer's organization",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Update a user in the organizer's organization",
         "parameters": [
           {
@@ -9009,15 +8349,9 @@
           }
         ],
         "description": "Soft delete a user from the authenticated organizer's organization",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Organizer"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
         "summary": "Delete a user from the organizer's organization",
         "parameters": [
           {
@@ -9071,15 +8405,9 @@
     "/api/v1/payments/initiate": {
       "post": {
         "description": "Create a payment intent, reserve tickets, and prepare payment with selected gateway. Works for both authenticated users and guests.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Initiate a payment",
         "parameters": [
           {
@@ -9141,12 +8469,8 @@
     "/api/v1/payments/{payment_intent_id}": {
       "get": {
         "description": "Retrieve the current status of a payment intent",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Get payment intent status",
         "parameters": [
           {
@@ -9205,12 +8529,8 @@
           }
         ],
         "description": "Cancel a payment intent that hasn't been completed yet",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Cancel a pending payment",
         "parameters": [
           {
@@ -9258,15 +8578,9 @@
     "/api/v1/public/categories": {
       "get": {
         "description": "Get all active event categories for public display",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get all active categories",
         "responses": {
           "200": {
@@ -9302,15 +8616,9 @@
     "/api/v1/public/checkout/{checkout_token}": {
       "get": {
         "description": "Get checkout session details by token (for frontend polling)",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get checkout session details",
         "parameters": [
           {
@@ -9358,15 +8666,9 @@
     "/api/v1/public/company-info": {
       "get": {
         "description": "Get the website/company information for public display",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get company information",
         "responses": {
           "200": {
@@ -9405,12 +8707,8 @@
     "/api/v1/public/events": {
       "get": {
         "description": "Get a list of all public events (on_sale, live, and recent completed) with pagination, search, and filtering. Results are sorted with featured events first, then by creation date (newest first).",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get all public events (Public)",
         "parameters": [
           {
@@ -9509,15 +8807,9 @@
     "/api/v1/public/events/category/{category}": {
       "get": {
         "description": "Get events filtered by a specific category",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get events by category",
         "parameters": [
           {
@@ -9572,15 +8864,9 @@
     "/api/v1/public/events/featured": {
       "get": {
         "description": "Get top 3 featured events for homepage display",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get featured events",
         "parameters": [
           {
@@ -9624,15 +8910,9 @@
     "/api/v1/public/events/search": {
       "get": {
         "description": "Search events by title or description",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Search events",
         "parameters": [
           {
@@ -9699,15 +8979,9 @@
     "/api/v1/public/events/upcoming": {
       "get": {
         "description": "Get upcoming events ordered by start date",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get upcoming events",
         "parameters": [
           {
@@ -9761,12 +9035,8 @@
     "/api/v1/public/events/{id}": {
       "get": {
         "description": "Get details of a specific event by ID",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get event by ID (Public)",
         "parameters": [
           {
@@ -9814,12 +9084,8 @@
     "/api/v1/public/guest/tickets": {
       "get": {
         "description": "Get a list of tickets purchased by a guest user with pagination and filtering",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Get guest user's purchased tickets",
         "parameters": [
           {
@@ -9913,15 +9179,9 @@
     "/api/v1/public/payment/failure": {
       "post": {
         "description": "Process failed payment from gateway",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Handle payment gateway failure callback",
         "parameters": [
           {
@@ -9972,15 +9232,9 @@
     "/api/v1/public/payment/success": {
       "post": {
         "description": "Process successful payment from gateway and activate tickets",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Handle payment gateway success callback",
         "parameters": [
           {
@@ -10044,15 +9298,9 @@
     "/api/v1/public/tickets/guest-purchase": {
       "post": {
         "description": "Create multiple individual ticket purchases for a guest with payment gateway integration. Email, event_id, tier_id, payment_gateway, and quantity are required. Guests can purchase up to 6 tickets. Other fields are optional with sensible defaults.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Purchase ticket as guest",
         "parameters": [
           {
@@ -10103,15 +9351,9 @@
     "/api/v1/public/tickets/validate-token": {
       "get": {
         "description": "Validate a JWT ticket access token to check if it's valid for viewing tickets",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Validate ticket access token",
         "parameters": [
           {
@@ -10166,15 +9408,9 @@
     "/api/v1/public/tickets/view": {
       "get": {
         "description": "View ticket details using a secure JWT token for frontend rendering",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "View ticket with JWT token",
         "parameters": [
           {
@@ -10234,15 +9470,9 @@
     "/api/v1/public/verify-guest": {
       "post": {
         "description": "Verify guest email using verification token",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Public"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Public"],
         "summary": "Verify guest email",
         "parameters": [
           {
@@ -10303,12 +9533,8 @@
           }
         ],
         "description": "Get dashboard statistics and upcoming events for regular users",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Dashboard"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Dashboard"],
         "summary": "Get user dashboard data",
         "responses": {
           "200": {
@@ -10347,12 +9573,8 @@
           }
         ],
         "description": "Get all tickets purchased by the user for a specific event",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["User Tickets"],
         "summary": "Get user's tickets for a specific event",
         "parameters": [
           {
@@ -10426,12 +9648,8 @@
           }
         ],
         "description": "Retrieve payment history for the authenticated user",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Get user's payment history",
         "parameters": [
           {
@@ -10504,15 +9722,9 @@
           }
         ],
         "description": "Check refund eligibility for specific tickets without creating a refund request",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Check if tickets are eligible for refund",
         "parameters": [
           {
@@ -10589,15 +9801,9 @@
           }
         ],
         "description": "Create a refund request for specific tickets",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Payments"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Payments"],
         "summary": "Request a refund for tickets",
         "parameters": [
           {
@@ -10664,12 +9870,8 @@
           }
         ],
         "description": "Get a list of tickets purchased by the authenticated user, grouped by transaction with pagination and filtering",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["User Tickets"],
         "summary": "Get user's purchased tickets grouped by transaction",
         "parameters": [
           {
@@ -10767,15 +9969,9 @@
           }
         ],
         "description": "Purchase multiple individual tickets for a logged-in user. Logged-in users can purchase up to 10 tickets. Requires event_id, tier_id, quantity, and payment_gateway.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User"],
         "summary": "Purchase tickets for logged-in user",
         "parameters": [
           {
@@ -10824,12 +10020,8 @@
           }
         ],
         "description": "Get statistics about user's ticket purchases and usage",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["User Tickets"],
         "summary": "Get user's ticket statistics",
         "responses": {
           "200": {
@@ -10874,12 +10066,8 @@
           }
         ],
         "description": "Get detailed information about a specific transaction with all its tickets",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["User Tickets"],
         "summary": "Get transaction details with tickets",
         "parameters": [
           {
@@ -10944,12 +10132,8 @@
           }
         ],
         "description": "Get QR code data for a specific ticket (for mobile apps)",
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User Tickets"
-        ],
+        "produces": ["application/json"],
+        "tags": ["User Tickets"],
         "summary": "Get ticket QR code",
         "parameters": [
           {
@@ -11014,16 +10198,10 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Get paginated list of transactions for the authenticated user",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User"
-        ],
+        "description": "Get paginated list of transactions for the authenticated user with search and filter options",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User"],
         "summary": "Get user transactions",
         "parameters": [
           {
@@ -11038,6 +10216,24 @@
             "default": 20,
             "description": "Items per page (default: 20)",
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter by payment method (stripe, paypal, etc.)",
+            "name": "payment_method",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter transactions from date (YYYY-MM-DD format)",
+            "name": "date_from",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Filter transactions to date (YYYY-MM-DD format)",
+            "name": "date_to",
             "in": "query"
           }
         ],
@@ -11086,6 +10282,85 @@
         }
       }
     },
+    "/api/v1/user/transactions/retry": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Create a new payment session for a failed transaction so user can retry payment",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User", "Financial"],
+        "summary": "Retry a failed transaction",
+        "parameters": [
+          {
+            "description": "Transaction ID to retry",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "transaction_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "checkout_token": {
+                          "type": "string"
+                        },
+                        "checkout_url": {
+                          "type": "string"
+                        },
+                        "transaction_id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/user/transactions/{transaction_id}": {
       "get": {
         "security": [
@@ -11094,15 +10369,9 @@
           }
         ],
         "description": "Get detailed information about a specific transaction for the current user",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "User"
-        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["User"],
         "summary": "Get user transaction by ID",
         "parameters": [
           {
@@ -11167,59 +10436,20 @@
     },
     "/api/v1/webhooks/stripe": {
       "post": {
-        "description": "Process webhook events from Stripe for payment processing with comprehensive security and audit logging",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Webhooks"
-        ],
+        "description": "Receives and processes Stripe webhook events with full failure tracking",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Webhooks"],
         "summary": "Handle Stripe webhook events",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Stripe webhook signature",
-            "name": "Stripe-Signature",
-            "in": "header",
-            "required": true
-          },
-          {
-            "type": "string",
-            "description": "Idempotency key for webhook processing",
-            "name": "X-Webhook-ID",
-            "in": "header"
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Webhook processed successfully",
+            "description": "Webhook processed or logged",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
           },
           "400": {
-            "description": "Invalid webhook signature or payload",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "409": {
-            "description": "Webhook already processed",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal server error",
+            "description": "Invalid payload or signature (rare - only for critical errors)",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -11270,12 +10500,7 @@
     },
     "models.AdminCreateOrganizerRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "first_name",
-        "last_name",
-        "password"
-      ],
+      "required": ["email", "first_name", "last_name", "password"],
       "properties": {
         "country_code": {
           "type": "string",
@@ -11310,9 +10535,7 @@
     },
     "models.AdminProcessCheckoutSessionRequest": {
       "type": "object",
-      "required": [
-        "checkout_token"
-      ],
+      "required": ["checkout_token"],
       "properties": {
         "checkout_token": {
           "type": "string"
@@ -11339,10 +10562,7 @@
     },
     "models.BulkUserActionRequest": {
       "type": "object",
-      "required": [
-        "action",
-        "user_ids"
-      ],
+      "required": ["action", "user_ids"],
       "properties": {
         "action": {
           "type": "string",
@@ -11403,11 +10623,7 @@
     },
     "models.ChangePasswordRequest": {
       "type": "object",
-      "required": [
-        "confirm_password",
-        "current_password",
-        "new_password"
-      ],
+      "required": ["confirm_password", "current_password", "new_password"],
       "properties": {
         "confirm_password": {
           "type": "string",
@@ -11509,9 +10725,7 @@
     },
     "models.CreateCategoryRequest": {
       "type": "object",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "description": {
           "type": "string",
@@ -11535,11 +10749,7 @@
     },
     "models.CreateEventTierRequest": {
       "type": "object",
-      "required": [
-        "price",
-        "quantity",
-        "tier_template_id"
-      ],
+      "required": ["price", "quantity", "tier_template_id"],
       "properties": {
         "currency": {
           "type": "string"
@@ -11574,13 +10784,7 @@
     },
     "models.CreateOrgUserRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "first_name",
-        "last_name",
-        "password",
-        "role_name"
-      ],
+      "required": ["email", "first_name", "last_name", "password", "role_name"],
       "properties": {
         "email": {
           "type": "string",
@@ -11609,19 +10813,14 @@
         "role_name": {
           "description": "Only allow staff or manager roles",
           "type": "string",
-          "enum": [
-            "staff",
-            "manager"
-          ],
+          "enum": ["staff", "manager"],
           "example": "staff"
         }
       }
     },
     "models.CreateOrganizerTierTemplateRequest": {
       "type": "object",
-      "required": [
-        "template_name"
-      ],
+      "required": ["template_name"],
       "properties": {
         "description": {
           "type": "string"
@@ -11635,11 +10834,7 @@
     },
     "models.CreatePermissionRequest": {
       "type": "object",
-      "required": [
-        "action",
-        "name",
-        "resource"
-      ],
+      "required": ["action", "name", "resource"],
       "properties": {
         "action": {
           "type": "string"
@@ -11657,11 +10852,7 @@
     },
     "models.CreateUserRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "first_name",
-        "last_name"
-      ],
+      "required": ["email", "first_name", "last_name"],
       "properties": {
         "country_code": {
           "type": "string",
@@ -11691,17 +10882,12 @@
     },
     "models.DeleteUserRequest": {
       "type": "object",
-      "required": [
-        "delete_type"
-      ],
+      "required": ["delete_type"],
       "properties": {
         "delete_type": {
           "description": "Type of deletion: soft or hard",
           "type": "string",
-          "enum": [
-            "soft",
-            "hard"
-          ],
+          "enum": ["soft", "hard"],
           "example": "soft"
         },
         "reason": {
@@ -11713,13 +10899,7 @@
     },
     "models.Event": {
       "type": "object",
-      "required": [
-        "capacity",
-        "end_date",
-        "price",
-        "start_date",
-        "title"
-      ],
+      "required": ["capacity", "end_date", "price", "start_date", "title"],
       "properties": {
         "address": {
           "type": "string"
@@ -11795,7 +10975,7 @@
           "type": "string"
         },
         "status": {
-          "description": "draft, pending, approved, held, rejected, cancelled",
+          "description": "draft, pending, approved, on_sale, live, completed, scheduled, hold, held, rejected, cancelled",
           "type": "string"
         },
         "status_history": {
@@ -11831,6 +11011,9 @@
         "available_seats": {
           "type": "integer"
         },
+        "commission_rate": {
+          "type": "number"
+        },
         "created_at": {
           "type": "string"
         },
@@ -11842,6 +11025,9 @@
         },
         "event_title": {
           "type": "string"
+        },
+        "organizer_share": {
+          "type": "number"
         },
         "sales_status": {
           "type": "string"
@@ -11868,9 +11054,7 @@
     },
     "models.EventCancellationRequest": {
       "type": "object",
-      "required": [
-        "reason"
-      ],
+      "required": ["reason"],
       "properties": {
         "reason": {
           "type": "string",
@@ -12158,17 +11342,11 @@
     },
     "models.EventSalesControlRequest": {
       "type": "object",
-      "required": [
-        "action"
-      ],
+      "required": ["action"],
       "properties": {
         "action": {
           "type": "string",
-          "enum": [
-            "pause",
-            "resume",
-            "stop"
-          ]
+          "enum": ["pause", "resume", "stop"]
         },
         "reason": {
           "type": "string"
@@ -12271,6 +11449,10 @@
           "type": "number"
         },
         "quantity": {
+          "type": "integer"
+        },
+        "reserved": {
+          "description": "Temporarily held tickets",
           "type": "integer"
         },
         "sales_end": {
@@ -12413,13 +11595,7 @@
         },
         "status": {
           "type": "string",
-          "enum": [
-            "draft",
-            "pending",
-            "approved",
-            "held",
-            "rejected"
-          ]
+          "enum": ["draft", "pending", "approved", "held", "rejected"]
         },
         "tiers": {
           "type": "array",
@@ -12458,12 +11634,7 @@
     },
     "models.GuestPurchaseRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "event_id",
-        "payment_gateway",
-        "tiers"
-      ],
+      "required": ["email", "event_id", "payment_gateway", "tiers"],
       "properties": {
         "country_code": {
           "type": "string"
@@ -12576,10 +11747,7 @@
     },
     "models.LoginRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "password"
-      ],
+      "required": ["email", "password"],
       "properties": {
         "email": {
           "type": "string",
@@ -12593,10 +11761,7 @@
     },
     "models.OTPSendRequest": {
       "type": "object",
-      "required": [
-        "identifier",
-        "otp_type"
-      ],
+      "required": ["identifier", "otp_type"],
       "properties": {
         "identifier": {
           "description": "Email, phone, or user ID",
@@ -12612,11 +11777,7 @@
     },
     "models.OTPVerifyRequest": {
       "type": "object",
-      "required": [
-        "identifier",
-        "otp_code",
-        "otp_type"
-      ],
+      "required": ["identifier", "otp_code", "otp_type"],
       "properties": {
         "identifier": {
           "description": "Email, phone, or user ID",
@@ -12660,21 +11821,14 @@
     },
     "models.OrganizerApprovalRequest": {
       "type": "object",
-      "required": [
-        "status"
-      ],
+      "required": ["status"],
       "properties": {
         "admin_remark": {
           "type": "string"
         },
         "status": {
           "type": "string",
-          "enum": [
-            "inactive",
-            "pending",
-            "approved",
-            "rejected"
-          ]
+          "enum": ["inactive", "pending", "approved", "rejected"]
         }
       }
     },
@@ -12844,11 +11998,7 @@
     },
     "models.OrganizerRegistrationRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "first_name",
-        "last_name"
-      ],
+      "required": ["email", "first_name", "last_name"],
       "properties": {
         "country_code": {
           "type": "string",
@@ -13271,9 +12421,7 @@
     },
     "models.PaymentCallbackRequest": {
       "type": "object",
-      "required": [
-        "checkout_token"
-      ],
+      "required": ["checkout_token"],
       "properties": {
         "checkout_token": {
           "type": "string"
@@ -13287,14 +12435,7 @@
     },
     "models.PaymentGateway": {
       "type": "string",
-      "enum": [
-        "cash",
-        "stripe",
-        "paypal",
-        "esewa",
-        "khalti",
-        "imepay"
-      ],
+      "enum": ["cash", "stripe", "paypal", "esewa", "khalti", "imepay"],
       "x-enum-varnames": [
         "PaymentGatewayCash",
         "PaymentGatewayStripe",
@@ -13351,6 +12492,10 @@
         "capture_method": {
           "type": "string"
         },
+        "checkout_token": {
+          "description": "For fallback verification endpoints",
+          "type": "string"
+        },
         "commission_amount": {
           "type": "number"
         },
@@ -13403,6 +12548,10 @@
         "gateway_metadata": {
           "type": "object",
           "additionalProperties": true
+        },
+        "gateway_payment_id": {
+          "description": "Stripe PI ID, PayPal transaction ID, etc. (nil for cash)",
+          "type": "string"
         },
         "gateway_response": {
           "type": "object",
@@ -13506,11 +12655,7 @@
     },
     "models.PayoutRequestCreate": {
       "type": "object",
-      "required": [
-        "amount",
-        "event_id",
-        "request_type"
-      ],
+      "required": ["amount", "event_id", "request_type"],
       "properties": {
         "amount": {
           "type": "number",
@@ -13524,9 +12669,7 @@
         },
         "request_type": {
           "type": "string",
-          "enum": [
-            "event_payout"
-          ]
+          "enum": ["event_payout"]
         }
       }
     },
@@ -13588,19 +12731,14 @@
     },
     "models.PayoutRequestUpdate": {
       "type": "object",
-      "required": [
-        "status"
-      ],
+      "required": ["status"],
       "properties": {
         "admin_notes": {
           "type": "string"
         },
         "status": {
           "type": "string",
-          "enum": [
-            "approved",
-            "rejected"
-          ]
+          "enum": ["approved", "rejected"]
         }
       }
     },
@@ -13658,25 +12796,17 @@
     },
     "models.PromoteUserRequest": {
       "type": "object",
-      "required": [
-        "role"
-      ],
+      "required": ["role"],
       "properties": {
         "role": {
           "type": "string",
-          "enum": [
-            "user",
-            "organizer",
-            "subadmin"
-          ]
+          "enum": ["user", "organizer", "subadmin"]
         }
       }
     },
     "models.RefreshTokenRequest": {
       "type": "object",
-      "required": [
-        "refresh_token"
-      ],
+      "required": ["refresh_token"],
       "properties": {
         "refresh_token": {
           "type": "string",
@@ -13925,9 +13055,7 @@
     },
     "models.ResetPasswordRequest": {
       "type": "object",
-      "required": [
-        "email"
-      ],
+      "required": ["email"],
       "properties": {
         "email": {
           "type": "string",
@@ -13989,10 +13117,7 @@
     },
     "models.SetPasswordRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "password"
-      ],
+      "required": ["email", "password"],
       "properties": {
         "email": {
           "type": "string",
@@ -14007,11 +13132,7 @@
     },
     "models.TestTicketRequest": {
       "type": "object",
-      "required": [
-        "email",
-        "event_id",
-        "ticket_tier_id"
-      ],
+      "required": ["email", "event_id", "ticket_tier_id"],
       "properties": {
         "email": {
           "type": "string",
@@ -14064,6 +13185,10 @@
         "is_guest_purchase": {
           "type": "boolean"
         },
+        "paid_at": {
+          "description": "When payment was completed",
+          "type": "string"
+        },
         "payment_gateway": {
           "description": "Payment method used (stripe, paypal, etc.)",
           "allOf": [
@@ -14071,6 +13196,14 @@
               "$ref": "#/definitions/models.PaymentGateway"
             }
           ]
+        },
+        "payment_intent_id": {
+          "description": "Stripe payment intent ID",
+          "type": "string"
+        },
+        "payment_status": {
+          "description": "pending, completed, failed, refunded",
+          "type": "string"
         },
         "status": {
           "description": "active, pending_verification, used, cancelled, refunded",
@@ -14110,10 +13243,7 @@
     },
     "models.TicketBulkCheckInRequest": {
       "type": "object",
-      "required": [
-        "event_id",
-        "qr_codes"
-      ],
+      "required": ["event_id", "qr_codes"],
       "properties": {
         "event_id": {
           "type": "string"
@@ -14131,10 +13261,7 @@
     },
     "models.TicketBulkCheckOutRequest": {
       "type": "object",
-      "required": [
-        "event_id",
-        "qr_codes"
-      ],
+      "required": ["event_id", "qr_codes"],
       "properties": {
         "event_id": {
           "type": "string"
@@ -14152,10 +13279,7 @@
     },
     "models.TicketCheckInRequest": {
       "type": "object",
-      "required": [
-        "event_id",
-        "qr_code"
-      ],
+      "required": ["event_id", "qr_code"],
       "properties": {
         "event_id": {
           "type": "string"
@@ -14168,10 +13292,7 @@
     },
     "models.TicketCheckOutRequest": {
       "type": "object",
-      "required": [
-        "event_id",
-        "qr_code"
-      ],
+      "required": ["event_id", "qr_code"],
       "properties": {
         "event_id": {
           "type": "string"
@@ -14184,11 +13305,7 @@
     },
     "models.TicketPurchaseRequest": {
       "type": "object",
-      "required": [
-        "event_id",
-        "payment_gateway",
-        "tiers"
-      ],
+      "required": ["event_id", "payment_gateway", "tiers"],
       "properties": {
         "event_id": {
           "type": "string"
@@ -14278,10 +13395,7 @@
     },
     "models.TicketTierSelection": {
       "type": "object",
-      "required": [
-        "quantity",
-        "tier_id"
-      ],
+      "required": ["quantity", "tier_id"],
       "properties": {
         "quantity": {
           "description": "Required, minimum 1, maximum 10 tickets per tier",
@@ -14701,20 +13815,14 @@
     },
     "models.UpdateAccountStatusRequest": {
       "type": "object",
-      "required": [
-        "status"
-      ],
+      "required": ["status"],
       "properties": {
         "admin_remark": {
           "type": "string"
         },
         "status": {
           "type": "string",
-          "enum": [
-            "active",
-            "inactive",
-            "suspended"
-          ]
+          "enum": ["active", "inactive", "suspended"]
         }
       }
     },
@@ -14743,9 +13851,7 @@
     },
     "models.UpdateOrgUserRequest": {
       "type": "object",
-      "required": [
-        "role_type"
-      ],
+      "required": ["role_type"],
       "properties": {
         "active": {
           "type": "boolean",
@@ -14754,10 +13860,7 @@
         "role_type": {
           "description": "Only allow staff or manager roles",
           "type": "string",
-          "enum": [
-            "staff",
-            "manager"
-          ],
+          "enum": ["staff", "manager"],
           "example": "manager"
         }
       }
@@ -14780,11 +13883,7 @@
     },
     "models.UpdatePasswordRequest": {
       "type": "object",
-      "required": [
-        "confirm_password",
-        "new_password",
-        "otp"
-      ],
+      "required": ["confirm_password", "new_password", "otp"],
       "properties": {
         "confirm_password": {
           "type": "string",
@@ -14807,9 +13906,7 @@
     },
     "models.UpdatePaymentBillRequest": {
       "type": "object",
-      "required": [
-        "status"
-      ],
+      "required": ["status"],
       "properties": {
         "notes": {
           "description": "Notes are optional free-text remarks for this update.\nexample: Partial payment received via SWIFT",
@@ -14829,13 +13926,7 @@
         "status": {
           "description": "Status to transition the bill to.\nAllowed values: pending, partially_paid, paid, cancelled, overdue\nexample: partially_paid",
           "type": "string",
-          "enum": [
-            "pending",
-            "partially_paid",
-            "paid",
-            "cancelled",
-            "overdue"
-          ],
+          "enum": ["pending", "partially_paid", "paid", "cancelled", "overdue"],
           "example": "partially_paid"
         }
       }
@@ -14859,10 +13950,7 @@
     },
     "models.UpdateProfileRequest": {
       "type": "object",
-      "required": [
-        "first_name",
-        "last_name"
-      ],
+      "required": ["first_name", "last_name"],
       "properties": {
         "country_code": {
           "type": "string",
@@ -15151,6 +14239,9 @@
         "id": {
           "type": "string"
         },
+        "invoice_info": {
+          "$ref": "#/definitions/models.UserTransactionInvoiceInfo"
+        },
         "payment_gateway": {
           "$ref": "#/definitions/models.PaymentGateway"
         },
@@ -15176,6 +14267,20 @@
           "type": "string"
         },
         "user_name": {
+          "type": "string"
+        }
+      }
+    },
+    "models.UserTransactionEventInfo": {
+      "type": "object",
+      "properties": {
+        "banner_image": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
           "type": "string"
         }
       }
@@ -15230,14 +14335,14 @@
         "date": {
           "type": "string"
         },
-        "event_title": {
-          "type": "string"
+        "event": {
+          "$ref": "#/definitions/models.UserTransactionEventInfo"
         },
         "id": {
           "type": "string"
         },
-        "invoice": {
-          "$ref": "#/definitions/models.UserTransactionInvoiceInfo"
+        "payment_intent_id": {
+          "type": "string"
         },
         "payment_method": {
           "type": "string"
@@ -15253,6 +14358,9 @@
           "items": {
             "$ref": "#/definitions/models.UserTransactionTierInfo"
           }
+        },
+        "transaction_ref": {
+          "type": "string"
         },
         "user": {
           "$ref": "#/definitions/models.UserTransactionUserInfo"
@@ -15284,6 +14392,12 @@
         },
         "name": {
           "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "quantity": {
+          "type": "integer"
         }
       }
     },
@@ -15291,6 +14405,9 @@
       "type": "object",
       "properties": {
         "id": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         },
         "processed_by": {
@@ -15330,9 +14447,7 @@
     },
     "models.VerifyGuestEmailRequest": {
       "type": "object",
-      "required": [
-        "token"
-      ],
+      "required": ["token"],
       "properties": {
         "token": {
           "type": "string"

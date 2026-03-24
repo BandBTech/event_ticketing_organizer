@@ -37,13 +37,13 @@ export default function DashboardHome() {
     {
       icon: <CurrencyDollarIcon className="w-10 h-10 text-green-500" />,
       label: "Total Revenue",
-      value: formatCurrency(stats.totalRevenue),
+      value: formatCurrency(stats.totalRevenue, undefined, locale),
       gradient: "from-green-50 to-white",
     },
     {
       icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
       label: "Organizer Earnings",
-      value: formatCurrency(stats.organizerEarnings),
+      value: formatCurrency(stats.organizerEarnings, undefined, locale),
       gradient: "from-emerald-50 to-white",
     },
     {

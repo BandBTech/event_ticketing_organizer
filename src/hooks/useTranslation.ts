@@ -18,7 +18,7 @@ import { useLanguageStore } from '@/store/languageStore';
 
 export function useTranslation(localeOverride?: Locale) {
   const { locale: storeLocale } = useLanguageStore();
-  const locale = localeOverride || storeLocale || 'en';
+  const locale = localeOverride || storeLocale || 'ja';
 
   const [messages, setMessages] = useState<TranslationMessages>({});
   const [isLoading, setIsLoading] = useState(true);

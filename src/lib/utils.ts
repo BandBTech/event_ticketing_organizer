@@ -1,4 +1,3 @@
-import { useLanguageStore } from "@/store/languageStore";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -217,8 +216,7 @@ export function isValidRegistrationData(data: unknown): data is {
  * @param currency - The currency code (e.g. "USD", "EUR")
  * @returns Formatted currency string
  */
-export const formatCurrency = (amount: number, currency?: string) => {
-  const { locale } = useLanguageStore();
+export const formatCurrency = (amount: number, currency?: string, locale: string = "ja") => {
   // we have three languages japaneses english and italian if currency is not available use currency based on language
   const currencyMap: Record<string, string> = {
     ja: "JPY",
