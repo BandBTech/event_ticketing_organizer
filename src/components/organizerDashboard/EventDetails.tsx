@@ -228,7 +228,13 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-600">
                     <MapPinIcon weight="duotone" size={16} />
-                    <span>{/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address}</span>
+                    <span>
+                      {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
+                        event.address?.trim() || "",
+                      )
+                        ? event.venue_name
+                        : event.address}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -291,7 +297,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
               )}
               {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
               {!isEventCancelled &&
-                ["pending", "draft", "on_sale", "approved", "hold"].includes(
+                ["pending", "draft", "approved", "hold"].includes(
                   event.status,
                 ) && (
                   <Button
@@ -401,7 +407,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         {t("event.field.location", "Location")}
                       </h4>
                       <p className="font-medium text-gray-900">
-                        {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address}
+                        {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
+                          event.address?.trim() || "",
+                        )
+                          ? event.venue_name
+                          : event.address}
                       </p>
                     </div>
                   </div>
@@ -580,7 +590,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {t("common.sold", "sold")}
                                   </span>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(tier.price, tier.currency, locale)}
+                                    {formatCurrency(
+                                      tier.price,
+                                      tier.currency,
+                                      locale,
+                                    )}
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
@@ -666,13 +680,21 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {tier.tier_name}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(tier.price, tier.currency, locale)}{" "}
+                                    {formatCurrency(
+                                      tier.price,
+                                      tier.currency,
+                                      locale,
+                                    )}{" "}
                                     / {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {formatCurrency(tierRevenue, tier.currency, locale)}
+                                    {formatCurrency(
+                                      tierRevenue,
+                                      tier.currency,
+                                      locale,
+                                    )}
                                   </p>
                                 </div>
                               </div>
@@ -802,7 +824,12 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               {t("event.label.commissionAmount", "Commission")}
                             </span>
                             <span className="font-medium text-red-500">
-                              − {formatCurrency(commissionAmount, currency, locale)}
+                              −{" "}
+                              {formatCurrency(
+                                commissionAmount,
+                                currency,
+                                locale,
+                              )}
                             </span>
                           </div>
                           <Separator />
@@ -814,7 +841,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               )}
                             </span>
                             <span className="font-bold text-emerald-600 text-lg">
-                              {formatCurrency(organizerEarnings, currency, locale)}
+                              {formatCurrency(
+                                organizerEarnings,
+                                currency,
+                                locale,
+                              )}
                             </span>
                           </div>
                           {(() => {
