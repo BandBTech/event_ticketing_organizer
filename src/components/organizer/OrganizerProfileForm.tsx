@@ -176,6 +176,7 @@ export function OrganizerProfileForm({
               error={logoError || undefined}
               helperText={t("settings.organizerProfile.logoHelperText", "Recommended size: 500x500px.")}
               helperTextSize={t("settings.organizerProfile.logoHelperTextSize", "Max size: 2MB.")}
+              browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
             />
           </div>
         )}

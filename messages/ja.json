@@ -76,7 +76,9 @@
     "image": {
       "fileTooLarge": "ファイルサイズが {size} を超えています。\n小さい画像をアップロードしてください。",
       "fileInvalidType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。",
-      "limitExceeded": "ファイル サイズが上限の {maxSizeMB}MB を超えています。"
+      "limitExceeded": "ファイル サイズが上限の {maxSizeMB}MB を超えています。",
+      "dimensionsExceeded": "画像のサイズが最大許容サイズ {maxWidth}x{maxHeight}px を超えています。",
+      "aspectRatioInvalid": "画像のアスペクト比は約 {ratio} である必要があります。"
     },
     "clickToReplace": "クリックして置き換えます",
     "dialog": {

@@ -61,8 +61,10 @@ export function ImageUploader({
   const { t } = useTranslation(locale);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [internalError, setInternalError] = useState<string>("");
+  const [internalErrorParams, setInternalErrorParams] = useState<Record<string, unknown>>({});
 
   const effectiveError = error || internalError;
+  const effectiveErrorParams = error ? {} : internalErrorParams;
   const hasError = !!effectiveError;
 
   const validateImage = (file: File) => {
@@ -85,9 +87,10 @@ export function ImageUploader({
         const maxAspectRatio = aspectRatio + aspectRatioTolerance;
 
         if (imageAspectRatio < minAspectRatio || imageAspectRatio > maxAspectRatio) {
-          const msg = t("common.image.aspectRatioInvalid", "Image aspect ratio must be approximately {ratio}.", { ratio: aspectRatio.toFixed(2) });
-          setInternalError(msg);
-          toast.error(msg);
+          const params = { ratio: aspectRatio.toFixed(2) };
+          setInternalError("common.image.aspectRatioInvalid");
+          setInternalErrorParams(params);
+          toast.error(t("common.image.aspectRatioInvalid", "Image aspect ratio must be approximately {ratio}.", params));
           onChange(null);
           return;
         }
@@ -95,18 +98,20 @@ export function ImageUploader({
 
       // Max Width Check
       if (maxWidth && width > maxWidth) {
-        const msg = t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", { maxWidth, maxHeight: maxHeight || maxWidth });
-        setInternalError(msg);
-        toast.error(msg);
+        const params = { maxWidth, maxHeight: maxHeight || maxWidth };
+        setInternalError("common.image.dimensionsExceeded");
+        setInternalErrorParams(params);
+        toast.error(t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", params));
         onChange(null);
         return;
       }
 
       // Max Height Check
       if (maxHeight && height > maxHeight) {
-        const msg = t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", { maxWidth: maxWidth || maxHeight, maxHeight });
-        setInternalError(msg);
-        toast.error(msg);
+        const params = { maxWidth: maxWidth || maxHeight, maxHeight };
+        setInternalError("common.image.dimensionsExceeded");
+        setInternalErrorParams(params);
+        toast.error(t("common.image.dimensionsExceeded", "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.", params));
         onChange(null);
         return;
       }
@@ -130,6 +135,7 @@ export function ImageUploader({
       const file = acceptedFiles[0];
       if (file) {
         setInternalError("");
+        setInternalErrorParams({});
         if (checkAspectRatio || maxWidth || maxHeight) {
           validateImage(file);
         }
@@ -141,17 +147,19 @@ export function ImageUploader({
       if (rejection) {
         const err = rejection.errors[0];
         if (err.code === "file-too-large") {
-          const msg = t("common.image.limitExceeded", "File size exceeds the maximum limit of {maxSizeMB}MB.", { maxSizeMB });
-          setInternalError(msg);
-          toast.error(msg);
+          const params = { maxSizeMB };
+          setInternalError("common.image.limitExceeded");
+          setInternalErrorParams(params);
+          toast.error(t("common.image.limitExceeded", "File size exceeds the maximum limit of {maxSizeMB}MB.", params));
         } else if (err.code === "file-invalid-type") {
-          const msg = t("common.image.fileInvalidType", "Invalid media file. Please upload a valid image (PNG/JPG).");
-          setInternalError(msg);
-          toast.error(msg);
+          setInternalError("common.image.fileInvalidType");
+          setInternalErrorParams({});
+          toast.error(t("common.image.fileInvalidType", "Invalid media file. Please upload a valid image (PNG/JPG)."));
         } else {
           // Ensure default error message has a period
           const msg = err.message.endsWith(".") ? err.message : `${err.message}.`;
           setInternalError(msg);
+          setInternalErrorParams({});
           toast.error(msg);
         }
       }
@@ -261,7 +269,7 @@ export function ImageUploader({
 
       {effectiveError && (
         <p className="text-xs font-medium text-destructive">
-          {t(effectiveError)}
+          {t(effectiveError, undefined, effectiveErrorParams)}
         </p>
       )}
     </div>
