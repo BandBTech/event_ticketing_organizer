@@ -61,7 +61,7 @@ export function ImageUploader({
   const { t } = useTranslation(locale);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [internalError, setInternalError] = useState<string>("");
-  const [internalErrorParams, setInternalErrorParams] = useState<Record<string, unknown>>({});
+  const [internalErrorParams, setInternalErrorParams] = useState<Record<string, string | number>>({});
 
   const effectiveError = error || internalError;
   const effectiveErrorParams = error ? {} : internalErrorParams;
