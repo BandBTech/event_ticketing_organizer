@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Control, FieldError, useFormContext } from "react-hook-form";
-import { EventFormData, VENUE_NAME_MAX, VENUE_ADDRESS_MAX } from "@/lib/validation";
+import { EventFormData, VENUE_NAME_MAX, VENUE_ADDRESS_MAX, LAT_MAX_CHARS, LNG_MAX_CHARS } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
@@ -57,6 +57,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
   }, []);
 
   const handleLatChange = (val: string) => {
+    if (val.length > LAT_MAX_CHARS) return;
     setLat(val);
     setLatTouched(true);
     setValue("venueAddress", `${val},${lng}`, {
@@ -66,6 +67,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
   };
 
   const handleLngChange = (val: string) => {
+    if (val.length > LNG_MAX_CHARS) return;
     setLng(val);
     setLngTouched(true);
     setValue("venueAddress", `${lat},${val}`, {
@@ -196,6 +198,9 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                     {latError}
                                   </TranslatedFormMessage>
                                 )}
+                                <div className="text-xs text-muted-foreground text-right">
+                                  {lat.length}/{LAT_MAX_CHARS} {t("common.characters", "characters")}
+                                </div>
                               </>
                             );
                           })()}
@@ -234,6 +239,9 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                     {lngError}
                                   </TranslatedFormMessage>
                                 )}
+                                <div className="text-xs text-muted-foreground text-right">
+                                  {lng.length}/{LNG_MAX_CHARS} {t("common.characters", "characters")}
+                                </div>
                               </>
                             );
                           })()}

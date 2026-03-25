@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { WarningCircleIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,16 @@ import { ColumnDef } from "@tanstack/react-table";
 import { PayoutRequest } from "@/types/payout";
 import { useTranslation } from "@/hooks/useTranslation";
 import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
+import { formatCurrency } from "@/lib/utils";
+import { useLanguageStore } from "@/store/languageStore";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -46,6 +56,8 @@ export function PayoutTable({
   onPageChange,
 }: PayoutTableProps) {
   const { t } = useTranslation();
+  const { locale } = useLanguageStore();
+  const [adminNotesContent, setAdminNotesContent] = useState<string | null>(null);
 
   const columns = useMemo<ColumnDef<PayoutRequest>[]>(
     () => [
@@ -92,15 +104,8 @@ export function PayoutTable({
         id: "description",
         header: t("payouts.table.description", "Description"),
         cell: ({ row }) => (
-          <div className="max-w-[200px] text-gray-500">
-            <div className="truncate">{row.original.description || "-"}</div>
-            {row.original.admin_notes && (
-              <div className="flex items-center gap-1 text-xs text-orange-600 mt-1">
-                <WarningCircleIcon weight="fill" />
-                {t("common.adminNotes", "Admin Notes")}:{" "}
-                {row.original.admin_notes}
-              </div>
-            )}
+          <div className="max-w-[200px] text-gray-500 truncate">
+            {row.original.description || "-"}
           </div>
         ),
       },
@@ -113,15 +118,54 @@ export function PayoutTable({
         ),
         cell: ({ row }) => (
           <div className="font-semibold text-right">
-            {row.original.amount.toLocaleString()}
+            {formatCurrency(row.original.amount, undefined, locale)}
           </div>
         ),
       },
+      {
+        id: "admin_notes",
+        header: "",
+        cell: ({ row }) =>
+          row.original.admin_notes ? (
+            <div className="flex justify-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setAdminNotesContent(row.original.admin_notes!)}
+                    className="text-orange-500 hover:text-orange-600 transition-colors"
+                  >
+                    <WarningCircleIcon weight="duotone" className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t("common.adminNotes", "Admin Notes")}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          ) : null,
+      },
     ],
-    [t],
+    [t, locale, setAdminNotesContent],
   );
 
   return (
+    <>
+    <Dialog
+      open={adminNotesContent !== null}
+      onOpenChange={(open) => { if (!open) setAdminNotesContent(null); }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-orange-600">
+            <WarningCircleIcon weight="fill" className="w-5 h-5" />
+            {t("common.adminNotes", "Admin Notes")}
+          </DialogTitle>
+          <DialogDescription className="text-gray-700 pt-2">
+            {adminNotesContent}
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
     <ReusableTable
       columns={columns}
       data={payouts}
@@ -160,5 +204,6 @@ export function PayoutTable({
         </div>
       }
     />
+    </>
   );
 }

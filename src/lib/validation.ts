@@ -79,6 +79,10 @@ export const PASSWORD_MAX = 50;
 export const STOP_SALES_REASON_MIN = 1;
 export const CANCEL_REASON_MIN = 1;
 
+// Coordinate char limits
+export const LAT_MAX_CHARS = 16;
+export const LNG_MAX_CHARS = 16;
+
 // Numeric Limits
 export const MAX_CAPACITY = 100000;
 export const MAX_PRICE = 100000;
