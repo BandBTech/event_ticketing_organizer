@@ -106,7 +106,7 @@ export function useImageUpload({
 
       img.src = objectUrl;
     },
-    [t, maxSizeBytes, maxWidth, maxHeight, clearImageState]
+    [maxSizeBytes, maxWidth, maxHeight, clearImageState]
   );
 
   const handleRemoveImage = useCallback(() => {
