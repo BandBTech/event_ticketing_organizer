@@ -360,6 +360,7 @@
     },
     "error": {
       "invalidImageType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。",
+      "failedToLoadImage": "画像の読み込みに失敗しました。別のファイルをお試しください。",
       "loadFailed": "イベントの読み込みに失敗しました。"
     },
     "placeholder": {

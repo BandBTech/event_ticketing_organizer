@@ -54,6 +54,7 @@ export default function CreateEventsForm({
     imageFile,
     imagePreview,
     imageError,
+    imageErrorParams,
     imageRemoved,
     validateAndProcessImage,
     handleRemoveImage,
@@ -249,6 +250,7 @@ export default function CreateEventsForm({
             control={form.control}
             imagePreview={imagePreview}
             imageError={imageError || form.formState.errors.image?.message || ""}
+            imageErrorParams={imageError ? imageErrorParams : {}}
             imageRemoved={imageRemoved}
             initialBannerImage={initialData?.banner_image}
             onImageChange={handleImageChange}

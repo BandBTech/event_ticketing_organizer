@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useTranslation } from "@/hooks/useTranslation";
 
 export interface UseImageUploadOptions {
   initialPreview?: string;
@@ -14,6 +13,7 @@ export interface UseImageUploadReturn {
   imageFile: File | null;
   imagePreview: string;
   imageError: string;
+  imageErrorParams: Record<string, string | number>;
   imageRemoved: boolean;
   validateAndProcessImage: (file: File) => void;
   handleRemoveImage: () => void;
@@ -35,10 +35,10 @@ export function useImageUpload({
   maxWidth = DEFAULT_MAX_WIDTH,
   maxHeight = DEFAULT_MAX_HEIGHT,
 }: UseImageUploadOptions = {}): UseImageUploadReturn {
-  const { t } = useTranslation();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(initialPreview);
   const [imageError, setImageError] = useState<string>("");
+  const [imageErrorParams, setImageErrorParams] = useState<Record<string, string | number>>({});
   const [imageRemoved, setImageRemoved] = useState(false);
 
   const clearImageState = useCallback(() => {
@@ -50,22 +50,21 @@ export function useImageUpload({
   const validateAndProcessImage = useCallback(
     (file: File) => {
       setImageError("");
+      setImageErrorParams({});
 
       // Validate file type
       if (!file.type.startsWith("image/")) {
         clearImageState();
-        setImageError(
-          t("event.error.invalidImageType", "Invalid file type. Please upload an image (PNG/JPG).")
-        );
+        setImageError("event.error.invalidImageType");
+        setImageErrorParams({});
         return;
       }
 
       // Validate file size
       if (file.size > maxSizeBytes) {
         clearImageState();
-        setImageError(
-          `File size exceeds ${Math.round(maxSizeBytes / 1024 / 1024)}MB. Please upload a smaller image.`
-        );
+        setImageError("common.image.limitExceeded");
+        setImageErrorParams({ maxSizeMB: Math.round(maxSizeBytes / 1024 / 1024) });
         return;
       }
 
@@ -81,13 +80,8 @@ export function useImageUpload({
 
         if (width > maxWidth || height > maxHeight) {
           clearImageState();
-          setImageError(
-            t(
-              "event.error.invalidImageSize",
-              `Image dimensions exceed the maximum allowed (${maxWidth}x${maxHeight}px).`,
-              { maxWidth, maxHeight }
-            )
-          );
+          setImageError("common.image.dimensionsExceeded");
+          setImageErrorParams({ maxWidth, maxHeight });
           return;
         }
 
@@ -106,7 +100,8 @@ export function useImageUpload({
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
         clearImageState();
-        setImageError("Failed to load image. Please try another file.");
+        setImageError("event.error.failedToLoadImage");
+        setImageErrorParams({});
       };
 
       img.src = objectUrl;
@@ -118,6 +113,7 @@ export function useImageUpload({
     setImageFile(null);
     setImagePreview("");
     setImageError("");
+    setImageErrorParams({});
     setImageRemoved(true);
   }, []);
 
@@ -125,6 +121,7 @@ export function useImageUpload({
     setImageFile(null);
     setImagePreview(preview || "");
     setImageError("");
+    setImageErrorParams({});
     setImageRemoved(false);
   }, []);
 
@@ -132,6 +129,7 @@ export function useImageUpload({
     imageFile,
     imagePreview,
     imageError,
+    imageErrorParams,
     imageRemoved,
     validateAndProcessImage,
     handleRemoveImage,

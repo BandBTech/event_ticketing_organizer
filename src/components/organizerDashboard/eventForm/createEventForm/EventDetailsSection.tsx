@@ -22,6 +22,7 @@ interface EventDetailsSectionProps {
   control: Control<EventFormData>;
   imagePreview: string;
   imageError: string;
+  imageErrorParams?: Record<string, string | number>;
   imageRemoved: boolean;
   initialBannerImage?: string;
   onImageChange: (file: File) => void;
@@ -39,6 +40,7 @@ export function EventDetailsSection({
   control,
   imagePreview,
   imageError,
+  imageErrorParams,
   imageRemoved,
   initialBannerImage,
   onImageChange,
@@ -93,6 +95,7 @@ export function EventDetailsSection({
             }}
             onRemove={onImageRemove}
             error={imageError}
+            errorParams={imageErrorParams}
             browseButtonText={t(
               "event.helperText.bannerImageBrowse",
               "Browse File",

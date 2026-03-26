@@ -15,6 +15,7 @@ interface ImageUploaderProps {
   onChange: (file: File | null) => void;
   onRemove?: () => void;
   error?: string;
+  errorParams?: Record<string, string | number>;
   label?: string;
   helperText?: string;
   helperTextSize?: string;
@@ -37,6 +38,7 @@ export function ImageUploader({
   onChange,
   onRemove,
   error,
+  errorParams,
   label = "Image",
   helperText = "Upload image or drag & drop",
   helperTextSize,
@@ -64,7 +66,7 @@ export function ImageUploader({
   const [internalErrorParams, setInternalErrorParams] = useState<Record<string, string | number>>({});
 
   const effectiveError = error || internalError;
-  const effectiveErrorParams = error ? {} : internalErrorParams;
+  const effectiveErrorParams = error ? (errorParams ?? {}) : internalErrorParams;
   const hasError = !!effectiveError;
 
   const validateImage = (file: File) => {

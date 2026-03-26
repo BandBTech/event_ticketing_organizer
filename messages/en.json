@@ -537,6 +537,7 @@
     "error": {
       "invalidImageType": "Invalid file type. Please upload an image (PNG/JPG).",
       "invalidImageSize": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.",
+      "failedToLoadImage": "Failed to load image. Please try another file.",
       "invalidDatetime": "Enter valid datetime.",
       "pastDate": "Date cannot be in the past.",
       "fieldPastDate": "{field} cannot be in the past.",

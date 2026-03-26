@@ -360,6 +360,7 @@
     },
     "error": {
       "invalidImageType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG).",
+      "failedToLoadImage": "Impossibile caricare l'immagine. Prova un altro file.",
       "loadFailed": "Impossibile caricare gli eventi."
     },
     "placeholder": {
