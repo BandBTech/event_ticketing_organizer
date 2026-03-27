@@ -1,6 +1,6 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, useFormContext, useWatch } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +24,7 @@ interface TicketTierCardProps {
   onDelete: () => void;
   onCreateNew: () => void;
   isLoading?: boolean;
+  eventStartDate?: Date;
 }
 
 const TicketTierCard = ({
@@ -35,11 +36,15 @@ const TicketTierCard = ({
   onCreateNew,
   isLoading = false,
   usedTierNames = [],
+  eventStartDate,
 }: TicketTierCardProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
+  const { setValue } = useFormContext<EventFormData>();
 
   const minDate = new Date();
-  // const minDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+  const salesStartValue = useWatch({ control, name: `tickets.${index}.salesStart` });
+  const salesEndValue = useWatch({ control, name: `tickets.${index}.salesEnd` });
+  const salesStartDate = salesStartValue ? new Date(salesStartValue) : undefined;
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
@@ -194,13 +199,21 @@ const TicketTierCard = ({
                 <ShadcnDateTimePicker
                   value={field.value ? new Date(field.value) : null}
                   onChange={(date) => {
-                    if (!date) field.onChange("");
-                    else field.onChange(date.toISOString());
+                    if (!date) {
+                      field.onChange("");
+                    } else {
+                      field.onChange(date.toISOString());
+                      // Clear salesEnd if it's now before the new salesStart
+                      if (salesEndValue && new Date(salesEndValue) <= date) {
+                        setValue(`tickets.${index}.salesEnd`, "");
+                      }
+                    }
                   }}
                   format="yyyy-MM-dd hh:mm aa"
                   clearable
                   error={!!fieldState.error}
                   minDate={minDate}
+                  maxDate={eventStartDate}
                 />
               </FormControl>
               <TranslatedFormMessage t={t} />
@@ -227,7 +240,8 @@ const TicketTierCard = ({
                   format="yyyy-MM-dd hh:mm aa"
                   clearable
                   error={!!fieldState.error}
-                  minDate={minDate}
+                  minDate={salesStartDate ?? minDate}
+                  maxDate={eventStartDate}
                 />
               </FormControl>
               <TranslatedFormMessage t={t} />

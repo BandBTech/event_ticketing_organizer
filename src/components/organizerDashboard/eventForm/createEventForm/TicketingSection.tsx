@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Control, useFieldArray, useFormState } from "react-hook-form";
+import { Control, useFieldArray, useFormContext, useFormState } from "react-hook-form";
 import { EventFormData } from "@/lib/validation";
 import { TierTemplate } from "@/types/event";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -51,6 +51,9 @@ export function TicketingSection({
   onCreateNewTier,
 }: TicketingSectionProps) {
   const { t } = useTranslation();
+  const { watch } = useFormContext<EventFormData>();
+  const startDate = watch("startDate");
+  const eventStartDate = startDate ? new Date(startDate) : undefined;
 
   const {
     fields: ticketFields,
@@ -118,6 +121,7 @@ export function TicketingSection({
             showDelete={ticketFields.length > 1}
             onDelete={() => removeTicket(index)}
             onCreateNew={() => onCreateNewTier(index)}
+            eventStartDate={eventStartDate}
           />
         ))}
 

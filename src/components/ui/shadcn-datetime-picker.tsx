@@ -35,6 +35,7 @@ export function ShadcnDateTimePicker({
   format: formatStr,
   error = false,
   minDate,
+  maxDate,
 }: ShadcnDateTimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -43,7 +44,13 @@ export function ShadcnDateTimePicker({
     const limit = minDate || new Date();
     const limitDay = new Date(limit);
     limitDay.setHours(0, 0, 0, 0);
-    return date < limitDay;
+    if (date < limitDay) return true;
+    if (maxDate) {
+      const maxDay = new Date(maxDate);
+      maxDay.setHours(23, 59, 59, 999);
+      if (date > maxDay) return true;
+    }
+    return false;
   };
 
   /**
@@ -98,11 +105,11 @@ export function ShadcnDateTimePicker({
       }
     }
 
-    // After time change, if we have a minDate, ensure it's not before minDate
+    // After time change, ensure the value stays within minDate/maxDate bounds
     if (minDate && newDate < minDate) {
-      // If user tries to pick a time before minDate on the same day, we could either block it or snap it.
-      // Snapping might be confusing, but keeping it simple for now.
       onChange?.(minDate);
+    } else if (maxDate && newDate > maxDate) {
+      onChange?.(maxDate);
     } else {
       onChange?.(newDate);
     }

@@ -32,6 +32,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
   const [lngTouched, setLngTouched] = useState(false);
 
   const venueAddress = watch("venueAddress");
+  const startDate = watch("startDate");
 
   const getCoordErrors = (error?: FieldError) => {
     const messages: string[] = [];
@@ -381,6 +382,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     format="yyyy-MM-dd hh:mm aa"
                     clearable
                     error={!!fieldState.error}
+                    minDate={startDate ? new Date(startDate) : undefined}
                   />
                 </FormControl>
                 <TranslatedFormMessage t={t} />
