@@ -212,7 +212,7 @@ export function OrganizerProfileForm({
                 <TranslatedFormMessage t={t} />
                 {isEditing && (
                   <p className="text-xs text-gray-400 ml-auto">
-                    {field.value?.length || 0}/50
+                    {field.value?.length || 0}/50 characters
                   </p>
                 )}
               </div>
@@ -245,7 +245,7 @@ export function OrganizerProfileForm({
                 <TranslatedFormMessage t={t} />
                 {isEditing && (
                   <p className="text-xs text-gray-400 ml-auto">
-                    {field.value?.length || 0}/500
+                    {field.value?.length || 0}/500 characters
                   </p>
                 )}
               </div>
