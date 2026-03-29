@@ -46,6 +46,8 @@ import {
   updateOrgUserSchema,
   CreateOrgUserFormData,
   UpdateOrgUserFormData,
+  FIRST_NAME_MAX,
+  LAST_NAME_MAX,
 } from "@/lib/validation";
 import { OrgUser } from "@/types/organizerUser";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -101,17 +103,17 @@ export default function UserFormDialog({
     resolver: zodResolver(schema),
     defaultValues: isEditing
       ? {
-        role_type: "staff",
-        active: true,
-      }
+          role_type: "staff",
+          active: true,
+        }
       : {
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        phone: "",
-        role_name: "staff",
-      },
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+          phone: "",
+          role_name: "staff",
+        },
     mode: "onChange",
   });
 
@@ -250,17 +252,20 @@ export default function UserFormDialog({
       description={
         isEditing
           ? t(
-            "users.edit.description",
-            "Update team member's role and access status.",
-          )
+              "users.edit.description",
+              "Update team member's role and access status.",
+            )
           : t(
-            "users.create.description",
-            "Add a new staff or manager to your organization.",
-          )
+              "users.create.description",
+              "Add a new staff or manager to your organization.",
+            )
       }
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden h-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col flex-1 overflow-hidden h-full"
+        >
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {!isEditing && (
               <>
@@ -291,6 +296,7 @@ export default function UserFormDialog({
                                 "Enter first name",
                               )}
                               {...field}
+                              maxLength={FIRST_NAME_MAX}
                               className={cn(
                                 "h-12 pl-14 pr-4",
                                 fieldState.error && "border-destructive",
@@ -298,7 +304,13 @@ export default function UserFormDialog({
                             />
                           </FormControl>
                         </div>
-                        <TranslatedFormMessage t={t} />
+                        <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                          <TranslatedFormMessage t={t} className="mt-0" />
+                          <div className="text-xs text-muted-foreground ml-auto">
+                            {field.value?.length || 0}/{FIRST_NAME_MAX}{" "}
+                            {t("common.characters", "characters")}
+                          </div>
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -328,6 +340,7 @@ export default function UserFormDialog({
                                 "Enter last name",
                               )}
                               {...field}
+                              maxLength={LAST_NAME_MAX}
                               className={cn(
                                 "h-12 pl-14 pr-4",
                                 fieldState.error && "border-destructive",
@@ -335,7 +348,13 @@ export default function UserFormDialog({
                             />
                           </FormControl>
                         </div>
-                        <TranslatedFormMessage t={t} />
+                        <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                          <TranslatedFormMessage t={t} className="mt-0" />
+                          <div className="text-xs text-muted-foreground ml-auto">
+                            {field.value?.length || 0}/{LAST_NAME_MAX}{" "}
+                            {t("common.characters", "characters")}
+                          </div>
+                        </div>
                       </FormItem>
                     )}
                   />

@@ -4,7 +4,12 @@ import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "@/hooks/useTranslation";
-import { createTierTemplateSchema, TierTemplateFormData, TIER_NAME_MAX, TIER_DESC_MAX } from "@/lib/validation";
+import {
+  createTierTemplateSchema,
+  TierTemplateFormData,
+  TIER_NAME_MAX,
+  TIER_DESC_MAX,
+} from "@/lib/validation";
 import { tierService, TierTemplate } from "@/services/tierService";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -48,7 +53,10 @@ export function CreateTierTemplateDialog({
   const queryClient = useQueryClient();
   const isEditing = !!initialData;
 
-  const tierTemplateSchema = useMemo(() => createTierTemplateSchema((key, fallback, params) => key), []);
+  const tierTemplateSchema = useMemo(
+    () => createTierTemplateSchema((key, fallback, params) => key),
+    [],
+  );
 
   const form = useForm<TierTemplateFormData>({
     resolver: zodResolver(tierTemplateSchema),
@@ -76,16 +84,18 @@ export function CreateTierTemplateDialog({
   }, [open, initialData, form]);
 
   const createMutation = useMutation({
-    mutationFn: (data: TierTemplateFormData) => tierService.createTierTemplate(data),
+    mutationFn: (data: TierTemplateFormData) =>
+      tierService.createTierTemplate(data),
     onSuccess: (result) => {
       const fullTemplate = {
         ...result,
         template_name: form.getValues("template_name") || result.template_name,
-        description: form.getValues("description") || result.description
+        description: form.getValues("description") || result.description,
       };
 
-      queryClient.setQueryData<TierTemplate[]>(queryKeys.tierTemplates.all, (old) =>
-        old ? [fullTemplate, ...old] : [fullTemplate]
+      queryClient.setQueryData<TierTemplate[]>(
+        queryKeys.tierTemplates.all,
+        (old) => (old ? [fullTemplate, ...old] : [fullTemplate]),
       );
 
       queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
@@ -99,16 +109,18 @@ export function CreateTierTemplateDialog({
     mutationFn: ({ id, data }: { id: string; data: TierTemplateFormData }) =>
       tierService.updateTierTemplate(id, data),
     onSuccess: (result, variables) => {
-      queryClient.setQueryData<TierTemplate[]>(queryKeys.tierTemplates.all, (old) =>
-        old?.map((template) =>
-          template.id === variables.id
-            ? {
-              ...template,
-              ...variables.data,
-              updated_at: new Date().toISOString()
-            }
-            : template
-        ) ?? []
+      queryClient.setQueryData<TierTemplate[]>(
+        queryKeys.tierTemplates.all,
+        (old) =>
+          old?.map((template) =>
+            template.id === variables.id
+              ? {
+                  ...template,
+                  ...variables.data,
+                  updated_at: new Date().toISOString(),
+                }
+              : template,
+          ) ?? [],
       );
 
       queryClient.invalidateQueries({ queryKey: queryKeys.tierTemplates.all });
@@ -119,7 +131,7 @@ export function CreateTierTemplateDialog({
         is_active: true,
         organizer_id: "",
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       } as TierTemplate;
 
       onSuccess?.(fullTemplate);
@@ -145,7 +157,15 @@ export function CreateTierTemplateDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? t("tierTemplates.dialog.editTierTemplate.title", "Edit Tier Template") : t("tierTemplates.dialog.createTierTemplate.title", "Create Tier Template")}
+            {isEditing
+              ? t(
+                  "tierTemplates.dialog.editTierTemplate.title",
+                  "Edit Tier Template",
+                )
+              : t(
+                  "tierTemplates.dialog.createTierTemplate.title",
+                  "Create Tier Template",
+                )}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -155,14 +175,24 @@ export function CreateTierTemplateDialog({
               name="template_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("tierTemplates.columns.templateName", "Template Name")}</FormLabel>
+                  <FormLabel>
+                    {t("tierTemplates.columns.templateName", "Template Name")}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder={t("tierTemplates.placeholder.templateName", "e.g., VIP, Early Bird")} maxLength={TIER_NAME_MAX} {...field} />
+                    <Input
+                      placeholder={t(
+                        "tierTemplates.placeholder.templateName",
+                        "e.g., VIP, Early Bird",
+                      )}
+                      maxLength={TIER_NAME_MAX}
+                      {...field}
+                    />
                   </FormControl>
                   <div className="flex justify-between items-center -mt-1 min-h-[20px]">
                     <TranslatedFormMessage t={t} />
                     <div className="text-xs text-muted-foreground ml-auto">
-                      {field.value?.length || 0}/{TIER_NAME_MAX} {t("common.characters", "characters")}
+                      {field.value?.length || 0}/{TIER_NAME_MAX}{" "}
+                      {t("common.characters", "characters")}
                     </div>
                   </div>
                 </FormItem>
@@ -173,19 +203,26 @@ export function CreateTierTemplateDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("tierTemplates.columns.description", "Description")}</FormLabel>
+                  <FormLabel>
+                    {t("tierTemplates.columns.description", "Description")}
+                  </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder={t("tierTemplates.placeholder.description", "Describe this tier...")}
+                      placeholder={t(
+                        "tierTemplates.placeholder.description",
+                        "Describe this tier...",
+                      )}
                       rows={3}
                       maxLength={TIER_DESC_MAX}
+                      className="md:max-w-[460px]"
                       {...field}
                     />
                   </FormControl>
                   <div className="flex justify-between items-center -mt-1 min-h-[20px]">
                     <TranslatedFormMessage t={t} />
                     <div className="text-xs text-muted-foreground ml-auto">
-                      {field.value?.length || 0}/{TIER_DESC_MAX} {t("common.characters", "characters")}
+                      {field.value?.length || 0}/{TIER_DESC_MAX}{" "}
+                      {t("common.characters", "characters")}
                     </div>
                   </div>
                 </FormItem>
@@ -201,10 +238,14 @@ export function CreateTierTemplateDialog({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {isEditing ? t("common.updating", "Updating...") : t("common.creating", "Creating...")}
+                    {isEditing
+                      ? t("common.updating", "Updating...")
+                      : t("common.creating", "Creating...")}
                   </>
+                ) : isEditing ? (
+                  t("common.update", "Update")
                 ) : (
-                    isEditing ? t("common.update", "Update") : t("common.create", "Create")
+                  t("common.create", "Create")
                 )}
               </Button>
             </DialogFooter>

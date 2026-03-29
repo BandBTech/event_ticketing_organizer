@@ -43,6 +43,7 @@ import { PayoutSummaryEvent } from "@/types/payout";
 import {
   createPayoutRequestSchema,
   PayoutRequestFormData,
+  BUSINESS_DESC_MAX,
 } from "@/lib/validation";
 import { queryKeys } from "@/lib/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
@@ -339,12 +340,19 @@ export function PayoutRequestDialog({
                           "payouts.create.descriptionPlaceholder",
                           "Add notes…",
                         )}
-                        className="resize-none"
+                        className="resize-none md:max-w-[398px]"
+                        maxLength={BUSINESS_DESC_MAX}
                         rows={3}
                         {...field}
                       />
                     </FormControl>
-                    <TranslatedFormMessage t={t} />
+                    <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                      <TranslatedFormMessage t={t} className="mt-0" />
+                      <div className="text-xs text-muted-foreground ml-auto">
+                        {field.value?.length || 0}/{BUSINESS_DESC_MAX}{" "}
+                        {t("common.characters", "characters")}
+                      </div>
+                    </div>
                   </FormItem>
                 )}
               />
