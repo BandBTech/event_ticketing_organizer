@@ -41,6 +41,9 @@ interface PayoutTableProps {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   onPageChange: (page: number) => void;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (sortBy: string | undefined, sortOrder: "asc" | "desc" | undefined) => void;
 }
 
 export function PayoutTable({
@@ -54,6 +57,9 @@ export function PayoutTable({
   hasNextPage,
   hasPreviousPage,
   onPageChange,
+  sortBy,
+  sortOrder,
+  onSortChange,
 }: PayoutTableProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
@@ -73,6 +79,7 @@ export function PayoutTable({
       {
         id: "event",
         header: t("payouts.table.event", "Event"),
+        meta: { sortKey: "event_title" },
         cell: ({ row }) => (
           <span className="text-gray-700 truncate max-w-[180px] inline-block">
             {row.original.event?.title || "-"}
@@ -82,6 +89,7 @@ export function PayoutTable({
       {
         accessorKey: "status",
         header: t("payouts.table.status", "Status"),
+        meta: { sortKey: "status" },
         cell: ({ row }) => (
           <Badge
             variant="outline"
@@ -94,6 +102,7 @@ export function PayoutTable({
       {
         accessorKey: "created_at",
         header: t("payouts.table.date", "Date"),
+        meta: { sortKey: "created_at" },
         cell: ({ row }) => (
           <span className="text-gray-500">
             {format(new Date(row.original.created_at), "MMM d, yyyy")}
@@ -116,6 +125,7 @@ export function PayoutTable({
             {t("payouts.table.amount", "Amount")}
           </div>
         ),
+        meta: { sortKey: "amount" },
         cell: ({ row }) => (
           <div className="font-semibold text-right">
             {formatCurrency(row.original.amount, undefined, locale)}
@@ -178,6 +188,9 @@ export function PayoutTable({
       hasNextPage={hasNextPage}
       hasPreviousPage={hasPreviousPage}
       onPageChange={onPageChange}
+      sortBy={sortBy}
+      sortOrder={sortOrder}
+      onSortChange={onSortChange}
       emptyState={
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="bg-gray-50 p-4 rounded-full mb-4">

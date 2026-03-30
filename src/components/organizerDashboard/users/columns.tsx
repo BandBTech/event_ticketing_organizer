@@ -26,11 +26,13 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       accessorFn: (row) => `${row.first_name} ${row.last_name}`,
       id: "name",
       header: t('common.columns.name', "Name"),
+      meta: { sortKey: 'name' },
       cell: (info) => <span className="font-medium text-gray-900">{info.getValue<string>()}</span>,
     },
     {
       accessorKey: "email",
       header: t('common.columns.email', "Email"),
+      meta: { sortKey: 'email' },
       cell: (info) => <span className="text-gray-600 font-medium">{info.getValue<string>()}</span>,
     },
     {

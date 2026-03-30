@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import TablePagination from "@/components/organizerDashboard/TablePagination";
 import { useTranslation } from "@/hooks/useTranslation";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 export interface ReusableTableProps<TData, TValue> {
   // Table Core
@@ -28,6 +29,14 @@ export interface ReusableTableProps<TData, TValue> {
   // Custom Slots
   headerComponent?: React.ReactNode;
   emptyState?: React.ReactNode;
+
+  // Sorting Props
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  onSortChange?: (
+    sortBy: string | undefined,
+    sortOrder: "asc" | "desc" | undefined,
+  ) => void;
 
   // Pagination Props
   currentPage: number;
@@ -46,6 +55,9 @@ export function ReusableTable<TData, TValue>({
   isLoading = false,
   headerComponent,
   emptyState,
+  sortBy,
+  sortOrder,
+  onSortChange,
   currentPage,
   totalPages,
   total,
@@ -64,6 +76,33 @@ export function ReusableTable<TData, TValue>({
     manualPagination: true,
     pageCount: totalPages,
   });
+
+  const handleHeaderClick = (sortKey: string) => {
+    if (!onSortChange) return;
+
+    if (sortBy !== sortKey) {
+      // New column — start with asc
+      onSortChange(sortKey, "asc");
+    } else if (sortOrder === "asc") {
+      // Same column, was asc → switch to desc
+      onSortChange(sortKey, "desc");
+    } else {
+      // Same column, was desc → clear sort
+      onSortChange(undefined, undefined);
+    }
+  };
+
+  const renderSortIcon = (sortKey: string) => {
+    if (sortBy === sortKey) {
+      if (sortOrder === "asc") {
+        return <ArrowUp className="w-3.5 h-3.5 ml-1 text-blue-600" />;
+      }
+      return <ArrowDown className="w-3.5 h-3.5 ml-1 text-blue-600" />;
+    }
+    return (
+      <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400 opacity-0 group-hover/sortable:opacity-100 transition-opacity" />
+    );
+  };
 
   const renderEmptyState = () => {
     if (emptyState) return emptyState;
@@ -91,19 +130,39 @@ export function ReusableTable<TData, TValue>({
           <TableHeader className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="text-gray-500 font-medium whitespace-nowrap"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const sortKey = (
+                    header.column.columnDef.meta as { sortKey?: string }
+                  )?.sortKey;
+                  const isSortable = !!sortKey && !!onSortChange;
+                  const isActive = sortBy === sortKey;
+
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={`text-gray-500 font-medium whitespace-nowrap ${
+                        isSortable
+                          ? "cursor-pointer select-none group/sortable hover:text-gray-700 transition-colors"
+                          : ""
+                      } `}
+                      onClick={
+                        isSortable
+                          ? () => handleHeaderClick(sortKey)
+                          : undefined
+                      }
+                    >
+                      {header.isPlaceholder ? null : (
+                        <span className="inline-flex items-center">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {isSortable && renderSortIcon(sortKey)}
+                        </span>
+                      )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -149,18 +208,20 @@ export function ReusableTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="border-t border-gray-100 bg-gray-50/30 rounded-b-2xl mt-auto">
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          total={total}
-          limit={limit}
-          onLimitChange={onLimitChange}
-          hasNext={hasNextPage}
-          hasPrev={hasPreviousPage}
-          onPageChange={onPageChange}
-        />
-      </div>
+      {!isLoading && data.length > 0 && (
+        <div className="border-t border-gray-100 bg-gray-50/30 rounded-b-2xl mt-auto">
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            total={total}
+            limit={limit}
+            onLimitChange={onLimitChange}
+            hasNext={hasNextPage}
+            hasPrev={hasPreviousPage}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </>
   );
 }

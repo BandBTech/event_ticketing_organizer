@@ -1,6 +1,6 @@
 
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
@@ -25,12 +25,18 @@ function EventTicketsTable({
   search,
   setPagination,
   t,
+  sortBy,
+  sortOrder,
+  onSortChange,
 }: {
   eventId: string;
   pagination: PaginationState;
   search: string;
   setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
   t: (key: string, fallback?: string) => string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  onSortChange: (sortBy: string | undefined, sortOrder: "asc" | "desc" | undefined) => void;
 }) {
   const { locale } = useLanguageStore();
   const { data: ticketsResponse, isLoading } = useQuery({
@@ -38,6 +44,8 @@ function EventTicketsTable({
       page: pagination.pageIndex + 1,
       limit: pagination.pageSize,
       search: search,
+      sort_by: sortBy,
+      sort_order: sortOrder,
     }),
     queryFn: () =>
       eventService.getEventTickets(
@@ -45,6 +53,8 @@ function EventTicketsTable({
         pagination.pageIndex + 1,
         pagination.pageSize,
         search || undefined,
+        sortBy,
+        sortOrder,
       ),
     enabled: !!eventId,
   });
@@ -85,6 +95,9 @@ function EventTicketsTable({
       onPageChange={(page) =>
         setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
       }
+      sortBy={sortBy}
+      sortOrder={sortOrder}
+      onSortChange={onSortChange}
       emptyState={
         <div className="flex flex-col items-center justify-center text-gray-500 py-12">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
@@ -118,6 +131,10 @@ export default function EventTicketsPage() {
     pageSize: 10,
   });
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+
   const { data: event, isLoading: isEventLoading } = useQuery({
     queryKey: queryKeys.events.detail(eventId),
     queryFn: () => eventService.getEvent(eventId),
@@ -128,6 +145,15 @@ export default function EventTicketsPage() {
     setGlobalFilter(value);
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
+
+  const handleSortChange = useCallback(
+    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+      setSortBy(newSortBy);
+      setSortOrder(newSortOrder);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    [],
+  );
 
   return (
     <>
@@ -188,6 +214,9 @@ export default function EventTicketsPage() {
                   search={debouncedSearch}
                   setPagination={setPagination}
                   t={t}
+                  sortBy={sortBy}
+                  sortOrder={sortOrder}
+                  onSortChange={handleSortChange}
                 />
               )}
             </div>

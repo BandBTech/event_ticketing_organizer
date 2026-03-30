@@ -26,7 +26,7 @@ export const queryKeys = {
     /** Key for fetching event status history by ID */
     statusHistory: (id: string) => ['eventStatusHistory', id] as const,
     /** Key for fetching event tickets list */
-    tickets: (id: string, params: { page?: number; limit?: number; search?: string }) =>
+    tickets: (id: string, params: { page?: number; limit?: number; search?: string; sort_by?: string; sort_order?: string }) =>
       ['eventTickets', id, params] as const,
   },
 
@@ -53,8 +53,8 @@ export const queryKeys = {
     /** Key for invalidating all org users queries */
     all: ['orgUsers'] as const,
     /** Key for fetching users list with pagination/filters */
-    list: (params: { page?: number; limit?: number; search?: string; role?: string }) =>
-      ['orgUsers', params.page, params.limit, params.search, params.role] as const,
+    list: (params: { page?: number; limit?: number; search?: string; role?: string; sort?: string }) =>
+      ['orgUsers', params.page, params.limit, params.search, params.role, params.sort] as const,
   },
 
   /**
@@ -79,7 +79,7 @@ export const queryKeys = {
     /** Key for fetching all payout requests */
     all: ['payouts'] as const,
     /** Key for fetching payout requests list with filters */
-    list: (params: { page?: number; limit?: number; status?: string }) =>
+    list: (params: { page?: number; limit?: number; status?: string; sort_by?: string; sort_order?: string }) =>
       ['payouts', 'list', params] as const,
     /** Key for fetching payout summary */
     summary: ['payouts', 'summary'] as const,

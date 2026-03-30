@@ -121,8 +121,7 @@ export default function TablePagination({
             )}
           </span>
         ) : null}
-
-        {t("common.results", "Results")}
+        <span className="text-sm font-medium text-gray-600">{t("common.results", "Results")}</span>
       </div>
 
       <div className="flex items-center gap-6">

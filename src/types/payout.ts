@@ -89,4 +89,6 @@ export interface PayoutSearchParams {
   page?: number;
   limit?: number;
   status?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
 }

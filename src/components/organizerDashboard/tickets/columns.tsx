@@ -28,6 +28,7 @@ export function getColumns({
     {
       accessorKey: "ticket_number",
       header: t("tickets.columns.ticketNumber", "Ticket Number"),
+      meta: { sortKey: 'ticket_number' },
       cell: (info) => (
         <span className="font-mono text-sm font-medium">
           {info.getValue<string>()}
@@ -56,6 +57,7 @@ export function getColumns({
     {
       accessorKey: "created_at",
       header: t("tickets.columns.purchaseDate", "Purchase Date"),
+      meta: { sortKey: 'created_at' },
       cell: (info) => (
         <span className="text-gray-500 whitespace-nowrap">
           {formatDateTime(info.getValue<string>())}
@@ -74,6 +76,7 @@ export function getColumns({
     {
       id: "amount",
       header: t("tickets.columns.amount", "Amount"),
+      meta: { sortKey: 'total_amount' },
       cell: (info) => {
         const amount = info.row.original.total_amount;
         return (
@@ -86,6 +89,7 @@ export function getColumns({
     {
       id: "status",
       header: t("common.status", "Status"),
+      meta: { sortKey: 'status' },
       cell: (info) => {
         const checkInTime = info.row.original.check_in_time;
         const status = checkInTime ? "checked_in" : info.row.original.status;

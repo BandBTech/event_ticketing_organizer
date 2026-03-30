@@ -72,12 +72,23 @@ function UsersPageContent() {
     pageSize: 10,
   });
 
+  // Sorting state — Users API uses a single `sort` param with `-` prefix for desc
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+
+  // Build the combined sort param for the Users API: e.g. "name" or "-name"
+  const sortParam = useMemo(() => {
+    if (!sortBy) return undefined;
+    return sortOrder === "desc" ? `-${sortBy}` : sortBy;
+  }, [sortBy, sortOrder]);
+
   const { data: usersResponse, isLoading: isUsersLoading } = useQuery({
     queryKey: queryKeys.orgUsers.list({
       page: pagination.pageIndex + 1,
       limit: pagination.pageSize,
       search: debouncedSearch,
       role: roleFilter !== "all" ? roleFilter : undefined,
+      sort: sortParam,
     }),
     queryFn: () =>
       organizerUserService.getUsers(
@@ -85,13 +96,12 @@ function UsersPageContent() {
         pagination.pageSize,
         debouncedSearch || undefined,
         roleFilter !== "all" ? roleFilter : undefined,
+        sortParam,
       ),
   });
 
   const users = usersResponse?.users || [];
-  const totalPages = usersResponse
-    ? Math.ceil(usersResponse.total / usersResponse.limit)
-    : 0;
+  const totalPages = usersResponse?.pagination?.total_pages ?? 0;
 
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => organizerUserService.deleteUser(userId),
@@ -105,7 +115,6 @@ function UsersPageContent() {
             users: old.users
               ? old.users.filter((user: OrgUser) => user.id !== deletedUserId)
               : [],
-            total: Math.max(0, (old.total || 0) - 1),
           };
         },
       );
@@ -146,6 +155,15 @@ function UsersPageContent() {
     setRoleFilter(value);
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   }, []);
+
+  const handleSortChange = useCallback(
+    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+      setSortBy(newSortBy);
+      setSortOrder(newSortOrder);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    [],
+  );
 
   const columns = useMemo(
     () =>
@@ -215,7 +233,7 @@ function UsersPageContent() {
         </PermissionGuard>
       </div>
 
-      <div className="glass-card-lowest rounded-2xl">
+      <div className="glass-card-lowest rounded-2xl flex-1 flex flex-col">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -259,7 +277,7 @@ function UsersPageContent() {
           isLoading={isUsersLoading}
           currentPage={pagination.pageIndex + 1}
           totalPages={totalPages}
-          total={usersResponse?.total}
+          total={usersResponse?.pagination?.total}
           limit={pagination.pageSize}
           onLimitChange={(limit) =>
             setPagination((prev) => ({
@@ -268,11 +286,14 @@ function UsersPageContent() {
               pageIndex: 0,
             }))
           }
-          hasNextPage={pagination.pageIndex < totalPages - 1}
-          hasPreviousPage={pagination.pageIndex > 0}
+          hasNextPage={usersResponse?.pagination?.has_next ?? false}
+          hasPreviousPage={usersResponse?.pagination?.has_prev ?? false}
           onPageChange={(page) =>
             setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
           }
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
           emptyState={
             <EmptyState
               hasUsers={users.length > 0}

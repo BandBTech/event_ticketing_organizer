@@ -140,10 +140,16 @@ export const eventService = {
   },
 
   // Get all tickets purchased for a specific event
-  getEventTickets: async (eventId: string, page = 1, limit = 10, search?: string) => {
+  getEventTickets: async (eventId: string, page = 1, limit = 10, search?: string, sort_by?: string, sort_order?: string) => {
     let endpoint = `/organizer/events/${eventId}/tickets?page=${page}&limit=${limit}`;
     if (search) {
       endpoint += `&search=${search}`;
+    }
+    if (sort_by) {
+      endpoint += `&sort_by=${sort_by}`;
+    }
+    if (sort_order) {
+      endpoint += `&sort_order=${sort_order}`;
     }
     return api.get<EventTicketsListResponse>(endpoint, { requiresAuth: true });
   },

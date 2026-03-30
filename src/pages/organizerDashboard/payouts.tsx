@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Head from "next/head";
 import { PlusIcon } from "@phosphor-icons/react";
 
@@ -31,6 +31,10 @@ export default function PayoutsPage() {
 
   const [limit, setLimit] = useState(10);
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+
   const {
     payouts,
     totalPages,
@@ -42,6 +46,8 @@ export default function PayoutsPage() {
     page: currentPage,
     limit,
     status: activeTab === "all" ? undefined : activeTab,
+    sort_by: sortBy,
+    sort_order: sortOrder,
   });
 
   const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary();
@@ -50,6 +56,15 @@ export default function PayoutsPage() {
     setActiveTab(tab);
     setCurrentPage(1);
   };
+
+  const handleSortChange = useCallback(
+    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+      setSortBy(newSortBy);
+      setSortOrder(newSortOrder);
+      setCurrentPage(1);
+    },
+    [],
+  );
 
   // Status guards
   if (isOrganizerRejected()) {
@@ -89,7 +104,7 @@ export default function PayoutsPage() {
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
-          <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full">
+          <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
@@ -109,14 +124,14 @@ export default function PayoutsPage() {
                   onClick={() => setIsDialogOpen(true)}
                   className="gap-2 w-full sm:w-auto "
                 >
-                <PlusIcon size={18} weight="bold" />
-                {t("payouts.requestPayout", "Request Payout")}
-              </Button>
+                  <PlusIcon size={18} weight="bold" />
+                  {t("payouts.requestPayout", "Request Payout")}
+                </Button>
 
-              <PayoutRequestDialog
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
-                events={summary?.events}
+                <PayoutRequestDialog
+                  open={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                  events={summary?.events}
                 />
               </PermissionGuard>
             </div>
@@ -128,7 +143,7 @@ export default function PayoutsPage() {
             />
 
             {/* Payout Requests Table */}
-            <div className="glass-card-lowest rounded-2xl">
+            <div className="glass-card-lowest rounded-2xl flex-1 flex flex-col">
               <PayoutFilterTabs
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
@@ -144,6 +159,9 @@ export default function PayoutsPage() {
                 hasNextPage={hasNextPage}
                 hasPreviousPage={hasPreviousPage}
                 onPageChange={setCurrentPage}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSortChange={handleSortChange}
               />
             </div>
           </div>

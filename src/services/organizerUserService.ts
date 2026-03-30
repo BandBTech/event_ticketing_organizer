@@ -21,8 +21,8 @@ export const organizerUserService = {
   /**
    * Get all users in the organization with pagination
    */
-  getUsers: async (page = 1, limit = 10, search?: string, role?: string /* , sortBy?: string, sortOrder?: 'asc' | 'desc' */): Promise<OrgUsersListResponse> => {
-    const query = buildQuery({ page, limit, search, role /* , sortBy, sortOrder */ });
+  getUsers: async (page = 1, limit = 10, search?: string, role?: string, sort?: string): Promise<OrgUsersListResponse> => {
+    const query = buildQuery({ page, limit, search, role, sort });
     return api.get<OrgUsersListResponse>(`/organizer/users?${query}`, {
       requiresAuth: true
     });
