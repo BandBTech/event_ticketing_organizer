@@ -249,9 +249,14 @@ export function AppSidebar() {
 
                 {!collapsed && (
                   <div className="flex flex-1 items-center justify-between overflow-hidden">
-                    <span className="text-sm text-gray-800 font-medium truncate">
-                      {displayName}
-                    </span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm text-gray-800 font-medium truncate">
+                        {displayName}
+                      </span>
+                      <span className="text-xs text-gray-500 truncate">
+                        {displayEmail}
+                      </span>
+                    </div>
                     <CaretRightIcon className="h-4 w-4 text-gray-400 shrink-0 ml-1" />
                   </div>
                 )}
@@ -263,15 +268,7 @@ export function AppSidebar() {
               align="start"
               sideOffset={8}
             >
-              {/* Header */}
-              <div className="p-3 border-b">
-                <p className="text-sm font-semibold text-gray-900 truncate">
-                  {displayName}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {displayEmail}
-                </p>
-              </div>
+
 
               {/* Profile */}
               <DropdownMenuItem
