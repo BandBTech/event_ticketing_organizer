@@ -486,7 +486,9 @@
       "longitudeRange": "La longitudine deve essere compresa tra -180 e 180.",
       "longitudeRequired": "La longitudine è richiesta.",
       "latitudeRequired": "La latitudine è richiesta.",
-      "capacityExceeded": "Il numero totale dei biglietti ({total}) non può superare la capienza della sede ({capacity})."
+      "capacityExceeded": "Il numero totale dei biglietti ({total}) non può superare la capienza della sede ({capacity}).",
+      "startDateBeforeEnd": "La data di inizio dell'evento deve essere antecedente alla data di fine dell'evento.",
+      "salesStartBeforeEnd": "La data di inizio delle vendite deve essere antecedente alla data di fine delle vendite."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -513,7 +515,8 @@
       "sales_ended": "Vendite terminate",
       "on_sale": "Vendite in diretta",
       "featured": "In primo piano",
-      "completed": "Completato"
+      "completed": "Completato",
+      "scheduled": "Scheduled"
     },
     "option": {
       "amountFixed": "Importo (fisso)",

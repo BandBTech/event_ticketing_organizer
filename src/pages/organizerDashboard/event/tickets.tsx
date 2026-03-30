@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { PaginationState } from "@tanstack/react-table";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
@@ -31,6 +32,7 @@ function EventTicketsTable({
   setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
   t: (key: string, fallback?: string) => string;
 }) {
+  const { locale } = useLanguageStore();
   const { data: ticketsResponse, isLoading } = useQuery({
     queryKey: queryKeys.events.tickets(eventId, {
       page: pagination.pageIndex + 1,
@@ -57,8 +59,9 @@ function EventTicketsTable({
         t,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
+        locale,
       }),
-    [t, pagination.pageIndex, pagination.pageSize],
+    [t, pagination.pageIndex, pagination.pageSize, locale],
   );
 
   return (

@@ -108,7 +108,10 @@ export default function EventCard({
           </div>
         )}
 
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+        <h3
+          title={event.title}
+          className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2"
+        >
           {event.title}
         </h3>
 
@@ -118,7 +121,9 @@ export default function EventCard({
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <MapPinAreaIcon className="w-4 h-4" />
-          {(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "") ? event.venue_name : event.address) || "Location TBA"}
+          {(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() || "")
+            ? event.venue_name
+            : event.address) || "Location TBA"}
         </div>
 
         <div className="mt-auto">

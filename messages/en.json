@@ -667,7 +667,9 @@
       "longitudeRequired": "Longitude is required.",
       "latitudeRequired": "Latitude is required.",
       "capacityExceeded": "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
-      "capacityRequiredFirst": "Please set the venue capacity before setting tickets quantity."
+      "capacityRequiredFirst": "Please set the venue capacity before setting tickets quantity.",
+      "startDateBeforeEnd": "Event Start Date must be before Event End Date.",
+      "salesStartBeforeEnd": "Sales Start Date must be before Sales End Date."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
@@ -693,7 +695,8 @@
       "sales_ended": "Sales Ended",
       "on_sale": "On Sale",
       "featured": "Featured",
-      "completed": "Completed"
+      "completed": "Completed",
+      "scheduled": "Scheduled"
     },
     "analytics": {
       "progress": "Sales Progress",

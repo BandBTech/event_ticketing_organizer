@@ -2,16 +2,22 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { TicketResponse } from "@/types/event";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatCurrency } from "@/lib/utils";
 import { TicketStatusBadge } from "./TicketStatusBadge";
 
 interface ColumnProps {
   t: (key: string, fallback: string) => string;
   pageIndex: number;
   pageSize: number;
+  locale: string;
 }
 
-export function getColumns({ t, pageIndex, pageSize }: ColumnProps): ColumnDef<TicketResponse>[] {
+export function getColumns({
+  t,
+  pageIndex,
+  pageSize,
+  locale,
+}: ColumnProps): ColumnDef<TicketResponse>[] {
   return [
     {
       id: "sn",
@@ -72,7 +78,7 @@ export function getColumns({ t, pageIndex, pageSize }: ColumnProps): ColumnDef<T
         const amount = info.row.original.total_amount;
         return (
           <span className="font-medium text-emerald-600">
-            NPR {amount.toLocaleString()}
+            {formatCurrency(amount, undefined, locale)}
           </span>
         );
       },

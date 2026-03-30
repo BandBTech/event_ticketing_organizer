@@ -485,7 +485,9 @@
       "longitudeRange": "経度は -180 ～ 180 である必要があります。",
       "longitudeRequired": "経度は必須です。",
       "latitudeRequired": "緯度は必須です。",
-      "capacityExceeded": "チケットの合計数（{total}）は会場の定員（{capacity}）を超えることはできません。"
+      "capacityExceeded": "チケットの合計数（{total}）は会場の定員（{capacity}）を超えることはできません。",
+      "startDateBeforeEnd": "イベント開始日はイベント終了日より前である必要があります。",
+      "salesStartBeforeEnd": "販売開始日は販売終了日より前である必要があります。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -512,7 +514,8 @@
       "rejected": "拒否されました",
       "on_sale": "セールスライブ",
       "featured": "注目の",
-      "completed": "完了"
+      "completed": "完了",
+      "scheduled": "スケジュール"
     },
     "option": {
       "amountFixed": "金額（固定）",

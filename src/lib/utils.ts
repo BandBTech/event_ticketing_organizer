@@ -225,10 +225,11 @@ export const formatCurrency = (amount: number, currency?: string, locale: string
   };
   const resolvedCurrency = currencyMap[locale] || currency;
 
+  const hasFraction = amount % 1 !== 0;
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: resolvedCurrency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);
 };

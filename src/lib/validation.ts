@@ -494,6 +494,19 @@ export const createTicketSchema = (
         ),
         path: ["salesEnd"],
       },
+    )
+    .refine(
+      (data) => {
+        if (!data.salesEnd || !data.salesStart) return true;
+        return new Date(data.salesStart) < new Date(data.salesEnd);
+      },
+      {
+        message: t(
+          "event.validation.salesStartBeforeEnd",
+          "Sales Start Date must be before Sales End Date.",
+        ),
+        path: ["salesStart"],
+      },
     );
 // .superRefine((data, ctx) => {
 //   // Skip 24hr validation if editing an existing ticket (has ID)
@@ -843,6 +856,19 @@ export const createEventSchema = (
           "Event End Date must be after Event Start Date.",
         ),
         path: ["endDate"],
+      },
+    )
+    .refine(
+      (data) => {
+        if (!data.endDate || !data.startDate) return true;
+        return new Date(data.startDate) < new Date(data.endDate);
+      },
+      {
+        message: t(
+          t("event.validation.startDateBeforeEnd"),
+          "Event Start Date must be before Event End Date.",
+        ),
+        path: ["startDate"],
       },
     )
     .superRefine((data, ctx) => {
