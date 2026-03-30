@@ -264,23 +264,13 @@ export function AppSidebar() {
               sideOffset={8}
             >
               {/* Header */}
-              <div className="flex items-center gap-3 p-3 border-b">
-                <div className="relative w-10 h-10 shrink-0">
-                  <Image
-                    src={displayLogo}
-                    alt="User avatar"
-                    fill
-                    className="rounded-full object-cover"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate">
-                    {displayName}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {displayEmail}
-                  </p>
-                </div>
+              <div className="p-3 border-b">
+                <p className="text-sm font-semibold text-gray-900 truncate">
+                  {displayName}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {displayEmail}
+                </p>
               </div>
 
               {/* Profile */}
