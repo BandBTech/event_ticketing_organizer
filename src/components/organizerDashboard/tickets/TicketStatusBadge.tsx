@@ -15,7 +15,7 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
       case "valid":
         return {
           variant: "success",
-          label: t("tickets.status.valid", "Valid"),
+          label: t("tickets.status.valid", "Active"),
           icon: CheckCircle,
           className:
             "bg-green-50 text-green-700 border-green-600 hover:bg-green-100",
@@ -50,6 +50,14 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
           icon: AlertCircle,
           className:
             "bg-orange-50 text-orange-700 border-orange-600 hover:bg-orange-100",
+        };
+      case "payment_pending":
+        return {
+          variant: "outline",
+          label: t("tickets.status.paymentPending", "Payment Pending"),
+          icon: AlertCircle,
+          className:
+            "bg-yellow-50 text-yellow-700 border-yellow-600 hover:bg-yellow-100",
         };
       default:
         return {

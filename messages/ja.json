@@ -808,6 +808,14 @@
       "purchaseDate": "購入日",
       "checkedInBy": "チェックイン者",
       "checkInTime": "チェックイン時間"
+    },
+    "status": {
+      "paymentPending": "支払い保留中",
+      "refunded": "返金されました",
+      "cancelled": "キャンセル",
+      "checkedIn": "チェックイン済み",
+      "used": "使用済み",
+      "valid": "アクティブ"
     }
   },
   "Your account is inactive.": "アカウントが非アクティブです。",

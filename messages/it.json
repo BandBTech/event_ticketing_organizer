@@ -806,6 +806,14 @@
       "purchaseDate": "Data di acquisto",
       "checkedInBy": "Check-in effettuato da",
       "checkInTime": "Orario di check-in"
+    },
+    "status": {
+      "paymentPending": "Pagamento in sospeso",
+      "refunded": "Rimborsato",
+      "cancelled": "Annullato",
+      "checkedIn": "Check-in",
+      "used": "Usato",
+      "valid": "Attivo"
     }
   },
   "events": {

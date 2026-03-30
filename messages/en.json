@@ -913,6 +913,14 @@
       "purchaseDate": "Purchase Date",
       "checkedInBy": "Checked In By",
       "checkInTime": "Check-In Time"
+    },
+    "status": {
+      "paymentPending": "Payment Pending",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled",
+      "checkedIn": "Checked In",
+      "used": "Used",
+      "valid": "Active"
     }
   },
   "events": {
