@@ -186,16 +186,14 @@ export default function Sidebar({
             </div>
 
             {/* Profile */}
-            <div
-              onClick={() => {
-                router.push("/organizerDashboard/settings");
-                setOpenMenu(false);
-              }}
+            <Link
+              href="/organizerDashboard/settings"
+              onClick={() => setOpenMenu(false)}
               className="flex items-center gap-2 p-2 text-sm hover:bg-gray-100 cursor-pointer rounded transition-colors"
             >
               <UserIcon className="h-4 w-4 text-gray-600" />
               <span className="text-gray-700">Profile</span>
-            </div>
+            </Link>
 
             {/* Logout */}
             <div

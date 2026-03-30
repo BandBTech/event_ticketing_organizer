@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import Router from "next/router";
 
 export interface UseNavigationGuardOptions {
   /**
@@ -26,17 +26,15 @@ export interface UseNavigationGuardReturn {
  * Hook to guard against navigation when there are unsaved changes.
  * Handles:
  * - Browser refresh/close (beforeunload)
- * - Browser back/forward buttons (popstate)
- * - Click navigation on anchor tags
+ * - All client-side route changes via Next.js Router events (Links, router.push, back/forward)
  */
 export function useNavigationGuard({
   hasUnsavedChanges,
   onBeforeLeave,
 }: UseNavigationGuardOptions): UseNavigationGuardReturn {
-  const router = useRouter();
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
-  const historyStatePushed = useRef(false);
+  const isConfirmedNavigation = useRef(false);
 
   // Handle browser refresh/close
   useEffect(() => {
@@ -52,79 +50,38 @@ export function useNavigationGuard({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  // Handle browser back/forward buttons
+  // Handle all client-side navigation via Next.js Router events
   useEffect(() => {
-    // Push a dummy state ONCE to detect back navigation
-    if (typeof window !== "undefined" && !historyStatePushed.current) {
-      window.history.pushState({ formPage: true }, "");
-      historyStatePushed.current = true;
-    }
+    const handleRouteChangeStart = (url: string) => {
+      if (isConfirmedNavigation.current) {
+        isConfirmedNavigation.current = false;
+        return;
+      }
 
-    const handlePopState = () => {
       if (hasUnsavedChanges()) {
-        // Push state back to prevent navigation
-        window.history.pushState({ formPage: true }, "");
-        // Show our custom dialog
         setPendingNavigation(() => () => {
-          // Allow the back navigation by going back twice (our pushed state + actual back)
-          window.history.go(-2);
+          Router.push(url);
         });
         setShowLeaveDialog(true);
-      } else {
-        // No unsaved changes - allow normal back navigation
-        // Go back one more time since we consumed the popstate event
-        window.history.go(-1);
+
+        // Abort the current route change
+        Router.events.emit("routeChangeError");
+        // eslint-disable-next-line no-throw-literal
+        throw "Route change aborted due to unsaved changes.";
       }
     };
 
-    window.addEventListener("popstate", handlePopState);
+    Router.events.on("routeChangeStart", handleRouteChangeStart);
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      Router.events.off("routeChangeStart", handleRouteChangeStart);
     };
   }, [hasUnsavedChanges]);
 
-  // Handle sidebar/route navigation clicks
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (!hasUnsavedChanges()) return;
-
-      const target = e.target as HTMLElement;
-      const anchor = target.closest("a");
-
-      if (anchor) {
-        // Build the URL to check if it's a navigation
-        const href = anchor.getAttribute("href");
-
-        // Ignore non-navigation links
-        if (
-          !href ||
-          href.startsWith("#") ||
-          href.startsWith("mailto:") ||
-          href.startsWith("tel:") ||
-          anchor.target === "_blank"
-        ) {
-          return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        setPendingNavigation(() => () => {
-          router.push(href);
-        });
-        setShowLeaveDialog(true);
-      }
-    };
-
-    window.addEventListener("click", handleClick, true); // Capture phase to intervene early
-    return () => window.removeEventListener("click", handleClick, true);
-  }, [hasUnsavedChanges, router]);
-
   const confirmLeave = useCallback(() => {
-    // Call cleanup callback before leaving
     onBeforeLeave?.();
     setShowLeaveDialog(false);
     if (pendingNavigation) {
+      isConfirmedNavigation.current = true;
       pendingNavigation();
       setPendingNavigation(null);
     }
