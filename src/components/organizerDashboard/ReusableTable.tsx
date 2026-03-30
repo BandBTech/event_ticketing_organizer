@@ -100,7 +100,7 @@ export function ReusableTable<TData, TValue>({
       return <ArrowDown className="w-3.5 h-3.5 ml-1 text-blue-600" />;
     }
     return (
-      <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400 opacity-0 group-hover/sortable:opacity-100 transition-opacity" />
+      <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400" />
     );
   };
 
