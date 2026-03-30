@@ -26,7 +26,7 @@ const eventStatusConfig: Record<
     variant: "secondary",
   },
   rejected: {
-    color: "bg-red-700 text-red-100 border-red-600",
+    color: "bg-red-700! text-red-100 border-red-600",
     variant: "destructive",
   },
   cancelled: {
@@ -64,6 +64,10 @@ const eventStatusConfig: Record<
   sold_out: {
     color: "bg-red-700 text-red-100 border-red-600",
     variant: "destructive",
+  },
+  sales_end: {
+    color: "bg-red-200 text-red-800 border-red-300",
+    variant: "secondary",
   },
 };
 
