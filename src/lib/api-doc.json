@@ -2879,6 +2879,73 @@
         }
       }
     },
+    "/api/v1/admin/payments/stripe/{gateway_txn_id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Retrieve detailed PaymentIntent information from Stripe API using gateway_txn_id",
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
+        "summary": "Get Stripe PaymentIntent details (Admin)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Stripe PaymentIntent ID (gateway_txn_id)",
+            "name": "gateway_txn_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Invalid gateway_txn_id",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "PaymentIntent not found in Stripe",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/payouts": {
       "get": {
         "security": [
@@ -12158,7 +12225,7 @@
         "logs": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/models.PaymentAuditLog"
+            "$ref": "#/definitions/models.MinimalAuditLog"
           }
         },
         "pagination": {
@@ -12275,10 +12342,6 @@
         }
       }
     },
-    "models.JSONMap": {
-      "type": "object",
-      "additionalProperties": true
-    },
     "models.LoginRequest": {
       "type": "object",
       "required": ["email", "password"],
@@ -12290,6 +12353,66 @@
         "password": {
           "type": "string",
           "example": "Password123!"
+        }
+      }
+    },
+    "models.MinimalAuditLog": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/definitions/models.MinimalUser"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "entity_id": {
+          "type": "string"
+        },
+        "entity_type": {
+          "type": "string"
+        },
+        "event": {
+          "$ref": "#/definitions/models.MinimalEvent"
+        },
+        "id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      }
+    },
+    "models.MinimalEvent": {
+      "type": "object",
+      "properties": {
+        "banner_image": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "organizer_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "models.MinimalUser": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -12690,71 +12813,6 @@
         },
         "total_pages": {
           "type": "integer"
-        }
-      }
-    },
-    "models.PaymentAuditLog": {
-      "type": "object",
-      "properties": {
-        "action": {
-          "description": "payment_created, refund_issued, etc.",
-          "type": "string"
-        },
-        "actor": {
-          "$ref": "#/definitions/models.User"
-        },
-        "actor_id": {
-          "description": "Actor Info",
-          "type": "string"
-        },
-        "actor_type": {
-          "description": "user, admin, system, webhook",
-          "type": "string"
-        },
-        "changes_after": {
-          "$ref": "#/definitions/models.JSONMap"
-        },
-        "changes_before": {
-          "description": "Changes",
-          "allOf": [
-            {
-              "$ref": "#/definitions/models.JSONMap"
-            }
-          ]
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "entity_id": {
-          "type": "string"
-        },
-        "entity_type": {
-          "description": "payment_intent, transaction, refund",
-          "type": "string"
-        },
-        "event": {
-          "$ref": "#/definitions/models.Event"
-        },
-        "event_id": {
-          "description": "Event Details",
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "ip_address": {
-          "description": "Context",
-          "type": "string"
-        },
-        "metadata": {
-          "$ref": "#/definitions/models.JSONMap"
-        },
-        "timestamp": {
-          "description": "Timestamps",
-          "type": "string"
-        },
-        "user_agent": {
-          "type": "string"
         }
       }
     },
