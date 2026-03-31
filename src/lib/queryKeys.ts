@@ -132,4 +132,15 @@ export const queryKeys = {
     /** Key for fetching dashboard stats */
     all: ["dashboard"] as const,
   },
+
+  /**
+   * Reports query keys
+   */
+  reports: {
+    /** Key for invalidating all report queries */
+    all: ['reports'] as const,
+    /** Key for fetching a specific report type with optional filters */
+    byType: (type: string, params?: { start_date?: string; end_date?: string; event_id?: string; limit?: number }) =>
+      ['reports', type, params] as const,
+  },
 } as const;
