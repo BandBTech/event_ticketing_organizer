@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Control, FieldError, useFormContext } from "react-hook-form";
-import { EventFormData, VENUE_NAME_MAX, VENUE_ADDRESS_MAX, LAT_MAX_CHARS, LNG_MAX_CHARS } from "@/lib/validation";
+import {
+  EventFormData,
+  VENUE_NAME_MAX,
+  VENUE_ADDRESS_MAX,
+  LAT_MAX_CHARS,
+  LNG_MAX_CHARS,
+  MAX_CAPACITY,
+} from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
@@ -24,7 +31,8 @@ interface VenueScheduleSectionProps {
 
 export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
   const { t } = useTranslation();
-  const { setValue, watch, clearErrors, formState } = useFormContext<EventFormData>();
+  const { setValue, watch, clearErrors, formState } =
+    useFormContext<EventFormData>();
   const [isCoordMode, setIsCoordMode] = useState(false);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
@@ -49,7 +57,10 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
 
   useEffect(() => {
     // Initial check: if address looks like coords, switch to coord mode
-    if (venueAddress && /^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/.test(venueAddress)) {
+    if (
+      venueAddress &&
+      /^(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)$/.test(venueAddress)
+    ) {
       setIsCoordMode(true);
       const [l1, l2] = venueAddress.split(",").map((s) => s.trim());
       setLat(l1 || "");
@@ -123,14 +134,18 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                   <div className="relative">
                     <Input
                       className="h-13 md:text-md"
-                      placeholder={t("event.placeholder.venueName", "Enter venue name")}
+                      placeholder={t(
+                        "event.placeholder.venueName",
+                        "Enter venue name",
+                      )}
                       maxLength={VENUE_NAME_MAX}
                       {...field}
                     />
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
                       <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
-                        {field.value?.length || 0}/{VENUE_NAME_MAX} {t("common.characters", "characters")}
+                        {field.value?.length || 0}/{VENUE_NAME_MAX}{" "}
+                        {t("common.characters", "characters")}
                       </div>
                     </div>
                   </div>
@@ -169,7 +184,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                           {(() => {
                             const errors = getCoordErrors(fieldState.error);
                             const latError = errors.find((m) =>
-                              m.toLowerCase().includes("latitude")
+                              m.toLowerCase().includes("latitude"),
                             );
                             const shouldShowError =
                               latError &&
@@ -183,15 +198,17 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                   step="any"
                                   placeholder={t(
                                     "event.placeholder.latitude",
-                                    "Latitude"
+                                    "Latitude",
                                   )}
                                   value={lat}
-                                  onChange={(e) => handleLatChange(e.target.value)}
+                                  onChange={(e) =>
+                                    handleLatChange(e.target.value)
+                                  }
                                   onBlur={() => setLatTouched(true)}
                                   className={cn(
                                     "h-13 md:text-md",
                                     shouldShowError &&
-                                    "border-destructive focus-visible:ring-destructive/20"
+                                      "border-destructive focus-visible:ring-destructive/20",
                                   )}
                                 />
                                 {shouldShowError && (
@@ -200,7 +217,8 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                   </TranslatedFormMessage>
                                 )}
                                 <div className="text-xs text-muted-foreground text-right">
-                                  {lat.length}/{LAT_MAX_CHARS} {t("common.characters", "characters")}
+                                  {lat.length}/{LAT_MAX_CHARS}{" "}
+                                  {t("common.characters", "characters")}
                                 </div>
                               </>
                             );
@@ -210,7 +228,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                           {(() => {
                             const errors = getCoordErrors(fieldState.error);
                             const lngError = errors.find((m) =>
-                              m.toLowerCase().includes("longitude")
+                              m.toLowerCase().includes("longitude"),
                             );
                             const shouldShowError =
                               lngError &&
@@ -224,15 +242,17 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                   step="any"
                                   placeholder={t(
                                     "event.placeholder.longitude",
-                                    "Longitude"
+                                    "Longitude",
                                   )}
                                   value={lng}
-                                  onChange={(e) => handleLngChange(e.target.value)}
+                                  onChange={(e) =>
+                                    handleLngChange(e.target.value)
+                                  }
                                   onBlur={() => setLngTouched(true)}
                                   className={cn(
                                     "h-13 md:text-md",
                                     shouldShowError &&
-                                    "border-destructive focus-visible:ring-destructive/20"
+                                      "border-destructive focus-visible:ring-destructive/20",
                                   )}
                                 />
                                 {shouldShowError && (
@@ -241,7 +261,8 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                                   </TranslatedFormMessage>
                                 )}
                                 <div className="text-xs text-muted-foreground text-right">
-                                  {lng.length}/{LNG_MAX_CHARS} {t("common.characters", "characters")}
+                                  {lng.length}/{LNG_MAX_CHARS}{" "}
+                                  {t("common.characters", "characters")}
                                 </div>
                               </>
                             );
@@ -249,20 +270,22 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                         </div>
                       </div>
                     ) : (
-                        <AddressAutocomplete
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder={t(
-                            "event.placeholder.venueAddress",
-                            "Search for venue address"
-                          )}
-                          className="h-13 md:text-md"
-                          maxLength={VENUE_ADDRESS_MAX}
-                          error={!!fieldState.error}
-                        />
+                      <AddressAutocomplete
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t(
+                          "event.placeholder.venueAddress",
+                          "Search for venue address",
+                        )}
+                        className="h-13 md:text-md"
+                        maxLength={VENUE_ADDRESS_MAX}
+                        error={!!fieldState.error}
+                      />
                     )}
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">
-                      {!isCoordMode && <TranslatedFormMessage t={t} className="mt-0" />}
+                      {!isCoordMode && (
+                        <TranslatedFormMessage t={t} className="mt-0" />
+                      )}
                       {!isCoordMode && (
                         <div className="text-xs text-muted-foreground ml-auto">
                           {field.value?.length || 0}/{VENUE_ADDRESS_MAX}{" "}
@@ -290,9 +313,16 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     className="h-13 md:text-md"
                     type="number"
                     placeholder={t("event.placeholder.capacity", "e.g 5000")}
+                    max={MAX_CAPACITY}
                     {...field}
                     onKeyDown={(e) => {
-                      if (e.key === '.' || e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                      if (
+                        e.key === "." ||
+                        e.key === "e" ||
+                        e.key === "E" ||
+                        e.key === "-" ||
+                        e.key === "+"
+                      ) {
                         e.preventDefault();
                       }
                     }}
@@ -310,6 +340,9 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                 </FormControl>
                 <div className="flex justify-between items-center -mt-1">
                   <TranslatedFormMessage t={t} className="mt-0" />
+                  <div className="text-xs text-muted-foreground ml-auto">
+                    Max: {MAX_CAPACITY.toLocaleString()}
+                  </div>
                 </div>
               </FormItem>
             )}
