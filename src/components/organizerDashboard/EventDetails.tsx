@@ -17,6 +17,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -86,6 +96,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
   const [payoutDialogOpen, setPayoutDialogOpen] = useState(false);
   const [salesAction, setSalesAction] = useState<SalesAction | null>(null);
+  const [stopSalesReason, setStopSalesReason] = useState<string | undefined>(
+    undefined,
+  );
+  const [stopSalesConfirmOpen, setStopSalesConfirmOpen] = useState(false);
   const { data: payoutSummary } = usePayoutSummary();
 
   const totalTicketsSold =
@@ -128,7 +142,9 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
       setSalesDialogOpen(false);
+      setStopSalesConfirmOpen(false);
       form.reset();
+      setStopSalesReason(undefined);
       setSalesAction(null);
     },
   });
@@ -176,7 +192,19 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
 
   const onSubmitSales = (data: StopSalesFormData) => {
     if (salesAction) {
-      salesControlMutation.mutate({ action: salesAction, reason: data.reason });
+      // Store the reason and open confirmation dialog
+      setStopSalesReason(data.reason);
+      setStopSalesConfirmOpen(true);
+    }
+  };
+
+  const handleStopSalesConfirm = () => {
+    setStopSalesConfirmOpen(false);
+    if (salesAction) {
+      salesControlMutation.mutate({
+        action: salesAction,
+        reason: stopSalesReason,
+      });
     }
   };
 
@@ -1002,12 +1030,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 <DialogTitle>
                   {t("event.dialog.stopSales.title", "Stop Event Sales")}
                 </DialogTitle>
-                <DialogDescription>
-                  {t(
-                    "event.dialog.stopSales.description",
-                    "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases.",
-                  )}
-                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <FormField
@@ -1016,7 +1038,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {t("event.label.stopSalesReason", "Reason (optional)")}
+                        {t("event.label.stopSalesReason", "Reason")}
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -1066,6 +1088,36 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={stopSalesConfirmOpen}
+        onOpenChange={setStopSalesConfirmOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("event.dialog.stopSales.confirmTitle", "Confirm Stop Sales")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t(
+                "event.dialog.stopSales.confirmDescription",
+                "Are you sure you want to stop sales for this event? This action will prevent all future ticket sales.",
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("common.cancel", "Cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleStopSalesConfirm}
+              className="bg-red-600 hover:bg-red-700 font-semibold"
+            >
+              {t("event.button.stopSales", "Stop Sales")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <PayoutRequestDialog
         open={payoutDialogOpen}

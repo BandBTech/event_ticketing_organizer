@@ -591,7 +591,7 @@
     "label": {
       "totalRevenue": "Total Revenue",
       "cancellationReason": "Reason for cancellation (minimum 10 characters)",
-      "stopSalesReason": "Reason (optional)",
+      "stopSalesReason": "Reason",
       "totalSold": "Total Sold"
     },
     "text": {
@@ -606,7 +606,8 @@
       },
       "stopSales": {
         "title": "Stop Event Sales",
-        "description": "Are you sure you want to stop sales for this event? This will prevent any new ticket purchases."
+        "confirmTitle": "Confirm Stop Sales",
+        "confirmDescription": "Are you sure you want to stop sales for this event? This action will prevent all future ticket sales."
       }
     },
     "validation": {

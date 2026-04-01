@@ -426,7 +426,8 @@
       },
       "stopSales": {
         "title": "Interrompi le vendite di eventi",
-        "description": "Sei sicuro di voler interrompere le vendite per questo evento? \nCiò impedirà qualsiasi nuovo acquisto di biglietti."
+        "confirmTitle": "Conferma l'interruzione delle vendite",
+        "confirmDescription": "Sei sicuro di voler interrompere le vendite per questo evento? Questa azione impedirà tutte le future vendite di biglietti."
       }
     },
     "validation": {
