@@ -8,7 +8,11 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 import { formatCurrency } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +20,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { usePayoutRequest } from "@/hooks/usePayouts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -43,7 +49,10 @@ interface PayoutTableProps {
   onPageChange: (page: number) => void;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-  onSortChange?: (sortBy: string | undefined, sortOrder: "asc" | "desc" | undefined) => void;
+  onSortChange?: (
+    sortBy: string | undefined,
+    sortOrder: "asc" | "desc" | undefined,
+  ) => void;
 }
 
 export function PayoutTable({
@@ -63,7 +72,13 @@ export function PayoutTable({
 }: PayoutTableProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
-  const [adminNotesContent, setAdminNotesContent] = useState<string | null>(null);
+  const [adminNotesContent, setAdminNotesContent] = useState<string | null>(
+    null,
+  );
+  const [selectedPayoutId, setSelectedPayoutId] = useState<string | null>(null);
+
+  const { data: selectedPayout, isLoading: isLoadingSelected } =
+    usePayoutRequest(selectedPayoutId);
 
   const columns = useMemo<ColumnDef<PayoutRequest>[]>(
     () => [
@@ -110,15 +125,6 @@ export function PayoutTable({
         ),
       },
       {
-        id: "description",
-        header: t("payouts.table.description", "Description"),
-        cell: ({ row }) => (
-          <div className="max-w-[200px] text-gray-500 truncate">
-            {row.original.description || "-"}
-          </div>
-        ),
-      },
-      {
         accessorKey: "amount",
         header: () => (
           <div className="text-right">
@@ -141,7 +147,10 @@ export function PayoutTable({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    onClick={() => setAdminNotesContent(row.original.admin_notes!)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAdminNotesContent(row.original.admin_notes!);
+                    }}
                     className="text-orange-500 hover:text-orange-600 transition-colors"
                   >
                     <WarningCircleIcon weight="duotone" className="w-5 h-5" />
@@ -160,63 +169,189 @@ export function PayoutTable({
 
   return (
     <>
-    <Dialog
-      open={adminNotesContent !== null}
-      onOpenChange={(open) => { if (!open) setAdminNotesContent(null); }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-orange-600">
-            <WarningCircleIcon weight="fill" className="w-5 h-5" />
-            {t("common.adminNotes", "Admin Notes")}
-          </DialogTitle>
-          <DialogDescription className="text-gray-700 pt-2">
-            {adminNotesContent}
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-    <ReusableTable
-      columns={columns}
-      data={payouts}
-      isLoading={isLoading}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      total={total}
-      limit={limit}
-      onLimitChange={onLimitChange}
-      hasNextPage={hasNextPage}
-      hasPreviousPage={hasPreviousPage}
-      onPageChange={onPageChange}
-      sortBy={sortBy}
-      sortOrder={sortOrder}
-      onSortChange={onSortChange}
-      emptyState={
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="bg-gray-50 p-4 rounded-full mb-4">
-            <svg
-              className="w-8 h-8 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-            >
-              <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
-            </svg>
+      <Dialog
+        open={adminNotesContent !== null}
+        onOpenChange={(open) => {
+          if (!open) setAdminNotesContent(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-orange-600">
+              <WarningCircleIcon weight="fill" className="w-5 h-5" />
+              {t("common.adminNotes", "Admin Notes")}
+            </DialogTitle>
+            <DialogDescription className="text-gray-700 pt-2">
+              {adminNotesContent}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payout Detail Dialog */}
+      <Dialog
+        open={selectedPayoutId !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedPayoutId(null);
+        }}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {t("payouts.payoutDetails", "Payout Details")}
+            </DialogTitle>
+          </DialogHeader>
+          {isLoadingSelected ? (
+            <div className="space-y-4 py-4">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-2/3" />
+            </div>
+          ) : selectedPayout ? (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">
+                    {t("payouts.table.requestNumber", "Request #")}
+                  </p>
+                  <p className="font-medium text-gray-900">
+                    {selectedPayout.request_number}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">
+                    {t("payouts.table.status", "Status")}
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className={`${getStatusColor(selectedPayout.status)} border-0 px-2.5 py-0.5 capitalize`}
+                  >
+                    {selectedPayout.status}
+                  </Badge>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">
+                  {t("payouts.table.event", "Event")}
+                </p>
+                <p className="font-medium text-gray-900">
+                  {selectedPayout.event?.title || "-"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">
+                  {t("payouts.table.amount", "Amount")}
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {formatCurrency(selectedPayout.amount, undefined, locale)}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">
+                  {t("payouts.table.description", "Description")}
+                </p>
+                <p className="text-gray-700 pt-1">
+                  {selectedPayout.description ||
+                    t("common.noDescription", "No description provided")}
+                </p>
+              </div>
+
+              {selectedPayout.admin_notes && (
+                <div>
+                  <p className="text-sm text-gray-500 flex items-center gap-1">
+                    <WarningCircleIcon
+                      weight="fill"
+                      className="w-4 h-4 text-orange-500"
+                    />
+                    {t("common.adminNotes", "Admin Notes")}
+                  </p>
+                  <p className="text-gray-700 pt-1">
+                    {selectedPayout.admin_notes}
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div>
+                  <p className="text-sm text-gray-500">
+                    {t("payouts.created", "Created")}
+                  </p>
+                  <p className="font-medium text-gray-900">
+                    {format(
+                      new Date(selectedPayout.created_at),
+                      "MMM d, yyyy 'at' h:mm a",
+                    )}
+                  </p>
+                </div>
+                {selectedPayout.processed_at && (
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      {t("payouts.processed", "Processed")}
+                    </p>
+                    <p className="font-medium text-gray-900">
+                      {format(
+                        new Date(selectedPayout.processed_at),
+                        "MMM d, yyyy 'at' h:mm a",
+                      )}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500 py-4">
+              {t("common.errorLoading", "Error loading data")}
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <ReusableTable
+        columns={columns}
+        data={payouts}
+        isLoading={isLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        total={total}
+        limit={limit}
+        onLimitChange={onLimitChange}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        onPageChange={onPageChange}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={onSortChange}
+        emptyState={
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="bg-gray-50 p-4 rounded-full mb-4">
+              <svg
+                className="w-8 h-8 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900">
+              {t("payouts.empty.title", "No payout requests found")}
+            </h3>
+            <p className="text-gray-500 mt-1 max-w-sm">
+              {t(
+                "payouts.empty.description",
+                "You haven't made any payout requests yet.",
+              )}
+            </p>
           </div>
-          <h3 className="text-lg font-medium text-gray-900">
-            {t("payouts.empty.title", "No payout requests found")}
-          </h3>
-          <p className="text-gray-500 mt-1 max-w-sm">
-            {t(
-              "payouts.empty.description",
-              "You haven't made any payout requests yet.",
-            )}
-          </p>
-        </div>
-      }
-    />
+        }
+        onRowClick={(row) => setSelectedPayoutId(row.id)}
+      />
     </>
   );
 }

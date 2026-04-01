@@ -15,19 +15,31 @@ export const queryKeys = {
    */
   events: {
     /** Key for fetching all events list */
-    all: ['events'] as const,
+    all: ["events"] as const,
     /** Key for fetching events with search/filter params */
-    list: (params: { page?: number; limit?: number; search?: string; status?: string }) =>
-      ['events', 'list', params] as const,
+    list: (params: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+    }) => ["events", "list", params] as const,
     /** Key for fetching a single event by ID */
-    detail: (id: string) => ['event', id] as const,
+    detail: (id: string) => ["event", id] as const,
     /** Key for fetching event analytics by ID */
-    analytics: (id: string) => ['eventAnalytics', id] as const,
+    analytics: (id: string) => ["eventAnalytics", id] as const,
     /** Key for fetching event status history by ID */
-    statusHistory: (id: string) => ['eventStatusHistory', id] as const,
+    statusHistory: (id: string) => ["eventStatusHistory", id] as const,
     /** Key for fetching event tickets list */
-    tickets: (id: string, params: { page?: number; limit?: number; search?: string; sort_by?: string; sort_order?: string }) =>
-      ['eventTickets', id, params] as const,
+    tickets: (
+      id: string,
+      params: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        sort_by?: string;
+        sort_order?: string;
+      },
+    ) => ["eventTickets", id, params] as const,
   },
 
   /**
@@ -35,7 +47,7 @@ export const queryKeys = {
    */
   tierTemplates: {
     /** Key for fetching all tier templates */
-    all: ['tierTemplates'] as const,
+    all: ["tierTemplates"] as const,
   },
 
   /**
@@ -43,7 +55,7 @@ export const queryKeys = {
    */
   organizerProfile: {
     /** Key for fetching organizer profile */
-    all: ['organizerProfile'] as const,
+    all: ["organizerProfile"] as const,
   },
 
   /**
@@ -51,10 +63,23 @@ export const queryKeys = {
    */
   orgUsers: {
     /** Key for invalidating all org users queries */
-    all: ['orgUsers'] as const,
+    all: ["orgUsers"] as const,
     /** Key for fetching users list with pagination/filters */
-    list: (params: { page?: number; limit?: number; search?: string; role?: string; sort?: string }) =>
-      ['orgUsers', params.page, params.limit, params.search, params.role, params.sort] as const,
+    list: (params: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      role?: string;
+      sort?: string;
+    }) =>
+      [
+        "orgUsers",
+        params.page,
+        params.limit,
+        params.search,
+        params.role,
+        params.sort,
+      ] as const,
   },
 
   /**
@@ -62,14 +87,22 @@ export const queryKeys = {
    */
   tickets: {
     /** Key for invalidating all tickets queries */
-    all: ['tickets'] as const,
+    all: ["tickets"] as const,
     /** Key for fetching tickets list for an event with filters */
-    list: (eventId: string, filters?: { page?: number; limit?: number; status?: string; search?: string; checked_in?: boolean }) =>
-      ['tickets', 'list', eventId, filters] as const,
+    list: (
+      eventId: string,
+      filters?: {
+        page?: number;
+        limit?: number;
+        status?: string;
+        search?: string;
+        checked_in?: boolean;
+      },
+    ) => ["tickets", "list", eventId, filters] as const,
     /** Key for fetching a single ticket by ID */
-    detail: (ticketId: string) => ['ticket', ticketId] as const,
+    detail: (ticketId: string) => ["ticket", ticketId] as const,
     /** Key for fetching ticket statistics for an event */
-    stats: (eventId: string) => ['ticketStats', eventId] as const,
+    stats: (eventId: string) => ["ticketStats", eventId] as const,
   },
 
   /**
@@ -77,12 +110,19 @@ export const queryKeys = {
    */
   payouts: {
     /** Key for fetching all payout requests */
-    all: ['payouts'] as const,
+    all: ["payouts"] as const,
     /** Key for fetching payout requests list with filters */
-    list: (params: { page?: number; limit?: number; status?: string; sort_by?: string; sort_order?: string }) =>
-      ['payouts', 'list', params] as const,
+    list: (params: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      sort_by?: string;
+      sort_order?: string;
+    }) => ["payouts", "list", params] as const,
+    /** Key for fetching a single payout request by ID */
+    byId: (id: string) => ["payout", id] as const,
     /** Key for fetching payout summary */
-    summary: ['payouts', 'summary'] as const,
+    summary: ["payouts", "summary"] as const,
   },
 
   /**
@@ -90,6 +130,6 @@ export const queryKeys = {
    */
   dashboard: {
     /** Key for fetching dashboard stats */
-    all: ['dashboard'] as const,
+    all: ["dashboard"] as const,
   },
 } as const;

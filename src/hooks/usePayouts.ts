@@ -1,15 +1,20 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { payoutService } from "@/services/payoutService";
 import { queryKeys } from "@/lib/queryKeys";
-import { PayoutSearchParams, PayoutRequestsListResponse, PayoutRequestCreate, PayoutSummary } from "@/types/payout";
+import {
+  PayoutSearchParams,
+  PayoutRequestsListResponse,
+  PayoutRequestCreate,
+  PayoutSummary,
+  PayoutRequest,
+} from "@/types/payout";
 
 interface UsePayoutRequestsOptions {
   page?: number;
   limit?: number;
   status?: string;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
 }
 
 /**
@@ -48,6 +53,17 @@ export function usePayoutRequests(options: UsePayoutRequestsOptions = {}) {
 }
 
 /**
+ * Custom hook for fetching a single payout request by ID
+ */
+export function usePayoutRequest(id: string | null) {
+  return useQuery<PayoutRequest>({
+    queryKey: queryKeys.payouts.byId(id ?? ""),
+    queryFn: () => payoutService.getPayoutRequestById(id!),
+    enabled: !!id,
+  });
+}
+
+/**
  * Custom hook for fetching payout summary statistics
  */
 export function usePayoutSummary() {
@@ -64,7 +80,8 @@ export function useCreatePayoutRequest() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: PayoutRequestCreate) => payoutService.createPayoutRequest(data),
+    mutationFn: (data: PayoutRequestCreate) =>
+      payoutService.createPayoutRequest(data),
     onSuccess: () => {
       // Invalidate all payout related queries
       queryClient.invalidateQueries({ queryKey: queryKeys.payouts.all });

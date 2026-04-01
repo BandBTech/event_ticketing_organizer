@@ -47,6 +47,9 @@ export interface ReusableTableProps<TData, TValue> {
   hasPreviousPage?: boolean;
   onPageChange: (page: number) => void;
   onLimitChange?: (limit: number) => void;
+
+  // Row click handler
+  onRowClick?: (row: TData) => void;
 }
 
 export function ReusableTable<TData, TValue>({
@@ -66,6 +69,7 @@ export function ReusableTable<TData, TValue>({
   hasPreviousPage = false,
   onPageChange,
   onLimitChange,
+  onRowClick,
 }: ReusableTableProps<TData, TValue>) {
   const { t } = useTranslation();
 
@@ -99,9 +103,7 @@ export function ReusableTable<TData, TValue>({
       }
       return <ArrowDown className="w-3.5 h-3.5 ml-1 text-blue-600" />;
     }
-    return (
-      <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400" />
-    );
+    return <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400" />;
   };
 
   const renderEmptyState = () => {
@@ -190,8 +192,9 @@ export function ReusableTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="group hover:bg-gray-50/50 transition-colors border-gray-100"
+                  className={`group hover:bg-gray-50/50 transition-colors border-gray-100 ${onRowClick ? "cursor-pointer" : ""}`}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-4">
