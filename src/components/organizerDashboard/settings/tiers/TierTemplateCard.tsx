@@ -29,7 +29,7 @@ export function TierTemplateCard({
     >
       <div className="flex justify-between items-start gap-3 mb-3">
         <div className="flex-1 min-w-0">
-          <div class="flex items-start justify-between">
+          <div className="flex items-start justify-between">
             <h3 className="font-semibold text-gray-900 text-ellipsis line-clamp-2 text-lg">
               {template.template_name}
             </h3>
