@@ -422,7 +422,8 @@
     "dialog": {
       "cancelEvent": {
         "title": "イベントのキャンセル",
-        "description": "このイベントをキャンセルしてもよろしいですか?\nこの操作は元に戻すことができません。"
+        "confirmTitle": "キャンセルの確認",
+        "confirmDescription": "このイベントをキャンセルしてもよろしいですか？この操作は元に戻すことができません。"
       },
       "stopSales": {
         "title": "イベント販売停止",

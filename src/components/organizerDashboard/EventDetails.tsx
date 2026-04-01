@@ -100,6 +100,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
     undefined,
   );
   const [stopSalesConfirmOpen, setStopSalesConfirmOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState<string | undefined>(
+    undefined,
+  );
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
   const { data: payoutSummary } = usePayoutSummary();
 
   const totalTicketsSold =
@@ -164,7 +168,9 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
       setCancelDialogOpen(false);
+      setCancelConfirmOpen(false);
       cancelForm.reset();
+      setCancelReason(undefined);
     },
   });
 
@@ -187,7 +193,15 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   });
 
   const onSubmitCancel = (data: CancelEventFormData) => {
-    cancelEventMutation.mutate(data.reason);
+    setCancelReason(data.reason);
+    setCancelConfirmOpen(true);
+  };
+
+  const handleCancelConfirm = () => {
+    setCancelConfirmOpen(false);
+    if (cancelReason) {
+      cancelEventMutation.mutate(cancelReason);
+    }
   };
 
   const onSubmitSales = (data: StopSalesFormData) => {
@@ -331,8 +345,8 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
               )}
               {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
               {!isEventCancelled &&
-                (["pending", "scheduled"].includes(event.status) ||
-                  hasZeroTicketSales) && (
+                ["pending", "scheduled"].includes(event.status) &&
+                hasZeroTicketSales && (
                   <Button
                     onClick={() => setCancelDialogOpen(true)}
                     variant="destructive"
@@ -948,12 +962,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 <DialogTitle>
                   {t("event.dialog.cancelEvent.title", "Cancel Event")}
                 </DialogTitle>
-                <DialogDescription>
-                  {t(
-                    "event.dialog.cancelEvent.description",
-                    "Are you sure you want to cancel this event? This action cannot be undone.",
-                  )}
-                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <FormField
@@ -1015,6 +1023,36 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={cancelConfirmOpen} onOpenChange={setCancelConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t(
+                "event.dialog.cancelEvent.confirmTitle",
+                "Confirm Cancel Event",
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t(
+                "event.dialog.cancelEvent.confirmDescription",
+                "Are you sure you want to cancel this event? This action cannot be undone.",
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {t("common.cancel", "Cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelConfirm}
+              className="bg-red-600 hover:bg-red-700 font-semibold"
+            >
+              {t("event.dialog.cancelEvent.title", "Cancel Event")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog
         open={salesDialogOpen}

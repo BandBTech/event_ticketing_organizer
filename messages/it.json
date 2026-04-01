@@ -422,7 +422,8 @@
     "dialog": {
       "cancelEvent": {
         "title": "Annulla evento",
-        "description": "Sei sicuro di voler annullare questo evento? \nQuesta azione non può essere annullata."
+        "confirmTitle": "Conferma annullamento evento",
+        "confirmDescription": "Sei sicuro di voler annullare questo evento? Questa azione non può essere annullata."
       },
       "stopSales": {
         "title": "Interrompi le vendite di eventi",

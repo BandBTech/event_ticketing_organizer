@@ -602,7 +602,8 @@
     "dialog": {
       "cancelEvent": {
         "title": "Cancel Event",
-        "description": "Are you sure you want to cancel this event? This action cannot be undone."
+        "confirmTitle": "Confirm Cancel Event",
+        "confirmDescription": "Are you sure you want to cancel this event? This action cannot be undone."
       },
       "stopSales": {
         "title": "Stop Event Sales",
