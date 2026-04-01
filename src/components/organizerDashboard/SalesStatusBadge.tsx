@@ -28,6 +28,7 @@ export function SalesStatusBadge({
 }: SalesStatusBadgeProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
   if (!status && !showAlways) return null;
 
   const displayStatus = status || "";
