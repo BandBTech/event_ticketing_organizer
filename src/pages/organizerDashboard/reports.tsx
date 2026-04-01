@@ -129,25 +129,27 @@ export default function ReportsPage() {
   return (
     <>
       <Head>
-        <title>{t("reports.title", "Reports")} | {t("organizer.title", "Organizer")}</title>
+        <title>{`${t("reports.title", "Reports")} | ${t("organizer.title", "Organizer")}`}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
           <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t("reports.title", "Reports")}</h1>
-              <p className="text-sm text-gray-500 mt-1">
-                {t("reports.subtitle", "Analyze your event performance, sales, and financials")}
-              </p>
+            <div className="flex items-end justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">{t("reports.title", "Reports")}</h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  {t("reports.subtitle", "Analyze your event performance, sales, and financials")}
+                </p>
+              </div>
+              <ReportFilters
+                dateRangePreset={dateRangePreset}
+                onDateRangePresetChange={setDateRangePreset}
+                activeTab={activeTab}
+                selectedEventId={selectedEventId}
+                onEventChange={setSelectedEventId}
+              />
             </div>
 
-            <ReportFilters
-              dateRangePreset={dateRangePreset}
-              onDateRangePresetChange={setDateRangePreset}
-              activeTab={activeTab}
-              selectedEventId={selectedEventId}
-              onEventChange={setSelectedEventId}
-            />
 
             <ReportTabNav activeTab={activeTab} onTabChange={setActiveTab} />
 

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEventListAll } from "@/hooks/useOrganizerEvents";
+import { EventSelect } from "@/components/ui/EventSelect";
 import { ReportType } from "@/types/report";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -33,54 +33,39 @@ export function ReportFilters({
 }: ReportFiltersProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { events, isLoading: eventsLoading } = useEventListAll();
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-      <div className="flex flex-wrap gap-4 items-end">
-        <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-gray-500">{t("reports.dateRange.label", "Date Range")}</Label>
-          <div className="relative">
-            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            <Select value={dateRangePreset} onValueChange={onDateRangePresetChange}>
-              <SelectTrigger className="w-48 text-sm pl-9">
-                <SelectValue placeholder={t("reports.dateRange.placeholder", "Select date range")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today">{t("reports.dateRange.today", "Today")}</SelectItem>
-                <SelectItem value="yesterday">{t("reports.dateRange.yesterday", "Yesterday")}</SelectItem>
-                <SelectItem value="last-7-days">{t("reports.dateRange.last7Days", "Last 7 Days")}</SelectItem>
-                <SelectItem value="last-month">{t("reports.dateRange.lastMonth", "Last Month")}</SelectItem>
-                <SelectItem value="last-3-months">{t("reports.dateRange.last3Months", "Last 3 Months")}</SelectItem>
-                <SelectItem value="last-6-months">{t("reports.dateRange.last6Months", "Last 6 Months")}</SelectItem>
-                <SelectItem value="last-year">{t("reports.dateRange.lastYear", "Last Year")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+    <div className="flex flex-wrap gap-4 items-end">
+      <div className="flex flex-col gap-1.5">
+        <Label className="text-xs text-gray-500">{t("reports.dateRange.label", "Date Range")}</Label>
+        <div className="relative">
+          <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Select value={dateRangePreset} onValueChange={onDateRangePresetChange}>
+            <SelectTrigger className="w-48 text-sm pl-9 bg-white">
+              <SelectValue placeholder={t("reports.dateRange.placeholder", "Select date range")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">{t("reports.dateRange.today", "Today")}</SelectItem>
+              <SelectItem value="yesterday">{t("reports.dateRange.yesterday", "Yesterday")}</SelectItem>
+              <SelectItem value="last-7-days">{t("reports.dateRange.last7Days", "Last 7 Days")}</SelectItem>
+              <SelectItem value="last-month">{t("reports.dateRange.lastMonth", "Last Month")}</SelectItem>
+              <SelectItem value="last-3-months">{t("reports.dateRange.last3Months", "Last 3 Months")}</SelectItem>
+              <SelectItem value="last-6-months">{t("reports.dateRange.last6Months", "Last 6 Months")}</SelectItem>
+              <SelectItem value="last-year">{t("reports.dateRange.lastYear", "Last Year")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-
-        {activeTab === "event-performance" && (
-          <div className="flex flex-col gap-1.5">
-            <Label className="text-xs text-gray-500">{t("reports.selectEvent.label", "Select Event")}</Label>
-            <Select
-              value={selectedEventId}
-              onValueChange={onEventChange}
-              disabled={eventsLoading}
-            >
-              <SelectTrigger className="w-64 text-sm">
-                <SelectValue placeholder={eventsLoading ? t("reports.selectEvent.loading", "Loading events...") : t("reports.selectEvent.placeholder", "Choose an event")} />
-              </SelectTrigger>
-              <SelectContent>
-                {events.map((event) => (
-                  <SelectItem key={event.id} value={event.id}>
-                    {event.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
       </div>
+
+      {activeTab === "event-performance" && (
+        <EventSelect
+          value={selectedEventId}
+          onValueChange={onEventChange}
+          triggerWidth="w-64"
+          placeholder={t("reports.selectEvent.placeholder", "Choose an event")}
+          loadingText={t("reports.selectEvent.loading", "Loading events...")}
+        />
+      )}
     </div>
   );
 }

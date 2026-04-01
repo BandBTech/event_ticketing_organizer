@@ -8,7 +8,6 @@ import {
   CurrencyDollarIcon,
   PencilSimpleIcon,
   LockIcon,
-  CalendarBlankIcon,
   CashRegisterIcon,
 } from "@phosphor-icons/react";
 import {
@@ -27,13 +26,7 @@ import {
   FormLabel,
   TranslatedFormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { EventSelect, EventOption } from "@/components/ui/EventSelect";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -179,72 +172,36 @@ export function PayoutRequestDialog({
               <FormField
                 control={form.control}
                 name="event_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>
-                      {t("payouts.create.event", "Event")}
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={handleEventChange}
-                        value={field.value}
-                        disabled={!!defaultEventId}
-                      >
-                        <SelectTrigger
+                render={({ field }) => {
+                  // Convert PayoutSummaryEvent to EventOption
+                  const eventOptions: EventOption[] = safeEvents.map((e) => ({
+                    id: e.event_id,
+                    title: e.event_title,
+                  }));
+
+                  return (
+                    <FormItem>
+                      <FormLabel required>
+                        {t("payouts.create.event", "Event")}
+                      </FormLabel>
+                      <FormControl>
+                        <EventSelect
                           id="payout-event-id"
-                          className="max-w-100"
-                          title={
-                            field.value
-                              ? safeEvents.find(
-                                  (e) => e.event_id === field.value,
-                                )?.event_title
-                              : undefined
-                          }
-                        >
-                          <SelectValue
-                            placeholder={t(
-                              "payouts.create.eventPlaceholder",
-                              "Select an event",
-                            )}
-                            className="line-clamp-1 truncate"
-                          >
-                            {field.value
-                              ? (safeEvents.find(
-                                  (e) => e.event_id === field.value,
-                                )?.event_title ??
-                                t(
-                                  "payouts.create.eventPlaceholder",
-                                  "Select an event",
-                                ))
-                              : undefined}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[400px]">
-                          {safeEvents.length === 0 ? (
-                            <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground text-sm">
-                              <CalendarBlankIcon className="h-5 w-5" />
-                              <span>
-                                {t("event.noEventsFound", "No events found")}
-                              </span>
-                            </div>
-                          ) : (
-                            safeEvents.map((event) => (
-                              <SelectItem
-                                key={event.event_id}
-                                value={event.event_id}
-                                title={event.event_title}
-                                className="max-w-[390px] truncate line-clamp-1 cursor-pointer"
-                              >
-                                {event.event_title}
-                              </SelectItem>
-                            ))
+                          value={field.value}
+                          onValueChange={handleEventChange}
+                          events={eventOptions}
+                          disabled={!!defaultEventId}
+                          triggerWidth="max-w-100"
+                          placeholder={t(
+                            "payouts.create.eventPlaceholder",
+                            "Select an event",
                           )}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <TranslatedFormMessage t={t} />
-                  </FormItem>
-                )}
+                        />
+                      </FormControl>
+                      <TranslatedFormMessage t={t} />
+                    </FormItem>
+                  );
+                }}
               />
 
               {/* Commission Rate - info display */}
