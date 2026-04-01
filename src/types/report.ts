@@ -79,6 +79,51 @@ export interface CustomerAnalyticsData {
 }
 
 export interface FinancialReportData {
+  summary_metrics?: {
+    total_gross_revenue?: number;
+    total_commission?: number;
+    total_organizer_share?: number;
+    total_refunds?: number;
+    net_revenue?: number;
+    pending_payouts?: number;
+    completed_payouts?: number;
+    average_ticket_price?: number;
+    total_transactions?: number;
+  };
+  revenue_breakdown?: Array<{
+    event_id: string;
+    event_title: string;
+    gross_revenue: number;
+    commission: number;
+    organizer_share: number;
+    refunds: number;
+    net_revenue: number;
+    transaction_count: number;
+  }> | null;
+  commission_history?: Array<{
+    transaction_id: string;
+    event_id: string;
+    event_title: string;
+    revenue: number;
+    commission_rate: number;
+    commission_amount: number;
+    created_at: string;
+  }> | null;
+  payout_history?: Array<{
+    payout_id: string;
+    amount: number;
+    status: string;
+    created_at: string;
+  }> | null;
+  currency_breakdown?: Array<{
+    currency: string;
+    gross_revenue: number;
+    commission: number;
+    organizer_share: number;
+    transaction_count: number;
+    percentage_of_total: number;
+  }> | null;
+  // Legacy fields for backward compatibility
   total_revenue?: number;
   total_expenses?: number;
   net_income?: number;
