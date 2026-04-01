@@ -21,7 +21,7 @@ export const EVENT_STATUS_OPTIONS = [
   { value: "approved", label: "Approved" },
   { value: "cancelled", label: "Cancelled" },
   { value: "completed", label: "Completed" },
-  { value: "draft", label: "Draft" },
+  // { value: "draft", label: "Draft" },
   { value: "live", label: "Live" },
   { value: "hold", label: "On Hold" },
   { value: "on_sale", label: "On Sale" },
