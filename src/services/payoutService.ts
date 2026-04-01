@@ -38,7 +38,7 @@ export const payoutService = {
 
   // Get single payout request by ID
   getPayoutRequestById: async (id: string) => {
-    return api.get<PayoutRequest>(`/organizer/payout/${id}`, {
+    return api.get<PayoutRequest>(`/organizer/payouts/${id}`, {
       requiresAuth: true,
     });
   },
