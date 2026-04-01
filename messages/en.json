@@ -177,7 +177,7 @@
       "event": "Event",
       "eventPlaceholder": "Select event",
       "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Add notes...",
+      "descriptionPlaceholder": "Enter description",
       "submit": "Submit Request",
       "cancel": "Cancel",
       "commissionRate": "Commission Rate",

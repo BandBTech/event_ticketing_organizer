@@ -346,7 +346,7 @@ export function PayoutRequestDialog({
                         {...field}
                       />
                     </FormControl>
-                    <div className="flex justify-between items-center mt-1 min-h-[20px]">
+                    <div className="flex justify-between items-center mt-1 min-h-5">
                       <TranslatedFormMessage t={t} className="mt-0" />
                       <div className="text-xs text-muted-foreground ml-auto">
                         {field.value?.length || 0}/{BUSINESS_DESC_MAX}{" "}

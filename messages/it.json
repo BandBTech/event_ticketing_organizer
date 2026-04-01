@@ -170,7 +170,7 @@
       "event": "Evento",
       "eventPlaceholder": "Seleziona evento",
       "descriptionLabel": "Descrizione",
-      "descriptionPlaceholder": "Aggiungi note...",
+      "descriptionPlaceholder": "Inserisci la descrizione",
       "submit": "Submit Request",
       "cancel": "Cancel",
       "commissionRate": "Tasso di commissione",
@@ -714,7 +714,7 @@
   "Completed": "Completato",
   "Draft": "Bozza",
   "Live": "Live",
-  "On Hold": "In Sospeso",
+  "On Hold": "In attesa",
   "On Sale": "Vendite in diretta",
   "Pending": "In attesa di",
   "Rejected": "Respinto",
@@ -825,6 +825,5 @@
     }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
-  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",
-  "On Hold": "In attesa"
+  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account."
 }

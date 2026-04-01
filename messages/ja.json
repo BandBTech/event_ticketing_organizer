@@ -170,7 +170,7 @@
       "event": "イベント",
       "eventPlaceholder": "イベントを選択",
       "descriptionLabel": "説明",
-      "descriptionPlaceholder": "メモを追加...",
+      "descriptionPlaceholder": "説明を入力してください",
       "submit": "Submit Request",
       "cancel": "Cancel",
       "commissionRate": "手数料率",
@@ -822,6 +822,5 @@
     }
   },
   "Your account is inactive.": "アカウントが非アクティブです。",
-  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。",
-  "On Hold": "保留中"
+  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。"
 }

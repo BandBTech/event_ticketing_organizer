@@ -7,6 +7,9 @@ import {
   CaretRight,
   CaretDoubleLeft,
   CaretDoubleRight,
+  CaretDoubleLeftIcon,
+  CaretRightIcon,
+  CaretDoubleRightIcon,
 } from "@phosphor-icons/react";
 import {
   Select,
@@ -15,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface TablePaginationProps {
   currentPage: number;
@@ -100,7 +104,11 @@ export default function TablePagination({
               </SelectTrigger>
               <SelectContent>
                 {[10, 20, 50, 100].map((pageSize) => (
-                  <SelectItem key={pageSize} value={pageSize.toString()}>
+                  <SelectItem
+                    key={pageSize}
+                    value={pageSize.toString()}
+                    className="cursor-pointer"
+                  >
                     {pageSize}
                   </SelectItem>
                 ))}
@@ -121,11 +129,12 @@ export default function TablePagination({
             )}
           </span>
         ) : null}
-        <span className="text-sm font-medium text-gray-600">{t("common.results", "Results")}</span>
+        <span className="text-sm font-medium text-gray-600">
+          {t("common.results", "Results")}
+        </span>
       </div>
 
       <div className="flex items-center gap-6">
-
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -134,7 +143,7 @@ export default function TablePagination({
             disabled={currentPage === 1 || totalPages === 0}
             className="h-8 w-8 text-gray-500 hover:text-gray-900"
           >
-            <CaretDoubleLeft className="h-4 w-4" />
+            <CaretDoubleLeftIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
@@ -143,7 +152,7 @@ export default function TablePagination({
             disabled={currentPage === 1 || totalPages === 0}
             className="h-8 w-8 text-gray-500 hover:text-gray-900"
           >
-            <CaretLeft className="h-4 w-4" />
+            <CaretLeftIcon className="h-4 w-4" />
           </Button>
 
           <div className="flex gap-1 mx-2">
@@ -161,10 +170,11 @@ export default function TablePagination({
                   variant="ghost"
                   size="sm"
                   onClick={() => onPageChange(item as number)}
-                  className={`h-8 min-w-8 p-0 text-sm hover:bg-gray-100 rounded-md ${currentPage === item
-                      ? "font-bold text-gray-900"
+                  className={`h-8 min-w-8 p-0 text-sm hover:bg-gray-100 rounded-md ${
+                    currentPage === item
+                      ? "font-bold text-white cursor-default! bg-primary hover:bg-primary-700 hover:text-white"
                       : "font-medium text-gray-500"
-                    }`}
+                  }`}
                 >
                   {item}
                 </Button>
@@ -179,7 +189,7 @@ export default function TablePagination({
             disabled={currentPage === totalPages || totalPages === 0}
             className="h-8 w-8 text-gray-500 hover:text-gray-900"
           >
-            <CaretRight className="h-4 w-4" />
+            <CaretRightIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
@@ -188,7 +198,7 @@ export default function TablePagination({
             disabled={currentPage === totalPages || totalPages === 0}
             className="h-8 w-8 text-gray-500 hover:text-gray-900"
           >
-            <CaretDoubleRight className="h-4 w-4" />
+            <CaretDoubleRightIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>
