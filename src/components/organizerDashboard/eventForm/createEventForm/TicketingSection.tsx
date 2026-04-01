@@ -1,7 +1,12 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Control, useFieldArray, useFormContext, useFormState } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  useFormContext,
+  useFormState,
+} from "react-hook-form";
 import { EventFormData } from "@/lib/validation";
 import { TierTemplate } from "@/types/event";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -43,12 +48,14 @@ interface TicketingSectionProps {
   control: Control<EventFormData>;
   tierTemplates: TierTemplate[];
   onCreateNewTier: (index: number) => void;
+  registerFieldRef?: (name: string, element: HTMLElement | null) => void;
 }
 
 export function TicketingSection({
   control,
   tierTemplates,
   onCreateNewTier,
+  registerFieldRef,
 }: TicketingSectionProps) {
   const { t } = useTranslation();
   const { watch } = useFormContext<EventFormData>();
@@ -71,13 +78,16 @@ export function TicketingSection({
           <h2 className="text-md font-semibold text-primary">
             {t("event.section.ticketing", "Ticketing")}
           </h2>
-          
+
           <div className="md:w-64">
             <FormField
               control={control}
               name="currency"
               render={({ field }) => (
-                <FormItem className="flex items-center gap-3 space-y-0">
+                <FormItem
+                  ref={(el) => registerFieldRef?.("currency", el)}
+                  className="flex items-center gap-3 space-y-0"
+                >
                   <FormLabel className="whitespace-nowrap font-medium">
                     {t("event.field.currency", "Currency")}{" "}
                     <span className="text-red-500">*</span>
@@ -122,6 +132,7 @@ export function TicketingSection({
             onDelete={() => removeTicket(index)}
             onCreateNew={() => onCreateNewTier(index)}
             eventStartDate={eventStartDate}
+            registerFieldRef={registerFieldRef}
           />
         ))}
 

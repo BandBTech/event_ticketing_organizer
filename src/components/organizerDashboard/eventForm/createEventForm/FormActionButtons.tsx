@@ -8,14 +8,21 @@ interface FormActionButtonsProps {
   isEditing: boolean;
   isPending: boolean;
   onCancel: () => void;
+  isDirty?: boolean;
+  hasImageChange?: boolean;
 }
 
 export function FormActionButtons({
   isEditing,
   isPending,
   onCancel,
+  isDirty = false,
+  hasImageChange = false,
 }: FormActionButtonsProps) {
   const { t } = useTranslation();
+
+  const hasChanges = isDirty || hasImageChange;
+  const isSubmitDisabled = isPending || (isEditing && !hasChanges);
 
   return (
     <div className="flex justify-between items-center gap-3">
@@ -25,7 +32,7 @@ export function FormActionButtons({
       <div className="flex gap-3">
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isSubmitDisabled}
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Plus className="w-5 h-5 mr-2" />

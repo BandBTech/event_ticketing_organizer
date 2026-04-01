@@ -91,6 +91,11 @@ export const PROMO_CODE_NAME_MAX = 50;
 export const PROMO_CODE_AMOUNT_MAX = 100000;
 export const PROMO_CODE_QUANTITY_MAX = 100000;
 
+// Max characters for numeric inputs (based on max values)
+export const CAPACITY_MAX_CHARS = 6; // 100000
+export const QUANTITY_MAX_CHARS = 6; // 100000
+export const PRICE_MAX_CHARS = 6; // 100000
+
 // Auth Schemas
 export const loginSchema = (
   t: (
@@ -460,19 +465,22 @@ export const createTicketSchema = (
         MAX_QUANTITY,
         true,
       ),
-      gst: z.preprocess(
-        (val) => {
-          if (val === "" || val === null || val === undefined) return 0;
-          const num = Number(val);
-          return isNaN(num) ? 0 : num;
-        },
-        z
-          .number({
-            message: "GST must be a number.",
-          })
-          .min(0, t("event.validation.gstPositive", "GST must be positive."))
-          .max(100, t("event.validation.gstMax", "GST cannot exceed 100%.")),
-      ).optional().default(0),
+      gst: z
+        .preprocess(
+          (val) => {
+            if (val === "" || val === null || val === undefined) return 0;
+            const num = Number(val);
+            return isNaN(num) ? 0 : num;
+          },
+          z
+            .number({
+              message: "GST must be a number.",
+            })
+            .min(0, t("event.validation.gstPositive", "GST must be positive."))
+            .max(100, t("event.validation.gstMax", "GST cannot exceed 100%.")),
+        )
+        .optional()
+        .default(0),
       salesStart: createRequiredDateSchema(
         t,
         "event.field.salesStart:Sales Start Date",
@@ -600,13 +608,13 @@ export const createPromoCodeSchema = (
         const message =
           discountType === "percentage"
             ? t(
-              "event.validation.discountPercentageRequired",
-              "Discount Percentage is required.",
-            )
+                "event.validation.discountPercentageRequired",
+                "Discount Percentage is required.",
+              )
             : t(
-              "event.validation.discountAmountRequired",
-              "Discount Amount is required.",
-            );
+                "event.validation.discountAmountRequired",
+                "Discount Amount is required.",
+              );
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message,
@@ -767,7 +775,7 @@ export const createEventSchema = (
             "Venue Address must be under {max} characters.",
             { max: VENUE_ADDRESS_MAX.toString() },
           ),
-      )
+        )
         .superRefine((val, ctx) => {
           // Only validate as coordinates when the value strictly matches numeric "lat,lng" format.
           // This avoids false negatives on normal addresses like "Kathmandu, Nepal".
@@ -919,7 +927,7 @@ export const createEventSchema = (
             code: z.ZodIssueCode.custom,
             message: t(
               "event.validation.capacityRequiredFirst",
-              "Please set the venue capacity before setting tickets quantity"
+              "Please set the venue capacity before setting tickets quantity",
             ),
             path: ["capacity"],
           });
@@ -930,7 +938,7 @@ export const createEventSchema = (
               message: t(
                 "event.validation.capacityExceeded",
                 "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
-                { total: totalTickets, capacity: data.capacity }
+                { total: totalTickets, capacity: data.capacity },
               ),
               path: ["tickets", index, "quantity"],
             });
@@ -1503,12 +1511,10 @@ export const createPayoutRequestSchema = (
 ) =>
   z.object({
     event_id: z.string().min(1, "payouts.validation.selectEvent"),
-    amount: createRequiredNumberSchema(
-      t,
-      "payouts.table.amount:Amount",
-      1,
-    ),
+    amount: createRequiredNumberSchema(t, "payouts.table.amount:Amount", 1),
     description: z.string().optional(),
   });
 
-export type PayoutRequestFormData = z.infer<ReturnType<typeof createPayoutRequestSchema>>;
+export type PayoutRequestFormData = z.infer<
+  ReturnType<typeof createPayoutRequestSchema>
+>;

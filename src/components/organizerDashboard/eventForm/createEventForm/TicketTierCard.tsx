@@ -13,7 +13,11 @@ import {
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TierNameSelector from "../../TierNameSelector";
 import { TierTemplate } from "@/types/event";
-import { EventFormData } from "@/lib/validation";
+import {
+  EventFormData,
+  MAX_QUANTITY,
+  QUANTITY_MAX_CHARS,
+} from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface TicketTierCardProps {
@@ -25,6 +29,7 @@ interface TicketTierCardProps {
   onCreateNew: () => void;
   isLoading?: boolean;
   eventStartDate?: Date;
+  registerFieldRef?: (name: string, element: HTMLElement | null) => void;
 }
 
 const TicketTierCard = ({
@@ -37,14 +42,23 @@ const TicketTierCard = ({
   isLoading = false,
   usedTierNames = [],
   eventStartDate,
+  registerFieldRef,
 }: TicketTierCardProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
   const { setValue } = useFormContext<EventFormData>();
 
   const minDate = new Date();
-  const salesStartValue = useWatch({ control, name: `tickets.${index}.salesStart` });
-  const salesEndValue = useWatch({ control, name: `tickets.${index}.salesEnd` });
-  const salesStartDate = salesStartValue ? new Date(salesStartValue) : undefined;
+  const salesStartValue = useWatch({
+    control,
+    name: `tickets.${index}.salesStart`,
+  });
+  const salesEndValue = useWatch({
+    control,
+    name: `tickets.${index}.salesEnd`,
+  });
+  const salesStartDate = salesStartValue
+    ? new Date(salesStartValue)
+    : undefined;
 
   return (
     <div className="border border-gray-200 rounded-lg p-4 relative">
@@ -53,7 +67,9 @@ const TicketTierCard = ({
           control={control}
           name={`tickets.${index}.name`}
           render={({ field, fieldState }) => (
-            <FormItem>
+            <FormItem
+              ref={(el) => registerFieldRef?.(`tickets[${index}].name`, el)}
+            >
               <FormLabel className="inline-block">
                 {t("event.field.tierName", "Tier Name")}{" "}
                 <span className="text-red-500">*</span>
@@ -78,7 +94,9 @@ const TicketTierCard = ({
           control={control}
           name={`tickets.${index}.price`}
           render={({ field }) => (
-            <FormItem>
+            <FormItem
+              ref={(el) => registerFieldRef?.(`tickets[${index}].price`, el)}
+            >
               <FormLabel className="inline-block">
                 {t("event.field.ticketPrice", "Price")}{" "}
                 <span className="text-red-500">*</span>
@@ -112,7 +130,9 @@ const TicketTierCard = ({
           control={control}
           name={`tickets.${index}.quantity`}
           render={({ field }) => (
-            <FormItem>
+            <FormItem
+              ref={(el) => registerFieldRef?.(`tickets[${index}].quantity`, el)}
+            >
               <FormLabel className="inline-block">
                 {t("event.field.ticketQuantity", "Quantity")}{" "}
                 <span className="text-red-500">*</span>
@@ -125,14 +145,26 @@ const TicketTierCard = ({
                     "event.placeholder.quantity",
                     "Enter number of quantity",
                   )}
+                  max={MAX_QUANTITY}
+                  inputMode="numeric"
                   {...field}
                   onKeyDown={(e) => {
-                    if (e.key === '.' || e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                    if (
+                      e.key === "." ||
+                      e.key === "e" ||
+                      e.key === "E" ||
+                      e.key === "-" ||
+                      e.key === "+"
+                    ) {
                       e.preventDefault();
                     }
                   }}
                   onChange={(e) => {
                     const val = e.target.value;
+                    // Prevent entering more than max characters
+                    if (val.length > QUANTITY_MAX_CHARS) {
+                      return;
+                    }
                     if (val === "") {
                       field.onChange("");
                       return;
@@ -190,7 +222,11 @@ const TicketTierCard = ({
           control={control}
           name={`tickets.${index}.salesStart`}
           render={({ field, fieldState }) => (
-            <FormItem>
+            <FormItem
+              ref={(el) =>
+                registerFieldRef?.(`tickets[${index}].salesStart`, el)
+              }
+            >
               <FormLabel className="inline-block">
                 {t("event.field.salesStart", "Sales Start Date")}{" "}
                 <span className="text-red-500">*</span>
@@ -225,7 +261,9 @@ const TicketTierCard = ({
           control={control}
           name={`tickets.${index}.salesEnd`}
           render={({ field, fieldState }) => (
-            <FormItem>
+            <FormItem
+              ref={(el) => registerFieldRef?.(`tickets[${index}].salesEnd`, el)}
+            >
               <FormLabel className="inline-block">
                 {t("event.field.salesEnd", "Sales End Date")}{" "}
                 <span className="text-red-500">*</span>

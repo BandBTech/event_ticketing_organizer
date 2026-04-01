@@ -2,7 +2,11 @@
 
 import { useCallback } from "react";
 import { Control, useWatch, useFormContext } from "react-hook-form";
-import { EventFormData, EVENT_TITLE_MAX, EVENT_DESC_MAX } from "@/lib/validation";
+import {
+  EventFormData,
+  EVENT_TITLE_MAX,
+  EVENT_DESC_MAX,
+} from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Label } from "@/components/ui/label";
 import {
@@ -34,6 +38,7 @@ interface EventDetailsSectionProps {
   eventId?: string;
   initialDescription?: string;
   onTagsChange?: (tags: string[]) => void;
+  registerFieldRef?: (name: string, element: HTMLElement | null) => void;
 }
 
 export function EventDetailsSection({
@@ -52,24 +57,25 @@ export function EventDetailsSection({
   eventId,
   initialDescription = "",
   onTagsChange,
+  registerFieldRef,
 }: EventDetailsSectionProps) {
   const { t } = useTranslation();
   const { setError, clearErrors } = useFormContext<EventFormData>();
 
   const description = useWatch({ control, name: "description" }) || "";
-  const descriptionTextLength = description.replace(/<[^>]*>/g, '').length;
+  const descriptionTextLength = description.replace(/<[^>]*>/g, "").length;
 
   const handleHtmlChange = useCallback(
     (html: string) => {
-      const textContent = html.replace(/<[^>]*>/g, '').trim();
+      const textContent = html.replace(/<[^>]*>/g, "").trim();
       const hasImage = /<img\s/i.test(html);
-      const valueToSet = (textContent || hasImage) ? html : "";
+      const valueToSet = textContent || hasImage ? html : "";
       onDescriptionChange(valueToSet);
       if (valueToSet) {
         onDescriptionClearError();
       }
     },
-    [onDescriptionChange, onDescriptionClearError]
+    [onDescriptionChange, onDescriptionClearError],
   );
 
   return (
@@ -79,36 +85,40 @@ export function EventDetailsSection({
           {t("event.eventDetails", "Event Details")}
         </h2>
         <div className="grid @2xl:grid-cols-2 gap-5">
-          <ImageUploader
-            label={t("event.field.uploadBanner", "Upload Banner")}
-            helperText={t(
-              "event.helperText.bannerImage",
-              "Upload banner image or drag & drop",
-            )}
-            helperTextSize={t(
-              "event.helperText.bannerImageSize",
-              "Recommended: PNG/JPG file of 1920x1200px with size up to 5MB",
-            )}
-            value={imageRemoved ? "" : imagePreview || initialBannerImage || ""}
-            onChange={(file) => {
-              if (file) onImageChange(file);
-            }}
-            onRemove={onImageRemove}
-            error={imageError}
-            errorParams={imageErrorParams}
-            browseButtonText={t(
-              "event.helperText.bannerImageBrowse",
-              "Browse File",
-            )}
-            required
-          />
+          <div ref={(el) => registerFieldRef?.("image", el)}>
+            <ImageUploader
+              label={t("event.field.uploadBanner", "Upload Banner")}
+              helperText={t(
+                "event.helperText.bannerImage",
+                "Upload banner image or drag & drop",
+              )}
+              helperTextSize={t(
+                "event.helperText.bannerImageSize",
+                "Recommended: PNG/JPG file of 1920x1200px with size up to 5MB",
+              )}
+              value={
+                imageRemoved ? "" : imagePreview || initialBannerImage || ""
+              }
+              onChange={(file) => {
+                if (file) onImageChange(file);
+              }}
+              onRemove={onImageRemove}
+              error={imageError}
+              errorParams={imageErrorParams}
+              browseButtonText={t(
+                "event.helperText.bannerImageBrowse",
+                "Browse File",
+              )}
+              required
+            />
+          </div>
 
           <div className="flex flex-col gap-5">
             <FormField
               control={control}
               name="name"
               render={({ field }) => (
-                <FormItem>
+                <FormItem ref={(el) => registerFieldRef?.("name", el)}>
                   <FormLabel className="inline-block">
                     {t("event.field.eventTitle", "Event Title")}{" "}
                     <span className="text-red-500">*</span>
@@ -141,7 +151,7 @@ export function EventDetailsSection({
               control={control}
               name="tags"
               render={({ field, fieldState }) => (
-                <FormItem>
+                <FormItem ref={(el) => registerFieldRef?.("tags", el)}>
                   <FormLabel className="inline-block">
                     {t("event.field.categoryTags", "Category Tags")}{" "}
                     <span className="text-red-500">*</span>
@@ -194,6 +204,7 @@ export function EventDetailsSection({
             <span className="text-red-500">*</span>
           </Label>
           <div
+            ref={(el) => registerFieldRef?.("description", el)}
             className={cn(
               "rounded-lg border transition-colors",
               descriptionError
@@ -220,10 +231,16 @@ export function EventDetailsSection({
                   if (pipeIndex === -1) return t(descriptionError);
                   const key = descriptionError.substring(0, pipeIndex);
                   const params: Record<string, string> = {};
-                  descriptionError.substring(pipeIndex + 1).split(",").forEach((pair) => {
-                    const colonIdx = pair.indexOf(":");
-                    if (colonIdx !== -1) params[pair.substring(0, colonIdx).trim()] = pair.substring(colonIdx + 1).trim();
-                  });
+                  descriptionError
+                    .substring(pipeIndex + 1)
+                    .split(",")
+                    .forEach((pair) => {
+                      const colonIdx = pair.indexOf(":");
+                      if (colonIdx !== -1)
+                        params[pair.substring(0, colonIdx).trim()] = pair
+                          .substring(colonIdx + 1)
+                          .trim();
+                    });
                   return t(key, undefined, params);
                 })()}
               </p>

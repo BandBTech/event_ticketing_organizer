@@ -57,6 +57,18 @@ export default function CreateEventsForm({
   const lastInitializedEventId = React.useRef<string | null>(null);
   const lastInitializedWithTemplates = React.useRef<boolean>(false);
 
+  // Refs for form fields to enable scrolling to errors
+  const fieldRefs = React.useRef<Record<string, HTMLElement | null>>({});
+
+  const registerFieldRef = React.useCallback(
+    (name: string, element: HTMLElement | null) => {
+      if (name) {
+        fieldRefs.current[name] = element;
+      }
+    },
+    [],
+  );
+
   const {
     imageFile,
     imagePreview,
@@ -65,6 +77,7 @@ export default function CreateEventsForm({
     imageRemoved,
     validateAndProcessImage,
     handleRemoveImage,
+    resetImage,
     setImagePreview,
   } = useImageUpload({
     initialPreview: initialData?.banner_image || "",
@@ -97,8 +110,9 @@ export default function CreateEventsForm({
   const { isDirty } = form.formState;
 
   const hasUnsavedChanges = useCallback(() => {
-    return isDirty || imageFile !== null;
-  }, [isDirty, imageFile]);
+    // Check both form dirty state and image changes
+    return isDirty || (imageFile !== null && !imageRemoved);
+  }, [isDirty, imageFile, imageRemoved]);
 
   const {
     showLeaveDialog,
@@ -174,11 +188,176 @@ export default function CreateEventsForm({
         `Event has been successfully ${isEditing ? "updated" : "created"}.`,
       );
 
-      // Reset form dirty state before navigation to prevent unsaved changes dialog
-      form.reset();
-      router.push("/organizerDashboard/event");
+      // Reset ALL form dirty state before navigation to prevent unsaved changes dialog
+      form.reset(undefined, { keepValues: false });
+      // Reset image state completely
+      resetImage("");
+      // Wait a tick for state to settle before navigating
+      setTimeout(() => {
+        router.push("/organizerDashboard/event");
+      }, 50);
     },
   });
+
+  // Scroll to the first error field on form submission
+  const scrollToFirstError = useCallback(async () => {
+    const errors = form.formState.errors;
+    const errorKeys = Object.keys(errors);
+
+    if (errorKeys.length === 0) return;
+
+    // Helper to get the first error field name (handles nested errors like tickets[0].name)
+    const getFirstErrorField = (
+      obj: Record<string, unknown>,
+      prefix = "",
+    ): string | null => {
+      // Priority order for top-level fields
+      const priorityOrder = [
+        "name",
+        "image",
+        "tags",
+        "description",
+        "venue",
+        "venueAddress",
+        "capacity",
+        "startDate",
+        "endDate",
+        "currency",
+        "tickets",
+      ];
+
+      // Sort keys by priority
+      const sortedKeys = Object.keys(obj).sort((a, b) => {
+        const aIndex = priorityOrder.indexOf(a);
+        const bIndex = priorityOrder.indexOf(b);
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+        if (aIndex !== -1) return -1;
+        if (bIndex !== -1) return 1;
+        return a.localeCompare(b);
+      });
+
+      for (const key of sortedKeys) {
+        const fullPath = prefix ? `${prefix}.${key}` : key;
+        const error = obj[key] as Record<string, unknown> | undefined;
+
+        // If this is a field error (has message) or we found an error, return it
+        if (error?.message || !error?.types) {
+          // Check if it's a nested object (like tickets array)
+          if (
+            error &&
+            typeof error === "object" &&
+            error.message === undefined
+          ) {
+            const nestedResult = getFirstErrorField(error, fullPath);
+            if (nestedResult) return nestedResult;
+          }
+          return fullPath;
+        }
+      }
+      return null;
+    };
+
+    const firstErrorField = getFirstErrorField(errors);
+
+    if (firstErrorField) {
+      // Wait a bit for the DOM to update with error states
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Try to find the field element
+      let fieldElement: HTMLElement | null = null;
+
+      // For array fields like tickets[0].name, try different variations
+      const possibleNames = [
+        firstErrorField,
+        firstErrorField.replace(/\[(\d+)\]/, ".$1"), // tickets[0].name -> tickets.0.name
+      ];
+
+      for (const name of possibleNames) {
+        if (fieldRefs.current[name]) {
+          fieldElement = fieldRefs.current[name];
+          break;
+        }
+      }
+
+      // Fallback: try to find by various selectors
+      if (!fieldElement) {
+        // Try to find by name attribute
+        fieldElement =
+          document.querySelector(`[name="${firstErrorField}"]`) ||
+          document.querySelector(`[name^="${firstErrorField}."]`) ||
+          document.querySelector(
+            `[name^="${firstErrorField.replace(/\[(\d+)\]/, ".$1")}"]`,
+          ) ||
+          document.querySelector(
+            `[aria-describedby*="${firstErrorField.replace(/\[(\d+)\]/, ".$1")}"]`,
+          );
+      }
+
+      // For tickets array, try to find the specific card
+      if (!fieldElement && firstErrorField.startsWith("tickets")) {
+        const match = firstErrorField.match(/tickets\[(\d+)\]\.(\w+)/);
+        if (match) {
+          const [, index] = match;
+          // Try to find the ticket card by index
+          const ticketCards = document.querySelectorAll("[data-ticket-index]");
+          const targetCard = ticketCards[parseInt(index)];
+          if (targetCard) {
+            fieldElement = targetCard as HTMLElement;
+          }
+        }
+      }
+
+      // For date fields, try to find the input within the picker
+      if (
+        !fieldElement &&
+        (firstErrorField === "startDate" ||
+          firstErrorField === "endDate" ||
+          firstErrorField.includes("salesStart") ||
+          firstErrorField.includes("salesEnd"))
+      ) {
+        const dateInputs = document.querySelectorAll(
+          'input[type="text"][aria-invalid="true"], input[type="text"][class*="destructive"]',
+        );
+        if (dateInputs.length > 0) {
+          fieldElement = dateInputs[0] as HTMLElement;
+        }
+      }
+
+      // For venue address, look for the address autocomplete input
+      if (!fieldElement && firstErrorField === "venueAddress") {
+        fieldElement = document.querySelector(
+          'input[placeholder*="venue address"], input[placeholder*="Search for venue"]',
+        );
+      }
+
+      // For description, look for the editor container
+      if (!fieldElement && firstErrorField === "description") {
+        fieldElement = document.querySelector(
+          '[class*="description"] [contenteditable], .ProseMirror, [data-placeholder*="Write about your event"]',
+        );
+      }
+
+      // For image, look for the image uploader container
+      if (!fieldElement && firstErrorField === "image") {
+        fieldElement = document.querySelector(
+          '[class*="image-uploader"], [class*="dropzone"]',
+        );
+      }
+
+      if (fieldElement) {
+        // Scroll the element into view
+        fieldElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [form.formState.errors]);
+
+  // Scroll to first error when form is submitted with errors
+  const { isSubmitted, errors } = form.formState;
+  React.useEffect(() => {
+    if (isSubmitted && Object.keys(errors).length > 0) {
+      scrollToFirstError();
+    }
+  }, [isSubmitted, errors, scrollToFirstError]);
 
   const onSubmit: SubmitHandler<EventFormData> = async (data) => {
     try {
@@ -305,14 +484,19 @@ export default function CreateEventsForm({
                 form.trigger("tags");
               }, 0);
             }}
+            registerFieldRef={registerFieldRef}
           />
 
-          <VenueScheduleSection control={form.control} />
+          <VenueScheduleSection
+            control={form.control}
+            registerFieldRef={registerFieldRef}
+          />
 
           <TicketingSection
             control={form.control}
             tierTemplates={tierTemplates}
             onCreateNewTier={handleCreateNewTier}
+            registerFieldRef={registerFieldRef}
           />
 
           {/* <DiscountsPromoSection control={form.control} /> */}
@@ -321,6 +505,8 @@ export default function CreateEventsForm({
             isEditing={isEditing}
             isPending={saveEventMutation.isPending}
             onCancel={handleCancel}
+            isDirty={isDirty}
+            hasImageChange={imageFile !== null}
           />
         </form>
       </Form>

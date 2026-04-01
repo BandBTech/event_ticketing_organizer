@@ -9,6 +9,7 @@ import {
   LAT_MAX_CHARS,
   LNG_MAX_CHARS,
   MAX_CAPACITY,
+  CAPACITY_MAX_CHARS,
 } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
@@ -27,9 +28,13 @@ import TimezoneSelector from "../../TimezoneSelector";
 
 interface VenueScheduleSectionProps {
   control: Control<EventFormData>;
+  registerFieldRef?: (name: string, element: HTMLElement | null) => void;
 }
 
-export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
+export function VenueScheduleSection({
+  control,
+  registerFieldRef,
+}: VenueScheduleSectionProps) {
   const { t } = useTranslation();
   const { setValue, watch, clearErrors, formState } =
     useFormContext<EventFormData>();
@@ -125,7 +130,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             control={control}
             name="venue"
             render={({ field }) => (
-              <FormItem>
+              <FormItem ref={(el) => registerFieldRef?.("venue", el)}>
                 <FormLabel className="inline-block">
                   {t("event.field.venueName", "Venue Name")}{" "}
                   <span className="text-red-500">*</span>
@@ -158,7 +163,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             control={control}
             name="venueAddress"
             render={({ field, fieldState }) => (
-              <FormItem>
+              <FormItem ref={(el) => registerFieldRef?.("venueAddress", el)}>
                 <div className="inline-flex w-full justify-between items-center mb-2">
                   <FormLabel className="m-0!">
                     {t("event.field.venueAddress", "Venue Address")}{" "}
@@ -303,7 +308,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             control={control}
             name="capacity"
             render={({ field }) => (
-              <FormItem>
+              <FormItem ref={(el) => registerFieldRef?.("capacity", el)}>
                 <FormLabel className="inline-block">
                   {t("event.field.capacity", "Capacity")}{" "}
                   <span className="text-red-500">*</span>
@@ -314,6 +319,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     type="number"
                     placeholder={t("event.placeholder.capacity", "e.g 5000")}
                     max={MAX_CAPACITY}
+                    inputMode="numeric"
                     {...field}
                     onKeyDown={(e) => {
                       if (
@@ -328,6 +334,10 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
                     }}
                     onChange={(e) => {
                       const val = e.target.value;
+                      // Prevent entering more than max characters
+                      if (val.length > CAPACITY_MAX_CHARS) {
+                        return;
+                      }
                       if (val === "") {
                         field.onChange("");
                         return;
@@ -374,7 +384,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             control={control}
             name="startDate"
             render={({ field, fieldState }) => (
-              <FormItem>
+              <FormItem ref={(el) => registerFieldRef?.("startDate", el)}>
                 <FormLabel className="inline-block">
                   {t("event.field.startDateTime", "Event Start Date")}{" "}
                   <span className="text-red-500">*</span>
@@ -400,7 +410,7 @@ export function VenueScheduleSection({ control }: VenueScheduleSectionProps) {
             control={control}
             name="endDate"
             render={({ field, fieldState }) => (
-              <FormItem>
+              <FormItem ref={(el) => registerFieldRef?.("endDate", el)}>
                 <FormLabel className="inline-block">
                   {t("event.field.endDateTime", "Event End Date")}{" "}
                   <span className="text-red-500">*</span>
