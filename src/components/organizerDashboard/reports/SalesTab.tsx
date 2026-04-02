@@ -19,6 +19,7 @@ import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 
 interface SalesTabProps {
   startDate?: string;
@@ -28,6 +29,7 @@ interface SalesTabProps {
 export function SalesTab({ startDate, endDate }: SalesTabProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency } = useCurrencyStore();
   const { data, isLoading } = useReport("sales", {
     start_date: startDate,
     end_date: endDate,
@@ -44,7 +46,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
         <StatCard
           icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
           label={t("reports.sales.totalSales", "Total Sales")}
-          value={formatCurrency(report?.total_sales ?? 0)}
+          value={formatCurrency(report?.total_sales ?? 0, currency, locale)}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
           index={0}
@@ -75,7 +77,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
               />
               <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip
-                formatter={(value: number) => [formatCurrency(value), t("reports.sales.columns.revenue", "Revenue")]}
+                formatter={(value: number) => [formatCurrency(value, currency, locale), t("reports.sales.columns.revenue", "Revenue")]}
               />
               <Bar dataKey="total_sales" fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -93,7 +95,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
               <XAxis dataKey="date" tick={{ fontSize: 12 }} tickLine={false} />
               <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip
-                formatter={(value: number) => [formatCurrency(value), t("reports.sales.columns.revenue", "Revenue")]}
+                formatter={(value: number) => [formatCurrency(value, currency, locale), t("reports.sales.columns.revenue", "Revenue")]}
               />
               <Line
                 type="monotone"
@@ -139,7 +141,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                       {event.tickets_sold.toLocaleString()}
                     </td>
                     <td className="py-3 px-3 text-right text-gray-700">
-                      {formatCurrency(event.revenue)}
+                      {formatCurrency(event.revenue, currency, locale)}
                     </td>
                   </tr>
                 ))}

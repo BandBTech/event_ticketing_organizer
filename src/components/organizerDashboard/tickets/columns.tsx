@@ -10,6 +10,7 @@ interface ColumnProps {
   pageIndex: number;
   pageSize: number;
   locale: string;
+  currency: string;
 }
 
 export function getColumns({
@@ -17,6 +18,7 @@ export function getColumns({
   pageIndex,
   pageSize,
   locale,
+  currency,
 }: ColumnProps): ColumnDef<TicketResponse>[] {
   return [
     {
@@ -81,7 +83,7 @@ export function getColumns({
         const amount = info.row.original.total_amount;
         return (
           <span className="font-medium text-emerald-600">
-            {formatCurrency(amount, undefined, locale)}
+            {formatCurrency(amount, currency, locale)}
           </span>
         );
       },

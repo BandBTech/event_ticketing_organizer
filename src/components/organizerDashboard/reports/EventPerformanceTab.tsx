@@ -24,6 +24,7 @@ import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 
 interface EventPerformanceTabProps {
   startDate?: string;
@@ -38,6 +39,7 @@ export function EventPerformanceTab({
 }: EventPerformanceTabProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency } = useCurrencyStore();
   const { data, isLoading } = useReport("event-performance", {
     start_date: startDate,
     end_date: endDate,
@@ -93,7 +95,7 @@ export function EventPerformanceTab({
         <StatCard
           icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
           label={t("reports.eventPerformance.revenue", "Revenue")}
-          value={formatCurrency(report?.revenue ?? 0)}
+          value={formatCurrency(report?.revenue ?? 0, currency, locale)}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
           index={3}

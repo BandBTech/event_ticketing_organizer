@@ -223,7 +223,7 @@ export const formatCurrency = (amount: number, currency?: string, locale: string
     en: "USD",
     it: "EUR",
   };
-  const resolvedCurrency = currencyMap[locale] || currency;
+  const resolvedCurrency = currency || currencyMap[locale];
 
   const hasFraction = amount % 1 !== 0;
   return new Intl.NumberFormat(locale, {

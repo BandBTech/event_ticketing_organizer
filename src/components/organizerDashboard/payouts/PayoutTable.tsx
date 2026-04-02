@@ -8,6 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 import { formatCurrency } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import {
   Tooltip,
   TooltipTrigger,
@@ -72,6 +73,7 @@ export function PayoutTable({
 }: PayoutTableProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
+  const { currency } = useCurrencyStore();
   const [adminNotesContent, setAdminNotesContent] = useState<string | null>(
     null,
   );
@@ -134,7 +136,7 @@ export function PayoutTable({
         meta: { sortKey: "amount" },
         cell: ({ row }) => (
           <div className="font-semibold text-right">
-            {formatCurrency(row.original.amount, undefined, locale)}
+            {formatCurrency(row.original.amount, currency, locale)}
           </div>
         ),
       },

@@ -1488,6 +1488,7 @@ export const createOrganizerProfileSchema = (
         ),
       )
       .optional(),
+    currency: z.string().optional(),
   });
 
 export type OrganizerProfileFormValues = z.infer<

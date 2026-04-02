@@ -58,6 +58,7 @@ import { SalesStatusBadge } from "./SalesStatusBadge";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { format, isValid } from "date-fns";
 import {
   CalendarBlankIcon,
@@ -89,6 +90,7 @@ interface EventDetailsProps {
 export default function EventDetails({ event, analytics }: EventDetailsProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
+  const { currency: storedCurrency } = useCurrencyStore();
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -584,7 +586,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       <p className="text-lg font-bold text-emerald-700">
                         {formatCurrency(
                           totalRevenue,
-                          event.tiers?.[0]?.currency,
+                          event.tiers?.[0]?.currency || storedCurrency,
                           locale,
                         )}
                       </p>
@@ -616,7 +618,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                   <p className="font-medium text-emerald-600">
                                     {formatCurrency(
                                       tier.revenue,
-                                      tier.currency,
+                                      tier.currency || storedCurrency,
                                       locale,
                                     )}
                                   </p>
@@ -639,7 +641,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                   <p className="text-xs text-gray-500">
                                     {formatCurrency(
                                       tier.price,
-                                      tier.currency,
+                                      tier.currency || storedCurrency,
                                       locale,
                                     )}
                                     {t("common.ticket", "ticket")}
@@ -729,7 +731,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                   <p className="text-xs text-gray-500">
                                     {formatCurrency(
                                       tier.price,
-                                      tier.currency,
+                                      tier.currency || storedCurrency,
                                       locale,
                                     )}{" "}
                                     / {t("common.ticket", "ticket")}
@@ -739,7 +741,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                   <p className="font-medium text-emerald-600">
                                     {formatCurrency(
                                       tierRevenue,
-                                      tier.currency,
+                                      tier.currency || storedCurrency,
                                       locale,
                                     )}
                                   </p>
@@ -844,7 +846,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       const commissionAmount =
                         totalRevenue * (commissionRate / 100);
                       const organizerEarnings = totalRevenue - commissionAmount;
-                      const currency = event.tiers?.[0]?.currency;
+                      const currency = event.tiers?.[0]?.currency || storedCurrency;
                       return (
                         <div className="space-y-3">
                           <div className="flex justify-between items-center text-sm">

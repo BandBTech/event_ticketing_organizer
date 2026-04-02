@@ -7,6 +7,7 @@ import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { PaginationState } from "@tanstack/react-table";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
@@ -39,6 +40,7 @@ function EventTicketsTable({
   onSortChange: (sortBy: string | undefined, sortOrder: "asc" | "desc" | undefined) => void;
 }) {
   const { locale } = useLanguageStore();
+  const { currency } = useCurrencyStore();
   const { data: ticketsResponse, isLoading } = useQuery({
     queryKey: queryKeys.events.tickets(eventId, {
       page: pagination.pageIndex + 1,
@@ -70,8 +72,9 @@ function EventTicketsTable({
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         locale,
+        currency,
       }),
-    [t, pagination.pageIndex, pagination.pageSize, locale],
+    [t, pagination.pageIndex, pagination.pageSize, locale, currency],
   );
 
   return (

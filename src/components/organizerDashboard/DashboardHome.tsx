@@ -21,11 +21,13 @@ import { useOrganizerDashboard } from "@/hooks/useOrganizerDashboard";
 import EventCard from "./EventCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardHome() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency } = useCurrencyStore();
   const { stats, upcomingEvents, isLoading, error } = useOrganizerDashboard();
 
   const statCards = [
@@ -38,13 +40,13 @@ export default function DashboardHome() {
     {
       icon: <CurrencyDollarIcon className="w-10 h-10 text-green-500" />,
       label: "Total Revenue",
-      value: formatCurrency(stats.totalRevenue, undefined, locale),
+      value: formatCurrency(stats.totalRevenue, currency, locale),
       gradient: "from-green-50 to-white",
     },
     {
       icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
       label: "Organizer Earnings",
-      value: formatCurrency(stats.organizerEarnings, undefined, locale),
+      value: formatCurrency(stats.organizerEarnings, currency, locale),
       gradient: "from-emerald-50 to-white",
     },
     {
@@ -56,13 +58,13 @@ export default function DashboardHome() {
     {
       icon: <HourglassIcon className="w-10 h-10 text-orange-500" />,
       label: "Total Pending Amount",
-      value: formatCurrency(stats.totalPendingAmount, undefined, locale),
+      value: formatCurrency(stats.totalPendingAmount, currency, locale),
       gradient: "from-orange-50 to-white",
     },
     {
       icon: <BankIcon className="w-10 h-10 text-teal-600" />,
       label: "Total Amount Received",
-      value: formatCurrency(stats.totalAmountReceived, undefined, locale),
+      value: formatCurrency(stats.totalAmountReceived, currency, locale),
       gradient: "from-teal-50 to-white",
     },
   ];

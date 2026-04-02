@@ -22,6 +22,7 @@ import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 
 interface OverviewTabProps {
   startDate?: string;
@@ -31,6 +32,7 @@ interface OverviewTabProps {
 export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency } = useCurrencyStore();
   const { data, isLoading } = useReport("overview", {
     start_date: startDate,
     end_date: endDate,
@@ -42,7 +44,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.overview.totalRevenue", "Total Revenue"),
-      value: formatCurrency(report?.total_revenue ?? 0),
+      value: formatCurrency(report?.total_revenue ?? 0, currency, locale),
       change: report?.revenue_change_pct,
       colorClass: "bg-green-100 text-green-600",
     },
@@ -103,7 +105,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
             />
             <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
             <Tooltip
-              formatter={(value: number) => [formatCurrency(value), t("reports.financial.revenue", "Revenue")]}
+              formatter={(value: number) => [formatCurrency(value, currency, locale), t("reports.financial.revenue", "Revenue")]}
             />
             <Line
               type="monotone"

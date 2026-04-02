@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,6 +25,7 @@ export function CompleteProfileDialog() {
   const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile, hasRole } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency: storedCurrency } = useCurrencyStore();
   const [isOpen, setIsOpen] = useState(false);
   const { showCompleteProfileDialog, setShowCompleteProfileDialog } = useUIStore();
 
@@ -111,6 +113,7 @@ export function CompleteProfileDialog() {
             onSubmit={handleSubmit}
             showActions={false}
             showLogoUploader={true}
+            defaultValues={{ currency: storedCurrency }}
           />
 
           <div className="mt-6 flex flex-col sm:flex-row gap-4 sticky bottom-0 bg-white pt-4 border-t border-gray-200 z-10">

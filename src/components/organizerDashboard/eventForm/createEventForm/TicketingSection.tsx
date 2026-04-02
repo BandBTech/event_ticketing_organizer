@@ -26,23 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TicketTierCard from "./TicketTierCard";
-
-const SUPPORTED_CURRENCIES = [
-  { value: "usd", label: "USD ($)" },
-  { value: "eur", label: "EUR (€)" },
-  { value: "gbp", label: "GBP (£)" },
-  { value: "aud", label: "AUD ($)" },
-  { value: "cad", label: "CAD ($)" },
-  { value: "jpy", label: "JPY (¥)" },
-  { value: "nzd", label: "NZD ($)" },
-  { value: "chf", label: "CHF" },
-  { value: "sgd", label: "SGD ($)" },
-  { value: "hkd", label: "HKD ($)" },
-  { value: "sek", label: "SEK (kr)" },
-  { value: "mxn", label: "MXN ($)" },
-  { value: "inr", label: "INR (₹)" },
-  { value: "brl", label: "BRL (R$)" },
-];
+import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
 
 interface TicketingSectionProps {
   control: Control<EventFormData>;

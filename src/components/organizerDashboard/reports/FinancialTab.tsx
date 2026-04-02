@@ -22,6 +22,7 @@ import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 
 interface FinancialTabProps {
   startDate?: string;
@@ -31,6 +32,7 @@ interface FinancialTabProps {
 export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { currency } = useCurrencyStore();
   const { data, isLoading } = useReport("financial", {
     start_date: startDate,
     end_date: endDate,
@@ -46,7 +48,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         <StatCard
           icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
           label={t("reports.financial.totalRevenue", "Total Revenue")}
-          value={formatCurrency(report?.total_revenue ?? 0)}
+          value={formatCurrency(report?.total_revenue ?? 0, currency, locale)}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
           index={0}
@@ -54,7 +56,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         <StatCard
           icon={<ArrowDownIcon className="w-6 h-6" weight="duotone" />}
           label={t("reports.financial.totalExpenses", "Total Expenses")}
-          value={formatCurrency(report?.total_expenses ?? 0)}
+          value={formatCurrency(report?.total_expenses ?? 0, currency, locale)}
           colorClass="bg-red-100 text-red-600"
           isLoading={isLoading}
           index={1}
@@ -62,7 +64,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         <StatCard
           icon={<ChartBarIcon className="w-6 h-6" weight="duotone" />}
           label={t("reports.financial.netIncome", "Net Income")}
-          value={formatCurrency(report?.net_income ?? 0)}
+          value={formatCurrency(report?.net_income ?? 0, currency, locale)}
           colorClass="bg-blue-100 text-blue-600"
           isLoading={isLoading}
           index={2}
@@ -80,7 +82,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             <XAxis dataKey="date" tick={{ fontSize: 12 }} tickLine={false} />
             <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value: number) => formatCurrency(value, currency, locale)}
             />
             <Legend />
             <Line
@@ -120,7 +122,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                 <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-sm text-gray-700">{item.label}</span>
                   <span className="text-sm font-semibold text-gray-900">
-                    {formatCurrency(item.amount)}
+                    {formatCurrency(item.amount, currency, locale)}
                   </span>
                 </div>
               ))}
@@ -128,7 +130,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                 <div className="flex justify-between items-center py-2 pt-3">
                   <span className="text-sm font-semibold text-gray-900">{t("reports.financial.totalCommission", "Total Commission")}</span>
                   <span className="text-sm font-bold text-primary">
-                    {formatCurrency(report.commission_total)}
+                    {formatCurrency(report.commission_total, currency, locale)}
                   </span>
                 </div>
               )}

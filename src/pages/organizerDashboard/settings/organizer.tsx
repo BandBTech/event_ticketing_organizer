@@ -13,6 +13,8 @@ import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { OrganizerProfileForm } from "@/components/organizer/OrganizerProfileForm";
 import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
+import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
 import { useTranslation } from "@/hooks/useTranslation";
 import { OrganizerProfileFormValues } from "@/lib/validation";
 import { Loader2 } from "lucide-react";
@@ -40,6 +42,7 @@ export default function OrganizerProfileSettings() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { isOrganizerRejected } = useAuthStore();
+  const { currency: storedCurrency } = useCurrencyStore();
 
   const { data: profile, isLoading: isLoadingProfile, isFetching: isFetchingProfile } = useQuery({
     queryKey: queryKeys.organizerProfile.all,
@@ -128,6 +131,7 @@ export default function OrganizerProfileSettings() {
                   defaultValues={{
                     business_name: org?.business_name || "",
                     business_description: org?.business_description || "",
+                    currency: storedCurrency,
                   }}
                   initialLogoUrl={org?.business_logo_url}
                   isEditing={true}
@@ -163,6 +167,17 @@ export default function OrganizerProfileSettings() {
                     </label>
                     <p className="text-gray-700 bg-gray-50/50 px-4 py-3 rounded-lg border border-gray-100">
                       {org?.business_name || t("common.notSpecified", "Not specified")}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-900 block">
+                      {t("settings.organizerProfile.currency", "Default Currency")}
+                    </label>
+                    <p className="text-gray-700 bg-gray-50/50 px-4 py-3 rounded-lg border border-gray-100">
+                      {storedCurrency
+                        ? SUPPORTED_CURRENCIES.find((c) => c.value === storedCurrency)?.label || storedCurrency.toUpperCase()
+                        : t("common.notSpecified", "Not specified")}
                     </p>
                   </div>
 

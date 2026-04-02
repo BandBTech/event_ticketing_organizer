@@ -18,8 +18,17 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
+import { useCurrencyStore } from "@/store/currencyStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createOrganizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
+import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
 interface OrganizerProfileFormProps {
@@ -59,6 +68,7 @@ export function OrganizerProfileForm({
 }: OrganizerProfileFormProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const { setCurrency } = useCurrencyStore();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialLogoUrl || null);
@@ -73,6 +83,7 @@ export function OrganizerProfileForm({
     defaultValues: {
       business_name: defaultValues?.business_name || "",
       business_description: defaultValues?.business_description || "",
+      currency: defaultValues?.currency || "",
     },
   });
 
@@ -104,6 +115,7 @@ export function OrganizerProfileForm({
       form.reset({
         business_name: defaultValues.business_name || "",
         business_description: defaultValues.business_description || "",
+        currency: defaultValues.currency || "",
       });
     }
   }, [defaultValues, form]);
@@ -120,6 +132,9 @@ export function OrganizerProfileForm({
     // Validate logo is present
     if (!validateLogo()) {
       return;
+    }
+    if (data.currency) {
+      setCurrency(data.currency);
     }
     // If we have no selected file and previewUrl is null, it means the user explicitly removed the logo
     const logo = selectedFile ? selectedFile : (previewUrl ? undefined : null);
@@ -138,6 +153,7 @@ export function OrganizerProfileForm({
     form.reset({
       business_name: defaultValues?.business_name || "",
       business_description: defaultValues?.business_description || "",
+      currency: defaultValues?.currency || "",
     });
     onCancel?.();
   };
@@ -216,6 +232,38 @@ export function OrganizerProfileForm({
                   </p>
                 )}
               </div>
+            </FormItem>
+          )}
+        />
+
+        {/* Currency Field */}
+        <FormField
+          control={form.control}
+          name="currency"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-gray-900">
+                {t("settings.organizerProfile.currency", "Default Currency")}
+              </FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || ""}
+                disabled={!isEditing}
+              >
+                <FormControl>
+                  <SelectTrigger className={cn(!isEditing && "bg-gray-50 cursor-not-allowed")}>
+                    <SelectValue placeholder={t("event.placeholder.currency", "Select currency")} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {SUPPORTED_CURRENCIES.map((currency) => (
+                    <SelectItem key={currency.value} value={currency.value}>
+                      {currency.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <TranslatedFormMessage t={t} />
             </FormItem>
           )}
         />
