@@ -19,9 +19,19 @@ import { ReportType } from "@/types/report";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
 
-type DateRangePreset = "today" | "yesterday" | "last-7-days" | "last-month" | "last-3-months" | "last-6-months" | "last-year";
+type DateRangePreset =
+  | "today"
+  | "yesterday"
+  | "last-7-days"
+  | "last-month"
+  | "last-3-months"
+  | "last-6-months"
+  | "last-year";
 
-function getDateRangeFromPreset(preset: DateRangePreset): { startDate: string; endDate: string } {
+function getDateRangeFromPreset(preset: DateRangePreset): {
+  startDate: string;
+  endDate: string;
+} {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
@@ -86,12 +96,14 @@ function getDateRangeFromPreset(preset: DateRangePreset): { startDate: string; e
 }
 
 export default function ReportsPage() {
-  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } =
+    useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
   const [activeTab, setActiveTab] = useState<ReportType>("overview");
-  const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>("last-7-days");
+  const [dateRangePreset, setDateRangePreset] =
+    useState<DateRangePreset>("last-7-days");
   const [selectedEventId, setSelectedEventId] = useState("");
 
   const { startDate, endDate } = getDateRangeFromPreset(dateRangePreset);
@@ -134,11 +146,16 @@ export default function ReportsPage() {
       <DashboardLayout>
         <ProtectedRoute>
           <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
-            <div className="flex items-end justify-between">
+            <div className="flex max-md:flex-col gap-4 md:items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t("reports.title", "Reports")}</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {t("reports.title", "Reports")}
+                </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  {t("reports.subtitle", "Analyze your event performance, sales, and financials")}
+                  {t(
+                    "reports.subtitle",
+                    "Analyze your event performance, sales, and financials",
+                  )}
                 </p>
               </div>
               <ReportFilters
@@ -150,20 +167,31 @@ export default function ReportsPage() {
               />
             </div>
 
-
             <ReportTabNav activeTab={activeTab} onTabChange={setActiveTab} />
 
             {activeTab === "overview" && (
-              <OverviewTab startDate={startDate || undefined} endDate={endDate || undefined} />
+              <OverviewTab
+                startDate={startDate || undefined}
+                endDate={endDate || undefined}
+              />
             )}
             {activeTab === "sales" && (
-              <SalesTab startDate={startDate || undefined} endDate={endDate || undefined} />
+              <SalesTab
+                startDate={startDate || undefined}
+                endDate={endDate || undefined}
+              />
             )}
             {activeTab === "customer-analytics" && (
-              <CustomerAnalyticsTab startDate={startDate || undefined} endDate={endDate || undefined} />
+              <CustomerAnalyticsTab
+                startDate={startDate || undefined}
+                endDate={endDate || undefined}
+              />
             )}
             {activeTab === "financial" && (
-              <FinancialTab startDate={startDate || undefined} endDate={endDate || undefined} />
+              <FinancialTab
+                startDate={startDate || undefined}
+                endDate={endDate || undefined}
+              />
             )}
             {activeTab === "event-performance" && (
               <EventPerformanceTab

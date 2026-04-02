@@ -197,11 +197,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.overview.totalRevenue", "Total Revenue"),
-      value: formatCurrency(summary?.total_revenue ?? 0, currency, locale),
+      value: formatCurrency(summary?.total_revenue ?? 0),
       subValue:
         summary?.net_revenue !== undefined &&
         summary.net_revenue !== summary?.total_revenue
-          ? `${t("reports.overview.net", "Net")}: ${formatCurrency(summary.net_revenue, currency, locale)}`
+          ? `${t("reports.overview.net", "Net")}: ${formatCurrency(summary.net_revenue)}`
           : undefined,
       colorClass: "bg-green-100 text-green-600",
     },
@@ -238,7 +238,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     {
       icon: <WalletIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.overview.pendingPayouts", "Pending Payouts"),
-      value: formatCurrency(summary?.pending_payouts ?? 0, currency, locale),
+      value: formatCurrency(summary?.pending_payouts ?? 0),
       description: t(
         "reports.overview.awaitingWithdrawal",
         "Awaiting withdrawal",
@@ -248,13 +248,13 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     {
       icon: <TrendUpIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.overview.netEarnings", "Net Earnings"),
-      value: formatCurrency(summary?.net_earnings ?? 0, currency, locale),
+      value: formatCurrency(summary?.net_earnings ?? 0),
       description: t("reports.overview.afterFees", "After platform fees"),
     },
     {
       icon: <ArrowDownRightIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.overview.totalRefunds", "Total Refunds"),
-      value: formatCurrency(summary?.total_refunds ?? 0, currency, locale),
+      value: formatCurrency(summary?.total_refunds ?? 0),
       description: t("reports.overview.processedRefunds", "Processed refunds"),
     },
     {
@@ -338,7 +338,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
           {t("reports.overview.keyMetrics", "Key Metrics")}
         </h2>
         <div className="@container">
-          <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 @2xl:grid-cols-4 gap-4">
             {primaryStats.map((stat, i) => (
               <StatCard
                 key={stat.label}
@@ -361,7 +361,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
           {t("reports.overview.financialOverview", "Financial Overview")}
         </h2>
         <div className="@container">
-          <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 @3xl:grid-cols-4 gap-4">
             {financialStats.map((stat, i) => (
               <FinancialCard
                 key={stat.label}
@@ -399,22 +399,27 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                 data={revenueTrend}
                 margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
                 />
                 <ChartTooltip
                   content={
-                    <ChartTooltipContent className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
                       formatter={(value) => [
-                        formatCurrency(Number(value), currency, locale),
+                        formatCurrency(Number(value)),
                         t("reports.financial.revenue", "Revenue"),
                       ]}
                     />
@@ -454,20 +459,25 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                 data={ticketSalesTrend}
                 margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
                 />
                 <ChartTooltip
                   content={
-                    <ChartTooltipContent className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
                       formatter={(value) => [
                         Number(value).toLocaleString(),
                         t("reports.overview.tickets", "Tickets"),
@@ -619,15 +629,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                         {event.tickets_sold.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(event.revenue, currency, locale)}
+                        {formatCurrency(event.revenue)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-500 hidden sm:table-cell">
                         {event.tickets_sold > 0
-                          ? formatCurrency(
-                              event.revenue / event.tickets_sold,
-                              currency,
-                              locale,
-                            )
+                          ? formatCurrency(event.revenue / event.tickets_sold)
                           : "-"}
                       </td>
                     </tr>
@@ -685,11 +691,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                       className={`text-sm font-semibold ${isRefund ? "text-red-600" : "text-green-600"}`}
                     >
                       {isRefund ? "-" : "+"}
-                      {formatCurrency(
-                        (transaction.amount as number) ?? 0,
-                        currency,
-                        locale,
-                      )}
+                      {formatCurrency((transaction.amount as number) ?? 0)}
                     </span>
                   </div>
                 );

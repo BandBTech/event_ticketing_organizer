@@ -40,13 +40,13 @@ export default function DashboardHome() {
     {
       icon: <CurrencyDollarIcon className="w-10 h-10 text-green-500" />,
       label: "Total Revenue",
-      value: formatCurrency(stats.totalRevenue, currency, locale),
+      value: formatCurrency(stats.totalRevenue),
       gradient: "from-green-50 to-white",
     },
     {
       icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
       label: "Organizer Earnings",
-      value: formatCurrency(stats.organizerEarnings, currency, locale),
+      value: formatCurrency(stats.organizerEarnings),
       gradient: "from-emerald-50 to-white",
     },
     {
@@ -58,13 +58,13 @@ export default function DashboardHome() {
     {
       icon: <HourglassIcon className="w-10 h-10 text-orange-500" />,
       label: "Total Pending Amount",
-      value: formatCurrency(stats.totalPendingAmount, currency, locale),
+      value: formatCurrency(stats.totalPendingAmount),
       gradient: "from-orange-50 to-white",
     },
     {
       icon: <BankIcon className="w-10 h-10 text-teal-600" />,
       label: "Total Amount Received",
-      value: formatCurrency(stats.totalAmountReceived, currency, locale),
+      value: formatCurrency(stats.totalAmountReceived),
       gradient: "from-teal-50 to-white",
     },
   ];
@@ -74,7 +74,10 @@ export default function DashboardHome() {
       <div className="space-y-6 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
+            <div
+              key={i}
+              className="h-24 bg-gray-100 rounded-2xl animate-pulse"
+            />
           ))}
         </div>
         <div className="h-96 bg-gray-100 rounded-2xl animate-pulse" />

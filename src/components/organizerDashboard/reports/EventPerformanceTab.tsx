@@ -357,10 +357,10 @@ export function EventPerformanceTab({
             <StatCard
               icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
               label={t("reports.eventPerformance.revenue", "Revenue")}
-              value={formatCurrency(report?.revenue ?? 0, currency, locale)}
+              value={formatCurrency(report?.revenue ?? 0)}
               subValue={
                 report?.organizer_earnings
-                  ? `${t("reports.eventPerformance.net", "Net")}: ${formatCurrency(report.organizer_earnings, currency, locale)}`
+                  ? `${t("reports.eventPerformance.net", "Net")}: ${formatCurrency(report.organizer_earnings)}`
                   : undefined
               }
               colorClass="bg-green-100 text-green-600"
@@ -373,11 +373,7 @@ export function EventPerformanceTab({
                 "reports.eventPerformance.avgTicketPrice",
                 "Avg. Ticket Price",
               )}
-              value={formatCurrency(
-                report?.average_ticket_price ?? 0,
-                currency,
-                locale,
-              )}
+              value={formatCurrency(report?.average_ticket_price ?? 0)}
               subValue={
                 report?.total_transactions
                   ? `${report.total_transactions.toLocaleString()} ${t("reports.eventPerformance.transactions", "transactions")}`
@@ -454,7 +450,7 @@ export function EventPerformanceTab({
                     {topTier.tier_name}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {formatCurrency(topTier.ticket_price, currency, locale)} /{" "}
+                    {formatCurrency(topTier.ticket_price)} /{" "}
                     {t("reports.eventPerformance.ticket", "ticket")}
                   </p>
                 </div>
@@ -478,7 +474,7 @@ export function EventPerformanceTab({
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-600">
-                    {formatCurrency(topTier.revenue, currency, locale)}
+                    {formatCurrency(topTier.revenue)}
                   </p>
                   <p className="text-xs text-gray-500">
                     {t("reports.eventPerformance.revenue", "Revenue")}
@@ -634,9 +630,7 @@ export function EventPerformanceTab({
                     content={
                       <ChartTooltipContent
                         className="bg-white shadow-lg border border-gray-100 rounded-xl"
-                        formatter={(value) =>
-                          formatCurrency(Number(value), currency, locale)
-                        }
+                        formatter={(value) => formatCurrency(Number(value))}
                       />
                     }
                   />
@@ -706,7 +700,7 @@ export function EventPerformanceTab({
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
-                        {formatCurrency(tier.ticket_price, currency, locale)}
+                        {formatCurrency(tier.ticket_price)}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
                         {tier.tickets_sold.toLocaleString()}
@@ -728,7 +722,7 @@ export function EventPerformanceTab({
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right font-semibold text-green-600">
-                        {formatCurrency(tier.revenue, currency, locale)}
+                        {formatCurrency(tier.revenue)}
                       </td>
                     </tr>
                   ))}

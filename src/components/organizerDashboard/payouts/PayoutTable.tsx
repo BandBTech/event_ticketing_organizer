@@ -136,7 +136,7 @@ export function PayoutTable({
         meta: { sortKey: "amount" },
         cell: ({ row }) => (
           <div className="font-semibold text-right">
-            {formatCurrency(row.original.amount, currency, locale)}
+            {formatCurrency(row.original.amount)}
           </div>
         ),
       },

@@ -21,8 +21,8 @@ import {
   PieChart,
   Pie,
   Cell,
-  ResponsiveContainer,
 } from "recharts";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
 import { ChartCard } from "./ChartCard";
@@ -280,17 +280,19 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
     },
   ];
 
-  // Revenue breakdown by event for bar chart
-  const revenueByEventData = revenueBreakdown.map((item, i) => ({
-    name:
-      item.event_title.length > 20
-        ? item.event_title.substring(0, 20) + "..."
-        : item.event_title,
-    grossRevenue: item.gross_revenue,
-    organizerShare: item.organizer_share,
-    commission: item.commission,
-    color: EVENT_COLORS[i % EVENT_COLORS.length],
-  }));
+  // Revenue breakdown by event — top 10 by gross revenue
+  const revenueByEventData = [...revenueBreakdown]
+    .sort((a, b) => b.gross_revenue - a.gross_revenue)
+    .slice(0, 10)
+    .map((item, i) => ({
+      name:
+        item.event_title.length > 22
+          ? item.event_title.substring(0, 22) + "…"
+          : item.event_title,
+      organizerShare: item.organizer_share,
+      commission: item.commission,
+      color: EVENT_COLORS[i % EVENT_COLORS.length],
+    }));
 
   // Currency breakdown for pie chart
   const currencyChartData = currencyBreakdown.map((curr, i) => ({
@@ -370,163 +372,167 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         </div>
       </div>
 
-      {/* Revenue by Event */}
-      {revenueByEventData.length > 0 && (
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            {t("reports.financial.revenueByEvent", "Revenue by Event")}
-          </h2>
-          <ChartCard
-            title={t("reports.financial.revenueBreakdown", "Revenue Breakdown")}
-            isLoading={isLoading}
-            isEmpty={!isLoading && revenueByEventData.length === 0}
-          >
-            <ChartContainer
-              config={{
-                grossRevenue: {
-                  label: t("reports.financial.grossRevenue", "Gross Revenue"),
-                  color: "hsl(var(--chart-1))",
-                },
-                organizerShare: {
-                  label: t(
-                    "reports.financial.organizerShare",
-                    "Organizer Share",
-                  ),
-                  color: "hsl(var(--chart-2))",
-                },
-                commission: {
-                  label: t("reports.financial.commission", "Commission"),
-                  color: "hsl(var(--chart-3))",
-                },
-              }}
-              className="h-80"
-            >
-              <BarChart
-                data={revenueByEventData}
-                margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
-                barCategoryGap="20%"
+      {/* Revenue by Event + Currency Breakdown — side by side */}
+      {(revenueByEventData.length > 0 ||
+        (currencyChartData.length > 0 && currencyChartData.length <= 4)) && (
+        <div className="@container">
+          <div className="grid grid-cols-1 @2xl:grid-cols-2 gap-6 items-start">
+            {/* Revenue by Event */}
+            {revenueByEventData.length > 0 && (
+              <ChartCard
+                title={t(
+                  "reports.financial.revenueBreakdown",
+                  "Revenue Breakdown",
+                )}
+                isLoading={isLoading}
+                isEmpty={!isLoading && revenueByEventData.length === 0}
               >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  interval={0}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      className="bg-card text-card-foreground border-border rounded-lg"
-                      formatter={(value, name) => [
-                        formatCurrency(Number(value)),
-                        name,
-                      ]}
-                    />
-                  }
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-                <Bar
-                  dataKey="grossRevenue"
-                  name={t("reports.financial.grossRevenue", "Gross Revenue")}
-                  fill="var(--color-grossRevenue)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={60}
-                />
-                <Bar
-                  dataKey="organizerShare"
-                  name={t(
-                    "reports.financial.organizerShare",
-                    "Organizer Share",
-                  )}
-                  fill="var(--color-organizerShare)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={60}
-                />
-                <Bar
-                  dataKey="commission"
-                  name={t("reports.financial.commission", "Commission")}
-                  fill="var(--color-commission)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={60}
-                />
-              </BarChart>
-            </ChartContainer>
-          </ChartCard>
-        </div>
-      )}
-
-      {/* Currency Breakdown */}
-      {currencyChartData.length > 0 && currencyChartData.length <= 4 && (
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            {t("reports.financial.currencyBreakdown", "Currency Breakdown")}
-          </h2>
-          <ChartCard
-            title={t(
-              "reports.financial.revenueByCurrency",
-              "Revenue by Currency",
-            )}
-            isLoading={isLoading}
-            isEmpty={!isLoading && currencyChartData.length === 0}
-          >
-            <ChartContainer
-              config={Object.fromEntries(
-                currencyChartData.map((curr) => [
-                  curr.name,
-                  {
-                    label: curr.name,
-                    color: curr.color,
-                  },
-                ]),
-              )}
-              className="h-72"
-            >
-              <PieChart>
-                <Pie
-                  data={currencyChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  innerRadius={50}
-                  paddingAngle={3}
-                  strokeWidth={0}
+                <ChartContainer
+                  config={{
+                    organizerShare: {
+                      label: t(
+                        "reports.financial.organizerShare",
+                        "Organizer Share",
+                      ),
+                      color: "hsl(var(--chart-1))",
+                    },
+                    commission: {
+                      label: t("reports.financial.commission", "Commission"),
+                      color: "hsl(var(--chart-2))",
+                    },
+                  }}
+                  className="h-80 w-full"
                 >
-                  {currencyChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={`var(--color-${entry.name})`}
-                      className="transition-opacity hover:opacity-80"
+                  <BarChart
+                    layout="vertical"
+                    data={revenueByEventData}
+                    margin={{ top: 4, right: 24, left: 8, bottom: 4 }}
+                    barCategoryGap="30%"
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--border))"
+                      horizontal={false}
                     />
-                  ))}
-                </Pie>
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      className="bg-card text-card-foreground border-border rounded-lg"
-                      formatter={(value) => formatCurrency(Number(value))}
+                    <XAxis
+                      type="number"
+                      tick={{
+                        fontSize: 11,
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => {
+                        if (value >= 1_000_000)
+                          return `$${(value / 1_000_000).toFixed(1)}M`;
+                        if (value >= 1_000)
+                          return `$${(value / 1_000).toFixed(0)}k`;
+                        return `$${value}`;
+                      }}
                     />
-                  }
-                />
-                <ChartLegend content={<ChartLegendContent />} />
-              </PieChart>
-            </ChartContainer>
-          </ChartCard>
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={160}
+                      tick={{
+                        fontSize: 12,
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="bg-card text-card-foreground border-border rounded-lg"
+                          formatter={(value, name) => [
+                            formatCurrency(Number(value)),
+                            name,
+                          ]}
+                        />
+                      }
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    <Bar
+                      dataKey="organizerShare"
+                      name={t(
+                        "reports.financial.organizerShare",
+                        "Organizer Share",
+                      )}
+                      stackId="revenue"
+                      fill="var(--color-organizerShare)"
+                      radius={[0, 0, 0, 0]}
+                      maxBarSize={28}
+                    />
+                    <Bar
+                      dataKey="commission"
+                      name={t("reports.financial.commission", "Commission")}
+                      stackId="revenue"
+                      fill="var(--color-commission)"
+                      radius={[0, 4, 4, 0]}
+                      maxBarSize={28}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </ChartCard>
+            )}
+
+            {/* Currency Breakdown */}
+            {currencyChartData.length > 0 && currencyChartData.length <= 4 && (
+              <ChartCard
+                title={t(
+                  "reports.financial.revenueByCurrency",
+                  "Revenue by Currency",
+                )}
+                isLoading={isLoading}
+                isEmpty={!isLoading && currencyChartData.length === 0}
+              >
+                <ChartContainer
+                  config={Object.fromEntries(
+                    currencyChartData.map((curr) => [
+                      curr.name,
+                      {
+                        label: curr.name,
+                        color: curr.color,
+                      },
+                    ]),
+                  )}
+                  className="h-72"
+                >
+                  <PieChart>
+                    <Pie
+                      data={currencyChartData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      innerRadius={50}
+                      paddingAngle={3}
+                      strokeWidth={0}
+                    >
+                      {currencyChartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={`var(--color-${entry.name})`}
+                          className="transition-opacity hover:opacity-80"
+                        />
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="bg-card text-card-foreground border-border rounded-lg"
+                          formatter={(value) => formatCurrency(Number(value))}
+                        />
+                      }
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
+                  </PieChart>
+                </ChartContainer>
+              </ChartCard>
+            )}
+          </div>
         </div>
       )}
 

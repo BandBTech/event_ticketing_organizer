@@ -27,10 +27,10 @@ export function PayoutSummaryCards({
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
   const { currency } = useCurrencyStore();
-  const totalEarnings = formatCurrency(summary?.total_earnings ?? 0, currency, locale);
-  const totalReceived = formatCurrency(summary?.total_received ?? 0, currency, locale);
-  const availableAmount = formatCurrency(summary?.available_amount ?? 0, currency, locale);
-  const pendingAmount = formatCurrency(summary?.pending_amount ?? 0, currency, locale);
+  const totalEarnings = formatCurrency(summary?.total_earnings ?? 0);
+  const totalReceived = formatCurrency(summary?.total_received ?? 0);
+  const availableAmount = formatCurrency(summary?.available_amount ?? 0);
+  const pendingAmount = formatCurrency(summary?.pending_amount ?? 0);
   const cards = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" />,

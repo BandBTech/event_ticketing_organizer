@@ -584,11 +584,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         {t("event.label.totalRevenue", "Revenue")}
                       </p>
                       <p className="text-lg font-bold text-emerald-700">
-                        {formatCurrency(
-                          totalRevenue,
-                          event.tiers?.[0]?.currency || storedCurrency,
-                          locale,
-                        )}
+                        {formatCurrency(totalRevenue)}
                       </p>
                     </div>
                   </div>
@@ -616,11 +612,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {formatCurrency(
-                                      tier.revenue,
-                                      tier.currency || storedCurrency,
-                                      locale,
-                                    )}
+                                    {formatCurrency(tier.revenue)}
                                   </p>
                                 </div>
                               </div>
@@ -639,11 +631,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {t("common.sold", "sold")}
                                   </span>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(
-                                      tier.price,
-                                      tier.currency || storedCurrency,
-                                      locale,
-                                    )}
+                                    {formatCurrency(tier.price)}
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
@@ -729,21 +717,13 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {tier.tier_name}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(
-                                      tier.price,
-                                      tier.currency || storedCurrency,
-                                      locale,
-                                    )}{" "}
-                                    / {t("common.ticket", "ticket")}
+                                    {formatCurrency(tier.price)} /{" "}
+                                    {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {formatCurrency(
-                                      tierRevenue,
-                                      tier.currency || storedCurrency,
-                                      locale,
-                                    )}
+                                    {formatCurrency(tierRevenue)}
                                   </p>
                                 </div>
                               </div>
@@ -846,7 +826,8 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       const commissionAmount =
                         totalRevenue * (commissionRate / 100);
                       const organizerEarnings = totalRevenue - commissionAmount;
-                      const currency = event.tiers?.[0]?.currency || storedCurrency;
+                      const currency =
+                        event.tiers?.[0]?.currency || storedCurrency;
                       return (
                         <div className="space-y-3">
                           <div className="flex justify-between items-center text-sm">
@@ -854,7 +835,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               {t("event.label.grossRevenue", "Gross Revenue")}
                             </span>
                             <span className="font-medium text-gray-900">
-                              {formatCurrency(totalRevenue, currency, locale)}
+                              {formatCurrency(totalRevenue)}
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-sm">
@@ -873,12 +854,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               {t("event.label.commissionAmount", "Commission")}
                             </span>
                             <span className="font-medium text-red-500">
-                              −{" "}
-                              {formatCurrency(
-                                commissionAmount,
-                                currency,
-                                locale,
-                              )}
+                              − {formatCurrency(commissionAmount)}
                             </span>
                           </div>
                           <Separator />
@@ -890,11 +866,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               )}
                             </span>
                             <span className="font-bold text-emerald-600 text-lg">
-                              {formatCurrency(
-                                organizerEarnings,
-                                currency,
-                                locale,
-                              )}
+                              {formatCurrency(organizerEarnings)}
                             </span>
                           </div>
                           {(() => {
