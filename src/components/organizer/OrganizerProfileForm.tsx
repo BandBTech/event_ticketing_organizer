@@ -18,17 +18,11 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useLanguageStore } from "@/store/languageStore";
-import { useCurrencyStore } from "@/store/currencyStore";
 import { useTranslation } from "@/hooks/useTranslation";
-import { createOrganizerProfileSchema, OrganizerProfileFormValues } from "@/lib/validation";
-import { SUPPORTED_CURRENCIES } from "@/lib/currencies";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  createOrganizerProfileSchema,
+  OrganizerProfileFormValues,
+} from "@/lib/validation";
 import { Loader2 } from "lucide-react";
 
 interface OrganizerProfileFormProps {
@@ -41,7 +35,10 @@ interface OrganizerProfileFormProps {
   /** Whether the form submission is pending */
   isPending?: boolean;
   /** Callback when form is submitted */
-  onSubmit: (data: OrganizerProfileFormValues, logo: File | null | undefined) => void;
+  onSubmit: (
+    data: OrganizerProfileFormValues,
+    logo: File | null | undefined,
+  ) => void;
   /** Callback when form is cancelled (only in edit mode) */
   onCancel?: () => void;
   /** Whether to show action buttons */
@@ -68,14 +65,18 @@ export function OrganizerProfileForm({
 }: OrganizerProfileFormProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { setCurrency } = useCurrencyStore();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(initialLogoUrl || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    initialLogoUrl || null,
+  );
   const [logoError, setLogoError] = useState<string | null>(null);
 
   // Create schema with translation function - uses translation keys
-  const organizerProfileSchema = useMemo(() => createOrganizerProfileSchema((key, fallback) => key), []);
+  const organizerProfileSchema = useMemo(
+    () => createOrganizerProfileSchema((key, fallback) => key),
+    [],
+  );
 
   const internalForm = useForm<OrganizerProfileFormValues>({
     resolver: zodResolver(organizerProfileSchema),
@@ -83,7 +84,6 @@ export function OrganizerProfileForm({
     defaultValues: {
       business_name: defaultValues?.business_name || "",
       business_description: defaultValues?.business_description || "",
-      currency: defaultValues?.currency || "",
     },
   });
 
@@ -110,12 +110,14 @@ export function OrganizerProfileForm({
     }
 
     const currentDefaultValuesStr = JSON.stringify(defaultValues);
-    if (defaultValues && prevDefaultValuesRef.current !== currentDefaultValuesStr) {
+    if (
+      defaultValues &&
+      prevDefaultValuesRef.current !== currentDefaultValuesStr
+    ) {
       prevDefaultValuesRef.current = currentDefaultValuesStr;
       form.reset({
         business_name: defaultValues.business_name || "",
         business_description: defaultValues.business_description || "",
-        currency: defaultValues.currency || "",
       });
     }
   }, [defaultValues, form]);
@@ -133,11 +135,8 @@ export function OrganizerProfileForm({
     if (!validateLogo()) {
       return;
     }
-    if (data.currency) {
-      setCurrency(data.currency);
-    }
     // If we have no selected file and previewUrl is null, it means the user explicitly removed the logo
-    const logo = selectedFile ? selectedFile : (previewUrl ? undefined : null);
+    const logo = selectedFile ? selectedFile : previewUrl ? undefined : null;
     onSubmit(data, logo);
   };
 
@@ -153,7 +152,6 @@ export function OrganizerProfileForm({
     form.reset({
       business_name: defaultValues?.business_name || "",
       business_description: defaultValues?.business_description || "",
-      currency: defaultValues?.currency || "",
     });
     onCancel?.();
   };
@@ -176,12 +174,18 @@ export function OrganizerProfileForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit, handleInvalid)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
+        className="space-y-6"
+      >
         {/* Logo Uploader */}
         {showLogoUploader && isEditing && (
           <div className="space-y-2 organizer-profile-form">
             <ImageUploader
-              label={t("settings.organizerProfile.businessLogo", "Business Logo")}
+              label={t(
+                "settings.organizerProfile.businessLogo",
+                "Business Logo",
+              )}
               value={previewUrl || ""}
               onChange={handleLogoChange}
               onRemove={handleLogoRemove}
@@ -190,9 +194,18 @@ export function OrganizerProfileForm({
               maxHeight={500}
               required={true}
               error={logoError || undefined}
-              helperText={t("settings.organizerProfile.logoHelperText", "Recommended size: 500x500px.")}
-              helperTextSize={t("settings.organizerProfile.logoHelperTextSize", "Max size: 2MB.")}
-              browseButtonText={t("event.helperText.bannerImageBrowse", "Browse File")}
+              helperText={t(
+                "settings.organizerProfile.logoHelperText",
+                "Recommended size: 500x500px.",
+              )}
+              helperTextSize={t(
+                "settings.organizerProfile.logoHelperTextSize",
+                "Max size: 2MB.",
+              )}
+              browseButtonText={t(
+                "event.helperText.bannerImageBrowse",
+                "Browse File",
+              )}
             />
           </div>
         )}
@@ -209,17 +222,24 @@ export function OrganizerProfileForm({
               </FormLabel>
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <BuildingOfficeIcon size={18} className="text-gray-600" weight="duotone" />
+                  <BuildingOfficeIcon
+                    size={18}
+                    className="text-gray-600"
+                    weight="duotone"
+                  />
                 </div>
                 <FormControl>
                   <Input
                     {...field}
                     disabled={!isEditing}
                     maxLength={50}
-                    placeholder={t("settings.organizerProfile.businessNamePlaceholder", "Enter your business name")}
+                    placeholder={t(
+                      "settings.organizerProfile.businessNamePlaceholder",
+                      "Enter your business name",
+                    )}
                     className={cn(
                       "pl-10",
-                      !isEditing && "bg-gray-50 cursor-not-allowed"
+                      !isEditing && "bg-gray-50 cursor-not-allowed",
                     )}
                   />
                 </FormControl>
@@ -232,38 +252,6 @@ export function OrganizerProfileForm({
                   </p>
                 )}
               </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Currency Field */}
-        <FormField
-          control={form.control}
-          name="currency"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-900">
-                {t("settings.organizerProfile.currency", "Default Currency")}
-              </FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value || ""}
-                disabled={!isEditing}
-              >
-                <FormControl>
-                  <SelectTrigger className={cn(!isEditing && "bg-gray-50 cursor-not-allowed")}>
-                    <SelectValue placeholder={t("event.placeholder.currency", "Select currency")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {SUPPORTED_CURRENCIES.map((currency) => (
-                    <SelectItem key={currency.value} value={currency.value}>
-                      {currency.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <TranslatedFormMessage t={t} />
             </FormItem>
           )}
         />
@@ -282,10 +270,13 @@ export function OrganizerProfileForm({
                   {...field}
                   disabled={!isEditing}
                   maxLength={500}
-                  placeholder={t("settings.organizerProfile.aboutPlaceholder", "Write about your organization...")}
+                  placeholder={t(
+                    "settings.organizerProfile.aboutPlaceholder",
+                    "Write about your organization...",
+                  )}
                   className={cn(
                     "min-h-[100px]",
-                    !isEditing && "bg-gray-50 cursor-not-allowed"
+                    !isEditing && "bg-gray-50 cursor-not-allowed",
                   )}
                 />
               </FormControl>

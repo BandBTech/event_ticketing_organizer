@@ -211,24 +211,15 @@ export function isValidRegistrationData(data: unknown): data is {
 }
 
 /**
- * Format a currency amount using the user's locale
+ * Format a currency amount in USD
  * @param amount - The amount to format
- * @param currency - The currency code (e.g. "USD", "EUR")
- * @returns Formatted currency string
+ * @returns Formatted USD currency string
  */
-export const formatCurrency = (amount: number, currency?: string, locale: string = "ja") => {
-  // we have three languages japaneses english and italian if currency is not available use currency based on language
-  const currencyMap: Record<string, string> = {
-    ja: "JPY",
-    en: "USD",
-    it: "EUR",
-  };
-  const resolvedCurrency = currency || currencyMap[locale];
-
+export const formatCurrency = (amount: number) => {
   const hasFraction = amount % 1 !== 0;
-  return new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: resolvedCurrency,
+    currency: "USD",
     minimumFractionDigits: hasFraction ? 2 : 0,
     maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(amount);

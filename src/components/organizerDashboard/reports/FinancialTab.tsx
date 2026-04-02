@@ -35,8 +35,6 @@ import {
 } from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useLanguageStore } from "@/store/languageStore";
-import { useCurrencyStore } from "@/store/currencyStore";
 
 interface FinancialTabProps {
   startDate?: string;
@@ -154,9 +152,7 @@ const EVENT_COLORS = [
 ];
 
 export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
-  const { locale } = useLanguageStore();
-  const { t } = useTranslation(locale);
-  const { currency } = useCurrencyStore();
+  const { t } = useTranslation();
   const { data, isLoading } = useReport("financial", {
     start_date: startDate,
     end_date: endDate,
@@ -223,26 +219,18 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.financial.grossRevenue", "Gross Revenue"),
-      value: formatCurrency(
-        summary?.total_gross_revenue ?? 0,
-        currency,
-        locale,
-      ),
+      value: formatCurrency(summary?.total_gross_revenue ?? 0),
       subValue:
         summary?.net_revenue !== undefined &&
         summary.net_revenue !== summary.total_gross_revenue
-          ? `${t("reports.financial.net", "Net")}: ${formatCurrency(summary.net_revenue, currency, locale)}`
+          ? `${t("reports.financial.net", "Net")}: ${formatCurrency(summary.net_revenue)}`
           : undefined,
       colorClass: "bg-green-100 text-green-600",
     },
     {
       icon: <TicketIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.financial.avgTicketPrice", "Avg. Ticket Price"),
-      value: formatCurrency(
-        summary?.average_ticket_price ?? 0,
-        currency,
-        locale,
-      ),
+      value: formatCurrency(summary?.average_ticket_price ?? 0),
       subValue: summary?.total_transactions
         ? `${summary.total_transactions.toLocaleString()} ${t("reports.financial.transactions", "transactions")}`
         : undefined,
@@ -251,20 +239,16 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
     {
       icon: <WalletIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.financial.organizerShare", "Organizer Share"),
-      value: formatCurrency(
-        summary?.total_organizer_share ?? 0,
-        currency,
-        locale,
-      ),
+      value: formatCurrency(summary?.total_organizer_share ?? 0),
       subValue: summary?.total_commission
-        ? `${t("reports.financial.commission", "Commission")}: ${formatCurrency(summary.total_commission, currency, locale)}`
+        ? `${t("reports.financial.commission", "Commission")}: ${formatCurrency(summary.total_commission)}`
         : undefined,
       colorClass: "bg-blue-100 text-blue-600",
     },
     {
       icon: <ReceiptIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.financial.totalRefunds", "Total Refunds"),
-      value: formatCurrency(summary?.total_refunds ?? 0, currency, locale),
+      value: formatCurrency(summary?.total_refunds ?? 0),
       subValue: undefined,
       colorClass: "bg-red-100 text-red-600",
     },
@@ -275,7 +259,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
     {
       icon: <ClockIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.financial.pendingPayouts", "Pending Payouts"),
-      value: formatCurrency(summary?.pending_payouts ?? 0, currency, locale),
+      value: formatCurrency(summary?.pending_payouts ?? 0),
       description: t(
         "reports.financial.awaitingWithdrawal",
         "Awaiting withdrawal",
@@ -285,13 +269,13 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
     {
       icon: <CreditCardIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.financial.completedPayouts", "Completed Payouts"),
-      value: formatCurrency(summary?.completed_payouts ?? 0, currency, locale),
+      value: formatCurrency(summary?.completed_payouts ?? 0),
       description: t("reports.financial.paidOut", "Paid out"),
     },
     {
       icon: <TrendUpIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.financial.netRevenue", "Net Revenue"),
-      value: formatCurrency(summary?.net_revenue ?? 0, currency, locale),
+      value: formatCurrency(summary?.net_revenue ?? 0),
       description: t("reports.financial.afterRefunds", "After refunds"),
     },
   ];
@@ -415,11 +399,12 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   color: "hsl(var(--chart-3))",
                 },
               }}
-              className="h-72"
+              className="h-80"
             >
               <BarChart
                 data={revenueByEventData}
-                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                barCategoryGap="20%"
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -433,7 +418,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   axisLine={false}
                   angle={-45}
                   textAnchor="end"
-                  height={70}
+                  height={80}
                   interval={0}
                 />
                 <YAxis
@@ -447,7 +432,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                     <ChartTooltipContent
                       className="bg-card text-card-foreground border-border rounded-lg"
                       formatter={(value, name) => [
-                        formatCurrency(Number(value), currency, locale),
+                        formatCurrency(Number(value)),
                         name,
                       ]}
                     />
@@ -459,7 +444,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   name={t("reports.financial.grossRevenue", "Gross Revenue")}
                   fill="var(--color-grossRevenue)"
                   radius={[6, 6, 0, 0]}
-                  barSize={32}
+                  maxBarSize={60}
                 />
                 <Bar
                   dataKey="organizerShare"
@@ -469,14 +454,14 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   )}
                   fill="var(--color-organizerShare)"
                   radius={[6, 6, 0, 0]}
-                  barSize={32}
+                  maxBarSize={60}
                 />
                 <Bar
                   dataKey="commission"
                   name={t("reports.financial.commission", "Commission")}
                   fill="var(--color-commission)"
                   radius={[6, 6, 0, 0]}
-                  barSize={32}
+                  maxBarSize={60}
                 />
               </BarChart>
             </ChartContainer>
@@ -534,9 +519,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   content={
                     <ChartTooltipContent
                       className="bg-card text-card-foreground border-border rounded-lg"
-                      formatter={(value) =>
-                        formatCurrency(Number(value), currency, locale)
-                      }
+                      formatter={(value) => formatCurrency(Number(value))}
                     />
                   }
                 />
@@ -607,21 +590,19 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(item.gross_revenue, currency, locale)}
+                        {formatCurrency(item.gross_revenue)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
-                        {formatCurrency(item.commission, currency, locale)}
+                        {formatCurrency(item.commission)}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-green-600">
-                        {formatCurrency(item.organizer_share, currency, locale)}
+                        {formatCurrency(item.organizer_share)}
                       </td>
                       <td className="py-3 px-4 text-right text-red-600">
-                        {item.refunds > 0
-                          ? formatCurrency(item.refunds, currency, locale)
-                          : "-"}
+                        {item.refunds > 0 ? formatCurrency(item.refunds) : "-"}
                       </td>
                       <td className="py-3 px-4 text-right font-semibold text-gray-900">
-                        {formatCurrency(item.net_revenue, currency, locale)}
+                        {formatCurrency(item.net_revenue)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
                         {item.transaction_count.toLocaleString()}
@@ -660,7 +641,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                       </p>
                       <p className="text-xs text-gray-500">
                         {new Date(commission.created_at).toLocaleDateString(
-                          locale,
+                          "en-US",
                           {
                             year: "numeric",
                             month: "short",
@@ -674,16 +655,12 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-amber-600">
-                      {formatCurrency(
-                        commission.commission_amount,
-                        currency,
-                        locale,
-                      )}
+                      {formatCurrency(commission.commission_amount)}
                     </p>
                     <p className="text-xs text-gray-500">
                       {commission.commission_rate}%{" "}
                       {t("reports.financial.of", "of")}{" "}
-                      {formatCurrency(commission.revenue, currency, locale)}
+                      {formatCurrency(commission.revenue)}
                     </p>
                   </div>
                 </div>
@@ -738,7 +715,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                           </code>
                         </td>
                         <td className="py-3 px-4 text-right font-medium text-gray-900">
-                          {formatCurrency(payout.amount, currency, locale)}
+                          {formatCurrency(payout.amount)}
                         </td>
                         <td className="py-3 px-4 text-right">
                           <span
@@ -749,7 +726,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                         </td>
                         <td className="py-3 px-4 text-right text-gray-700">
                           {new Date(payout.created_at).toLocaleDateString(
-                            locale,
+                            "en-US",
                             {
                               year: "numeric",
                               month: "short",
