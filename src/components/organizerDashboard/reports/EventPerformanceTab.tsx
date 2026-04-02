@@ -513,11 +513,11 @@ export function EventPerformanceTab({
                     color: "#e0e7ff",
                   },
                 }}
-                className="h-72"
+                className="h-64 sm:h-72"
               >
                 <BarChart
                   data={tierChartData}
-                  margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                  margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -528,11 +528,13 @@ export function EventPerformanceTab({
                     dataKey="name"
                     tick={{ fontSize: 11, fill: "#6b7280" }}
                     tickLine={false}
+                    interval="preserveStartEnd"
                   />
                   <YAxis
-                    tick={{ fontSize: 12, fill: "#6b7280" }}
+                    tick={{ fontSize: 11, fill: "#6b7280" }}
                     tickLine={false}
                     axisLine={false}
+                    width={35}
                   />
                   <ChartTooltip
                     content={
@@ -602,7 +604,7 @@ export function EventPerformanceTab({
                       },
                     ]),
                 )}
-                className="h-72"
+                className="h-64 sm:h-72"
               >
                 <PieChart>
                   <Pie
@@ -611,9 +613,9 @@ export function EventPerformanceTab({
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
-                    innerRadius={50}
-                    paddingAngle={3}
+                    outerRadius="80%"
+                    innerRadius="40%"
+                    paddingAngle={2}
                     strokeWidth={0}
                   >
                     {tierChartData

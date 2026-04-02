@@ -393,11 +393,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                   color: "#6366f1",
                 },
               }}
-              className="h-72"
+              className="h-64 sm:h-72 w-full"
             >
               <LineChart
                 data={revenueTrend}
-                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -406,13 +406,15 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                 />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
+                  width={45}
                 />
                 <ChartTooltip
                   content={
@@ -453,11 +455,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                   color: "#10b981",
                 },
               }}
-              className="h-72"
+              className="h-64 sm:h-72 w-full"
             >
               <LineChart
                 data={ticketSalesTrend}
-                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -466,13 +468,15 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                 />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
+                  width={35}
                 />
                 <ChartTooltip
                   content={

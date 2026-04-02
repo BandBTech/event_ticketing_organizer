@@ -401,12 +401,12 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                       color: "hsl(var(--chart-2))",
                     },
                   }}
-                  className="h-80 w-full"
+                  className="h-64 sm:h-80 w-full"
                 >
                   <BarChart
                     layout="vertical"
                     data={revenueByEventData}
-                    margin={{ top: 4, right: 24, left: 8, bottom: 4 }}
+                    margin={{ top: 4, right: 4, left: 8, bottom: 4 }}
                     barCategoryGap="30%"
                   >
                     <CartesianGrid
@@ -433,7 +433,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                     <YAxis
                       type="category"
                       dataKey="name"
-                      width={160}
+                      width={110}
                       tick={{
                         fontSize: 12,
                         fill: "hsl(var(--muted-foreground))",
@@ -497,7 +497,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                       },
                     ]),
                   )}
-                  className="h-72"
+                  className="h-64 sm:h-72 w-full"
                 >
                   <PieChart>
                     <Pie
@@ -506,9 +506,9 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
-                      innerRadius={50}
-                      paddingAngle={3}
+                      outerRadius="80%"
+                      innerRadius="40%"
+                      paddingAngle={2}
                       strokeWidth={0}
                     >
                       {currencyChartData.map((entry, index) => (

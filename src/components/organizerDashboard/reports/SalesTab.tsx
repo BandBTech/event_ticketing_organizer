@@ -332,11 +332,11 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   color: "#6366f1",
                 },
               }}
-              className="h-72"
+              className="h-64 sm:h-72"
             >
               <BarChart
                 data={dailySalesChartData}
-                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -347,11 +347,13 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   dataKey="date"
                   tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
+                  width={45}
                 />
                 <ChartTooltip
                   content={
@@ -392,11 +394,11 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   color: "#10b981",
                 },
               }}
-              className="h-72"
+              className="h-64 sm:h-72"
             >
               <LineChart
                 data={dailySalesChartData}
-                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+                margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -405,13 +407,15 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                 />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                   axisLine={false}
+                  width={35}
                 />
                 <ChartTooltip
                   content={
@@ -460,7 +464,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   },
                 ]),
               )}
-              className="h-72"
+              className="h-64 sm:h-72"
             >
               <PieChart>
                 <Pie
@@ -469,9 +473,9 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={100}
-                  innerRadius={50}
-                  paddingAngle={3}
+                  outerRadius="80%"
+                  innerRadius="40%"
+                  paddingAngle={2}
                   strokeWidth={0}
                 >
                   {gatewayChartData.map((entry, index) => (
