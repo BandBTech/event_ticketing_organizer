@@ -22,6 +22,8 @@ import { EventPerformanceData } from "@/types/report";
 import { StatCard } from "./StatCard";
 import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface EventPerformanceTabProps {
   startDate?: string;
@@ -34,6 +36,8 @@ export function EventPerformanceTab({
   endDate,
   eventId,
 }: EventPerformanceTabProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const { data, isLoading } = useReport("event-performance", {
     start_date: startDate,
     end_date: endDate,
@@ -49,8 +53,8 @@ export function EventPerformanceTab({
     return (
       <div className="bg-white rounded-xl p-12 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-gray-400">
         <CalendarCheckIcon className="w-14 h-14 mb-3" weight="duotone" />
-        <p className="text-lg font-medium text-gray-600">Select an Event</p>
-        <p className="text-sm mt-1">Choose an event from the filter above to view its performance report</p>
+        <p className="text-lg font-medium text-gray-600">{t("reports.eventPerformance.selectEventMessage", "Select an Event")}</p>
+        <p className="text-sm mt-1">{t("reports.eventPerformance.selectEventDescription", "Choose an event from the filter above to view its performance report")}</p>
       </div>
     );
   }
@@ -64,7 +68,7 @@ export function EventPerformanceTab({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={<TicketIcon className="w-6 h-6" weight="duotone" />}
-          label="Tickets Sold"
+          label={t("reports.eventPerformance.ticketsSold", "Tickets Sold")}
           value={`${(report?.tickets_sold ?? 0).toLocaleString()} / ${(report?.total_tickets ?? 0).toLocaleString()}`}
           colorClass="bg-purple-100 text-purple-600"
           isLoading={isLoading}
@@ -72,7 +76,7 @@ export function EventPerformanceTab({
         />
         <StatCard
           icon={<TicketIcon className="w-6 h-6" weight="duotone" />}
-          label="Tickets Remaining"
+          label={t("reports.eventPerformance.ticketsRemaining", "Tickets Remaining")}
           value={(report?.tickets_remaining ?? 0).toLocaleString()}
           colorClass="bg-orange-100 text-orange-600"
           isLoading={isLoading}
@@ -80,7 +84,7 @@ export function EventPerformanceTab({
         />
         <StatCard
           icon={<UsersIcon className="w-6 h-6" weight="duotone" />}
-          label="Attendance Rate"
+          label={t("reports.eventPerformance.attendanceRate", "Attendance Rate")}
           value={`${((report?.attendance_rate ?? 0) * 100).toFixed(1)}%`}
           colorClass="bg-blue-100 text-blue-600"
           isLoading={isLoading}
@@ -88,7 +92,7 @@ export function EventPerformanceTab({
         />
         <StatCard
           icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
-          label="Revenue"
+          label={t("reports.eventPerformance.revenue", "Revenue")}
           value={formatCurrency(report?.revenue ?? 0)}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
@@ -98,7 +102,7 @@ export function EventPerformanceTab({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title="Ticket Sales Over Time"
+          title={t("reports.eventPerformance.ticketSalesOverTime", "Ticket Sales Over Time")}
           isLoading={isLoading}
           isEmpty={!isLoading && ticketSalesOverTime.length === 0}
         >
@@ -111,7 +115,7 @@ export function EventPerformanceTab({
               <Line
                 type="monotone"
                 dataKey="sold"
-                name="Tickets Sold"
+                name={t("reports.eventPerformance.sold", "Sold")}
                 stroke="#6366f1"
                 strokeWidth={2}
                 dot={false}
@@ -122,7 +126,7 @@ export function EventPerformanceTab({
         </ChartCard>
 
         <ChartCard
-          title="Tickets by Tier"
+          title={t("reports.eventPerformance.ticketsByTier", "Tickets by Tier")}
           isLoading={isLoading}
           isEmpty={!isLoading && tierBreakdown.length === 0}
         >
@@ -132,8 +136,8 @@ export function EventPerformanceTab({
               <XAxis dataKey="tier_name" tick={{ fontSize: 12 }} tickLine={false} />
               <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip />
-              <Bar dataKey="sold" name="Sold" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="total" name="Total" fill="#e0e7ff" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="sold" name={t("reports.eventPerformance.sold", "Sold")} fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="total" name={t("reports.eventPerformance.total", "Total")} fill="#e0e7ff" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

@@ -18,6 +18,8 @@ import { useReport } from "@/hooks/useReports";
 import { CustomerAnalyticsData } from "@/types/report";
 import { StatCard } from "./StatCard";
 import { ChartCard } from "./ChartCard";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 const PIE_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
@@ -27,6 +29,8 @@ interface CustomerAnalyticsTabProps {
 }
 
 export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTabProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const { data, isLoading } = useReport("customer-analytics", {
     start_date: startDate,
     end_date: endDate,
@@ -41,7 +45,7 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           icon={<UsersIcon className="w-6 h-6" weight="duotone" />}
-          label="Total Customers"
+          label={t("reports.customerAnalytics.totalCustomers", "Total Customers")}
           value={(report?.total_customers ?? 0).toLocaleString()}
           colorClass="bg-blue-100 text-blue-600"
           isLoading={isLoading}
@@ -49,7 +53,7 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
         />
         <StatCard
           icon={<UserPlusIcon className="w-6 h-6" weight="duotone" />}
-          label="New Customers"
+          label={t("reports.customerAnalytics.newCustomers", "New Customers")}
           value={(report?.new_customers ?? 0).toLocaleString()}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
@@ -57,7 +61,7 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
         />
         <StatCard
           icon={<ArrowsClockwiseIcon className="w-6 h-6" weight="duotone" />}
-          label="Repeat Customers"
+          label={t("reports.customerAnalytics.repeatCustomers", "Repeat Customers")}
           value={(report?.repeat_customers ?? 0).toLocaleString()}
           colorClass="bg-purple-100 text-purple-600"
           isLoading={isLoading}
@@ -67,7 +71,7 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard
-          title="Customer Demographics"
+          title={t("reports.customerAnalytics.customerDemographics", "Customer Demographics")}
           isLoading={isLoading}
           isEmpty={!isLoading && demographics.length === 0}
         >
@@ -98,7 +102,7 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
         </ChartCard>
 
         <ChartCard
-          title="Customer Growth"
+          title={t("reports.customerAnalytics.customerGrowth", "Customer Growth")}
           isLoading={isLoading}
           isEmpty={!isLoading && customerGrowth.length === 0}
         >

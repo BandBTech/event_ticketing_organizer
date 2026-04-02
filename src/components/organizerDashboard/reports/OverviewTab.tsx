@@ -20,6 +20,8 @@ import { OverviewReportData } from "@/types/report";
 import { StatCard } from "./StatCard";
 import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface OverviewTabProps {
   startDate?: string;
@@ -27,6 +29,8 @@ interface OverviewTabProps {
 }
 
 export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const { data, isLoading } = useReport("overview", {
     start_date: startDate,
     end_date: endDate,
@@ -37,28 +41,28 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
   const stats = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
-      label: "Total Revenue",
+      label: t("reports.overview.totalRevenue", "Total Revenue"),
       value: formatCurrency(report?.total_revenue ?? 0),
       change: report?.revenue_change_pct,
       colorClass: "bg-green-100 text-green-600",
     },
     {
       icon: <CalendarCheckIcon className="w-6 h-6" weight="duotone" />,
-      label: "Total Events",
+      label: t("reports.overview.totalEvents", "Total Events"),
       value: (report?.total_events ?? 0).toLocaleString(),
       change: report?.events_change_pct,
       colorClass: "bg-blue-100 text-blue-600",
     },
     {
       icon: <TicketIcon className="w-6 h-6" weight="duotone" />,
-      label: "Tickets Sold",
+      label: t("reports.overview.ticketsSold", "Tickets Sold"),
       value: (report?.tickets_sold ?? 0).toLocaleString(),
       change: report?.tickets_change_pct,
       colorClass: "bg-purple-100 text-purple-600",
     },
     {
       icon: <UsersIcon className="w-6 h-6" weight="duotone" />,
-      label: "Total Attendees",
+      label: t("reports.overview.totalAttendees", "Total Attendees"),
       value: (report?.total_attendees ?? 0).toLocaleString(),
       change: report?.attendees_change_pct,
       colorClass: "bg-orange-100 text-orange-600",
@@ -85,7 +89,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
       </div>
 
       <ChartCard
-        title="Revenue Over Time"
+        title={t("reports.overview.revenueOverTime", "Revenue Over Time")}
         isLoading={isLoading}
         isEmpty={!isLoading && revenueTrend.length === 0}
       >
@@ -99,7 +103,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
             />
             <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
             <Tooltip
-              formatter={(value: number) => [formatCurrency(value), "Revenue"]}
+              formatter={(value: number) => [formatCurrency(value), t("reports.financial.revenue", "Revenue")]}
             />
             <Line
               type="monotone"

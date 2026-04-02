@@ -824,5 +824,82 @@
     }
   },
   "Your account is inactive.": "アカウントが非アクティブです。",
-  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。"
+  "Please contact support to reactivate your account.": "アカウントを再アクティブ化するには、サポートに連絡してください。",
+  "On Hold": "保留中",
+  "reports": {
+    "title": "レポート",
+    "subtitle": "イベントのパフォーマンス、売上、財務を分析",
+    "dateRange": {
+      "label": "日付範囲",
+      "today": "今日",
+      "yesterday": "昨日",
+      "last7Days": "過去 7 日間",
+      "lastMonth": "過去 1 ヶ月",
+      "last3Months": "過去 3 ヶ月",
+      "last6Months": "過去 6 ヶ月",
+      "lastYear": "過去 1 年",
+      "placeholder": "日付範囲を選択"
+    },
+    "selectEvent": {
+      "label": "イベントを選択",
+      "placeholder": "イベントを選択",
+      "loading": "イベントを読み込み中..."
+    },
+    "tabs": {
+      "overview": "概要",
+      "sales": "売上",
+      "customerAnalytics": "顧客分析",
+      "financial": "財務",
+      "eventPerformance": "イベントパフォーマンス"
+    },
+    "overview": {
+      "totalRevenue": "総収益",
+      "totalEvents": "総イベント数",
+      "ticketsSold": "販売枚数",
+      "totalAttendees": "総参加者数",
+      "revenueOverTime": "収益推移"
+    },
+    "sales": {
+      "totalSales": "総売上",
+      "totalTicketsSold": "総販売枚数",
+      "salesByEvent": "イベント別売上",
+      "salesOverTime": "売上推移",
+      "topSellingEvents": "売上上位イベント",
+      "noSalesData": "売上データがありません",
+      "columns": {
+        "event": "イベント",
+        "ticketsSold": "販売枚数",
+        "revenue": "収益"
+      }
+    },
+    "customerAnalytics": {
+      "totalCustomers": "総顧客数",
+      "newCustomers": "新規顧客",
+      "repeatCustomers": "リピーター顧客",
+      "customerDemographics": "顧客デモグラフィック",
+      "customerGrowth": "顧客成長"
+    },
+    "financial": {
+      "totalRevenue": "総収益",
+      "totalExpenses": "総費用",
+      "netIncome": "純利益",
+      "revenueVsExpenses": "収益対費用",
+      "commissionBreakdown": "手数料内訳",
+      "totalCommission": "総手数料",
+      "revenue": "収益",
+      "expenses": "費用"
+    },
+    "eventPerformance": {
+      "selectEventMessage": "イベントを選択",
+      "selectEventDescription": "上記のフィルターからイベントを選択してパフォーマンスレポートを表示",
+      "ticketsSold": "販売枚数",
+      "ticketsRemaining": "残券数",
+      "attendanceRate": "参加率",
+      "revenue": "収益",
+      "ticketSalesOverTime": "チケット販売推移",
+      "ticketsByTier": "ティア別チケット",
+      "sold": "販売済み",
+      "total": "合計"
+    }
+  }
 }

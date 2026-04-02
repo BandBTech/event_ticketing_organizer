@@ -16,6 +16,8 @@ import { CustomerAnalyticsTab } from "@/components/organizerDashboard/reports/Cu
 import { FinancialTab } from "@/components/organizerDashboard/reports/FinancialTab";
 import { EventPerformanceTab } from "@/components/organizerDashboard/reports/EventPerformanceTab";
 import { ReportType } from "@/types/report";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 type DateRangePreset = "today" | "yesterday" | "last-7-days" | "last-month" | "last-3-months" | "last-6-months" | "last-year";
 
@@ -85,6 +87,8 @@ function getDateRangeFromPreset(preset: DateRangePreset): { startDate: string; e
 
 export default function ReportsPage() {
   const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
 
   const [activeTab, setActiveTab] = useState<ReportType>("overview");
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>("last-7-days");
@@ -125,15 +129,15 @@ export default function ReportsPage() {
   return (
     <>
       <Head>
-        <title>Reports | Organizer Dashboard</title>
+        <title>{t("reports.title", "Reports")} | {t("organizer.title", "Organizer")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
           <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t("reports.title", "Reports")}</h1>
               <p className="text-sm text-gray-500 mt-1">
-                Analyze your event performance, sales, and financials
+                {t("reports.subtitle", "Analyze your event performance, sales, and financials")}
               </p>
             </div>
 

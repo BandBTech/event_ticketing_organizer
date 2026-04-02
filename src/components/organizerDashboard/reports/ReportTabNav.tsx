@@ -9,20 +9,14 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { ReportType } from "@/types/report";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface Tab {
   value: ReportType;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
 }
-
-const tabs: Tab[] = [
-  { value: "overview", label: "Overview", icon: ChartLineIcon },
-  { value: "sales", label: "Sales", icon: ShoppingCartIcon },
-  { value: "customer-analytics", label: "Customer Analytics", icon: UsersIcon },
-  { value: "financial", label: "Financial", icon: CurrencyDollarIcon },
-  { value: "event-performance", label: "Event Performance", icon: CalendarCheckIcon },
-];
 
 interface ReportTabNavProps {
   activeTab: ReportType;
@@ -30,6 +24,17 @@ interface ReportTabNavProps {
 }
 
 export function ReportTabNav({ activeTab, onTabChange }: ReportTabNavProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+
+  const tabs: Tab[] = [
+    { value: "overview", labelKey: "reports.tabs.overview", icon: ChartLineIcon },
+    { value: "sales", labelKey: "reports.tabs.sales", icon: ShoppingCartIcon },
+    { value: "customer-analytics", labelKey: "reports.tabs.customerAnalytics", icon: UsersIcon },
+    { value: "financial", labelKey: "reports.tabs.financial", icon: CurrencyDollarIcon },
+    { value: "event-performance", labelKey: "reports.tabs.eventPerformance", icon: CalendarCheckIcon },
+  ];
+
   return (
     <div className="flex flex-wrap gap-2">
       {tabs.map((tab) => {
@@ -44,7 +49,7 @@ export function ReportTabNav({ activeTab, onTabChange }: ReportTabNavProps) {
             className="flex items-center gap-2"
           >
             <Icon className="w-4 h-4" weight="duotone" />
-            {tab.label}
+            {t(tab.labelKey, tab.value)}
           </Button>
         );
       })}

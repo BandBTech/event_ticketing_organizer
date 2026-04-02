@@ -935,5 +935,81 @@
   },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
-  "On Hold": "On Hold"
+  "On Hold": "On Hold",
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Analyze your event performance, sales, and financials",
+    "dateRange": {
+      "label": "Date Range",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7Days": "Last 7 Days",
+      "lastMonth": "Last Month",
+      "last3Months": "Last 3 Months",
+      "last6Months": "Last 6 Months",
+      "lastYear": "Last Year",
+      "placeholder": "Select date range"
+    },
+    "selectEvent": {
+      "label": "Select Event",
+      "placeholder": "Choose an event",
+      "loading": "Loading events..."
+    },
+    "tabs": {
+      "overview": "Overview",
+      "sales": "Sales",
+      "customerAnalytics": "Customer Analytics",
+      "financial": "Financial",
+      "eventPerformance": "Event Performance"
+    },
+    "overview": {
+      "totalRevenue": "Total Revenue",
+      "totalEvents": "Total Events",
+      "ticketsSold": "Tickets Sold",
+      "totalAttendees": "Total Attendees",
+      "revenueOverTime": "Revenue Over Time"
+    },
+    "sales": {
+      "totalSales": "Total Sales",
+      "totalTicketsSold": "Total Tickets Sold",
+      "salesByEvent": "Sales by Event",
+      "salesOverTime": "Sales Over Time",
+      "topSellingEvents": "Top Selling Events",
+      "noSalesData": "No sales data available",
+      "columns": {
+        "event": "Event",
+        "ticketsSold": "Tickets Sold",
+        "revenue": "Revenue"
+      }
+    },
+    "customerAnalytics": {
+      "totalCustomers": "Total Customers",
+      "newCustomers": "New Customers",
+      "repeatCustomers": "Repeat Customers",
+      "customerDemographics": "Customer Demographics",
+      "customerGrowth": "Customer Growth"
+    },
+    "financial": {
+      "totalRevenue": "Total Revenue",
+      "totalExpenses": "Total Expenses",
+      "netIncome": "Net Income",
+      "revenueVsExpenses": "Revenue vs Expenses",
+      "commissionBreakdown": "Commission Breakdown",
+      "totalCommission": "Total Commission",
+      "revenue": "Revenue",
+      "expenses": "Expenses"
+    },
+    "eventPerformance": {
+      "selectEventMessage": "Select an Event",
+      "selectEventDescription": "Choose an event from the filter above to view its performance report",
+      "ticketsSold": "Tickets Sold",
+      "ticketsRemaining": "Tickets Remaining",
+      "attendanceRate": "Attendance Rate",
+      "revenue": "Revenue",
+      "ticketSalesOverTime": "Ticket Sales Over Time",
+      "ticketsByTier": "Tickets by Tier",
+      "sold": "Sold",
+      "total": "Total"
+    }
+  }
 }

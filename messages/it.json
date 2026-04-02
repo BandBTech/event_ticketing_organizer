@@ -827,5 +827,82 @@
     }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
-  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account."
+  "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",
+  "On Hold": "In attesa",
+  "reports": {
+    "title": "Rapporti",
+    "subtitle": "Analizza prestazioni eventi, vendite e finanziari",
+    "dateRange": {
+      "label": "Intervallo Date",
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "last7Days": "Ultimi 7 giorni",
+      "lastMonth": "Ultimo mese",
+      "last3Months": "Ultimi 3 mesi",
+      "last6Months": "Ultimi 6 mesi",
+      "lastYear": "Ultimo anno",
+      "placeholder": "Seleziona intervallo date"
+    },
+    "selectEvent": {
+      "label": "Seleziona Evento",
+      "placeholder": "Scegli un evento",
+      "loading": "Caricamento eventi..."
+    },
+    "tabs": {
+      "overview": "Panoramica",
+      "sales": "Vendite",
+      "customerAnalytics": "Analisi Clienti",
+      "financial": "Finanziario",
+      "eventPerformance": "Prestazioni Eventi"
+    },
+    "overview": {
+      "totalRevenue": "Entrate Totali",
+      "totalEvents": "Eventi Totali",
+      "ticketsSold": "Biglietti Venduti",
+      "totalAttendees": "Partecipanti Totali",
+      "revenueOverTime": "Entrate nel Tempo"
+    },
+    "sales": {
+      "totalSales": "Vendite Totali",
+      "totalTicketsSold": "Biglietti Venduti Totali",
+      "salesByEvent": "Vendite per Evento",
+      "salesOverTime": "Vendite nel Tempo",
+      "topSellingEvents": "Eventi più Venduti",
+      "noSalesData": "Nessun dato di vendita disponibile",
+      "columns": {
+        "event": "Evento",
+        "ticketsSold": "Biglietti Venduti",
+        "revenue": "Entrate"
+      }
+    },
+    "customerAnalytics": {
+      "totalCustomers": "Clienti Totali",
+      "newCustomers": "Nuovi Clienti",
+      "repeatCustomers": "Clienti Ricorrenti",
+      "customerDemographics": "Demografia Clienti",
+      "customerGrowth": "Crescita Clienti"
+    },
+    "financial": {
+      "totalRevenue": "Entrate Totali",
+      "totalExpenses": "Spese Totali",
+      "netIncome": "Reddito Netto",
+      "revenueVsExpenses": "Entrate vs Spese",
+      "commissionBreakdown": "Dettaglio Commissioni",
+      "totalCommission": "Commissione Totale",
+      "revenue": "Entrate",
+      "expenses": "Spese"
+    },
+    "eventPerformance": {
+      "selectEventMessage": "Seleziona un Evento",
+      "selectEventDescription": "Scegli un evento dal filtro sopra per visualizzare il rapporto sulle prestazioni",
+      "ticketsSold": "Biglietti Venduti",
+      "ticketsRemaining": "Biglietti Rimanenti",
+      "attendanceRate": "Tasso di Partecipazione",
+      "revenue": "Entrate",
+      "ticketSalesOverTime": "Vendite Biglietti nel Tempo",
+      "ticketsByTier": "Biglietti per Categoria",
+      "sold": "Venduti",
+      "total": "Totale"
+    }
+  }
 }

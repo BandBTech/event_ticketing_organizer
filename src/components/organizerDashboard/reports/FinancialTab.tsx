@@ -20,6 +20,8 @@ import { FinancialReportData } from "@/types/report";
 import { StatCard } from "./StatCard";
 import { ChartCard } from "./ChartCard";
 import { formatCurrency } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguageStore } from "@/store/languageStore";
 
 interface FinancialTabProps {
   startDate?: string;
@@ -27,6 +29,8 @@ interface FinancialTabProps {
 }
 
 export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const { data, isLoading } = useReport("financial", {
     start_date: startDate,
     end_date: endDate,
@@ -41,7 +45,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           icon={<CurrencyDollarIcon className="w-6 h-6" weight="duotone" />}
-          label="Total Revenue"
+          label={t("reports.financial.totalRevenue", "Total Revenue")}
           value={formatCurrency(report?.total_revenue ?? 0)}
           colorClass="bg-green-100 text-green-600"
           isLoading={isLoading}
@@ -49,7 +53,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         />
         <StatCard
           icon={<ArrowDownIcon className="w-6 h-6" weight="duotone" />}
-          label="Total Expenses"
+          label={t("reports.financial.totalExpenses", "Total Expenses")}
           value={formatCurrency(report?.total_expenses ?? 0)}
           colorClass="bg-red-100 text-red-600"
           isLoading={isLoading}
@@ -57,7 +61,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
         />
         <StatCard
           icon={<ChartBarIcon className="w-6 h-6" weight="duotone" />}
-          label="Net Income"
+          label={t("reports.financial.netIncome", "Net Income")}
           value={formatCurrency(report?.net_income ?? 0)}
           colorClass="bg-blue-100 text-blue-600"
           isLoading={isLoading}
@@ -66,7 +70,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
       </div>
 
       <ChartCard
-        title="Revenue vs Expenses"
+        title={t("reports.financial.revenueVsExpenses", "Revenue vs Expenses")}
         isLoading={isLoading}
         isEmpty={!isLoading && revVsExp.length === 0}
       >
@@ -82,7 +86,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             <Line
               type="monotone"
               dataKey="revenue"
-              name="Revenue"
+              name={t("reports.financial.revenue", "Revenue")}
               stroke="#10b981"
               strokeWidth={2}
               dot={false}
@@ -91,7 +95,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             <Line
               type="monotone"
               dataKey="expenses"
-              name="Expenses"
+              name={t("reports.financial.expenses", "Expenses")}
               stroke="#ef4444"
               strokeWidth={2}
               dot={false}
@@ -103,7 +107,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
 
       {(isLoading || commissionBreakdown.length > 0) && (
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Commission Breakdown</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("reports.financial.commissionBreakdown", "Commission Breakdown")}</h3>
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
@@ -122,7 +126,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
               ))}
               {report?.commission_total !== undefined && (
                 <div className="flex justify-between items-center py-2 pt-3">
-                  <span className="text-sm font-semibold text-gray-900">Total Commission</span>
+                  <span className="text-sm font-semibold text-gray-900">{t("reports.financial.totalCommission", "Total Commission")}</span>
                   <span className="text-sm font-bold text-primary">
                     {formatCurrency(report.commission_total)}
                   </span>
