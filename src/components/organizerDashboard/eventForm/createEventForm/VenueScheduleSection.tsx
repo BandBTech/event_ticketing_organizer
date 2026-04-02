@@ -348,11 +348,8 @@ export function VenueScheduleSection({
                     }}
                   />
                 </FormControl>
-                <div className="flex justify-between items-center -mt-1">
+                <div className="-mt-1">
                   <TranslatedFormMessage t={t} className="mt-0" />
-                  <div className="text-xs text-muted-foreground ml-auto">
-                    Max: {MAX_CAPACITY.toLocaleString()}
-                  </div>
                 </div>
               </FormItem>
             )}
