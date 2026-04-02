@@ -18,16 +18,21 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
-  Legend,
+  ResponsiveContainer,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
 import { ChartCard } from "./ChartCard";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -392,54 +397,69 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             isLoading={isLoading}
             isEmpty={!isLoading && revenueByEventData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <BarChart data={revenueByEventData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ChartContainer
+              config={{
+                grossRevenue: {
+                  label: t("reports.financial.grossRevenue", "Gross Revenue"),
+                  color: "hsl(var(--chart-1))",
+                },
+                organizerShare: {
+                  label: t(
+                    "reports.financial.organizerShare",
+                    "Organizer Share",
+                  ),
+                  color: "hsl(var(--chart-2))",
+                },
+                commission: {
+                  label: t("reports.financial.commission", "Commission"),
+                  color: "hsl(var(--chart-3))",
+                },
+              }}
+              className="h-72"
+            >
+              <BarChart
+                data={revenueByEventData}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
                   tickLine={false}
                   axisLine={false}
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                  interval={0}
                 />
-                <Tooltip
-                  formatter={(value: number, name: string) => {
-                    if (name === "grossRevenue") {
-                      return [
-                        formatCurrency(value, currency, locale),
-                        t("reports.financial.grossRevenue", "Gross Revenue"),
-                      ];
-                    }
-                    if (name === "organizerShare") {
-                      return [
-                        formatCurrency(value, currency, locale),
-                        t(
-                          "reports.financial.organizerShare",
-                          "Organizer Share",
-                        ),
-                      ];
-                    }
-                    if (name === "commission") {
-                      return [
-                        formatCurrency(value, currency, locale),
-                        t("reports.financial.commission", "Commission"),
-                      ];
-                    }
-                    return [value, name];
-                  }}
+                <YAxis
+                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
                 />
-                <Legend />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-card text-card-foreground border-border rounded-lg"
+                      formatter={(value, name) => [
+                        formatCurrency(Number(value), currency, locale),
+                        name,
+                      ]}
+                    />
+                  }
+                />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Bar
                   dataKey="grossRevenue"
                   name={t("reports.financial.grossRevenue", "Gross Revenue")}
-                  fill="#6366f1"
-                  radius={[4, 4, 0, 0]}
+                  fill="var(--color-grossRevenue)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={32}
                 />
                 <Bar
                   dataKey="organizerShare"
@@ -447,23 +467,25 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                     "reports.financial.organizerShare",
                     "Organizer Share",
                   )}
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
+                  fill="var(--color-organizerShare)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={32}
                 />
                 <Bar
                   dataKey="commission"
                   name={t("reports.financial.commission", "Commission")}
-                  fill="#f59e0b"
-                  radius={[4, 4, 0, 0]}
+                  fill="var(--color-commission)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={32}
                 />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
         </div>
       )}
 
       {/* Currency Breakdown */}
-      {/*{currencyChartData.length > 0 && currencyChartData.length <= 4 && (
+      {currencyChartData.length > 0 && currencyChartData.length <= 4 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             {t("reports.financial.currencyBreakdown", "Currency Breakdown")}
@@ -476,7 +498,18 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             isLoading={isLoading}
             isEmpty={!isLoading && currencyChartData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
+            <ChartContainer
+              config={Object.fromEntries(
+                currencyChartData.map((curr) => [
+                  curr.name,
+                  {
+                    label: curr.name,
+                    color: curr.color,
+                  },
+                ]),
+              )}
+              className="h-72"
+            >
               <PieChart>
                 <Pie
                   data={currencyChartData}
@@ -484,23 +517,35 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={90}
+                  outerRadius={100}
+                  innerRadius={50}
+                  paddingAngle={3}
+                  strokeWidth={0}
                 >
                   {currencyChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`var(--color-${entry.name})`}
+                      className="transition-opacity hover:opacity-80"
+                    />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value: number) =>
-                    formatCurrency(value, currency, locale)
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-card text-card-foreground border-border rounded-lg"
+                      formatter={(value) =>
+                        formatCurrency(Number(value), currency, locale)
+                      }
+                    />
                   }
                 />
-                <Legend />
+                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
         </div>
-      )}*/}
+      )}
 
       {/* Revenue Breakdown Table */}
       {revenueBreakdown.length > 0 && (

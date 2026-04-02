@@ -1023,7 +1023,31 @@
       "ticketSalesOverTime": "チケット販売推移",
       "ticketsByTier": "ティア別チケット",
       "sold": "販売済み",
-      "total": "合計"
+      "total": "合計",
+      "keyMetrics": "主要指標",
+      "eventDetails": "イベント詳細",
+      "eventDate": "開催日",
+      "duration": "開催時間",
+      "capacity": "収容人数",
+      "avgTicketPrice": "平均チケット価格",
+      "transactions": "取引",
+      "net": "純",
+      "topPerformingTier": "最上位ティア",
+      "tierPerformance": "ティアパフォーマンス",
+      "revenueByTier": "ティア別収益",
+      "tierBreakdown": "ティア内訳",
+      "fillRate": "稼働率",
+      "ticket": "チケット",
+      "noDataTitle": "パフォーマンスデータがありません",
+      "noDataDescription": "チケットの販売が始まると、ここにパフォーマンスデータが表示されます。",
+      "columns": {
+        "tier": "ティア",
+        "price": "価格",
+        "sold": "販売済み",
+        "capacity": "収容人数",
+        "fillRate": "稼働率",
+        "revenue": "収益"
+      }
     }
   }
 }

@@ -19,13 +19,18 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
 import { ChartCard } from "./ChartCard";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -46,7 +51,15 @@ interface StatCardProps {
   index: number;
 }
 
-function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }: StatCardProps) {
+function StatCard({
+  icon,
+  label,
+  value,
+  subValue,
+  colorClass,
+  isLoading,
+  index,
+}: StatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -56,9 +69,7 @@ function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }
       className="@container/card p-2.5 rounded-2xl glass-card-lowest transition-all"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className={`p-2 rounded-lg ${colorClass}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-lg ${colorClass}`}>{icon}</div>
         <span className="text-sm text-gray-500">{label}</span>
       </div>
       {isLoading ? (
@@ -73,9 +84,20 @@ function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }
   );
 }
 
-const SEGMENT_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
+const SEGMENT_COLORS = [
+  "#6366f1",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+];
 
-export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTabProps) {
+export function CustomerAnalyticsTab({
+  startDate,
+  endDate,
+}: CustomerAnalyticsTabProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { currency } = useCurrencyStore();
@@ -85,33 +107,35 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
   });
 
   // Type the API response
-  const report = data as {
-    total_customers?: number;
-    registered_users?: number;
-    guest_purchases?: number;
-    repeat_customers?: number;
-    average_order_value?: number;
-    customer_segments?: Array<{
-      segment_name: string;
-      customer_count: number;
-      total_spent: number;
-      average_spent: number;
-      percentage_of_total: number;
-    }>;
-    top_customers?: Array<{
-      customer_id: string;
-      customer_name: string;
-      email: string;
-      total_orders: number;
-      total_spent: number;
-    }> | null;
-    customer_retention?: {
-      new_customers: number;
-      returning_customers: number;
-      retention_rate: number;
-      churn_rate: number;
-    };
-  } | undefined;
+  const report = data as
+    | {
+        total_customers?: number;
+        registered_users?: number;
+        guest_purchases?: number;
+        repeat_customers?: number;
+        average_order_value?: number;
+        customer_segments?: Array<{
+          segment_name: string;
+          customer_count: number;
+          total_spent: number;
+          average_spent: number;
+          percentage_of_total: number;
+        }>;
+        top_customers?: Array<{
+          customer_id: string;
+          customer_name: string;
+          email: string;
+          total_orders: number;
+          total_spent: number;
+        }> | null;
+        customer_retention?: {
+          new_customers: number;
+          returning_customers: number;
+          retention_rate: number;
+          churn_rate: number;
+        };
+      }
+    | undefined;
 
   const segments = report?.customer_segments ?? [];
   const retention = report?.customer_retention;
@@ -130,18 +154,20 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
       icon: <UserPlusIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.customerAnalytics.registeredUsers", "Registered Users"),
       value: (report?.registered_users ?? 0).toLocaleString(),
-      subValue: report?.total_customers && report?.registered_users
-        ? `${((report.registered_users / report.total_customers) * 100).toFixed(1)}% ${t("reports.customerAnalytics.ofTotal", "of total")}`
-        : undefined,
+      subValue:
+        report?.total_customers && report?.registered_users
+          ? `${((report.registered_users / report.total_customers) * 100).toFixed(1)}% ${t("reports.customerAnalytics.ofTotal", "of total")}`
+          : undefined,
       colorClass: "bg-green-100 text-green-600",
     },
     {
       icon: <ShoppingCartIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.customerAnalytics.guestPurchases", "Guest Purchases"),
       value: (report?.guest_purchases ?? 0).toLocaleString(),
-      subValue: report?.total_customers && report?.guest_purchases
-        ? `${((report.guest_purchases / report.total_customers) * 100).toFixed(1)}% ${t("reports.customerAnalytics.ofTotal", "of total")}`
-        : undefined,
+      subValue:
+        report?.total_customers && report?.guest_purchases
+          ? `${((report.guest_purchases / report.total_customers) * 100).toFixed(1)}% ${t("reports.customerAnalytics.ofTotal", "of total")}`
+          : undefined,
       colorClass: "bg-purple-100 text-purple-600",
     },
     {
@@ -162,7 +188,10 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
     },
     {
       icon: <ArrowsClockwiseIcon className="w-5 h-5" weight="duotone" />,
-      label: t("reports.customerAnalytics.returningCustomers", "Returning Customers"),
+      label: t(
+        "reports.customerAnalytics.returningCustomers",
+        "Returning Customers",
+      ),
       value: (retention?.returning_customers ?? 0).toLocaleString(),
     },
     {
@@ -188,21 +217,28 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
     averageSpent: seg.average_spent,
   }));
 
-  const hasAnyData = !isLoading && (
-    (report?.total_customers ?? 0) > 0
-  );
+  const hasAnyData = !isLoading && (report?.total_customers ?? 0) > 0;
 
   return (
     <div className="space-y-6">
       {/* Empty State */}
       {!isLoading && !hasAnyData && (
         <div className="glass-card-lowest rounded-2xl p-8 text-center">
-          <PresentationChartIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" weight="duotone" />
+          <PresentationChartIcon
+            className="w-16 h-16 mx-auto text-gray-300 mb-4"
+            weight="duotone"
+          />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {t("reports.customerAnalytics.noDataTitle", "No Customer Data Available")}
+            {t(
+              "reports.customerAnalytics.noDataTitle",
+              "No Customer Data Available",
+            )}
           </h3>
           <p className="text-gray-500 max-w-md mx-auto">
-            {t("reports.customerAnalytics.noDataDescription", "Customer analytics will appear here once customers start purchasing tickets.")}
+            {t(
+              "reports.customerAnalytics.noDataDescription",
+              "Customer analytics will appear here once customers start purchasing tickets.",
+            )}
           </p>
         </div>
       )}
@@ -251,13 +287,22 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
                   {isLoading ? (
                     <Skeleton className="h-5 w-20 mb-1" />
                   ) : (
-                    <p className="text-sm text-gray-500">{t("reports.customerAnalytics.averageOrderValue", "Average Order Value")}</p>
+                    <p className="text-sm text-gray-500">
+                      {t(
+                        "reports.customerAnalytics.averageOrderValue",
+                        "Average Order Value",
+                      )}
+                    </p>
                   )}
                   {isLoading ? (
                     <Skeleton className="h-7 w-24" />
                   ) : (
                     <p className="text-lg font-semibold text-gray-900">
-                      {formatCurrency(report?.average_order_value ?? 0, currency, locale)}
+                      {formatCurrency(
+                        report?.average_order_value ?? 0,
+                        currency,
+                        locale,
+                      )}
                     </p>
                   )}
                 </div>
@@ -285,7 +330,9 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
                     {isLoading ? (
                       <Skeleton className="h-7 w-24" />
                     ) : (
-                      <p className="text-lg font-semibold text-gray-900">{stat.value}</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {stat.value}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -300,11 +347,25 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Segment Pie Chart */}
           <ChartCard
-            title={t("reports.customerAnalytics.customerSegments", "Customer Segments")}
+            title={t(
+              "reports.customerAnalytics.customerSegments",
+              "Customer Segments",
+            )}
             isLoading={isLoading}
             isEmpty={!isLoading && segmentChartData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
+            <ChartContainer
+              config={Object.fromEntries(
+                segmentChartData.map((seg) => [
+                  seg.name,
+                  {
+                    label: seg.name,
+                    color: seg.color,
+                  },
+                ]),
+              )}
+              className="h-72"
+            >
               <PieChart>
                 <Pie
                   data={segmentChartData}
@@ -312,49 +373,116 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={90}
+                  outerRadius={100}
+                  innerRadius={50}
+                  paddingAngle={3}
+                  strokeWidth={0}
                 >
                   {segmentChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`var(--color-${entry.name})`}
+                      className="transition-opacity hover:opacity-80"
+                    />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value: number) => [`${value} ${t("reports.customerAnalytics.customers", "customers")}`, t("reports.customerAnalytics.count", "Count")]}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value) => [
+                        `${Number(value)} ${t("reports.customerAnalytics.customers", "customers")}`,
+                        t("reports.customerAnalytics.count", "Count"),
+                      ]}
+                    />
+                  }
                 />
-                <Legend />
+                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
 
           {/* Segment Bar Chart */}
           <ChartCard
-            title={t("reports.customerAnalytics.segmentSpending", "Segment Spending")}
+            title={t(
+              "reports.customerAnalytics.segmentSpending",
+              "Segment Spending",
+            )}
             isLoading={isLoading}
             isEmpty={!isLoading && segmentBarData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <BarChart data={segmentBarData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ChartContainer
+              config={{
+                totalSpent: {
+                  label: t(
+                    "reports.customerAnalytics.totalSpent",
+                    "Total Spent",
+                  ),
+                  color: "#6366f1",
+                },
+              }}
+              className="h-72"
+            >
+              <BarChart
+                data={segmentBarData}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                 />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  formatter={(value: number, name: string) => {
-                    if (name === "totalSpent") {
-                      return [formatCurrency(value, currency, locale), t("reports.customerAnalytics.totalSpent", "Total Spent")];
-                    }
-                    if (name === "averageSpent") {
-                      return [formatCurrency(value, currency, locale), t("reports.customerAnalytics.avgSpent", "Avg Spent")];
-                    }
-                    return [value, name];
-                  }}
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tickLine={false}
+                  axisLine={false}
                 />
-                <Bar dataKey="totalSpent" fill="#6366f1" radius={[4, 4, 0, 0]} name={t("reports.customerAnalytics.totalSpent", "Total Spent")} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value, name) => {
+                        if (name === "totalSpent") {
+                          return [
+                            formatCurrency(Number(value), currency, locale),
+                            t(
+                              "reports.customerAnalytics.totalSpent",
+                              "Total Spent",
+                            ),
+                          ];
+                        }
+                        if (name === "averageSpent") {
+                          return [
+                            formatCurrency(Number(value), currency, locale),
+                            t(
+                              "reports.customerAnalytics.avgSpent",
+                              "Avg Spent",
+                            ),
+                          ];
+                        }
+                        return [value, name];
+                      }}
+                    />
+                  }
+                />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar
+                  dataKey="totalSpent"
+                  fill="var(--color-totalSpent)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={40}
+                  name={t(
+                    "reports.customerAnalytics.totalSpent",
+                    "Total Spent",
+                  )}
+                />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
         </div>
       )}
@@ -371,32 +499,55 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="text-left py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.segment", "Segment")}
+                      {t(
+                        "reports.customerAnalytics.columns.segment",
+                        "Segment",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.customers", "Customers")}
+                      {t(
+                        "reports.customerAnalytics.columns.customers",
+                        "Customers",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.totalSpent", "Total Spent")}
+                      {t(
+                        "reports.customerAnalytics.columns.totalSpent",
+                        "Total Spent",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.avgSpent", "Avg. Spent")}
+                      {t(
+                        "reports.customerAnalytics.columns.avgSpent",
+                        "Avg. Spent",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.percentage", "% of Total")}
+                      {t(
+                        "reports.customerAnalytics.columns.percentage",
+                        "% of Total",
+                      )}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {segments.map((seg, i) => (
-                    <tr key={seg.segment_name} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr
+                      key={seg.segment_name}
+                      className="border-b border-gray-50 hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div
                             className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: SEGMENT_COLORS[i % SEGMENT_COLORS.length] }}
+                            style={{
+                              backgroundColor:
+                                SEGMENT_COLORS[i % SEGMENT_COLORS.length],
+                            }}
                           />
-                          <span className="text-gray-900 font-medium">{seg.segment_name}</span>
+                          <span className="text-gray-900 font-medium">
+                            {seg.segment_name}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
@@ -433,28 +584,41 @@ export function CustomerAnalyticsTab({ startDate, endDate }: CustomerAnalyticsTa
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="text-left py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.customer", "Customer")}
+                      {t(
+                        "reports.customerAnalytics.columns.customer",
+                        "Customer",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
                       {t("reports.customerAnalytics.columns.orders", "Orders")}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.customerAnalytics.columns.totalSpent", "Total Spent")}
+                      {t(
+                        "reports.customerAnalytics.columns.totalSpent",
+                        "Total Spent",
+                      )}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {topCustomers.slice(0, 5).map((customer, i) => (
-                    <tr key={customer.customer_id ?? i} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr
+                      key={customer.customer_id ?? i}
+                      className="border-b border-gray-50 hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-medium flex items-center justify-center">
                             {i + 1}
                           </span>
                           <div>
-                            <span className="text-gray-900 font-medium">{customer.customer_name}</span>
+                            <span className="text-gray-900 font-medium">
+                              {customer.customer_name}
+                            </span>
                             {customer.email && (
-                              <p className="text-xs text-gray-500">{customer.email}</p>
+                              <p className="text-xs text-gray-500">
+                                {customer.email}
+                              </p>
                             )}
                           </div>
                         </div>

@@ -19,7 +19,7 @@ export function ChartCard({
   emptyMessage = "No data available for this period",
 }: ChartCardProps) {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="glass-card-lowest rounded-2xl p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       {isLoading ? (
         <Skeleton className="h-64 w-full rounded-lg" />

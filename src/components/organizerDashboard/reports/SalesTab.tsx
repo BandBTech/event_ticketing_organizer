@@ -18,16 +18,21 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
-  Legend,
+  ResponsiveContainer,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
 import { ChartCard } from "./ChartCard";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -48,7 +53,15 @@ interface StatCardProps {
   index: number;
 }
 
-function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }: StatCardProps) {
+function StatCard({
+  icon,
+  label,
+  value,
+  subValue,
+  colorClass,
+  isLoading,
+  index,
+}: StatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,9 +71,7 @@ function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }
       className="@container/card p-2.5 rounded-2xl glass-card-lowest transition-all"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className={`p-2 rounded-lg ${colorClass}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-lg ${colorClass}`}>{icon}</div>
         <span className="text-sm text-gray-500">{label}</span>
       </div>
       {isLoading ? (
@@ -75,7 +86,15 @@ function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }
   );
 }
 
-const GATEWAY_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
+const GATEWAY_COLORS = [
+  "#6366f1",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+];
 
 export function SalesTab({ startDate, endDate }: SalesTabProps) {
   const { locale } = useLanguageStore();
@@ -87,42 +106,44 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
   });
 
   // Type the API response
-  const report = data as {
-    summary_metrics?: {
-      total_revenue?: number;
-      total_commission?: number;
-      organizer_share?: number;
-      total_tickets_sold?: number;
-      active_events?: number;
-      total_events?: number;
-      total_transactions?: number;
-      completed_transactions?: number;
-      pending_transactions?: number;
-      failed_transactions?: number;
-      average_order_value?: number;
-      conversion_rate?: number;
-    };
-    daily_sales?: Array<{
-      date: string;
-      revenue: number;
-      tickets_sold: number;
-      transactions: number;
-      average_order_value: number;
-    }> | null;
-    top_product_events?: Array<{
-      event_id: string;
-      event_name: string;
-      revenue: number;
-      tickets_sold: number;
-    }> | null;
-    sales_by_payment_gateway?: Array<{
-      gateway_name: string;
-      total_transactions: number;
-      total_revenue: number;
-      percentage_of_total: number;
-      status: string;
-    }>;
-  } | undefined;
+  const report = data as
+    | {
+        summary_metrics?: {
+          total_revenue?: number;
+          total_commission?: number;
+          organizer_share?: number;
+          total_tickets_sold?: number;
+          active_events?: number;
+          total_events?: number;
+          total_transactions?: number;
+          completed_transactions?: number;
+          pending_transactions?: number;
+          failed_transactions?: number;
+          average_order_value?: number;
+          conversion_rate?: number;
+        };
+        daily_sales?: Array<{
+          date: string;
+          revenue: number;
+          tickets_sold: number;
+          transactions: number;
+          average_order_value: number;
+        }> | null;
+        top_product_events?: Array<{
+          event_id: string;
+          event_name: string;
+          revenue: number;
+          tickets_sold: number;
+        }> | null;
+        sales_by_payment_gateway?: Array<{
+          gateway_name: string;
+          total_transactions: number;
+          total_revenue: number;
+          percentage_of_total: number;
+          status: string;
+        }>;
+      }
+    | undefined;
 
   const summary = report?.summary_metrics;
   const dailySales = report?.daily_sales ?? [];
@@ -145,23 +166,27 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
       label: t("reports.sales.totalTicketsSold", "Total Tickets Sold"),
       value: (summary?.total_tickets_sold ?? 0).toLocaleString(),
       subValue: summary?.total_events
-        ? `${t("reports.sales.acrossEvents", "Across")} ${(summary.total_events).toLocaleString()} ${t("reports.sales.events", "events")}`
+        ? `${t("reports.sales.acrossEvents", "Across")} ${summary.total_events.toLocaleString()} ${t("reports.sales.events", "events")}`
         : undefined,
       colorClass: "bg-purple-100 text-purple-600",
     },
     {
       icon: <TrendUpIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.sales.averageOrderValue", "Avg. Order Value"),
-      value: formatCurrency(summary?.average_order_value ?? 0, currency, locale),
+      value: formatCurrency(
+        summary?.average_order_value ?? 0,
+        currency,
+        locale,
+      ),
       subValue: summary?.total_transactions
-        ? `${(summary.total_transactions).toLocaleString()} ${t("reports.sales.transactions", "transactions")}`
+        ? `${summary.total_transactions.toLocaleString()} ${t("reports.sales.transactions", "transactions")}`
         : undefined,
       colorClass: "bg-blue-100 text-blue-600",
     },
     {
       icon: <ChartBarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.sales.conversionRate", "Conversion Rate"),
-      value: `${((summary?.conversion_rate ?? 0)).toFixed(1)}%`,
+      value: `${(summary?.conversion_rate ?? 0).toFixed(1)}%`,
       subValue: undefined,
       colorClass: "bg-orange-100 text-orange-600",
     },
@@ -188,7 +213,10 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
 
   // Format daily sales data for charts
   const dailySalesChartData = dailySales.map((day) => ({
-    date: new Date(day.date).toLocaleDateString(locale, { month: "short", day: "numeric" }),
+    date: new Date(day.date).toLocaleDateString(locale, {
+      month: "short",
+      day: "numeric",
+    }),
     revenue: day.revenue,
     tickets: day.tickets_sold,
     transactions: day.transactions,
@@ -202,22 +230,28 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
     color: GATEWAY_COLORS[i % GATEWAY_COLORS.length],
   }));
 
-  const hasAnyData = !isLoading && (
-    (summary?.total_revenue ?? 0) > 0 ||
-    (summary?.total_tickets_sold ?? 0) > 0
-  );
+  const hasAnyData =
+    !isLoading &&
+    ((summary?.total_revenue ?? 0) > 0 ||
+      (summary?.total_tickets_sold ?? 0) > 0);
 
   return (
     <div className="space-y-6">
       {/* Empty State */}
       {!isLoading && !hasAnyData && (
         <div className="glass-card-lowest rounded-2xl p-8 text-center">
-          <PresentationChartIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" weight="duotone" />
+          <PresentationChartIcon
+            className="w-16 h-16 mx-auto text-gray-300 mb-4"
+            weight="duotone"
+          />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {t("reports.sales.noDataTitle", "No Sales Data Available")}
           </h3>
           <p className="text-gray-500 max-w-md mx-auto">
-            {t("reports.sales.noDataDescription", "Sales data will appear here once tickets are sold for your events.")}
+            {t(
+              "reports.sales.noDataDescription",
+              "Sales data will appear here once tickets are sold for your events.",
+            )}
           </p>
         </div>
       )}
@@ -274,7 +308,9 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                     {isLoading ? (
                       <Skeleton className="h-7 w-24" />
                     ) : (
-                      <p className="text-lg font-semibold text-gray-900">{stat.value}</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {stat.value}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -293,26 +329,58 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
             isLoading={isLoading}
             isEmpty={!isLoading && dailySalesChartData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <BarChart data={dailySalesChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ChartContainer
+              config={{
+                revenue: {
+                  label: t("reports.sales.columns.revenue", "Revenue"),
+                  color: "#6366f1",
+                },
+              }}
+              className="h-72"
+            >
+              <BarChart
+                data={dailySalesChartData}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 11 }}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   tickLine={false}
                 />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  formatter={(value: number, name: string) => {
-                    if (name === "revenue") {
-                      return [formatCurrency(value, currency, locale), t("reports.sales.columns.revenue", "Revenue")];
-                    }
-                    return [value, name];
-                  }}
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tickLine={false}
+                  axisLine={false}
                 />
-                <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value, name) => {
+                        if (name === "revenue") {
+                          return [
+                            formatCurrency(Number(value), currency, locale),
+                            t("reports.sales.columns.revenue", "Revenue"),
+                          ];
+                        }
+                        return [value, name];
+                      }}
+                    />
+                  }
+                />
+                <Bar
+                  dataKey="revenue"
+                  fill="var(--color-revenue)"
+                  radius={[6, 6, 0, 0]}
+                  barSize={40}
+                />
               </BarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
 
           {/* Tickets Over Time */}
@@ -321,24 +389,55 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
             isLoading={isLoading}
             isEmpty={!isLoading && dailySalesChartData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={dailySalesChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  formatter={(value: number) => [value.toLocaleString(), t("reports.sales.columns.tickets", "Tickets")]}
+            <ChartContainer
+              config={{
+                tickets: {
+                  label: t("reports.sales.columns.tickets", "Tickets"),
+                  color: "#10b981",
+                },
+              }}
+              className="h-72"
+            >
+              <LineChart
+                data={dailySalesChartData}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e7eb"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value) => [
+                        Number(value).toLocaleString(),
+                        t("reports.sales.columns.tickets", "Tickets"),
+                      ]}
+                    />
+                  }
                 />
                 <Line
                   type="monotone"
                   dataKey="tickets"
-                  stroke="#10b981"
+                  stroke="var(--color-tickets)"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 4 }}
                 />
               </LineChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
         </div>
       )}
@@ -348,11 +447,25 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Gateway Pie Chart */}
           <ChartCard
-            title={t("reports.sales.paymentGatewayBreakdown", "Payment Gateway Breakdown")}
+            title={t(
+              "reports.sales.paymentGatewayBreakdown",
+              "Payment Gateway Breakdown",
+            )}
             isLoading={isLoading}
             isEmpty={!isLoading && gatewayChartData.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
+            <ChartContainer
+              config={Object.fromEntries(
+                gatewayChartData.map((gw) => [
+                  gw.name,
+                  {
+                    label: gw.name,
+                    color: gw.color,
+                  },
+                ]),
+              )}
+              className="h-72"
+            >
               <PieChart>
                 <Pie
                   data={gatewayChartData}
@@ -360,18 +473,32 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={90}
+                  outerRadius={100}
+                  innerRadius={50}
+                  paddingAngle={3}
+                  strokeWidth={0}
                 >
                   {gatewayChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={`var(--color-${entry.name})`}
+                      className="transition-opacity hover:opacity-80"
+                    />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value: number) => formatCurrency(value, currency, locale)}
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value) =>
+                        formatCurrency(Number(value), currency, locale)
+                      }
+                    />
+                  }
                 />
-                <Legend />
+                <ChartLegend content={<ChartLegendContent />} />
               </PieChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
 
           {/* Gateway Table */}
@@ -398,19 +525,29 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                 </thead>
                 <tbody>
                   {paymentGateways.map((gw, i) => (
-                    <tr key={gw.gateway_name} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr
+                      key={gw.gateway_name}
+                      className="border-b border-gray-50 hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div
                             className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: GATEWAY_COLORS[i % GATEWAY_COLORS.length] }}
+                            style={{
+                              backgroundColor:
+                                GATEWAY_COLORS[i % GATEWAY_COLORS.length],
+                            }}
                           />
-                          <span className="text-gray-900 capitalize">{gw.gateway_name}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            gw.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-600"
-                          }`}>
+                          <span className="text-gray-900 capitalize">
+                            {gw.gateway_name}
+                          </span>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${
+                              gw.status === "active"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
                             {gw.status}
                           </span>
                         </div>
@@ -454,13 +591,18 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                 </thead>
                 <tbody>
                   {topProductEvents.slice(0, 5).map((event, i) => (
-                    <tr key={event.event_id ?? i} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr
+                      key={event.event_id ?? i}
+                      className="border-b border-gray-50 hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-medium flex items-center justify-center">
                             {i + 1}
                           </span>
-                          <span className="text-gray-900 font-medium">{event.event_name}</span>
+                          <span className="text-gray-900 font-medium">
+                            {event.event_name}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">

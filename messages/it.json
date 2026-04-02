@@ -1019,7 +1019,31 @@
       "ticketSalesOverTime": "Vendite Biglietti nel Tempo",
       "ticketsByTier": "Biglietti per Categoria",
       "sold": "Venduti",
-      "total": "Totale"
+      "total": "Totale",
+      "keyMetrics": "Metriche Chiave",
+      "eventDetails": "Dettagli Evento",
+      "eventDate": "Data Evento",
+      "duration": "Durata",
+      "capacity": "Capienza",
+      "avgTicketPrice": "Prezzo Medio Biglietto",
+      "transactions": "transazioni",
+      "net": "Netto",
+      "topPerformingTier": "Categoria con Migliori Prestazioni",
+      "tierPerformance": "Prestazioni per Categoria",
+      "revenueByTier": "Entrate per Categoria",
+      "tierBreakdown": "Dettaglio per Categoria",
+      "fillRate": "Tasso di Riempimento",
+      "ticket": "biglietto",
+      "noDataTitle": "Nessun Dato sulle Prestazioni Disponibile",
+      "noDataDescription": "I dati sulle prestazioni appariranno qui una volta iniziata la vendita dei biglietti per questo evento.",
+      "columns": {
+        "tier": "Categoria",
+        "price": "Prezzo",
+        "sold": "Venduti",
+        "capacity": "Capienza",
+        "fillRate": "Tasso di Riempimento",
+        "revenue": "Entrate"
+      }
     }
   }
 }

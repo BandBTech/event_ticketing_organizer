@@ -137,12 +137,42 @@ export interface FinancialReportData {
 }
 
 export interface EventPerformanceData {
+  event_id?: string;
   event_title?: string;
-  total_tickets?: number;
+  banner_image?: string;
+  status?: string;
+  start_date?: string;
+  end_date?: string;
+  capacity?: number;
   tickets_sold?: number;
+  sold_percentage?: number;
+  revenue?: number;
+  commission?: number;
+  organizer_earnings?: number;
+  average_ticket_price?: number;
+  total_transactions?: number;
+  top_tier?: {
+    tier_id: string;
+    tier_name: string;
+    ticket_price: number;
+    ticket_capacity: number;
+    tickets_sold: number;
+    sold_percentage: number;
+    revenue: number;
+  };
+  tier_performance?: Array<{
+    tier_id: string;
+    tier_name: string;
+    ticket_price: number;
+    ticket_capacity: number;
+    tickets_sold: number;
+    sold_percentage: number;
+    revenue: number;
+  }> | null;
+  // Legacy fields for backward compatibility
+  total_tickets?: number;
   tickets_remaining?: number;
   attendance_rate?: number;
-  revenue?: number;
   ticket_sales_over_time?: Array<{ date: string; sold: number }>;
   tier_breakdown?: Array<{
     tier_name: string;

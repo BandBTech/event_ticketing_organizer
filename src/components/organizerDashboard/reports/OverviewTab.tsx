@@ -21,13 +21,17 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
 import { OverviewReportData } from "@/types/report";
 import { ChartCard } from "./ChartCard";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
@@ -59,7 +63,15 @@ interface StatCardProps {
   index: number;
 }
 
-function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }: StatCardProps) {
+function StatCard({
+  icon,
+  label,
+  value,
+  subValue,
+  colorClass,
+  isLoading,
+  index,
+}: StatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -69,9 +81,7 @@ function StatCard({ icon, label, value, subValue, colorClass, isLoading, index }
       className="@container/card p-2.5 rounded-2xl glass-card-lowest transition-all"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className={`p-2 rounded-lg ${colorClass}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-lg ${colorClass}`}>{icon}</div>
         <span className="text-sm text-gray-500">{label}</span>
       </div>
       {isLoading ? (
@@ -95,7 +105,14 @@ interface FinancialCardProps {
   isLoading: boolean;
 }
 
-function FinancialCard({ icon, label, value, description, alert, isLoading }: FinancialCardProps) {
+function FinancialCard({
+  icon,
+  label,
+  value,
+  description,
+  alert,
+  isLoading,
+}: FinancialCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -106,7 +123,9 @@ function FinancialCard({ icon, label, value, description, alert, isLoading }: Fi
       }`}
     >
       <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-lg ${alert ? "bg-amber-100 text-amber-600" : "bg-indigo-100 text-indigo-600"}`}>
+        <div
+          className={`p-2 rounded-lg ${alert ? "bg-amber-100 text-amber-600" : "bg-indigo-100 text-indigo-600"}`}
+        >
           {icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -123,7 +142,10 @@ function FinancialCard({ icon, label, value, description, alert, isLoading }: Fi
           <p className="text-xs text-gray-400">{description}</p>
         </div>
         {alert && (
-          <ClockIcon className="w-5 h-5 text-amber-500 flex-shrink-0" weight="duotone" />
+          <ClockIcon
+            className="w-5 h-5 text-amber-500 flex-shrink-0"
+            weight="duotone"
+          />
         )}
       </div>
     </motion.div>
@@ -148,19 +170,27 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
   const ticketSalesTrend = report?.ticket_sales_trend ?? [];
 
   // Calculate derived metrics
-  const hasAnyData = !isLoading && (
-    (summary?.total_events ?? 0) > 0 ||
-    (summary?.total_tickets_sold ?? 0) > 0 ||
-    (summary?.total_revenue ?? 0) > 0
-  );
+  const hasAnyData =
+    !isLoading &&
+    ((summary?.total_events ?? 0) > 0 ||
+      (summary?.total_tickets_sold ?? 0) > 0 ||
+      (summary?.total_revenue ?? 0) > 0);
 
-  const completionRate = summary?.total_events && summary?.total_events > 0
-    ? ((eventsStats?.completed_events ?? 0) / summary.total_events * 100).toFixed(1)
-    : "0";
+  const completionRate =
+    summary?.total_events && summary?.total_events > 0
+      ? (
+          ((eventsStats?.completed_events ?? 0) / summary.total_events) *
+          100
+        ).toFixed(1)
+      : "0";
 
-  const rejectionRate = summary?.total_events && summary?.total_events > 0
-    ? ((eventsStats?.rejected_events ?? 0) / summary.total_events * 100).toFixed(1)
-    : "0";
+  const rejectionRate =
+    summary?.total_events && summary?.total_events > 0
+      ? (
+          ((eventsStats?.rejected_events ?? 0) / summary.total_events) *
+          100
+        ).toFixed(1)
+      : "0";
 
   // Primary KPIs
   const primaryStats = [
@@ -168,9 +198,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.overview.totalRevenue", "Total Revenue"),
       value: formatCurrency(summary?.total_revenue ?? 0, currency, locale),
-      subValue: summary?.net_revenue !== undefined && summary.net_revenue !== summary?.total_revenue
-        ? `${t("reports.overview.net", "Net")}: ${formatCurrency(summary.net_revenue, currency, locale)}`
-        : undefined,
+      subValue:
+        summary?.net_revenue !== undefined &&
+        summary.net_revenue !== summary?.total_revenue
+          ? `${t("reports.overview.net", "Net")}: ${formatCurrency(summary.net_revenue, currency, locale)}`
+          : undefined,
       colorClass: "bg-green-100 text-green-600",
     },
     {
@@ -191,7 +223,10 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     },
     {
       icon: <UsersIcon className="w-6 h-6" weight="duotone" />,
-      label: t("reports.overview.completedTransactions", "Completed Transactions"),
+      label: t(
+        "reports.overview.completedTransactions",
+        "Completed Transactions",
+      ),
       value: (summary?.completed_transactions ?? 0).toLocaleString(),
       subValue: `${t("reports.overview.ofTotal", "of")} ${(summary?.total_transactions ?? 0).toLocaleString()}`,
       colorClass: "bg-orange-100 text-orange-600",
@@ -204,7 +239,10 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
       icon: <WalletIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.overview.pendingPayouts", "Pending Payouts"),
       value: formatCurrency(summary?.pending_payouts ?? 0, currency, locale),
-      description: t("reports.overview.awaitingWithdrawal", "Awaiting withdrawal"),
+      description: t(
+        "reports.overview.awaitingWithdrawal",
+        "Awaiting withdrawal",
+      ),
       alert: (summary?.pending_payouts ?? 0) > 0,
     },
     {
@@ -230,14 +268,46 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
   // Event status breakdown data
   const eventsStatusData = eventsStats
     ? [
-        { name: t("events.status.draft", "Draft"), value: eventsStats.draft_events ?? 0, color: EVENT_STATUS_COLORS.draft },
-        { name: t("events.status.pending", "Pending"), value: eventsStats.pending_events ?? 0, color: EVENT_STATUS_COLORS.pending },
-        { name: t("events.status.approved", "Approved"), value: eventsStats.approved_events ?? 0, color: EVENT_STATUS_COLORS.approved },
-        { name: t("events.status.onSale", "On Sale"), value: eventsStats.on_sale_events ?? 0, color: EVENT_STATUS_COLORS["on-sale"] },
-        { name: t("events.status.live", "Live"), value: eventsStats.live_events ?? 0, color: EVENT_STATUS_COLORS.live },
-        { name: t("events.status.completed", "Completed"), value: eventsStats.completed_events ?? 0, color: EVENT_STATUS_COLORS.completed },
-        { name: t("events.status.cancelled", "Cancelled"), value: eventsStats.cancelled_events ?? 0, color: EVENT_STATUS_COLORS.cancelled },
-        { name: t("events.status.rejected", "Rejected"), value: eventsStats.rejected_events ?? 0, color: EVENT_STATUS_COLORS.rejected },
+        {
+          name: t("events.status.draft", "Draft"),
+          value: eventsStats.draft_events ?? 0,
+          color: EVENT_STATUS_COLORS.draft,
+        },
+        {
+          name: t("events.status.pending", "Pending"),
+          value: eventsStats.pending_events ?? 0,
+          color: EVENT_STATUS_COLORS.pending,
+        },
+        {
+          name: t("events.status.approved", "Approved"),
+          value: eventsStats.approved_events ?? 0,
+          color: EVENT_STATUS_COLORS.approved,
+        },
+        {
+          name: t("events.status.onSale", "On Sale"),
+          value: eventsStats.on_sale_events ?? 0,
+          color: EVENT_STATUS_COLORS["on-sale"],
+        },
+        {
+          name: t("events.status.live", "Live"),
+          value: eventsStats.live_events ?? 0,
+          color: EVENT_STATUS_COLORS.live,
+        },
+        {
+          name: t("events.status.completed", "Completed"),
+          value: eventsStats.completed_events ?? 0,
+          color: EVENT_STATUS_COLORS.completed,
+        },
+        {
+          name: t("events.status.cancelled", "Cancelled"),
+          value: eventsStats.cancelled_events ?? 0,
+          color: EVENT_STATUS_COLORS.cancelled,
+        },
+        {
+          name: t("events.status.rejected", "Rejected"),
+          value: eventsStats.rejected_events ?? 0,
+          color: EVENT_STATUS_COLORS.rejected,
+        },
       ].filter((item) => item.value > 0)
     : [];
 
@@ -246,12 +316,18 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
       {/* Empty State */}
       {!isLoading && !hasAnyData && (
         <div className="glass-card-lowest rounded-2xl p-8 text-center">
-          <PresentationChartIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" weight="duotone" />
+          <PresentationChartIcon
+            className="w-16 h-16 mx-auto text-gray-300 mb-4"
+            weight="duotone"
+          />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             {t("reports.overview.noDataTitle", "No Data Available Yet")}
           </h3>
           <p className="text-gray-500 max-w-md mx-auto">
-            {t("reports.overview.noDataDescription", "Start creating and selling events to see your performance metrics and analytics here.")}
+            {t(
+              "reports.overview.noDataDescription",
+              "Start creating and selling events to see your performance metrics and analytics here.",
+            )}
           </p>
         </div>
       )}
@@ -310,58 +386,105 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
             isLoading={isLoading}
             isEmpty={!isLoading && revenueTrend.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={revenueTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ChartContainer
+              config={{
+                revenue: {
+                  label: t("reports.financial.revenue", "Revenue"),
+                  color: "#6366f1",
+                },
+              }}
+              className="h-72"
+            >
+              <LineChart
+                data={revenueTrend}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
                   tickLine={false}
                 />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  formatter={(value: number) => [formatCurrency(value, currency, locale), t("reports.financial.revenue", "Revenue")]}
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value) => [
+                        formatCurrency(Number(value), currency, locale),
+                        t("reports.financial.revenue", "Revenue"),
+                      ]}
+                    />
+                  }
                 />
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#6366f1"
-                  strokeWidth={2}
+                  stroke="var(--color-revenue)"
+                  strokeWidth={3}
                   dot={false}
                   activeDot={{ r: 4 }}
                 />
               </LineChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
 
           {/* Ticket Sales Trend Chart */}
           <ChartCard
-            title={t("reports.overview.ticketSalesOverTime", "Ticket Sales Over Time")}
+            title={t(
+              "reports.overview.ticketSalesOverTime",
+              "Ticket Sales Over Time",
+            )}
             isLoading={isLoading}
             isEmpty={!isLoading && ticketSalesTrend.length === 0}
           >
-            <ResponsiveContainer width="100%" height={256}>
-              <LineChart data={ticketSalesTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ChartContainer
+              config={{
+                tickets: {
+                  label: t("reports.overview.tickets", "Tickets"),
+                  color: "#10b981",
+                },
+              }}
+              className="h-72"
+            >
+              <LineChart
+                data={ticketSalesTrend}
+                margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
                   tickLine={false}
                 />
-                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                <Tooltip
-                  formatter={(value: number) => [value.toLocaleString(), t("reports.overview.tickets", "Tickets")]}
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent className="bg-white shadow-lg border border-gray-100 rounded-xl"
+                      formatter={(value) => [
+                        Number(value).toLocaleString(),
+                        t("reports.overview.tickets", "Tickets"),
+                      ]}
+                    />
+                  }
                 />
                 <Line
                   type="monotone"
                   dataKey="tickets"
-                  stroke="#10b981"
-                  strokeWidth={2}
+                  stroke="var(--color-tickets)"
+                  strokeWidth={3}
                   dot={false}
                   activeDot={{ r: 4 }}
                 />
               </LineChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </ChartCard>
         </div>
       )}
@@ -376,20 +499,36 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
             {/* Summary stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 pb-6 border-b border-gray-100">
               <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{eventsStats?.total_events ?? 0}</p>
-                <p className="text-xs text-gray-500">{t("reports.overview.totalEvents", "Total Events")}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {eventsStats?.total_events ?? 0}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {t("reports.overview.totalEvents", "Total Events")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">{completionRate}%</p>
-                <p className="text-xs text-gray-500">{t("reports.overview.completionRate", "Completion Rate")}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {completionRate}%
+                </p>
+                <p className="text-xs text-gray-500">
+                  {t("reports.overview.completionRate", "Completion Rate")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">{rejectionRate}%</p>
-                <p className="text-xs text-gray-500">{t("reports.overview.rejectionRate", "Rejection Rate")}</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {rejectionRate}%
+                </p>
+                <p className="text-xs text-gray-500">
+                  {t("reports.overview.rejectionRate", "Rejection Rate")}
+                </p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-amber-600">{eventsStats?.pending_events ?? 0}</p>
-                <p className="text-xs text-gray-500">{t("reports.overview.pendingReview", "Pending Review")}</p>
+                <p className="text-2xl font-bold text-amber-600">
+                  {eventsStats?.pending_events ?? 0}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {t("reports.overview.pendingReview", "Pending Review")}
+                </p>
               </div>
             </div>
 
@@ -401,7 +540,9 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                     className="w-3 h-3 rounded-full mx-auto mb-2"
                     style={{ backgroundColor: item.color }}
                   />
-                  <p className="text-2xl font-bold text-gray-900">{item.value}</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {item.value}
+                  </p>
                   <p className="text-xs text-gray-500">{item.name}</p>
                 </div>
               ))}
@@ -445,7 +586,10 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                       {t("reports.overview.columns.event", "Event")}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t("reports.overview.columns.ticketsSold", "Tickets Sold")}
+                      {t(
+                        "reports.overview.columns.ticketsSold",
+                        "Tickets Sold",
+                      )}
                     </th>
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
                       {t("reports.overview.columns.revenue", "Revenue")}
@@ -457,13 +601,18 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                 </thead>
                 <tbody>
                   {topEvents.slice(0, 5).map((event, i) => (
-                    <tr key={event.event_id ?? i} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr
+                      key={event.event_id ?? i}
+                      className="border-b border-gray-50 hover:bg-gray-50"
+                    >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-xs font-medium flex items-center justify-center">
                             {i + 1}
                           </span>
-                          <span className="text-gray-900 font-medium">{event.event_name}</span>
+                          <span className="text-gray-900 font-medium">
+                            {event.event_name}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
@@ -474,7 +623,11 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
                       </td>
                       <td className="py-3 px-4 text-right text-gray-500 hidden sm:table-cell">
                         {event.tickets_sold > 0
-                          ? formatCurrency(event.revenue / event.tickets_sold, currency, locale)
+                          ? formatCurrency(
+                              event.revenue / event.tickets_sold,
+                              currency,
+                              locale,
+                            )
                           : "-"}
                       </td>
                     </tr>
@@ -498,26 +651,45 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
               {recentTransactions.slice(0, 5).map((transaction, i) => {
                 const isRefund = (transaction.status as string) === "refunded";
                 return (
-                  <div key={i} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div
+                    key={i}
+                    className="flex items-center justify-between p-4 hover:bg-gray-50"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${isRefund ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
+                      <div
+                        className={`p-2 rounded-lg ${isRefund ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}
+                      >
                         {isRefund ? (
-                          <ArrowDownRightIcon className="w-5 h-5" weight="duotone" />
+                          <ArrowDownRightIcon
+                            className="w-5 h-5"
+                            weight="duotone"
+                          />
                         ) : (
-                          <ArrowUpRightIcon className="w-5 h-5" weight="duotone" />
+                          <ArrowUpRightIcon
+                            className="w-5 h-5"
+                            weight="duotone"
+                          />
                         )}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          {transaction.event_name as string ?? t("reports.overview.unknownEvent", "Unknown Event")}
+                          {(transaction.event_name as string) ??
+                            t("reports.overview.unknownEvent", "Unknown Event")}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {transaction.created_at as string ?? ""}
+                          {(transaction.created_at as string) ?? ""}
                         </p>
                       </div>
                     </div>
-                    <span className={`text-sm font-semibold ${isRefund ? "text-red-600" : "text-green-600"}`}>
-                      {isRefund ? "-" : "+"}{formatCurrency((transaction.amount as number) ?? 0, currency, locale)}
+                    <span
+                      className={`text-sm font-semibold ${isRefund ? "text-red-600" : "text-green-600"}`}
+                    >
+                      {isRefund ? "-" : "+"}
+                      {formatCurrency(
+                        (transaction.amount as number) ?? 0,
+                        currency,
+                        locale,
+                      )}
                     </span>
                   </div>
                 );

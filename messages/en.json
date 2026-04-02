@@ -1126,7 +1126,31 @@
       "ticketSalesOverTime": "Ticket Sales Over Time",
       "ticketsByTier": "Tickets by Tier",
       "sold": "Sold",
-      "total": "Total"
+      "total": "Total",
+      "keyMetrics": "Key Metrics",
+      "eventDetails": "Event Details",
+      "eventDate": "Event Date",
+      "duration": "Duration",
+      "capacity": "Capacity",
+      "avgTicketPrice": "Avg. Ticket Price",
+      "transactions": "transactions",
+      "net": "Net",
+      "topPerformingTier": "Top Performing Tier",
+      "tierPerformance": "Tier Performance",
+      "revenueByTier": "Revenue by Tier",
+      "tierBreakdown": "Tier Breakdown",
+      "fillRate": "Fill Rate",
+      "ticket": "ticket",
+      "noDataTitle": "No Performance Data Available",
+      "noDataDescription": "Performance data will appear here once tickets start selling for this event.",
+      "columns": {
+        "tier": "Tier",
+        "price": "Price",
+        "sold": "Sold",
+        "capacity": "Capacity",
+        "fillRate": "Fill Rate",
+        "revenue": "Revenue"
+      }
     }
   }
 }
