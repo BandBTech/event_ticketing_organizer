@@ -248,7 +248,7 @@ export function PayoutTable({
                   {t("payouts.table.amount", "Amount")}
                 </p>
                 <p className="font-semibold text-gray-900">
-                  {formatCurrency(selectedPayout.amount, undefined, locale)}
+                  {formatCurrency(selectedPayout.amount)}
                 </p>
               </div>
 
