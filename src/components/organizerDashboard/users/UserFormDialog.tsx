@@ -269,7 +269,7 @@ export default function UserFormDialog({
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {!isEditing && (
               <>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4">
                   <FormField
                     control={form.control}
                     name="first_name"
