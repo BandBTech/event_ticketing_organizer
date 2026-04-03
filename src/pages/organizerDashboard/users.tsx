@@ -11,7 +11,7 @@ import { organizerUserService } from "@/services/organizerUserService";
 import { OrgUser, OrgUsersListResponse } from "@/types/organizerUser";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "sonner";
-import { PaginationState } from "@tanstack/react-table";
+import { usePaginationSync } from "@/hooks/usePaginationSync";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -67,14 +67,15 @@ function UsersPageContent() {
   const debouncedSearch = useDebounce(globalFilter, 500);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [deleteUser, setDeleteUser] = useState<OrgUser | null>(null);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+
+  const { currentPage, limit, handlePageChange, handleLimitChange } =
+    usePaginationSync();
 
   // Sorting state — Users API uses a single `sort` param with `-` prefix for desc
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined,
+  );
 
   // Build the combined sort param for the Users API: e.g. "name" or "-name"
   const sortParam = useMemo(() => {
@@ -84,16 +85,16 @@ function UsersPageContent() {
 
   const { data: usersResponse, isLoading: isUsersLoading } = useQuery({
     queryKey: queryKeys.orgUsers.list({
-      page: pagination.pageIndex + 1,
-      limit: pagination.pageSize,
+      page: currentPage,
+      limit,
       search: debouncedSearch,
       role: roleFilter !== "all" ? roleFilter : undefined,
       sort: sortParam,
     }),
     queryFn: () =>
       organizerUserService.getUsers(
-        pagination.pageIndex + 1,
-        pagination.pageSize,
+        currentPage,
+        limit,
         debouncedSearch || undefined,
         roleFilter !== "all" ? roleFilter : undefined,
         sortParam,
@@ -146,23 +147,32 @@ function UsersPageContent() {
     }
   }, [deleteUser, deleteMutation]);
 
-  const handleSearch = useCallback((value: string) => {
-    setGlobalFilter(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  }, []);
+  const handleSearch = useCallback(
+    (value: string) => {
+      setGlobalFilter(value);
+      handlePageChange(1);
+    },
+    [handlePageChange],
+  );
 
-  const handleRoleChange = useCallback((value: string) => {
-    setRoleFilter(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  }, []);
+  const handleRoleChange = useCallback(
+    (value: string) => {
+      setRoleFilter(value);
+      handlePageChange(1);
+    },
+    [handlePageChange],
+  );
 
   const handleSortChange = useCallback(
-    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+    (
+      newSortBy: string | undefined,
+      newSortOrder: "asc" | "desc" | undefined,
+    ) => {
       setSortBy(newSortBy);
       setSortOrder(newSortOrder);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      handlePageChange(1);
     },
-    [],
+    [handlePageChange],
   );
 
   const columns = useMemo(
@@ -171,16 +181,10 @@ function UsersPageContent() {
         onEdit: handleEdit,
         onDelete: handleDeleteClick,
         t,
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
+        pageIndex: currentPage - 1,
+        pageSize: limit,
       }),
-    [
-      handleEdit,
-      handleDeleteClick,
-      t,
-      pagination.pageIndex,
-      pagination.pageSize,
-    ],
+    [handleEdit, handleDeleteClick, t, currentPage, limit],
   );
 
   if (isOrganizerRejected())
@@ -275,22 +279,14 @@ function UsersPageContent() {
           columns={columns}
           data={users}
           isLoading={isUsersLoading}
-          currentPage={pagination.pageIndex + 1}
+          currentPage={currentPage}
           totalPages={totalPages}
           total={usersResponse?.pagination?.total}
-          limit={pagination.pageSize}
-          onLimitChange={(limit) =>
-            setPagination((prev) => ({
-              ...prev,
-              pageSize: limit,
-              pageIndex: 0,
-            }))
-          }
+          limit={limit}
+          onLimitChange={handleLimitChange}
           hasNextPage={usersResponse?.pagination?.has_next ?? false}
           hasPreviousPage={usersResponse?.pagination?.has_prev ?? false}
-          onPageChange={(page) =>
-            setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
-          }
+          onPageChange={handlePageChange}
           sortBy={sortBy}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}

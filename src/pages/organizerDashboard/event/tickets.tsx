@@ -1,5 +1,3 @@
-
-
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +7,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
 import { useCurrencyStore } from "@/store/currencyStore";
 import { useDebounce } from "@/hooks/useDebounce";
-import { PaginationState } from "@tanstack/react-table";
+import { usePaginationSync } from "@/hooks/usePaginationSync";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
 import { Input } from "@/components/ui/input";
 import { TicketIcon, Search, ArrowLeft, Loader2 } from "lucide-react";
@@ -22,29 +20,36 @@ import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 
 function EventTicketsTable({
   eventId,
-  pagination,
+  currentPage,
+  limit,
   search,
-  setPagination,
   t,
   sortBy,
   sortOrder,
   onSortChange,
+  onPageChange,
+  onLimitChange,
 }: {
   eventId: string;
-  pagination: PaginationState;
+  currentPage: number;
+  limit: number;
   search: string;
-  setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
   t: (key: string, fallback?: string) => string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-  onSortChange: (sortBy: string | undefined, sortOrder: "asc" | "desc" | undefined) => void;
+  onSortChange: (
+    sortBy: string | undefined,
+    sortOrder: "asc" | "desc" | undefined,
+  ) => void;
+  onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
 }) {
   const { locale } = useLanguageStore();
   const { currency } = useCurrencyStore();
   const { data: ticketsResponse, isLoading } = useQuery({
     queryKey: queryKeys.events.tickets(eventId, {
-      page: pagination.pageIndex + 1,
-      limit: pagination.pageSize,
+      page: currentPage,
+      limit,
       search: search,
       sort_by: sortBy,
       sort_order: sortOrder,
@@ -52,8 +57,8 @@ function EventTicketsTable({
     queryFn: () =>
       eventService.getEventTickets(
         eventId,
-        pagination.pageIndex + 1,
-        pagination.pageSize,
+        currentPage,
+        limit,
         search || undefined,
         sortBy,
         sortOrder,
@@ -69,12 +74,12 @@ function EventTicketsTable({
     () =>
       getColumns({
         t,
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
+        pageIndex: currentPage - 1,
+        pageSize: limit,
         locale,
         currency,
       }),
-    [t, pagination.pageIndex, pagination.pageSize, locale, currency],
+    [t, currentPage, limit, locale, currency],
   );
 
   return (
@@ -82,22 +87,14 @@ function EventTicketsTable({
       columns={columns}
       data={tickets}
       isLoading={isLoading}
-      currentPage={pagination.pageIndex + 1}
+      currentPage={currentPage}
       totalPages={totalPages}
       total={paginationData?.total}
-      limit={pagination.pageSize}
-      onLimitChange={(limit) =>
-        setPagination((prev) => ({
-          ...prev,
-          pageSize: limit,
-          pageIndex: 0,
-        }))
-      }
-      hasNextPage={pagination.pageIndex < totalPages - 1}
-      hasPreviousPage={pagination.pageIndex > 0}
-      onPageChange={(page) =>
-        setPagination((prev) => ({ ...prev, pageIndex: page - 1 }))
-      }
+      limit={limit}
+      onLimitChange={onLimitChange}
+      hasNextPage={currentPage < totalPages}
+      hasPreviousPage={currentPage > 1}
+      onPageChange={onPageChange}
       sortBy={sortBy}
       sortOrder={sortOrder}
       onSortChange={onSortChange}
@@ -129,14 +126,15 @@ export default function EventTicketsPage() {
 
   const [globalFilter, setGlobalFilter] = useState("");
   const debouncedSearch = useDebounce(globalFilter, 500);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+
+  const { currentPage, limit, handlePageChange, handleLimitChange } =
+    usePaginationSync();
 
   // Sorting state
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined,
+  );
 
   const { data: event, isLoading: isEventLoading } = useQuery({
     queryKey: queryKeys.events.detail(eventId),
@@ -146,16 +144,19 @@ export default function EventTicketsPage() {
 
   const handleSearch = (value: string) => {
     setGlobalFilter(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    handlePageChange(1);
   };
 
   const handleSortChange = useCallback(
-    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+    (
+      newSortBy: string | undefined,
+      newSortOrder: "asc" | "desc" | undefined,
+    ) => {
       setSortBy(newSortBy);
       setSortOrder(newSortOrder);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      handlePageChange(1);
     },
-    [],
+    [handlePageChange],
   );
 
   return (
@@ -213,13 +214,15 @@ export default function EventTicketsPage() {
               ) : (
                 <EventTicketsTable
                   eventId={eventId}
-                  pagination={pagination}
+                  currentPage={currentPage}
+                  limit={limit}
                   search={debouncedSearch}
-                  setPagination={setPagination}
                   t={t}
                   sortBy={sortBy}
                   sortOrder={sortOrder}
                   onSortChange={handleSortChange}
+                  onPageChange={handlePageChange}
+                  onLimitChange={handleLimitChange}
                 />
               )}
             </div>

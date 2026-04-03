@@ -19,21 +19,23 @@ import { PayoutFilterTabs } from "@/components/organizerDashboard/payouts/Payout
 import { PayoutTable } from "@/components/organizerDashboard/payouts/PayoutTable";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
+import { usePaginationSync } from "@/hooks/usePaginationSync";
 
 export default function PayoutsPage() {
   const { t } = useTranslation();
   const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } =
     useAuthStore();
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const { currentPage, limit, handlePageChange, handleLimitChange } =
+    usePaginationSync();
   const [activeTab, setActiveTab] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const [limit, setLimit] = useState(10);
-
   // Sorting state
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(undefined);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>(
+    undefined,
+  );
 
   const {
     payouts,
@@ -54,16 +56,19 @@ export default function PayoutsPage() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    setCurrentPage(1);
+    handlePageChange(1);
   };
 
   const handleSortChange = useCallback(
-    (newSortBy: string | undefined, newSortOrder: "asc" | "desc" | undefined) => {
+    (
+      newSortBy: string | undefined,
+      newSortOrder: "asc" | "desc" | undefined,
+    ) => {
       setSortBy(newSortBy);
       setSortOrder(newSortOrder);
-      setCurrentPage(1);
+      handlePageChange(1);
     },
-    [],
+    [handlePageChange],
   );
 
   // Status guards
@@ -155,10 +160,10 @@ export default function PayoutsPage() {
                 totalPages={totalPages}
                 total={total}
                 limit={limit}
-                onLimitChange={setLimit}
+                onLimitChange={handleLimitChange}
                 hasNextPage={hasNextPage}
                 hasPreviousPage={hasPreviousPage}
-                onPageChange={setCurrentPage}
+                onPageChange={handlePageChange}
                 sortBy={sortBy}
                 sortOrder={sortOrder}
                 onSortChange={handleSortChange}
