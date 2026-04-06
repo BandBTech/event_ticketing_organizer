@@ -494,7 +494,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                     />
                   }
                 />
-                <ChartLegend content={<ChartLegendContent />} />
+                <ChartLegend />
               </PieChart>
             </ChartContainer>
           </ChartCard>

@@ -393,7 +393,7 @@ export function CustomerAnalyticsTab({
                     />
                   }
                 />
-                <ChartLegend content={<ChartLegendContent />} />
+                <ChartLegend />
               </PieChart>
             </ChartContainer>
           </ChartCard>
@@ -468,7 +468,7 @@ export function CustomerAnalyticsTab({
                     />
                   }
                 />
-                <ChartLegend content={<ChartLegendContent />} />
+                <ChartLegend />
                 <Bar
                   dataKey="totalSpent"
                   fill="var(--color-totalSpent)"

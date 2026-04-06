@@ -561,7 +561,7 @@ export function EventPerformanceTab({
                       />
                     }
                   />
-                  <ChartLegend content={<ChartLegendContent />} />
+                  <ChartLegend />
                   <Bar
                     dataKey="sold"
                     name={t("reports.eventPerformance.sold", "Sold")}
@@ -636,7 +636,7 @@ export function EventPerformanceTab({
                       />
                     }
                   />
-                  <ChartLegend content={<ChartLegendContent />} />
+                  <ChartLegend />
                 </PieChart>
               </ChartContainer>
             </ChartCard>

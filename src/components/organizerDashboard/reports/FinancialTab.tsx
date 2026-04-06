@@ -452,7 +452,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                         />
                       }
                     />
-                    <ChartLegend content={<ChartLegendContent />} />
+                    <ChartLegend />
                     <Bar
                       dataKey="organizerShare"
                       name={t(
@@ -527,7 +527,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                         />
                       }
                     />
-                    <ChartLegend content={<ChartLegendContent />} />
+                    <ChartLegend />
                   </PieChart>
                 </ChartContainer>
               </ChartCard>
