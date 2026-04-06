@@ -263,17 +263,17 @@ export function EventPerformanceTab({
 
       {/* Event Header */}
       {report && (
-        <div className="glass-card-lowest rounded-2xl p-6">
+        <div className="glass-card-lowest rounded-2xl p-0">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-start gap-4">
+            <div className="flex items-center">
               {report.banner_image && (
                 <img
                   src={report.banner_image}
                   alt={report.event_title}
-                  className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                  className="aspect-video h-24 rounded-lg object-cover shrink-0"
                 />
               )}
-              <div>
+              <div className="px-6 py-3">
                 {isLoading ? (
                   <Skeleton className="h-7 w-80 mb-2" />
                 ) : (

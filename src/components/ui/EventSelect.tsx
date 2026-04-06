@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { CalendarBlankIcon } from "@phosphor-icons/react";
 import {
   Select,
@@ -47,6 +48,10 @@ interface EventSelectProps {
   isLoading?: boolean;
   /** Custom ID for the select trigger */
   id?: string;
+  /** Auto-select the first event when loaded */
+  autoSelectFirst?: boolean;
+  /** Callback when auto-selection happens */
+  onAutoSelect?: (eventId: string) => void;
 }
 
 export function EventSelect({
@@ -64,6 +69,8 @@ export function EventSelect({
   events: customEvents,
   isLoading: customLoading,
   id,
+  autoSelectFirst = false,
+  onAutoSelect,
 }: EventSelectProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -73,7 +80,25 @@ export function EventSelect({
   const events = customEvents ?? hookEvents;
   const isLoading = customLoading !== undefined ? customLoading : hookLoading;
 
-  const selectedEvent = events.find((e) => e.id === value);
+  // Sort events by title in ascending order
+  const sortedEvents = useMemo(() => {
+    if (!events || events.length === 0) return [];
+    return [...events].sort((a, b) => {
+      const titleA = a.title?.toLowerCase() || '';
+      const titleB = b.title?.toLowerCase() || '';
+      return titleA.localeCompare(titleB);
+    });
+  }, [events]);
+
+  // Auto-select the first event when loaded and autoSelectFirst is true
+  useEffect(() => {
+    if (autoSelectFirst && !isLoading && sortedEvents.length > 0 && !value) {
+      const firstEvent = sortedEvents[0];
+      onAutoSelect?.(firstEvent.id);
+    }
+  }, [autoSelectFirst, isLoading, sortedEvents, value, onAutoSelect]);
+
+  const selectedEvent = sortedEvents.find((e) => e.id === value);
 
   const defaultPlaceholder = placeholder ?? t("events.select.placeholder", "Select an event");
   const defaultLoadingText = loadingText ?? t("events.select.loading", "Loading events...");
@@ -95,13 +120,13 @@ export function EventSelect({
         </SelectValue>
       </SelectTrigger>
       <SelectContent className={maxHeight}>
-        {events.length === 0 ? (
+        {sortedEvents.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground text-sm">
             <CalendarBlankIcon className="h-5 w-5" />
             <span>{isLoading ? defaultLoadingText : defaultEmptyText}</span>
           </div>
         ) : (
-          events.map((event) => (
+          sortedEvents.map((event) => (
             <SelectItem
               key={event.id}
               value={event.id}

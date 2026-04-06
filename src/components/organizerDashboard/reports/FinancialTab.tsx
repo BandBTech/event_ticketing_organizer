@@ -611,7 +611,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                         {formatCurrency(item.net_revenue)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
-                        {item.transaction_count.toLocaleString()}
+                        {(item.transaction_count ?? 0).toLocaleString()}
                       </td>
                     </tr>
                   ))}

@@ -102,6 +102,8 @@ export function ReportFilters({
               "Choose an event",
             )}
             loadingText={t("reports.selectEvent.loading", "Loading events...")}
+            autoSelectFirst
+            onAutoSelect={onEventChange}
           />
         </div>
       )}
