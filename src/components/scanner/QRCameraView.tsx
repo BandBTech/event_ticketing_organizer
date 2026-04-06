@@ -22,7 +22,7 @@ export function QRCameraView({
       {/* Camera feed */}
       <div className="w-full h-full relative">
         <Scanner
-          scanDelay={800}
+          scanDelay={1200}
           onScan={disabled ? () => { } : onScan}
           onError={onError}
           classNames={{ container: "scanner-wrapper" }}

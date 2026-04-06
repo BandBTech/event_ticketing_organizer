@@ -76,6 +76,7 @@ export class TicketService {
       payload,
       {
         requiresAuth: true,
+        showErrorToast: false, // Handled by the caller (useScannerState) to avoid duplicate toasts
       }
     );
   }
@@ -181,7 +182,7 @@ export class TicketService {
     return await api.post(
       '/organizer/tickets/validate-checkin',
       payload,
-      { requiresAuth: true }
+      { requiresAuth: true, showErrorToast: false }
     );
   }
 

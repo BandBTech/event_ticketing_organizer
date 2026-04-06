@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { useScanTicket, useBulkCheckIn, useValidateCheckIn } from "@/hooks/useTickets";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useBulkCheckIn } from "@/hooks/useTickets";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
 import { eventService } from "@/services/eventService";
+import { TicketService } from "@/services/ticketService";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 
@@ -58,17 +59,62 @@ export function useScannerState() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
+  const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(
+    null,
+  );
+
+  // ─── Refs for race-condition-safe guards ─────────────────────────────────────
+  // Tracks codes currently being processed (in-flight API calls).
+  // Using a ref + Set so the guard is synchronous and immune to React's
+  // batched state updates — the scanner fires onScan faster than setState.
+  const processingCodesRef = useRef<Set<string>>(new Set());
+
+  // Cooldown flag for single-scan mode — prevents the same QR from triggering
+  // multiple rapid API calls before scanResult state is set.
+  const singleScanCooldownRef = useRef(false);
+
+  // Ref mirror of bulkQueue so async callbacks always see latest queue state
+  const bulkQueueRef = useRef<BulkScanItem[]>(bulkQueue);
+  bulkQueueRef.current = bulkQueue;
+
+  // Ref mirror of eventId for async callbacks
+  const eventIdRef = useRef<string | null>(eventId);
+  eventIdRef.current = eventId;
 
   // ─── Mutations ───────────────────────────────────────────────────────────────
-  const scanMutation = useScanTicket();
   const bulkCheckInMutation = useBulkCheckIn();
-  const validateCheckInMutation = useValidateCheckIn();
 
+  // Single-scan mutation — inline so we can disable the default apiClient error toast.
+  // The apiClient's showErrorToast defaults to true, which causes a generic error toast
+  // even when our onError handler already shows a contextual one.
+  const scanMutation = useMutation({
+    mutationFn: ({ ticketCode, eventId: eid }: { ticketCode: string; eventId?: string }) =>
+      TicketService.scanTicket(ticketCode, eid),
+    onSuccess: (data) => {
+      if (data.success && data.ticket) {
+        toast.success(
+          data.already_checked_in
+            ? "scanner.ticket_already_checked_in"
+            : "scanner.ticket_scanned_successfully",
+          data.already_checked_in
+            ? "Ticket already checked in."
+            : "Ticket scanned successfully.",
+          data.message || "",
+        );
+      }
+    },
+  });
+
+  // Validate-for-queue mutation — also inline to avoid duplicate toasts.
+  const validateCheckInMutation = useMutation({
+    mutationFn: ({ qrCode, eventId: eid }: { qrCode: string; eventId?: string }) =>
+      TicketService.validateCheckIn(qrCode, eid),
+  });
+
+  // isProcessing is used only for the UI overlay (spinner) and bulk-submit button.
+  // It is NOT used to gate incoming scans (that's handled by per-code refs).
   const isProcessing =
-    scanMutation.isPending ||
-    bulkCheckInMutation.isPending ||
-    validateCheckInMutation.isPending;
+    scanMutation.isPending || bulkCheckInMutation.isPending;
 
   // Disable scanning when all bulk items are successfully checked-in and the results drawer is open
   const isScanDisabled =
@@ -124,29 +170,31 @@ export function useScannerState() {
   }, [t]);
 
   // ─── Queue Helpers ────────────────────────────────────────────────────────────
-  const updateQueue = (
-    newQueue: BulkScanItem[],
-    newEventId?: string | null,
-  ) => {
-    setBulkQueue(newQueue);
-    if (newEventId !== undefined) {
-      setEventId(newEventId);
-    }
-  };
-
   const clearQueue = () => {
-    updateQueue([]);
+    setBulkQueue([]);
     setBulkResult(null);
+    processingCodesRef.current.clear();
   };
 
   const removeFromQueue = (index: number) => {
-    const newQueue = [...bulkQueue];
-    newQueue.splice(index, 1);
-    updateQueue(newQueue, newQueue.length === 0 ? null : undefined);
+    setBulkQueue((prev) => {
+      const next = [...prev];
+      const removed = next.splice(index, 1);
+      // Also remove from processing set so re-scan is possible
+      if (removed[0]) processingCodesRef.current.delete(removed[0].code);
+      if (next.length === 0) setEventId(null);
+      return next;
+    });
   };
 
   // ─── Scan Handlers ────────────────────────────────────────────────────────────
+
   const handleSingleScan = (code: string, scanEventId?: string) => {
+    // Prevent duplicate in-flight requests for the same code
+    if (processingCodesRef.current.has(code)) return;
+    processingCodesRef.current.add(code);
+    singleScanCooldownRef.current = true;
+
     scanMutation.mutate(
       { ticketCode: code, eventId: scanEventId },
       {
@@ -155,8 +203,11 @@ export function useScannerState() {
             success: data.success,
             message: data.message,
           });
-          // Auto-clear result after 3 s so the camera is ready for the next scan
-          setTimeout(() => setScanResult(null), 3000);
+          // Auto-clear result after 3s so camera is ready for next scan
+          setTimeout(() => {
+            setScanResult(null);
+            singleScanCooldownRef.current = false;
+          }, 3000);
         },
         onError: (error) => {
           setScanResult({
@@ -165,15 +216,24 @@ export function useScannerState() {
               error.message ||
               t("staffScanner.scanFailed", "Failed to scan ticket"),
           });
-          // Auto-clear so the camera is ready for the next scan
-          setTimeout(() => setScanResult(null), 3000);
+          setTimeout(() => {
+            setScanResult(null);
+            singleScanCooldownRef.current = false;
+          }, 3000);
+        },
+        onSettled: () => {
+          // Always release the per-code lock after the request finishes
+          processingCodesRef.current.delete(code);
         },
       },
     );
   };
 
   const handleBulkScan = (code: string) => {
-    if (bulkQueue.length >= 10) {
+    // ── Synchronous guard: check ref-based queue + processing set ──
+    const currentQueue = bulkQueueRef.current;
+
+    if (currentQueue.length >= 10) {
       toast.error(
         t("staffScanner.queueLimitReached", "Queue limit reached (Max 10)"),
         t(
@@ -184,18 +244,28 @@ export function useScannerState() {
       return;
     }
 
-    if (bulkQueue.some((item) => item.code === code)) {
-      toast.error(t("staffScanner.alreadyInQueue", "Ticket already in queue"));
+    // Check both the committed queue AND the in-flight processing set
+    if (
+      currentQueue.some((item) => item.code === code) ||
+      processingCodesRef.current.has(code)
+    ) {
+      // Silently ignore — no error toast. The ticket is either already queued
+      // or currently being validated. This prevents the annoying "already in queue"
+      // toast that fires when the camera re-reads the same QR before the first
+      // validation response arrives.
       return;
     }
 
-    // Validate the ticket via API before adding to the queue
+    // Mark as in-flight immediately (synchronous, before any async gap)
+    processingCodesRef.current.add(code);
+
     validateCheckInMutation.mutate(
-      { qrCode: code, eventId: eventId ?? undefined },
+      { qrCode: code, eventId: eventIdRef.current ?? undefined },
       {
         onSuccess: (data) => {
           if (!data.can_checkin) {
-            // Validation failed – show reason and do NOT add to queue
+            // Validation failed — remove from processing set and show reason
+            processingCodesRef.current.delete(code);
             toast.error(
               t("staffScanner.ticketInvalid", "Invalid ticket"),
               data.message || "Ticket cannot be checked in",
@@ -203,7 +273,7 @@ export function useScannerState() {
             return;
           }
 
-          // Validation passed – add to queue
+          // Validation passed — add to queue
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
             ticket_number?: string;
             attendee?: { name?: string; email?: string };
@@ -216,29 +286,46 @@ export function useScannerState() {
             attendeeEmail: ticketInfo?.attendee?.email,
           };
 
-          // If there's no event context yet, attempt to extract it from the response
           const responseEventId = data.event_id;
           const responseEventTitle = data.event_title;
 
-          if (!eventId && responseEventId) {
-            updateQueue([newItem], responseEventId);
-            if (responseEventTitle) {
-              setScannedEventTitle(responseEventTitle);
+          // Use functional setState so we always operate on the latest queue
+          setBulkQueue((prev) => {
+            // Final dedup check against latest state
+            if (prev.some((item) => item.code === code)) {
+              processingCodesRef.current.delete(code);
+              return prev;
             }
-            toast.success(
-              "Event detected",
-              `Ready to scan for: ${responseEventTitle ?? responseEventId}`,
-            );
-          } else {
-            updateQueue([...bulkQueue, newItem], undefined);
+
+            if (!eventIdRef.current && responseEventId) {
+              setEventId(responseEventId);
+              if (responseEventTitle) {
+                setScannedEventTitle(responseEventTitle);
+              }
+              toast.success(
+                "Event detected",
+                `Ready to scan for: ${responseEventTitle ?? responseEventId}`,
+              );
+              return [newItem];
+            }
+
             if (navigator.vibrate) navigator.vibrate(50);
             toast.success(
               "staffScanner.addedToQueue",
               "Added to queue",
-              `#${bulkQueue.length + 1}: ${newItem.ticketNumber}`,
+              `#${prev.length + 1}: ${newItem.ticketNumber}`,
             );
-          }
-        }
+            return [...prev, newItem];
+          });
+
+          // Note: we intentionally keep the code in processingCodesRef so it
+          // won't be re-scanned. It's cleared when the item is removed from queue
+          // or the queue is cleared.
+        },
+        onError: () => {
+          // Release the lock on failure so the user can retry
+          processingCodesRef.current.delete(code);
+        },
       },
     );
   };
@@ -255,9 +342,16 @@ export function useScannerState() {
   };
 
   const handleQRScan = (result: unknown[]) => {
-    // Prevent multiple scans while a result is displayed, a request is in-flight,
-    // or all bulk tickets are already successfully checked in
-    if (isProcessing || scanResult || isScanDisabled) return;
+    // In single mode: block while result is displayed or cooldown is active
+    if (mode === "single" && (scanResult || singleScanCooldownRef.current)) {
+      return;
+    }
+
+    // Block if all bulk tickets are already checked in
+    if (isScanDisabled) return;
+
+    // In bulk mode we do NOT block on isProcessing — the per-code
+    // processingCodesRef handles dedup, allowing parallel validations.
 
     if (result && result.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -327,32 +421,30 @@ export function useScannerState() {
       { event_id: eventId, qr_codes: codes },
       {
         onSuccess: (data) => {
-          const results: BulkResultItem[] = (data.data ?? []).map((r) => ({
-            success: r.success as boolean,
-            message: r.message as string | undefined,
-            qr_code: r.qr_code as string | undefined,
-          }));
+          const results: BulkResultItem[] = (data.data ?? []).map(
+            (r) => ({
+              success: r.success as boolean,
+              message: r.message as string | undefined,
+              qr_code: r.qr_code as string | undefined,
+            }),
+          );
 
           // Update each item in the queue with its check-in result
-          const updatedQueue = bulkQueue.map((item) => {
-            const result = results?.find(
-              (r) => r.qr_code === item.code,
-            );
-            return {
-              ...item,
-              checkinResult: result?.success ? ("success" as const) : ("failed" as const),
-              checkinMessage: result?.message || (result?.success ? "Checked in" : "Failed"),
-            };
-          });
-
-          setBulkQueue(updatedQueue);
+          setBulkQueue((prev) =>
+            prev.map((item) => {
+              const result = results?.find((r) => r.qr_code === item.code);
+              return {
+                ...item,
+                checkinResult: result?.success
+                  ? ("success" as const)
+                  : ("failed" as const),
+                checkinMessage:
+                  result?.message ||
+                  (result?.success ? "Checked in" : "Failed"),
+              };
+            }),
+          );
           setShowBulkList(true);
-
-          // if (data.success) {
-          //   toast.success("Bulk check-in complete");
-          // } else {
-          //   toast.error("Bulk check-in completed with issues");
-          // }
         },
         onError: (error) => {
           setBulkResult({
@@ -364,7 +456,10 @@ export function useScannerState() {
     );
   };
 
-  const clearScanResult = useCallback(() => setScanResult(null), []);
+  const clearScanResult = useCallback(() => {
+    setScanResult(null);
+    singleScanCooldownRef.current = false;
+  }, []);
 
   return {
     // State
