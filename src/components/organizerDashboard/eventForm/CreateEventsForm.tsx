@@ -25,6 +25,7 @@ import {
   getEventFormDefaults,
   getChangedFields,
   prepareCreateEventData,
+  getTierName,
 } from "@/lib/eventFormUtils";
 import {
   EventDetailsSection,
@@ -139,16 +140,33 @@ export default function CreateEventsForm({
         return;
       }
 
+      const isReInitWithTemplates =
+        sameEvent && !lastInitializedWithTemplates.current && templatesNowAvailable;
+
       lastInitializedEventId.current = initialData.id;
       lastInitializedWithTemplates.current = templatesNowAvailable;
 
-      form.reset(getEventFormDefaults(initialData, tierTemplates));
+      if (isReInitWithTemplates) {
+        // Templates just loaded — only update ticket tier names (which depend on
+        // template lookup) without resetting user-edited fields like capacity.
+        const tiers = initialData.tiers || [];
+        tiers.forEach((tier, index) => {
+          const resolvedName = getTierName(tier, tierTemplates);
+          const currentName = form.getValues(`tickets.${index}.name`);
+          if (!currentName && resolvedName) {
+            form.setValue(`tickets.${index}.name`, resolvedName);
+          }
+        });
+      } else {
+        // First initialisation — full reset is safe since user hasn't edited yet.
+        form.reset(getEventFormDefaults(initialData, tierTemplates));
 
-      if (
-        initialData.banner_image &&
-        typeof initialData.banner_image === "string"
-      ) {
-        setImagePreview(initialData.banner_image);
+        if (
+          initialData.banner_image &&
+          typeof initialData.banner_image === "string"
+        ) {
+          setImagePreview(initialData.banner_image);
+        }
       }
     }
   }, [initialData, isEditing, form, tierTemplates, setImagePreview]);
