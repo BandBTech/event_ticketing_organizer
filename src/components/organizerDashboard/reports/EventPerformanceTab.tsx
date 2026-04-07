@@ -183,6 +183,11 @@ export function EventPerformanceTab({
           sold_percentage: number;
           revenue: number;
         }> | null;
+        revenue_by_tier?: Array<{
+          tier_id: string;
+          tier_name: string;
+          revenue: number;
+        }> | null;
       }
     | undefined;
 
@@ -202,20 +207,40 @@ export function EventPerformanceTab({
     color: TIER_COLORS[i % TIER_COLORS.length],
   }));
 
-  // Status color mapping
+  // Status color mapping matching EventStatusBadge
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-700";
-      case "live":
-        return "bg-blue-100 text-blue-700";
-      case "on-sale":
-        return "bg-indigo-100 text-indigo-700";
+      case "pending":
+        return "bg-yellow-700 text-yellow-100";
+      case "approved":
+        return "bg-green-700 text-green-100";
+      case "rejected":
+        return "bg-red-700 text-red-100";
       case "cancelled":
-        return "bg-red-100 text-red-700";
+        return "bg-red-700 text-white";
+      case "draft":
+        return "bg-gray-700 text-gray-100";
+      case "completed":
+        return "bg-slate-700 text-slate-100";
+      case "on_sale":
+        return "bg-green-700 text-green-100";
+      case "live":
+        return "bg-green-100 text-green-700";
+      case "hold":
+        return "bg-amber-700 text-amber-100";
+      case "scheduled":
+        return "bg-blue-700 text-blue-100";
+      case "sold_out":
+        return "bg-red-700 text-red-100";
+      case "sales_end":
+        return "bg-red-200 text-red-800";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-700 text-gray-100";
     }
+  };
+
+  const getStatusLabel = (status?: string) => {
+    return t(`event.badge.${status}`, status);
   };
 
   const hasAnyData = !isLoading && report && (report?.tickets_sold ?? 0) > 0;
@@ -288,7 +313,13 @@ export function EventPerformanceTab({
                     <span
                       className={`text-xs px-2.5 py-1 rounded-full capitalize font-medium ${getStatusColor(report.status)}`}
                     >
-                      {report.status?.replace("-", " ")}
+                      {report.status === "live" && (
+                        <span className="flex h-1.5 w-1.5 relative mr-1">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                        </span>
+                      )}
+                      {getStatusLabel(report.status)}
                     </span>
                   )}
                   {!isLoading && report.start_date && (

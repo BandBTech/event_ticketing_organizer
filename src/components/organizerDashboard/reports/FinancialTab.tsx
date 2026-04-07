@@ -173,22 +173,28 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
           total_transactions?: number;
         };
         revenue_breakdown?: Array<{
-          event_id: string;
           event_title: string;
           gross_revenue: number;
           commission: number;
           organizer_share: number;
           refunds: number;
           net_revenue: number;
-          transaction_count: number;
         }> | null;
         commission_history?: Array<{
-          transaction_id: string;
+          id: string;
           event_id: string;
           event_title: string;
           revenue: number;
           commission_rate: number;
           commission_amount: number;
+          created_at: string;
+        }> | null;
+        bill_history?: Array<{
+          id: string;
+          bill_number: string;
+          amount: number;
+          status: string;
+          processed_at: string;
           created_at: string;
         }> | null;
         payout_history?: Array<{
@@ -211,6 +217,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
   const summary = report?.summary_metrics;
   const revenueBreakdown = report?.revenue_breakdown ?? [];
   const commissionHistory = report?.commission_history ?? [];
+  const billHistory = report?.bill_history ?? [];
   const payoutHistory = report?.payout_history ?? [];
   const currencyBreakdown = report?.currency_breakdown ?? [];
 
@@ -571,18 +578,12 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                     <th className="text-right py-3 px-4 text-gray-500 font-medium">
                       {t("reports.financial.columns.netRevenue", "Net Revenue")}
                     </th>
-                    <th className="text-right py-3 px-4 text-gray-500 font-medium">
-                      {t(
-                        "reports.financial.columns.transactions",
-                        "Transactions",
-                      )}
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {revenueBreakdown.map((item, i) => (
                     <tr
-                      key={item.event_id ?? i}
+                      key={i}
                       className="border-b border-gray-50 hover:bg-gray-50"
                     >
                       <td className="py-3 px-4">
@@ -610,9 +611,6 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                       <td className="py-3 px-4 text-right font-semibold text-gray-900">
                         {formatCurrency(item.net_revenue)}
                       </td>
-                      <td className="py-3 px-4 text-right text-gray-700">
-                        {(item.transaction_count ?? 0).toLocaleString()}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -633,7 +631,7 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
             <div className="divide-y divide-gray-100">
               {commissionHistory.slice(0, 10).map((commission, i) => (
                 <div
-                  key={commission.transaction_id ?? i}
+                  key={commission.id ?? i}
                   className="flex items-center justify-between p-4 hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-3">
@@ -671,6 +669,83 @@ export function FinancialTab({ startDate, endDate }: FinancialTabProps) {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bill History (if available) */}
+      {billHistory.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <ReceiptIcon className="w-5 h-5 text-gray-500" weight="duotone" />
+            {t("reports.financial.billHistory", "Bill History")}
+          </h2>
+          <div className="glass-card-lowest rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="text-left py-3 px-4 text-gray-500 font-medium">
+                      {t("reports.financial.columns.billNumber", "Bill Number")}
+                    </th>
+                    <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                      {t("reports.financial.columns.amount", "Amount")}
+                    </th>
+                    <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                      {t("reports.financial.columns.status", "Status")}
+                    </th>
+                    <th className="text-right py-3 px-4 text-gray-500 font-medium">
+                      {t(
+                        "reports.financial.columns.processedAt",
+                        "Processed At",
+                      )}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {billHistory.map((bill, i) => {
+                    const statusColor =
+                      bill.status === "paid"
+                        ? "bg-green-100 text-green-700"
+                        : bill.status === "partially_paid"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-700";
+                    return (
+                      <tr
+                        key={bill.id ?? i}
+                        className="border-b border-gray-50 hover:bg-gray-50"
+                      >
+                        <td className="py-3 px-4">
+                          <code className="text-xs text-gray-600">
+                            {bill.bill_number}
+                          </code>
+                        </td>
+                        <td className="py-3 px-4 text-right font-medium text-gray-900">
+                          {formatCurrency(bill.amount)}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full capitalize ${statusColor}`}
+                          >
+                            {bill.status.replace("_", " ")}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right text-gray-700">
+                          {new Date(bill.processed_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            },
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

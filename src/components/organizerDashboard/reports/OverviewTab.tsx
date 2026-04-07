@@ -260,7 +260,7 @@ export function OverviewTab({ startDate, endDate }: OverviewTabProps) {
     {
       icon: <PresentationChartIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.overview.conversionRate", "Conversion Rate"),
-      value: `${((summary?.conversion_rate ?? 0) * 100).toFixed(1)}%`,
+      value: `${(summary?.conversion_rate ?? 0).toFixed(1)}%`,
       description: t("reports.overview.visitorToBuyer", "Visitor to buyer"),
     },
   ];

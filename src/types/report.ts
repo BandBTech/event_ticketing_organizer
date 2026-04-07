@@ -91,22 +91,28 @@ export interface FinancialReportData {
     total_transactions?: number;
   };
   revenue_breakdown?: Array<{
-    event_id: string;
     event_title: string;
     gross_revenue: number;
     commission: number;
     organizer_share: number;
     refunds: number;
     net_revenue: number;
-    transaction_count: number;
   }> | null;
   commission_history?: Array<{
-    transaction_id: string;
+    id: string;
     event_id: string;
     event_title: string;
     revenue: number;
     commission_rate: number;
     commission_amount: number;
+    created_at: string;
+  }> | null;
+  bill_history?: Array<{
+    id: string;
+    bill_number: string;
+    amount: number;
+    status: string;
+    processed_at: string;
     created_at: string;
   }> | null;
   payout_history?: Array<{
