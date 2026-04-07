@@ -204,6 +204,18 @@ export class TicketService {
   }
 
   /**
+   * Manual check-in by ticket number
+   * POST /organizer/tickets/checkin
+   */
+  static async manualCheckIn(ticketNumber: string, eventId: string): Promise<TicketScanResult> {
+    return await api.post<TicketScanResult>(
+      '/organizer/tickets/checkin',
+      { ticket_number: ticketNumber, event_id: eventId },
+      { requiresAuth: true, showErrorToast: false }
+    );
+  }
+
+  /**
    * Search tickets by partial ticket number
    * GET /organizer/tickets/search
    */

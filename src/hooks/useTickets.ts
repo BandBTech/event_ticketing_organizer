@@ -260,3 +260,12 @@ export function useSearchTickets() {
     mutationFn: ({ eventId, q }) => TicketService.searchTickets(eventId, q),
   });
 }
+
+/**
+ * Hook for manual check-in by ticket number
+ */
+export function useManualCheckIn() {
+  return useMutation<TicketScanResult, Error, { ticketNumber: string; eventId: string }>({
+    mutationFn: ({ ticketNumber, eventId }) => TicketService.manualCheckIn(ticketNumber, eventId),
+  });
+}

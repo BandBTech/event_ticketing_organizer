@@ -309,7 +309,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {t("event.button.pauseSales", "Pause Sales")}
                     </Button>
                   )}
-                  {(salesStatus === "paused" && event.status === "hold") && (
+                  {event.status === "hold" && (
                     <Button
                       onClick={() => handleSalesAction("resume")}
                       disabled={salesControlMutation.isPending}

@@ -908,8 +908,11 @@
   },
   "scanner": {
     "ticket_already_checked_in": "Ticket already checked in.",
-    "ticket_scanned_successfully": "Ticket checked in succesfully",
-    "ticket_checked_in_successfully": "Check-in successful"
+    "ticket_scanned_successfully": "Ticket checked in successfully.",
+    "ticket_checked_in_successfully": "Check-in successful",
+    "checkedIn": "Checked In!",
+    "alreadyCheckedIn": "Already Checked In!",
+    "scanFailed": "Scan Failed"
   },
   "tickets": {
     "empty": {

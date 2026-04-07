@@ -14,7 +14,7 @@ export interface Ticket {
   buyer_name: string;
   buyer_email: string;
   buyer_phone?: string;
-  status: 'valid' | 'used' | 'cancelled' | 'expired' | 'refunded';
+  status: "valid" | "used" | "cancelled" | "expired" | "refunded" | "active";
   checked_in: boolean;
   checked_in_at?: string;
   checked_in_by?: string;
@@ -47,7 +47,7 @@ export interface TicketStats {
 export interface TicketFilters {
   page?: number;
   limit?: number;
-  status?: 'valid' | 'used' | 'cancelled' | 'expired' | 'refunded';
+  status?: "valid" | "used" | "cancelled" | "expired" | "refunded";
   search?: string;
   checked_in?: boolean;
   tier_id?: string;

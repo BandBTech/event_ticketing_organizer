@@ -794,9 +794,12 @@
     }
   },
   "scanner": {
-    "ticket_already_checked_in": "Ticket already checked in.",
-    "ticket_scanned_successfully": "Ticket checked in succesfully",
-    "ticket_checked_in_successfully": "Check-in successful"
+    "ticket_already_checked_in": "チケットはすでにチェックイン済みです。",
+    "ticket_scanned_successfully": "チケットのチェックインが完了しました。",
+    "ticket_checked_in_successfully": "チェックイン成功",
+    "checkedIn": "チェックイン完了！",
+    "alreadyCheckedIn": "チェックイン済み！",
+    "scanFailed": "スキャン失敗"
   },
   "tickets": {
     "empty": {

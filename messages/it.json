@@ -790,9 +790,12 @@
     }
   },
   "scanner": {
-    "ticket_scanned_successfully": "Il biglietto è stato registrato con successo",
+    "ticket_scanned_successfully": "Il biglietto è stato registrato con successo.",
     "ticket_checked_in_successfully": "Check-in riuscito",
-    "ticket_already_checked_in": "Biglietto già registrato."
+    "ticket_already_checked_in": "Biglietto già registrato.",
+    "checkedIn": "Check-in effettuato!",
+    "alreadyCheckedIn": "Già registrato!",
+    "scanFailed": "Scansione fallita"
   },
   "tickets": {
     "empty": {

@@ -29,6 +29,7 @@ export interface ScanResult {
   success: boolean;
   message: string;
   ticketNumber?: string;
+  alreadyCheckedIn?: boolean;
 }
 
 export interface BulkResultItem {
@@ -201,7 +202,10 @@ export function useScannerState() {
         onSuccess: (data) => {
           setScanResult({
             success: data.success,
-            message: data.message,
+            alreadyCheckedIn: data.already_checked_in,
+            message: data.already_checked_in
+              ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
+              : t("scanner.ticket_scanned_successfully", "Ticket checked in successfully."),
           });
           // Auto-clear result after 3s so camera is ready for next scan
           setTimeout(() => {

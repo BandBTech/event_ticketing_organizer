@@ -1,13 +1,19 @@
 import Head from "next/head";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
-import { ArrowLeft, MagnifyingGlass } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  ArrowLeftIcon,
+  MagnifyingGlass,
+  MagnifyingGlassIcon,
+  X,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import StaffDashboardLayout from "@/components/layout/StaffDashboardLayout";
-import { useSearchTickets, useScanTicket } from "@/hooks/useTickets";
+import { useSearchTickets, useManualCheckIn } from "@/hooks/useTickets";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "@/lib/toast";
 import type { Ticket } from "@/types/ticket";
@@ -23,7 +29,7 @@ export default function ManualCheckinPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const searchMutation = useSearchTickets();
-  const scanMutation = useScanTicket();
+  const checkInMutation = useManualCheckIn();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,13 +39,13 @@ export default function ManualCheckinPage() {
       {
         onSuccess: (data) => setResults(data),
         onError: (err) => toast.error(t("common.error", "Error"), err.message),
-      }
+      },
     );
   };
 
   const handleCheckIn = (ticket: Ticket) => {
-    scanMutation.mutate(
-      { ticketCode: ticket.qr_code, eventId },
+    checkInMutation.mutate(
+      { ticketNumber: ticket.ticket_number, eventId },
       {
         onSuccess: (data) => {
           if (data.success) {
@@ -47,15 +53,21 @@ export default function ManualCheckinPage() {
             toast.success(
               data.already_checked_in
                 ? t("scanner.ticket_already_checked_in", "Already checked in")
-                : t("manualCheckin.checkInSuccess", "Ticket checked in successfully."),
-              data.message || ""
+                : t(
+                    "manualCheckin.checkInSuccess",
+                    "Ticket checked in successfully.",
+                  ),
+              data.message || "",
             );
           } else {
-            toast.error(t("common.error", "Error"), data.message || data.error || "");
+            toast.error(
+              t("common.error", "Error"),
+              data.message || data.error || "",
+            );
           }
         },
         onError: (err) => toast.error(t("common.error", "Error"), err.message),
-      }
+      },
     );
   };
 
@@ -65,7 +77,9 @@ export default function ManualCheckinPage() {
   return (
     <>
       <Head>
-        <title>{t("manualCheckin.title", "Manual Check-in")} | Staff Dashboard</title>
+        <title>
+          {t("manualCheckin.title", "Manual Check-in")} | Staff Dashboard
+        </title>
       </Head>
 
       <StaffDashboardLayout>
@@ -77,9 +91,12 @@ export default function ManualCheckinPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => router.back()}
-                aria-label={t("staffScanner.backToDashboard", "Back to Dashboard")}
+                aria-label={t(
+                  "staffScanner.backToDashboard",
+                  "Back to Dashboard",
+                )}
               >
-                <ArrowLeft size={20} />
+                <ArrowLeftIcon size={20} />
               </Button>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">
@@ -90,19 +107,43 @@ export default function ManualCheckinPage() {
 
             {/* Search form */}
             <form onSubmit={handleSearch} className="flex gap-2">
-              <Input
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("manualCheckin.searchPlaceholder", "Search by ticket number...")}
-                className="flex-1"
-                autoFocus
-              />
-              <Button type="submit" disabled={!query.trim() || searchMutation.isPending}>
-                <MagnifyingGlass size={18} className="mr-2" />
-                {searchMutation.isPending
-                  ? t("common.searching", "Searching...")
-                  : t("manualCheckin.search", "Search")}
+              <div className="relative flex-1">
+                <Input
+                  ref={inputRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t(
+                    "manualCheckin.searchPlaceholder",
+                    "Search by ticket number...",
+                  )}
+                  className="min-h-10 pr-8"
+                  autoFocus
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setResults([]);
+                      inputRef.current?.focus();
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear search"
+                  >
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+              <Button
+                type="submit"
+                disabled={!query.trim() || searchMutation.isPending}
+              >
+                <MagnifyingGlassIcon size={18} className="mr-1" />
+                <span className="max-md:hidden">
+                  {searchMutation.isPending
+                    ? t("common.searching", "Searching...")
+                    : t("manualCheckin.search", "Search")}
+                </span>
               </Button>
             </form>
 
@@ -110,50 +151,66 @@ export default function ManualCheckinPage() {
             {results.length > 0 ? (
               <ul className="space-y-3">
                 {results.map((ticket) => {
+                  {
+                    console.log(ticket);
+                  }
                   const checkedIn = isCheckedIn(ticket);
                   const isCheckingIn =
-                    scanMutation.isPending && scanMutation.variables?.ticketCode === ticket.qr_code;
+                    checkInMutation.isPending &&
+                    checkInMutation.variables?.ticketNumber ===
+                      ticket.ticket_number;
 
                   return (
                     <li
                       key={ticket.id}
-                      className="flex items-start justify-between gap-4 rounded-xl border p-4 bg-white shadow-sm"
+                      className="flex justify-between flex-col gap-4 rounded-xl border p-4 bg-white shadow-sm"
                     >
-                      <div className="space-y-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">
-                          #{ticket.ticket_number}
-                        </p>
-                        <p className="text-sm text-gray-700">{ticket.buyer_name}</p>
-                        <p className="text-xs text-gray-500 truncate">{ticket.buyer_email}</p>
-                        <div className="flex items-center gap-2 mt-1">
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex mb-2 justify-between items-center">
+                          <p className="font-semibold text-md truncate">
+                            #{ticket.ticket_number}
+                          </p>
                           <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                            className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                               checkedIn
-                                ? "bg-green-100 text-green-700"
-                                : ticket.status === "valid"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-600"
+                                ? "bg-red-100 text-red-700"
+                                : ticket.status === "active"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-gray-100 text-gray-600"
                             }`}
                           >
                             {checkedIn
-                              ? t("manualCheckin.alreadyCheckedIn", "Already Checked In")
-                              : ticket.status}
+                              ? t(
+                                  "manualCheckin.alreadyCheckedIn",
+                                  "Already Checked In",
+                                )
+                              : ticket.status.toLocaleUpperCase()}
                           </span>
+                        </div>
+                        <div className="bg-gray-50 border p-2 rounded-md">
+                          <div className="text-sm text-primary -mb-0.5">
+                            Buyer
+                          </div>
+                          <p className="text-md text-gray-700">
+                            {ticket.attendee.name}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {ticket.attendee.email}
+                          </p>
                         </div>
                       </div>
 
-                      <Button
-                        size="sm"
-                        disabled={checkedIn || isCheckingIn || ticket.status !== "valid"}
-                        onClick={() => handleCheckIn(ticket)}
-                        className="shrink-0"
-                      >
-                        {isCheckingIn
-                          ? t("common.processing", "Processing...")
-                          : checkedIn
-                          ? t("manualCheckin.alreadyCheckedIn", "Already Checked In")
-                          : t("manualCheckin.checkIn", "Check In")}
-                      </Button>
+                      {!checkedIn && (
+                        <Button
+                          disabled={isCheckingIn}
+                          onClick={() => handleCheckIn(ticket)}
+                          className="shrink-0"
+                        >
+                          {isCheckingIn
+                            ? t("common.processing", "Processing...")
+                            : t("manualCheckin.checkIn", "Check In")}
+                        </Button>
+                      )}
                     </li>
                   );
                 })}

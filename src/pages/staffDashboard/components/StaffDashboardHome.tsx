@@ -22,7 +22,8 @@ export default function StaffDashboardHome() {
   const liveEvents =
     eventsData?.events.filter((e) => {
       if (!["approved", "on_sale", "live"].includes(e.status)) return false;
-      const scanStartTime = new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
+      const scanStartTime =
+        new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
       return Date.now() >= scanStartTime;
     }) || [];
 
@@ -54,9 +55,9 @@ export default function StaffDashboardHome() {
                 router.push(`/staffDashboard/scanner?eventId=${event.id}`)
               }
               customActions={
-                <div className="flex gap-2 w-full justify-between items-center">
+                <div className="flex gap-2 max-md:flex-col flex-wrap w-full justify-between md:items-center">
                   <Button
-                    className="flex-1 gap-2 size-12"
+                    className="flex-1 gap-2 h-12"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(
@@ -69,7 +70,7 @@ export default function StaffDashboardHome() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 gap-2 size-12"
+                    className="flex-1 gap-2 h-12"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(
@@ -77,7 +78,6 @@ export default function StaffDashboardHome() {
                       );
                     }}
                   >
-                    <ListNumbers size={24} />
                     {t("staffDashboard.manualCheckin", "Manual Check-in")}
                   </Button>
                 </div>
