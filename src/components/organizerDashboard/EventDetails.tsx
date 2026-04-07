@@ -266,15 +266,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                     <CalendarBlankIcon weight="duotone" size={16} />
                     <span suppressHydrationWarning>
                       {isValid(new Date(event.start_date))
-                        ? format(new Date(event.start_date), "MMM dd, yyyy")
+                        ? format(
+                            new Date(event.start_date),
+                            "MMM dd, yyyy h:mm a",
+                          )
                         : "TBD"}
-                    </span>
-                    <span className="text-gray-300">|</span>
-                    <ClockIcon weight="duotone" size={16} />
-                    <span suppressHydrationWarning>
-                      {isValid(new Date(event.start_date))
-                        ? format(new Date(event.start_date), "h:mm a")
-                        : "--:--"}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-gray-600">
@@ -472,7 +468,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       </h4>
                       <p className="font-medium text-gray-900">
                         {isValid(new Date(event.start_date))
-                          ? format(new Date(event.start_date), "PPpp")
+                          ? format(
+                              new Date(event.start_date),
+                              "MMM dd, yyyy h:mm a",
+                            )
                           : "TBD"}
                       </p>
                     </div>
@@ -482,7 +481,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       </h4>
                       <p className="font-medium text-gray-900">
                         {isValid(new Date(event.end_date))
-                          ? format(new Date(event.end_date), "PPpp")
+                          ? format(
+                              new Date(event.end_date),
+                              "MMM dd, yyyy h:mm a",
+                            )
                           : "TBD"}
                       </p>
                     </div>
