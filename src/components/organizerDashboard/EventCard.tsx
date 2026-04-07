@@ -72,7 +72,7 @@ export default function EventCard({
           className="w-full h-full object-cover"
           unoptimized
         />
-        {event.status &&
+        {/* {event.status &&
         event.sales_status === "stopped" &&
         !["completed", "cancelled"].includes(event.status) ? (
           <SalesStatusBadge
@@ -86,6 +86,12 @@ export default function EventCard({
               className="absolute top-2 left-2 shadow-lg"
             />
           )
+        )} */}
+        {event.status && (
+          <EventStatusBadge
+            status={event.status}
+            className="absolute top-2 left-2 shadow-lg"
+          />
         )}
         {event.is_featured && (
           <div className="absolute top-2 right-2">

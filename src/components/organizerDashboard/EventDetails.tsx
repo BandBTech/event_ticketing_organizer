@@ -253,12 +253,13 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 {event.title}
               </h1>
               <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
-                {salesStatus === "stopped" &&
+                {/* {salesStatus === "stopped" &&
                 !["completed", "cancelled"].includes(event.status) ? (
                   <SalesStatusBadge status={salesStatus} />
                 ) : (
                   <EventStatusBadge status={event.status} />
-                )}
+                )} */}
+                <EventStatusBadge status={event.status} />
 
                 <div className="flex gap-4 flex-wrap ml-2">
                   <div className="flex items-center gap-1.5 text-gray-600">
@@ -308,7 +309,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       {t("event.button.pauseSales", "Pause Sales")}
                     </Button>
                   )}
-                  {(salesStatus === "paused" || event.status === "hold") && (
+                  {(salesStatus === "paused" && event.status === "hold") && (
                     <Button
                       onClick={() => handleSalesAction("resume")}
                       disabled={salesControlMutation.isPending}
