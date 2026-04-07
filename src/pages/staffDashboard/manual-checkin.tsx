@@ -192,10 +192,10 @@ export default function ManualCheckinPage() {
                             Buyer
                           </div>
                           <p className="text-md text-gray-700">
-                            {ticket.attendee.name}
+                            {ticket.attendee?.name || ticket.buyer_name}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
-                            {ticket.attendee.email}
+                            {ticket.attendee?.email || ticket.buyer_email}
                           </p>
                         </div>
                       </div>

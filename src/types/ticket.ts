@@ -29,6 +29,11 @@ export interface Ticket {
   notes?: string;
   created_at: string;
   updated_at: string;
+  attendee?: {
+    name: string;
+    email: string;
+    phone?: string;
+  };
 }
 
 export interface TicketStats {
