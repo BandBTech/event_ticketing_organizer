@@ -78,6 +78,7 @@
       "fileInvalidType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG).",
       "limitExceeded": "La dimensione del file supera il limite massimo di {maxSizeMB} MB.",
       "dimensionsExceeded": "Le dimensioni dell'immagine superano il massimo consentito di {maxWidth}x{maxHeight}px.",
+      "dimensionsTooSmall": "Le dimensioni dell'immagine sono troppo piccole. La dimensione minima è {minWidth}x{minHeight}px.",
       "aspectRatioInvalid": "Il rapporto d'aspetto dell'immagine deve essere approssimativamente {ratio}."
     },
     "clickToReplace": "Fare clic per sostituire",

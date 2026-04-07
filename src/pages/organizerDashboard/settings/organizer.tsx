@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/lib/toast";
@@ -44,7 +42,11 @@ export default function OrganizerProfileSettings() {
   const { isOrganizerRejected } = useAuthStore();
   const { currency: storedCurrency } = useCurrencyStore();
 
-  const { data: profile, isLoading: isLoadingProfile, isFetching: isFetchingProfile } = useQuery({
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    isFetching: isFetchingProfile,
+  } = useQuery({
     queryKey: queryKeys.organizerProfile.all,
     queryFn: async () => {
       const res = await authService.getOrganizerProfile();
@@ -54,35 +56,54 @@ export default function OrganizerProfileSettings() {
   });
 
   const rawData = (profile as ProfileData)?.data || profile;
-  const org: OrganizationData = (rawData as ProfileData)?.organization ||
+  const org: OrganizationData =
+    (rawData as ProfileData)?.organization ||
     (rawData as ProfileData)?.organizer?.organization ||
     (rawData as ProfileData)?.user?.organizer?.organization ||
-    (rawData as OrganizationData) || {};
+    (rawData as OrganizationData) ||
+    {};
 
   const mutation = useMutation({
-    mutationFn: async ({ data, logo }: { data: OrganizerProfileFormValues; logo: File | null | undefined }) => {
+    mutationFn: async ({
+      data,
+      logo,
+    }: {
+      data: OrganizerProfileFormValues;
+      logo: File | null | undefined;
+    }) => {
       await authService.updateOrganizerProfile({
         business_name: data.business_name,
         business_description: data.business_description,
         business_logo: logo,
-        role: 'organizer',
+        role: "organizer",
       });
     },
     onSuccess: () => {
-      toast.success("profile.toast.updateSuccess", "Organizer profile updated successfully.");
+      toast.success(
+        "profile.toast.updateSuccess",
+        "Organizer profile updated successfully.",
+      );
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: queryKeys.organizerProfile.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.organizerProfile.all,
+      });
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {
         toast.error(error.message);
       } else {
-        toast.error("profile.toast.updateError", "Failed to update organizer profile.");
+        toast.error(
+          "profile.toast.updateError",
+          "Failed to update organizer profile.",
+        );
       }
     },
   });
 
-  const handleSubmit = (data: OrganizerProfileFormValues, logo: File | null | undefined) => {
+  const handleSubmit = (
+    data: OrganizerProfileFormValues,
+    logo: File | null | undefined,
+  ) => {
     mutation.mutate({ data, logo });
   };
 
@@ -104,7 +125,10 @@ export default function OrganizerProfileSettings() {
                   {t("settings.menu.organizer", "Organizer Profile")}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {t("settings.organizerProfile.description", "Manage your organization details and branding")}
+                  {t(
+                    "settings.organizerProfile.description",
+                    "Manage your organization details and branding",
+                  )}
                 </p>
               </div>
               {!isEditing && (
@@ -145,7 +169,10 @@ export default function OrganizerProfileSettings() {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-900 block">
-                      {t("settings.organizerProfile.businessLogo", "Business Logo")}
+                      {t(
+                        "settings.organizerProfile.businessLogo",
+                        "Business Logo",
+                      )}
                     </label>
                     <div className="w-[182px] h-[182px] relative border border-gray-100 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
                       {org?.business_logo_url ? (
@@ -153,31 +180,27 @@ export default function OrganizerProfileSettings() {
                           src={org.business_logo_url}
                           alt="Business Logo"
                           fill
-                              className="object-contain"
+                          className="object-contain"
                         />
                       ) : (
-                        <BuildingOfficeIcon size={48} className="text-gray-300" />
+                        <BuildingOfficeIcon
+                          size={48}
+                          className="text-gray-300"
+                        />
                       )}
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-900 block">
-                      {t("settings.organizerProfile.businessName", "Business Name")}
+                      {t(
+                        "settings.organizerProfile.businessName",
+                        "Business Name",
+                      )}
                     </label>
                     <p className="text-gray-700 bg-gray-50/50 px-4 py-3 rounded-lg border border-gray-100">
-                      {org?.business_name || t("common.notSpecified", "Not specified")}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-900 block">
-                      {t("settings.organizerProfile.currency", "Default Currency")}
-                    </label>
-                    <p className="text-gray-700 bg-gray-50/50 px-4 py-3 rounded-lg border border-gray-100">
-                      {storedCurrency
-                        ? SUPPORTED_CURRENCIES.find((c) => c.value === storedCurrency)?.label || storedCurrency.toUpperCase()
-                        : t("common.notSpecified", "Not specified")}
+                      {org?.business_name ||
+                        t("common.notSpecified", "Not specified")}
                     </p>
                   </div>
 
@@ -186,7 +209,8 @@ export default function OrganizerProfileSettings() {
                       {t("settings.organizerProfile.about", "Description")}
                     </label>
                     <p className="text-gray-700 bg-gray-50/50 px-4 py-3 rounded-lg min-h-[100px] border border-gray-100">
-                      {org?.business_description || t("common.notSpecified", "Not specified")}
+                      {org?.business_description ||
+                        t("common.notSpecified", "Not specified")}
                     </p>
                   </div>
                 </div>

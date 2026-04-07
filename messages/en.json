@@ -85,6 +85,7 @@
       "fileInvalidType": "Invalid file type. Please upload an image (PNG/JPG).",
       "limitExceeded": "File size exceeds the maximum limit of {maxSizeMB}MB.",
       "dimensionsExceeded": "Image dimensions exceed the maximum allowed {maxWidth}x{maxHeight}px.",
+      "dimensionsTooSmall": "Image dimensions are too small. Minimum size is {minWidth}x{minHeight}px.",
       "aspectRatioInvalid": "Image aspect ratio must be approximately {ratio}."
     },
     "clickToReplace": "Click to replace",

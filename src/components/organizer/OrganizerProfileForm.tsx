@@ -190,13 +190,15 @@ export function OrganizerProfileForm({
               onChange={handleLogoChange}
               onRemove={handleLogoRemove}
               maxSizeMB={2}
+              minWidth={100}
+              minHeight={100}
               maxWidth={500}
               maxHeight={500}
               required={true}
               error={logoError || undefined}
               helperText={t(
                 "settings.organizerProfile.logoHelperText",
-                "Recommended size: 500x500px.",
+                "Recommended size: 500x500px. Minimum size: 100x100px.",
               )}
               helperTextSize={t(
                 "settings.organizerProfile.logoHelperTextSize",
