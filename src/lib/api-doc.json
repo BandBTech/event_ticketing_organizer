@@ -2757,11 +2757,9 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Process refunds for all eligible tickets of an event (event cancellation)",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["Admin - Payments"],
-        "summary": "Admin refund all tickets for an event",
         "parameters": [
           {
             "description": "Event refund details",
@@ -2854,6 +2852,86 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "transaction_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.Refund"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Transaction not found",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payments/refunds/transaction": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Admin can refund all tickets in a complete transaction (marks transaction and checkout as refunded)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Admin - Payments"],
+        "summary": "Admin refund entire transaction",
+        "parameters": [
+          {
+            "description": "Full transaction refund details",
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "type": "string"
+                },
+                "refund_type": {
+                  "type": "string"
                 },
                 "transaction_id": {
                   "type": "string"
@@ -3227,72 +3305,6 @@
         }
       }
     },
-    "/api/v1/admin/payout/{id}": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Get a specific payout request by ID for admin review",
-        "produces": ["application/json"],
-        "tags": ["Admin"],
-        "summary": "Get single payout request (Admin)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Payout request ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.PayoutRequestResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
     "/api/v1/admin/payouts": {
       "get": {
         "security": [
@@ -3369,6 +3381,72 @@
           },
           "401": {
             "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/payouts/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get a specific payout request by ID for admin review",
+        "produces": ["application/json"],
+        "tags": ["Admin"],
+        "summary": "Get single payout request (Admin)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Payout request ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.PayoutRequestResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -4816,7 +4894,7 @@
           {
             "type": "string",
             "default": "\"-created_at\"",
-            "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'name', 'email')",
+            "description": "Sort by field with optional '-' prefix for desc (e.g., '-created_at', 'name', 'email', 'role')",
             "name": "sort",
             "in": "query"
           }
@@ -7519,7 +7597,7 @@
             "ApiKeyAuth": []
           }
         ],
-        "description": "Soft delete event by ID for the authenticated organizer (only draft and pending events can be deleted)",
+        "description": "Soft delete event by ID for the authenticated organizer (only draft, pending, cancelled, and rejected events can be deleted)",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "tags": ["Organizer"],
@@ -8134,72 +8212,6 @@
         }
       }
     },
-    "/api/v1/organizer/payout/{id}": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "description": "Get a specific payout request by ID for the authenticated organizer",
-        "produces": ["application/json"],
-        "tags": ["Organizer"],
-        "summary": "Get single payout request (Organizer)",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Payout request ID",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/definitions/utils.Response"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/definitions/models.PayoutRequestResponse"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "$ref": "#/definitions/utils.Response"
-            }
-          }
-        }
-      }
-    },
     "/api/v1/organizer/payouts": {
       "get": {
         "security": [
@@ -8381,6 +8393,72 @@
           },
           "401": {
             "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizer/payouts/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "description": "Get a specific payout request by ID for the authenticated organizer",
+        "produces": ["application/json"],
+        "tags": ["Organizer"],
+        "summary": "Get single payout request (Organizer)",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Payout request ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/utils.Response"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/definitions/models.PayoutRequestResponse"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/utils.Response"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/utils.Response"
             }
@@ -9748,7 +9826,7 @@
     },
     "/api/v1/public/events": {
       "get": {
-        "description": "Get a list of all public events (scheduled, on_sale, and live) with pagination, search, and filtering. Results are sorted with featured events first, then by creation date (newest first).",
+        "description": "Get a list of all public events (scheduled, on_sale, and live) with pagination, search, and filtering. Only shows events with 'approved' status. Results are sorted with featured events first in alphabetical ascending order, then non-featured events in alphabetical ascending order.",
         "produces": ["application/json"],
         "tags": ["Public"],
         "summary": "Get all public events (Public)",
@@ -9805,8 +9883,8 @@
           },
           {
             "type": "string",
-            "default": "\"-created_at\"",
-            "description": "Sort parameter (currently fixed to prioritize featured events first, then by newest)",
+            "default": "\"featured_first_alpha\"",
+            "description": "Sort parameter (currently fixed to show featured events first in alphabetical order, then non-featured events in alphabetical order)",
             "name": "sort",
             "in": "query"
           }
@@ -11855,6 +11933,35 @@
         }
       }
     },
+    "models.BillPaymentSummary": {
+      "type": "object",
+      "properties": {
+        "last_payment_date": {
+          "description": "Date of last payment",
+          "type": "string"
+        },
+        "payment_count": {
+          "description": "Number of payments made",
+          "type": "integer"
+        },
+        "pending_amount": {
+          "description": "Amount pending (same as remaining for active bills)",
+          "type": "number"
+        },
+        "remaining_amount": {
+          "description": "Amount still remaining to pay",
+          "type": "number"
+        },
+        "total_billed": {
+          "description": "Total amount in the bill",
+          "type": "number"
+        },
+        "total_paid": {
+          "description": "Total amount paid so far",
+          "type": "number"
+        }
+      }
+    },
     "models.BulkUserActionRequest": {
       "type": "object",
       "required": ["action", "user_ids"],
@@ -12654,6 +12761,7 @@
       "type": "object",
       "properties": {
         "changed_by": {
+          "description": "Nullable for system changes",
           "type": "string"
         },
         "changed_by_name": {
@@ -12689,7 +12797,7 @@
           "type": "string"
         },
         "status_type": {
-          "description": "'approval' or 'sales'",
+          "description": "'approval', 'sales', or 'automatic'",
           "type": "string"
         }
       }
@@ -13516,109 +13624,6 @@
         }
       }
     },
-    "models.PaymentBill": {
-      "type": "object",
-      "properties": {
-        "admin": {
-          "$ref": "#/definitions/models.User"
-        },
-        "admin_id": {
-          "type": "string"
-        },
-        "bill_date": {
-          "description": "Dates",
-          "type": "string"
-        },
-        "bill_number": {
-          "description": "Unique bill identifier",
-          "type": "string"
-        },
-        "bill_type": {
-          "description": "Additional tracking",
-          "type": "string"
-        },
-        "billed_amount": {
-          "description": "Amount included in this bill",
-          "type": "number"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "due_date": {
-          "description": "When payment is due",
-          "type": "string"
-        },
-        "event": {
-          "$ref": "#/definitions/models.Event"
-        },
-        "event_id": {
-          "description": "Single event per bill",
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "notes": {
-          "type": "string"
-        },
-        "organizer": {
-          "$ref": "#/definitions/models.User"
-        },
-        "organizer_earnings": {
-          "description": "Amount owed to organizer (after commission)",
-          "type": "number"
-        },
-        "organizer_id": {
-          "type": "string"
-        },
-        "paid_amount": {
-          "description": "Amount actually paid to organizer",
-          "type": "number"
-        },
-        "paid_date": {
-          "type": "string"
-        },
-        "payment_method": {
-          "description": "Payment details",
-          "allOf": [
-            {
-              "$ref": "#/definitions/models.PaymentMethod"
-            }
-          ]
-        },
-        "payment_ref": {
-          "description": "Transaction reference",
-          "type": "string"
-        },
-        "payment_screenshot_url": {
-          "description": "Proof of payment",
-          "type": "string"
-        },
-        "priority": {
-          "description": "low, normal, high, urgent",
-          "type": "string"
-        },
-        "remaining_amount": {
-          "description": "Remaining amount to pay organizer",
-          "type": "number"
-        },
-        "status": {
-          "description": "pending, partially_paid, paid, cancelled, overdue",
-          "type": "string"
-        },
-        "total_commission": {
-          "description": "Total commission deducted",
-          "type": "number"
-        },
-        "total_revenue": {
-          "description": "Financial tracking (organizer earnings after commission deduction)",
-          "type": "number"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      }
-    },
     "models.PaymentBillResponse": {
       "type": "object",
       "properties": {
@@ -13982,6 +13987,14 @@
         "amount": {
           "type": "number"
         },
+        "bill_summary": {
+          "description": "Bill payment summary and history",
+          "allOf": [
+            {
+              "$ref": "#/definitions/models.BillPaymentSummary"
+            }
+          ]
+        },
         "created_at": {
           "type": "string"
         },
@@ -14003,16 +14016,19 @@
         "organizer_id": {
           "type": "string"
         },
-        "payment_bill": {
-          "$ref": "#/definitions/models.PaymentBill"
-        },
-        "payment_bill_id": {
-          "type": "string"
-        },
-        "processed_at": {
-          "type": "string"
+        "payment_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/models.PaymentHistoryResponse"
+          }
         },
         "processed_by": {
+          "type": "string"
+        },
+        "processed_date": {
+          "type": "string"
+        },
+        "request_date": {
           "type": "string"
         },
         "request_number": {
@@ -14183,6 +14199,9 @@
         },
         "initiator": {
           "$ref": "#/definitions/models.User"
+        },
+        "is_full_transaction_refund": {
+          "type": "boolean"
         },
         "metadata": {
           "type": "object",
