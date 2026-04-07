@@ -843,7 +843,17 @@
     "welcome": "Welcome",
     "scan": "Scan Tickets",
     "bulkScan": "Bulk Scan",
-    "noEvents": "No ongoing events found."
+    "noEvents": "No ongoing events found.",
+    "manualCheckin": "Manual Check-in"
+  },
+  "manualCheckin": {
+    "title": "Manual Check-in",
+    "searchPlaceholder": "Search by ticket number...",
+    "search": "Search",
+    "noResults": "No tickets found.",
+    "checkIn": "Check In",
+    "alreadyCheckedIn": "Already Checked In",
+    "checkInSuccess": "Ticket checked in successfully."
   },
   "staffScanner": {
     "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",

@@ -67,6 +67,19 @@ export default function StaffDashboardHome() {
                     <QrCodeIcon size={24} />
                     {t("staffDashboard.scan", "Scan Tickets")}
                   </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 gap-2 size-12"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(
+                        `/staffDashboard/manual-checkin?eventId=${event.id}`,
+                      );
+                    }}
+                  >
+                    <ListNumbers size={24} />
+                    {t("staffDashboard.manualCheckin", "Manual Check-in")}
+                  </Button>
                 </div>
               }
             />

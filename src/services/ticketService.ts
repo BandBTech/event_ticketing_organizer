@@ -204,6 +204,17 @@ export class TicketService {
   }
 
   /**
+   * Search tickets by partial ticket number
+   * GET /organizer/tickets/search
+   */
+  static async searchTickets(eventId: string, q: string, limit = 10): Promise<Ticket[]> {
+    const params = new URLSearchParams({ event_id: eventId, q, limit: limit.toString() });
+    return await api.get<Ticket[]>(`/organizer/tickets/search?${params}`, {
+      requiresAuth: true,
+    });
+  }
+
+  /**
    * Bulk check-out tickets
    * POST /organizer/tickets/bulk-checkout
    */

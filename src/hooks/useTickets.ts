@@ -251,3 +251,12 @@ export function useBulkCheckOut() {
     },
   });
 }
+
+/**
+ * Hook for searching tickets by partial ticket number (on-demand)
+ */
+export function useSearchTickets() {
+  return useMutation<Ticket[], Error, { eventId: string; q: string }>({
+    mutationFn: ({ eventId, q }) => TicketService.searchTickets(eventId, q),
+  });
+}
