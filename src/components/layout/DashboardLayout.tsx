@@ -49,7 +49,7 @@ export default function DashboardLayout({
           <div className="flex flex-1 flex-col min-w-0">
             <header
               ref={headerRef}
-              className="flex h-16 shrink-0 items-center gap-4 border-b px-6"
+              className="flex h-16 shrink-0 items-center gap-4 border-b px-4 lg:px-6"
             >
               <Suspense fallback={<div className="flex-1" />}>
                 <DashboardHeader />

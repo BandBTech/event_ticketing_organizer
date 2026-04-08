@@ -84,6 +84,7 @@ function EventTicketsTable({
 
   return (
     <ReusableTable
+      wrapperClassName="max-h-[calc(100vh-390px)] md:max-h-[calc(100vh-347px)] lg:max-h-[calc(100vh-363px)] overflow-auto"
       columns={columns}
       data={tickets}
       isLoading={isLoading}
@@ -166,7 +167,7 @@ export default function EventTicketsPage() {
       </Head>
       <DashboardLayout>
         <ProtectedRoute permission={[PERMISSIONS.EVENT_READ]}>
-          <div className="flex-1 space-y-6 p-6 @container mx-auto w-full h-full flex flex-col">
+          <div className="flex-1 space-y-6 p-4 lg:p-6 @container mx-auto w-full min-h-full flex flex-col">
             <div className="flex flex-col gap-4">
               <Link
                 href={`/organizerDashboard/event/details?id=${eventId}`}

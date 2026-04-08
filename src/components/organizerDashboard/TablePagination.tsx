@@ -87,9 +87,9 @@ export default function TablePagination({
 
   return (
     <div
-      className={`flex items-center justify-between py-4 px-4 w-full ${className}`}
+      className={`flex max-md:flex-col-reverse gap-3 items-center justify-between py-4 px-4 w-full ${className}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {onLimitChange && limit ? (
           <>
             <span className="text-sm font-medium text-gray-600">

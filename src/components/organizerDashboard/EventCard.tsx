@@ -125,12 +125,6 @@ export default function EventCard({
           <CalendarDotsIcon className="w-4 h-4" />
           {formatDateTime(event.start_date)}
         </div>
-        {event.end_date && event.end_date !== event.start_date && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <CalendarDotsIcon className="w-4 h-4" />
-            {formatDateTime(event.end_date)}
-          </div>
-        )}
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <MapPinAreaIcon className="w-4 h-4" />
           {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim())
