@@ -19,8 +19,10 @@ import TablePagination from "@/components/organizerDashboard/TablePagination";
 import { useTranslation } from "@/hooks/useTranslation";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface ReusableTableProps<TData, TValue> {
+  wrapperClassName?: string;
   // Table Core
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -55,6 +57,7 @@ export interface ReusableTableProps<TData, TValue> {
 export function ReusableTable<TData, TValue>({
   columns,
   data,
+  wrapperClassName,
   isLoading = false,
   headerComponent,
   emptyState,
@@ -127,7 +130,7 @@ export function ReusableTable<TData, TValue>({
     <>
       {headerComponent}
 
-      <div className="w-full">
+      <div className={cn("w-full", wrapperClassName)}>
         <Table>
           <TableHeader className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (

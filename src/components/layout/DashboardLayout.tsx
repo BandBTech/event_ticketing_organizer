@@ -46,7 +46,7 @@ export default function DashboardLayout({
           <AppSidebar />
 
           {/* Main Content Area */}
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col min-w-0">
             <header
               ref={headerRef}
               className="flex h-16 shrink-0 items-center gap-4 border-b px-6"

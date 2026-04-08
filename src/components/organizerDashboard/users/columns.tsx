@@ -27,19 +27,19 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       id: "name",
       header: t('common.columns.name', "Name"),
       meta: { sortKey: 'name' },
-      cell: (info) => <span className="font-medium text-gray-900">{info.getValue<string>()}</span>,
+      cell: (info) => <span className="text-gray-900">{info.getValue<string>()}</span>,
     },
     {
       accessorKey: "email",
       header: t('common.columns.email', "Email"),
       meta: { sortKey: 'email' },
-      cell: (info) => <span className="text-gray-600 font-medium">{info.getValue<string>()}</span>,
+      cell: (info) => <span className="text-gray-600">{info.getValue<string>()}</span>,
     },
     {
       accessorFn: (row) => row.roles?.[0]?.name || "-",
       id: "role_name",
       header: t('common.role', "Role"),
-      cell: (info) => <span className="font-medium capitalize text-gray-900">{info.getValue<string>()}</span>,
+      cell: (info) => <span className="capitalize text-gray-900">{info.getValue<string>()}</span>,
     },
     {
       accessorKey: "phone",
@@ -47,7 +47,7 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       cell: (info) => {
         const phone = info.getValue<string>();
         const code = info.row.original.country_code;
-        return phone ? <span className="font-medium text-gray-900">{code ? `${code} ` : ""}{phone}</span> : "-";
+        return phone ? <span className="text-gray-900">{code ? `${code} ` : ""}{phone}</span> : "-";
       },
     },
     {
@@ -59,7 +59,7 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
         const isActive = status === "active";
         return (
           <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${isActive ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium capitalize ${isActive ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
               }`}
           >
             {status || t('common.unknown', "Unknown")}
