@@ -163,7 +163,7 @@ export default function ProfileSettingsPage() {
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto p-4 md:p-6">
+          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 font-poppins">
@@ -193,7 +193,7 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div className="glass-card rounded-xl p-6 bg-white/60 shadow-blur-subtle-md">
-              <div className="flex items-center gap-6 pb-6 border-b border-gray-100">
+              <div className="flex max-md:flex-col md:items-center gap-6 pb-6 border-b border-gray-100">
                 <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
                   {user?.firstName?.charAt(0)}
                   {user?.lastName?.charAt(0)}

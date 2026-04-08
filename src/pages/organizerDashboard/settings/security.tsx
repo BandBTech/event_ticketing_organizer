@@ -1,14 +1,12 @@
-
-
-import { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { EyeIcon, EyeClosedIcon, KeyIcon } from '@phosphor-icons/react';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { EyeIcon, EyeClosedIcon, KeyIcon } from "@phosphor-icons/react";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -16,15 +14,15 @@ import {
   FormItem,
   FormLabel,
   TranslatedFormMessage,
-} from '@/components/ui/form';
-import { useLanguageStore } from '@/store/languageStore';
-import { useTranslation } from '@/hooks/useTranslation';
-import { authService } from '@/services/authService';
-import { AuthError } from '@/lib/errors';
-import { toast } from '@/lib/toast';
-import { useAuthStore } from '@/store/authStore';
-import { useRouter } from 'next/router';
-import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
+} from "@/components/ui/form";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
+import { authService } from "@/services/authService";
+import { AuthError } from "@/lib/errors";
+import { toast } from "@/lib/toast";
+import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/router";
+import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import SettingsLayout from "@/components/layout/SettingsLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
@@ -34,24 +32,34 @@ const createChangePasswordSchema = () => {
     .object({
       currentPassword: z
         .string()
-        .min(1, 'settings.security.validation.currentPasswordRequired'),
+        .min(1, "settings.security.validation.currentPasswordRequired"),
       newPassword: z
         .string()
-        .min(1, 'settings.security.validation.newPasswordRequired')
-        .min(8, 'settings.security.validation.passwordMinLength')
-        .max(100, 'settings.security.validation.passwordMaxLength')
-        .regex(/(?=.*[a-z])(?=.*[A-Z])/, 'settings.security.validation.passwordUpperLower')
-        .regex(/[^A-Za-z0-9]/, 'settings.security.validation.passwordSpecialChar')
-        .regex(/[0-9]/, 'settings.security.validation.passwordNumber'),
-      confirmPassword: z.string().min(1, 'settings.security.validation.confirmPasswordRequired'),
+        .min(1, "settings.security.validation.newPasswordRequired")
+        .min(8, "settings.security.validation.passwordMinLength")
+        .max(100, "settings.security.validation.passwordMaxLength")
+        .regex(
+          /(?=.*[a-z])(?=.*[A-Z])/,
+          "settings.security.validation.passwordUpperLower",
+        )
+        .regex(
+          /[^A-Za-z0-9]/,
+          "settings.security.validation.passwordSpecialChar",
+        )
+        .regex(/[0-9]/, "settings.security.validation.passwordNumber"),
+      confirmPassword: z
+        .string()
+        .min(1, "settings.security.validation.confirmPasswordRequired"),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-      message: 'settings.security.validation.passwordMismatch',
-      path: ['confirmPassword'],
+      message: "settings.security.validation.passwordMismatch",
+      path: ["confirmPassword"],
     });
 };
 
-type ChangePasswordFormData = z.infer<ReturnType<typeof createChangePasswordSchema>>;
+type ChangePasswordFormData = z.infer<
+  ReturnType<typeof createChangePasswordSchema>
+>;
 
 export default function SecuritySettingsPage() {
   const router = useRouter();
@@ -67,11 +75,11 @@ export default function SecuritySettingsPage() {
   const form = useForm<ChangePasswordFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const mutation = useMutation({
@@ -85,20 +93,23 @@ export default function SecuritySettingsPage() {
     onSuccess: () => {
       toast.success(
         "auth.toast.passwordChanged",
-        'Password changed successfully',
-        t("auth.toast.passwordChangedLogin")
+        "Password changed successfully",
+        t("auth.toast.passwordChangedLogin"),
       );
 
       setTimeout(async () => {
         await logout();
-        router.push('/login');
+        router.push("/login");
       }, 500);
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {
         toast.error("", "Failed to change password", error.details);
       } else {
-        toast.error('auth.toast.passwordChangeFailed', 'Failed to change password');
+        toast.error(
+          "auth.toast.passwordChangeFailed",
+          "Failed to change password",
+        );
       }
     },
   });
@@ -110,10 +121,10 @@ export default function SecuritySettingsPage() {
   const isPasswordRequirementError = (message?: string) => {
     if (!message) return false;
     const requirementKeys = [
-      'settings.security.validation.passwordMinLength',
-      'settings.security.validation.passwordUpperLower',
-      'settings.security.validation.passwordSpecialChar',
-      'settings.security.validation.passwordNumber',
+      "settings.security.validation.passwordMinLength",
+      "settings.security.validation.passwordUpperLower",
+      "settings.security.validation.passwordSpecialChar",
+      "settings.security.validation.passwordNumber",
     ];
     return requirementKeys.includes(message);
   };
@@ -125,13 +136,16 @@ export default function SecuritySettingsPage() {
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto p-4 md:p-6">
+          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-                {t('settings.security.title', 'Security Settings')}
+                {t("settings.security.title", "Security Settings")}
               </h1>
               <p className="text-sm text-gray-600">
-                {t('settings.security.subtitle', 'Manage your password and authentication')}
+                {t(
+                  "settings.security.subtitle",
+                  "Manage your password and authentication",
+                )}
               </p>
             </div>
 
@@ -139,46 +153,72 @@ export default function SecuritySettingsPage() {
               <div className="flex items-center gap-3 mb-6">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    {t('settings.security.changePassword', 'Change Password')}
+                    {t("settings.security.changePassword", "Change Password")}
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {t('settings.security.changePasswordDesc', 'Update your password regularly to keep your account secure')}
+                    {t(
+                      "settings.security.changePasswordDesc",
+                      "Update your password regularly to keep your account secure",
+                    )}
                   </p>
                 </div>
               </div>
 
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={form.control}
                     name="currentPassword"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t('settings.security.currentPassword', 'Current Password')}
+                          {t(
+                            "settings.security.currentPassword",
+                            "Current Password",
+                          )}
                         </FormLabel>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                            <KeyIcon
+                              weight="duotone"
+                              size={18}
+                              className="text-gray-600"
+                            />
                           </div>
                           <FormControl>
                             <Input
                               {...field}
                               type={showCurrentPassword ? "text" : "password"}
                               autoComplete="current-password"
-                              placeholder={t('settings.security.currentPasswordPlaceholder', 'Enter current password')}
+                              placeholder={t(
+                                "settings.security.currentPasswordPlaceholder",
+                                "Enter current password",
+                              )}
                               className="h-11 pl-11 pr-12 bg-white"
                             />
                           </FormControl>
                           <button
                             type="button"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            onClick={() =>
+                              setShowCurrentPassword(!showCurrentPassword)
+                            }
                             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                           >
                             {showCurrentPassword ? (
-                              <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             ) : (
-                              <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeClosedIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             )}
                           </button>
                         </div>
@@ -193,18 +233,25 @@ export default function SecuritySettingsPage() {
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t('settings.security.newPassword', 'New Password')}
+                          {t("settings.security.newPassword", "New Password")}
                         </FormLabel>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                            <KeyIcon
+                              weight="duotone"
+                              size={18}
+                              className="text-gray-600"
+                            />
                           </div>
                           <FormControl>
                             <Input
                               {...field}
                               type={showNewPassword ? "text" : "password"}
                               autoComplete="new-password"
-                              placeholder={t('settings.security.newPasswordPlaceholder', 'Enter new password')}
+                              placeholder={t(
+                                "settings.security.newPasswordPlaceholder",
+                                "Enter new password",
+                              )}
                               className="h-11 pl-11 pr-12 bg-white"
                             />
                           </FormControl>
@@ -214,15 +261,24 @@ export default function SecuritySettingsPage() {
                             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                           >
                             {showNewPassword ? (
-                              <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             ) : (
-                              <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeClosedIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             )}
                           </button>
                         </div>
-                        {fieldState.error && !isPasswordRequirementError(fieldState.error.message) && (
-                          <TranslatedFormMessage t={t} />
-                        )}
+                        {fieldState.error &&
+                          !isPasswordRequirementError(
+                            fieldState.error.message,
+                          ) && <TranslatedFormMessage t={t} />}
                         <PasswordRequirements password={field.value} />
                       </FormItem>
                     )}
@@ -234,30 +290,50 @@ export default function SecuritySettingsPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-gray-900">
-                          {t('settings.security.confirmPassword', 'Confirm New Password')}
+                          {t(
+                            "settings.security.confirmPassword",
+                            "Confirm New Password",
+                          )}
                         </FormLabel>
                         <div className="relative">
                           <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                            <KeyIcon weight='duotone' size={18} className="text-gray-600" />
+                            <KeyIcon
+                              weight="duotone"
+                              size={18}
+                              className="text-gray-600"
+                            />
                           </div>
                           <FormControl>
                             <Input
                               {...field}
                               type={showConfirmPassword ? "text" : "password"}
                               autoComplete="new-password"
-                              placeholder={t('settings.security.confirmPasswordPlaceholder', 'Enter new password again')}
+                              placeholder={t(
+                                "settings.security.confirmPasswordPlaceholder",
+                                "Enter new password again",
+                              )}
                               className="h-11 pl-11 pr-12 bg-white"
                             />
                           </FormControl>
                           <button
                             type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
                             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
                           >
                             {showConfirmPassword ? (
-                              <EyeIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             ) : (
-                              <EyeClosedIcon size={18} className="text-gray-600" weight="duotone" />
+                              <EyeClosedIcon
+                                size={18}
+                                className="text-gray-600"
+                                weight="duotone"
+                              />
                             )}
                           </button>
                         </div>
@@ -272,10 +348,15 @@ export default function SecuritySettingsPage() {
                       disabled={mutation.isPending}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {mutation.isPending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       {mutation.isPending
-                        ? t('common.updating', 'Updating...')
-                        : t('settings.security.updateButton', 'Update Password')}
+                        ? t("common.updating", "Updating...")
+                        : t(
+                            "settings.security.updateButton",
+                            "Update Password",
+                          )}
                     </Button>
                     <Button
                       type="button"
@@ -283,7 +364,7 @@ export default function SecuritySettingsPage() {
                       onClick={() => form.reset()}
                       className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-none"
                     >
-                      {t('common.cancel', 'Cancel')}
+                      {t("common.cancel", "Cancel")}
                     </Button>
                   </div>
                 </form>
