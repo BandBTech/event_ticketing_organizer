@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Router from "next/router";
+import { navigationGuard } from "@/store/navigationGuardStore";
 
 export interface UseNavigationGuardOptions {
   /**
@@ -103,6 +104,12 @@ export function useNavigationGuard({
     },
     [hasUnsavedChanges]
   );
+
+  // Register with the global singleton so non-intercepted navigations (e.g. logout button) can trigger the guard
+  useEffect(() => {
+    navigationGuard.register(handleNavigateAway);
+    return () => navigationGuard.unregister();
+  }, [handleNavigateAway]);
 
   return {
     showLeaveDialog,

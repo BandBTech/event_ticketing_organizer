@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 
 import { useAuthStore } from "@/store/authStore";
+import { navigationGuard } from "@/store/navigationGuardStore";
 import { usePermission } from "@/hooks/usePermission";
 import { PERMISSIONS } from "@/lib/permissions";
 import { useUIStore } from "@/store/uiStore";
@@ -127,13 +128,15 @@ export function AppSidebar() {
     return can(link.permission);
   });
 
-  const handleLogout = async () => {
-    try {
-      await logout();
+  const handleLogout = () => {
+    navigationGuard.navigate(async () => {
+      try {
+        await logout();
+      } catch {
+        // ignore
+      }
       router.push("/login");
-    } catch (error) {
-      router.push("/login");
-    }
+    });
   };
 
   // Get user display name

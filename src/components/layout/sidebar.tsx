@@ -39,6 +39,7 @@ const navLinks = [
 
 
 import { useAuthStore } from "@/store/authStore";
+import { navigationGuard } from "@/store/navigationGuardStore";
 
 // ... existing imports ...
 
@@ -54,15 +55,15 @@ export default function Sidebar({
   const { user, logout } = useAuthStore();
   const [openMenu, setOpenMenu] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
+  const handleLogout = () => {
+    navigationGuard.navigate(async () => {
+      try {
+        await logout();
+      } catch {
+        // ignore
+      }
       router.push("/login");
-    } catch (error) {
-      console.error("Logout error", error);
-      // Force redirect even if API fails
-      router.push("/login");
-    }
+    });
   };
 
   useEffect(() => {
