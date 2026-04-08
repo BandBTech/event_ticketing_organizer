@@ -17,6 +17,8 @@ import {
   EventFormData,
   MAX_QUANTITY,
   QUANTITY_MAX_CHARS,
+  MAX_PRICE,
+  PRICE_MAX_CHARS,
 } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -106,9 +108,9 @@ const TicketTierCard = ({
                   className="h-13 md:text-md"
                   type="number"
                   placeholder="e.g. 100"
+                  max={MAX_PRICE}
                   inputMode="decimal"
                   step="0.01"
-                  maxLength={9}
                   {...field}
                   onKeyDown={(e) => {
                     // Allow decimal point for price
@@ -123,6 +125,9 @@ const TicketTierCard = ({
                   }}
                   onChange={(e) => {
                     const val = e.target.value;
+                    if (val.length > PRICE_MAX_CHARS) {
+                      return;
+                    }
                     if (val === "") {
                       field.onChange("");
                       return;
@@ -147,8 +152,11 @@ const TicketTierCard = ({
                   }}
                 />
               </FormControl>
-              <div className="flex justify-between items-center -mt-1">
+              <div className="flex justify-between items-center -mt-1 min-h-5">
                 <TranslatedFormMessage t={t} className="mt-0" />
+                <div className="text-xs text-muted-foreground ml-auto">
+                  {t("common.max", "Max")} {MAX_PRICE.toLocaleString()}
+                </div>
               </div>
             </FormItem>
           )}
@@ -203,8 +211,11 @@ const TicketTierCard = ({
                   }}
                 />
               </FormControl>
-              <div className="flex justify-between items-center -mt-1">
+              <div className="flex justify-between items-center -mt-1 min-h-5">
                 <TranslatedFormMessage t={t} className="mt-0" />
+                <div className="text-xs text-muted-foreground ml-auto">
+                  {t("common.max", "Max")} {MAX_QUANTITY.toLocaleString()}
+                </div>
               </div>
             </FormItem>
           )}

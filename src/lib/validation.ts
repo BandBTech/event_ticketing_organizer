@@ -84,17 +84,17 @@ export const LAT_MAX_CHARS = 16;
 export const LNG_MAX_CHARS = 16;
 
 // Numeric Limits
-export const MAX_CAPACITY = 100000;
-export const MAX_PRICE = 100000;
-export const MAX_QUANTITY = 100000;
+export const MAX_CAPACITY = 1000000;
+export const MAX_PRICE = 1000000;
+export const MAX_QUANTITY = 1000000;
 export const PROMO_CODE_NAME_MAX = 50;
-export const PROMO_CODE_AMOUNT_MAX = 100000;
-export const PROMO_CODE_QUANTITY_MAX = 100000;
+export const PROMO_CODE_AMOUNT_MAX = 1000000;
+export const PROMO_CODE_QUANTITY_MAX = 1000000;
 
 // Max characters for numeric inputs (based on max values)
-export const CAPACITY_MAX_CHARS = 6; // 100000
-export const QUANTITY_MAX_CHARS = 6; // 100000
-export const PRICE_MAX_CHARS = 6; // 100000
+export const CAPACITY_MAX_CHARS = 7; // 1000000
+export const QUANTITY_MAX_CHARS = 7; // 1000000
+export const PRICE_MAX_CHARS = 7; // 1000000
 
 // Auth Schemas
 export const loginSchema = (
