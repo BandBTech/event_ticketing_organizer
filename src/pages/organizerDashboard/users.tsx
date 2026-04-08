@@ -238,7 +238,7 @@ function UsersPageContent() {
       </div>
 
       <div className="glass-card-lowest rounded-2xl flex-1 flex flex-col">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 min-w-0">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-4 min-w-0">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input

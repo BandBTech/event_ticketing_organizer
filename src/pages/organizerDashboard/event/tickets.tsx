@@ -169,13 +169,13 @@ export default function EventTicketsPage() {
         <ProtectedRoute permission={[PERMISSIONS.EVENT_READ]}>
           <div className="flex-1 space-y-6 p-4 lg:p-6 @container mx-auto w-full min-h-full flex flex-col">
             <div className="flex flex-col gap-4">
-              <Link
-                href={`/organizerDashboard/event/details?id=${eventId}`}
+              <button
+                onClick={() => router.back()}
                 className="flex items-center text-sm text-gray-500 hover:text-gray-900 transition-colors w-fit"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 {t("common.backToEvent", "Back to Event")}
-              </Link>
+              </button>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
