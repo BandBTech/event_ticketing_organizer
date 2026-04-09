@@ -69,6 +69,10 @@ const eventStatusConfig: Record<
     color: "bg-red-200 text-red-800 border-red-300",
     variant: "secondary",
   },
+  sales_upcoming: {
+    color: "bg-blue-200 text-blue-800 border-blue-300",
+    variant: "secondary",
+  },
 };
 
 export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {

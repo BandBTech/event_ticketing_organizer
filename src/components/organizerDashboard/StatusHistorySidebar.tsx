@@ -13,6 +13,7 @@ import {
   PauseCircle,
   PlayCircle,
   StopCircle,
+  ArrowsClockwise,
 } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,11 +22,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface StatusHistorySidebarProps {
   history: EventStatusHistory[];
   isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 export default function StatusHistorySidebar({
   history,
   isLoading,
+  onRefresh,
 }: StatusHistorySidebarProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -66,6 +69,8 @@ export default function StatusHistorySidebar({
         return <PlayCircle size={16} className="text-green-500" />;
       if (status === "stopped")
         return <StopCircle size={16} className="text-red-500" />;
+      if (status === "sales_upcoming")
+        return <PlayCircle size={16} className="text-blue-500" />;
     }
 
     switch (status) {
@@ -110,6 +115,8 @@ export default function StatusHistorySidebar({
         return "border-red-600 bg-red-700 text-red-100";
       case "sales_end":
         return "border-red-300 bg-red-200 text-red-800";
+      case "sales_upcoming":
+        return "border-blue-300 bg-blue-200 text-blue-800";
       default:
         return "border-amber-200 bg-amber-50 text-amber-700";
     }
@@ -173,6 +180,20 @@ export default function StatusHistorySidebar({
     <div className="glass-card-lowest rounded-2xl p-6 shadow-sm space-y-4 @container">
       <h3 className="text-lg font-semibold flex items-center gap-2 pb-2 z-20">
         {t("event.section.statusHistory", "Status History")}
+        {onRefresh && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onRefresh}
+            disabled={isLoading}
+            className="h-7 w-7 ml-auto text-gray-400 hover:text-gray-600"
+          >
+            <ArrowsClockwise
+              size={14}
+              className={isLoading ? "animate-spin" : ""}
+            />
+          </Button>
+        )}
       </h3>
 
       <div className="relative space-y-6 before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent max-h-[600px] overflow-y-auto pr-2">

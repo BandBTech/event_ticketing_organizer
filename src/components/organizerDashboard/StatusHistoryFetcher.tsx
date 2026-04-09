@@ -9,11 +9,23 @@ interface StatusHistoryFetcherProps {
   eventId: string;
 }
 
-export default function StatusHistoryFetcher({ eventId }: StatusHistoryFetcherProps) {
-  const { data: history, isLoading } = useQuery({
+export default function StatusHistoryFetcher({
+  eventId,
+}: StatusHistoryFetcherProps) {
+  const {
+    data: history,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: queryKeys.events.statusHistory(eventId),
     queryFn: () => eventService.getStatusHistory(eventId),
   });
 
-  return <StatusHistorySidebar history={history || []} isLoading={isLoading} />;
+  return (
+    <StatusHistorySidebar
+      history={history || []}
+      isLoading={isLoading}
+      onRefresh={() => refetch()}
+    />
+  );
 }
