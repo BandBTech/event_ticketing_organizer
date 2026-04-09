@@ -699,7 +699,8 @@
       "on_sale": "On Sale",
       "featured": "Featured",
       "completed": "Completed",
-      "scheduled": "Scheduled"
+      "scheduled": "Scheduled",
+      "resumed": "Sales Resumed"
     },
     "analytics": {
       "progress": "Sales Progress",

@@ -115,7 +115,11 @@ export default function StatusHistorySidebar({
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string, status_type: string) => {
+    if (status_type === "sales" && status === "active") {
+      return t(`event.badge.resumed`, status);
+    }
+
     return t(`event.badge.${status}`, status);
   };
 
@@ -212,14 +216,17 @@ export default function StatusHistorySidebar({
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                       </span>
                     )}
-                    {getStatusLabel(historyItem.new_status)}
+                    {getStatusLabel(
+                      historyItem.new_status,
+                      historyItem.status_type,
+                    )}
                   </Badge>
                   <span className="text-[12px] text-gray-400">
                     {formatDateTime(historyItem.created_at)}
                   </span>
                 </div>
 
-                <div className="text-sm font-medium text-gray-700">
+                {/*<div className="text-sm font-medium text-gray-700">
                   {historyItem.status_type === "approval"
                     ? t(
                         "event.history.statusChanged",
@@ -231,7 +238,7 @@ export default function StatusHistorySidebar({
                         "{new}",
                         historyItem.new_status,
                       )}
-                </div>
+                </div>*/}
 
                 <div className="flex items-center gap-1 mt-1 text-[12px] text-gray-400">
                   <User size={10} />

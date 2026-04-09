@@ -518,7 +518,8 @@
       "on_sale": "セールスライブ",
       "featured": "注目の",
       "completed": "完了",
-      "scheduled": "スケジュール"
+      "scheduled": "スケジュール",
+      "resumed": "販売再開"
     },
     "option": {
       "amountFixed": "金額（固定）",

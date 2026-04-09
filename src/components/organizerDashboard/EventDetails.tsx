@@ -903,7 +903,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   </div>
                 )}
 
-              <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
+              {/* <div className="glass-card-lowest rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">
                   {t("event.section.promoCodes", "Promo/Discount Codes")}
                 </h3>
@@ -913,7 +913,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                     "No promo codes configured for this event.",
                   )}
                 </p>
-              </div>
+                </div> */}
 
               <Suspense
                 fallback={
