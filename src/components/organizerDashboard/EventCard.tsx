@@ -147,7 +147,9 @@ export default function EventCard({
                 {t("common.viewDetail")} <ArrowRight className="w-4 h-4" />
               </Link>
               <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
-                {(event.status === "pending" || event.status === "draft") && (
+                {(event.status === "pending" ||
+                  event.status === "draft" ||
+                  event.status === "rejected") && (
                   <Link
                     href={`/organizerDashboard/event/edit?id=${event.id}`}
                     onClick={(e) => e.stopPropagation()}
