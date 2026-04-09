@@ -32,6 +32,14 @@ export default function StatusHistorySidebar({
 }: StatusHistorySidebarProps) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    if (!onRefresh) return;
+    setIsRefreshing(true);
+    await onRefresh();
+    setIsRefreshing(false);
+  };
 
   const historyList = useMemo(() => {
     let list: EventStatusHistory[] = [];
@@ -183,15 +191,16 @@ export default function StatusHistorySidebar({
         {onRefresh && (
           <Button
             variant="ghost"
-            size="icon"
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="h-7 w-7 ml-auto text-gray-400 hover:text-gray-600"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="ml-auto text-xs text-gray-400 hover:text-gray-600 h-auto py-0.5 px-1.5 flex items-center gap-1"
           >
             <ArrowsClockwise
-              size={14}
-              className={isLoading ? "animate-spin" : ""}
+              size={12}
+              className={isRefreshing ? "animate-spin" : ""}
             />
+            {t("common.button.refresh", "Refresh")}
           </Button>
         )}
       </h3>
