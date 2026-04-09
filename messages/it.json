@@ -317,7 +317,7 @@
       "loginHere": "Accedi qui"
     },
     "phoneNumberSearch": {
-      "placeholder": "Cerca paese..."
+      "placeholder": "Cerca Paese"
     }
   },
   "event": {
@@ -373,12 +373,12 @@
       "eventTitle": "Inserisci il titolo dell'evento",
       "cancellationReason": "Si prega di fornire un motivo per annullare questo evento...",
       "stopSalesReason": "Fornire un motivo per interrompere le vendite...",
-      "searchEvents": "Cerca eventi...",
+      "searchEvents": "Cerca Eventi",
       "categoryTags": "Inserisci i tag di categoria separati da virgole",
       "gst": "Inserisci la GST in percentuale",
       "addMore": "Aggiungi altro...",
       "tags": "Digita e premi Invio/Virgola per aggiungere...",
-      "searchTier": "Cerca o crea livello...",
+      "searchTier": "Cerca o Crea Livello",
       "selectTier": "Seleziona o digita il nome del livello...",
       "discountType": "Seleziona il tipo di sconto",
       "discountAmount": "Inserisci l'importo dello sconto",
@@ -674,7 +674,7 @@
       "successCopy": "Password generata e copiata negli appunti!",
       "success": "Password generata correttamente"
     },
-    "search": "Cerca utenti...",
+    "search": "Cerca Utenti",
     "filterByRole": "Filtra per ruolo",
     "pageTitle": "Gestione della squadra",
     "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti.",
@@ -805,7 +805,7 @@
     },
     "pageTitle": "Biglietti per eventi",
     "pageSubtitle": "Visualizza e gestisci tutti i biglietti acquistati per questo evento.",
-    "search": "Cerca per numero biglietto, nome o email...",
+    "search": "Cerca per Numero Biglietto, Nome o Email",
     "columns": {
       "ticketNumber": "Numero del biglietto",
       "purchaser": "Acquistato da",

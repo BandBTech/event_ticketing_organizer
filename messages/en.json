@@ -422,7 +422,7 @@
       "number": "Must contain at least one numeric digit"
     },
     "phoneNumberSearch": {
-      "placeholder": "Search country..."
+      "placeholder": "Search Country"
     }
   },
   "settings": {
@@ -553,12 +553,12 @@
       "eventTitle": "Enter event title",
       "cancellationReason": "Please provide a reason for cancelling this event...",
       "stopSalesReason": "Provide a reason for stopping sales...",
-      "searchEvents": "Search events...",
+      "searchEvents": "Search Events",
       "categoryTags": "Enter category tags separated by commas",
       "gst": "Enter GST in percentage",
       "addMore": "Add more...",
       "tags": "Type and press Enter/Comma to add...",
-      "searchTier": "Search or create tier...",
+      "searchTier": "Search or Create Tier",
       "selectTier": "Select or type tier name...",
       "discountType": "Select discount type",
       "discountAmount": "Enter discount amount",
@@ -781,7 +781,7 @@
       "successCopy": "Password generated and copied to clipboard!",
       "success": "Password generated successfully"
     },
-    "search": "Search users...",
+    "search": "Search Users",
     "filterByRole": "Filter by role",
     "pageTitle": "Team Management",
     "pageSubtitle": "Manage your organization team and user access.",
@@ -922,7 +922,7 @@
     },
     "pageTitle": "Event Tickets",
     "pageSubtitle": "View and manage all tickets purchased for this event.",
-    "search": "Search by ticket number, name or email...",
+    "search": "Search by Ticket Number, Name or Email",
     "columns": {
       "ticketNumber": "Ticket Number",
       "purchaser": "Purchased By",

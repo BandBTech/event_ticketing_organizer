@@ -317,7 +317,7 @@
       "loginHere": "ここからログインしてください"
     },
     "phoneNumberSearch": {
-      "placeholder": "国を検索..."
+      "placeholder": "国を検索"
     }
   },
   "event": {
@@ -373,12 +373,12 @@
       "eventTitle": "イベントタイトルを入力してください",
       "cancellationReason": "このイベントをキャンセルする理由を入力してください...",
       "stopSalesReason": "販売中止の理由を教えてください...",
-      "searchEvents": "イベントを検索...",
+      "searchEvents": "イベントを検索",
       "categoryTags": "カテゴリタグをカンマで区切って入力します",
       "gst": "GST をパーセントで入力します",
       "addMore": "さらに追加...",
       "tags": "入力して Enter/カンマを押して追加します...",
-      "searchTier": "階層を検索または作成...",
+      "searchTier": "階層を検索または作成",
       "selectTier": "層名を選択または入力...",
       "discountType": "割引タイプを選択してください",
       "discountAmount": "割引額を入力してください",
@@ -670,7 +670,7 @@
       "successCopy": "パスワードが生成され、クリップボードにコピーされました。",
       "success": "パスワードが正常に生成されました"
     },
-    "search": "ユーザーを検索...",
+    "search": "ユーザーを検索",
     "filterByRole": "役割でフィルタリングする",
     "pageTitle": "チームマネジメント",
     "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。",
@@ -809,7 +809,7 @@
     },
     "pageTitle": "Event Tickets",
     "pageSubtitle": "View and manage all tickets purchased for this event.",
-    "search": "Search by ticket number, name or email...",
+    "search": "Search by Ticket Number, Name or Email",
     "columns": {
       "ticketNumber": "Ticket Number",
       "purchaser": "Purchased By",
