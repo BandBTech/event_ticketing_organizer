@@ -834,7 +834,8 @@
   "events": {
     "analytics": {
       "progress": "Sales Progress"
-    }
+    },
+    "allStatus": "すべてのステータス"
   },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
@@ -1055,5 +1056,17 @@
         "revenue": "収益"
       }
     }
+  },
+  "status": {
+    "approved": "承認済み",
+    "cancelled": "キャンセル済み",
+    "completed": "完了",
+    "hold": "保留中",
+    "live": "公開中",
+    "on_sale": "販売中",
+    "pending": "承認待ち",
+    "rejected": "却下",
+    "sales_upcoming": "販売予定",
+    "scheduled": "スケジュール済み"
   }
 }

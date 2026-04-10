@@ -696,7 +696,7 @@
       "stopped": "Sales Stopped",
       "sold_out": "Sold Out",
       "sales_end": "Sales Ended",
-      "sales_upcoming": "Sales Upcoming",
+      "sales_upcoming": "Upcoming Sales",
       "on_sale": "On Sale",
       "featured": "Featured",
       "completed": "Completed",
@@ -947,7 +947,8 @@
   "events": {
     "analytics": {
       "progress": "Sales Progress"
-    }
+    },
+    "allStatus": "All Statuses"
   },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
@@ -1168,5 +1169,17 @@
         "revenue": "Revenue"
       }
     }
+  },
+  "status": {
+    "approved": "Approved",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "hold": "On Hold",
+    "live": "Live",
+    "on_sale": "On Sale",
+    "pending": "Pending",
+    "rejected": "Rejected",
+    "sales_upcoming": "Upcoming Sales",
+    "scheduled": "Scheduled"
   }
 }

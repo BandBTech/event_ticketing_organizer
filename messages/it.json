@@ -516,7 +516,7 @@
       "stopped": "Le vendite si sono fermate",
       "sold_out": "Esaurito",
       "sales_end": "Vendite terminate",
-      "sales_upcoming": "Vendite in arrivo",
+      "sales_upcoming": "Vendite Future",
       "on_sale": "Vendite in diretta",
       "featured": "In primo piano",
       "completed": "Completato",
@@ -830,7 +830,8 @@
   "events": {
     "analytics": {
       "progress": "Avanzamento delle vendite"
-    }
+    },
+    "allStatus": "Tutti gli Stati"
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
   "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",
@@ -1051,5 +1052,17 @@
         "revenue": "Entrate"
       }
     }
+  },
+  "status": {
+    "approved": "Approvato",
+    "cancelled": "Annullato",
+    "completed": "Completato",
+    "hold": "In Sospeso",
+    "live": "In diretta",
+    "on_sale": "In Vendita",
+    "pending": "In attesa",
+    "rejected": "Rifiutato",
+    "sales_upcoming": "Vendite Future",
+    "scheduled": "Programmato"
   }
 }
