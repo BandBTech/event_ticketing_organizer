@@ -21,6 +21,27 @@ export const PayoutRequestUpdateSchema = z.object({
 export type PayoutRequestCreate = z.infer<typeof PayoutRequestCreateSchema>;
 export type PayoutRequestUpdate = z.infer<typeof PayoutRequestUpdateSchema>;
 
+export interface PayoutPaymentHistory {
+  id: number;
+  amount: number;
+  payment_method: string;
+  payment_ref: string;
+  payment_date: string;
+  processed_by: string;
+  notes: string;
+  screenshot_url: string;
+  created_at: string;
+}
+
+export interface PayoutBillSummary {
+  total_billed: number;
+  total_paid: number;
+  remaining_amount: number;
+  pending_amount: number;
+  payment_count: number;
+  last_payment_date: string;
+}
+
 export interface PayoutRequest {
   id: string;
   organizer_id: string;
@@ -28,6 +49,7 @@ export interface PayoutRequest {
   status: PayoutRequestStatus;
   request_type: PayoutRequestType;
   request_number: string;
+  bill_id?: string;
   event_id?: string;
   description?: string;
   admin_notes?: string;
@@ -37,14 +59,13 @@ export interface PayoutRequest {
   updated_at: string;
   // Expanded fields
   event?: {
-    id: string; // Changed from id to match usual API response patterns if specific fields are returned
-    title: string;
-    // Add other fields if returned by API, currently assumed based on typical expansion
-  };
-  organizer?: {
     id: string;
-    // Add other fields if returned by API
+    title: string;
+    banner_image?: string;
+    status?: string;
   };
+  bill_summary?: PayoutBillSummary;
+  payment_history?: PayoutPaymentHistory[];
 }
 
 export interface PayoutSummaryEvent {

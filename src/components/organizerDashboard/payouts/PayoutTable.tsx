@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { WarningCircleIcon } from "@phosphor-icons/react";
+import { WarningCircleIcon, EyeIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import { PayoutRequest } from "@/types/payout";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePayoutRequest } from "@/hooks/usePayouts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/router";
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -74,6 +75,7 @@ export function PayoutTable({
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
   const { currency } = useCurrencyStore();
+  const router = useRouter();
   const [adminNotesContent, setAdminNotesContent] = useState<string | null>(
     null,
   );
@@ -165,8 +167,33 @@ export function PayoutTable({
             </div>
           ) : null,
       },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => (
+          <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push({ pathname: "/organizerDashboard/payouts/detail", query: { id: row.original.id } });
+                  }}
+                  className="text-gray-400 hover:text-indigo-600 transition-colors"
+                  title={t("common.viewDetail", "View Detail")}
+                >
+                  <EyeIcon weight="duotone" className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t("payouts.viewPayoutDetail", "View payout detail")}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        ),
+      },
     ],
-    [t, locale, setAdminNotesContent],
+    [t, locale, setAdminNotesContent, router],
   );
 
   return (
