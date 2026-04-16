@@ -77,7 +77,7 @@ export const LAST_NAME_MAX = 50;
 export const PASSWORD_MIN = 8;
 export const PASSWORD_MAX = 50;
 export const STOP_SALES_REASON_MIN = 1;
-export const CANCEL_REASON_MIN = 1;
+export const CANCEL_REASON_MIN = 10;
 
 // Coordinate char limits
 export const LAT_MAX_CHARS = 16;
