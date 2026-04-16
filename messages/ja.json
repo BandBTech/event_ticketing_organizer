@@ -639,6 +639,7 @@
       "businessNameRequired": "法人名は必須です。",
       "businessNameMinLength": "ビジネス名は少なくとも {min} 文字である必要があります。",
       "businessNameMaxLength": "ビジネス名は {max} 文字未満である必要があります。",
+      "descriptionRequired": "概要は必須です。",
       "descriptionMaxLength": "説明は {max} 文字未満にする必要があります。"
     },
     "editButton": "プロフィールの編集"

@@ -265,7 +265,8 @@ export function OrganizerProfileForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-900">
-                {t("settings.organizerProfile.about", "About")}
+                {t("settings.organizerProfile.about", "About")}{" "}
+                <span className="text-red-500">*</span>
               </FormLabel>
               <FormControl>
                 <Textarea

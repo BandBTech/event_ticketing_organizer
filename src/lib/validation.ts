@@ -1479,6 +1479,13 @@ export const createOrganizerProfileSchema = (
       ),
     business_description: z
       .string()
+      .min(
+        1,
+        t(
+          "profile.validation.descriptionRequired",
+          "About is required.",
+        ),
+      )
       .max(
         BUSINESS_DESC_MAX,
         t(
@@ -1486,8 +1493,7 @@ export const createOrganizerProfileSchema = (
           "Description must be less than {max} characters.",
           { max: BUSINESS_DESC_MAX.toString() },
         ),
-      )
-      .optional(),
+      ),
     currency: z.string().optional(),
   });
 

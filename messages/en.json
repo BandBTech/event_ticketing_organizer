@@ -226,6 +226,7 @@
       "businessNameRequired": "Business name is required.",
       "businessNameMinLength": "Business name must be at least {min} characters.",
       "businessNameMaxLength": "Business name must be less than {max} characters.",
+      "descriptionRequired": "About is required.",
       "descriptionMaxLength": "Description must be less than {max} characters.",
       "dimensionsExceeded": "Image dimensions must not exceed {maxWidth}x{maxHeight}px."
     }

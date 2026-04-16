@@ -643,6 +643,7 @@
       "businessNameRequired": "Il nome dell'azienda è obbligatorio.",
       "businessNameMinLength": "Il nome dell'azienda deve contenere almeno {min} caratteri.",
       "businessNameMaxLength": "Il nome dell'azienda deve contenere meno di {max} caratteri.",
+      "descriptionRequired": "Il campo Informazioni è obbligatorio.",
       "descriptionMaxLength": "La descrizione deve contenere meno di {max} caratteri."
     },
     "editButton": "Modifica profilo"
