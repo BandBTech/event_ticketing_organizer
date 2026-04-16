@@ -142,22 +142,22 @@ export default function PayoutDetailPage() {
     {
       icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.totalBilled", "Total Billed"),
-      value: isLoading ? null : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0, undefined, locale),
+      value: isLoading ? null : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0),
     },
     {
       icon: <CheckCircleIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.paid", "Total Paid"),
-      value: isLoading ? null : formatCurrency(billSummary?.total_paid ?? 0, undefined, locale),
+      value: isLoading ? null : formatCurrency(billSummary?.total_paid ?? 0),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.remaining", "Remaining"),
-      value: isLoading ? null : formatCurrency(billSummary?.remaining_amount ?? 0, undefined, locale),
+      value: isLoading ? null : formatCurrency(billSummary?.remaining_amount ?? 0),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.pending", "Pending"),
-      value: isLoading ? null : formatCurrency(billSummary?.pending_amount ?? 0, undefined, locale),
+      value: isLoading ? null : formatCurrency(billSummary?.pending_amount ?? 0),
     },
   ];
 
@@ -311,13 +311,13 @@ export default function PayoutDetailPage() {
                   <SectionTitle>{t("payouts.billSummary", "Bill Summary")}</SectionTitle>
                   <InfoRow
                     label={t("payouts.totalBilled", "Total Billed")}
-                    value={formatCurrency(billSummary?.total_billed ?? 0, undefined, locale)}
+                    value={formatCurrency(billSummary?.total_billed ?? 0)}
                   />
                   <InfoRow
                     label={t("payouts.totalPaid", "Total Paid")}
                     value={
                       <span className="text-emerald-600">
-                        {formatCurrency(billSummary?.total_paid ?? 0, undefined, locale)}
+                        {formatCurrency(billSummary?.total_paid ?? 0)}
                       </span>
                     }
                   />
@@ -325,7 +325,7 @@ export default function PayoutDetailPage() {
                     label={t("payouts.remaining", "Remaining")}
                     value={
                       <span className="text-rose-500">
-                        {formatCurrency(billSummary?.remaining_amount ?? 0, undefined, locale)}
+                        {formatCurrency(billSummary?.remaining_amount ?? 0)}
                       </span>
                     }
                   />
