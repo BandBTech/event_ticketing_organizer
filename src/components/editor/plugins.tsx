@@ -22,20 +22,32 @@ function MaxLengthPlugin({ maxLength }: { maxLength: number }) {
   const [editor] = useLexicalComposerContext()
 
   useEffect(() => {
-    const isAtLimit = () => {
-      const textLength = $getRoot().getTextContent().replace(/\n/g, "").length
-      return textLength >= maxLength
-    }
+    const getCurrentLength = () =>
+      $getRoot().getTextContent().replace(/\n/g, "").length
 
     const unregisterText = editor.registerCommand(
       CONTROLLED_TEXT_INSERTION_COMMAND,
-      () => isAtLimit(),
+      () => getCurrentLength() >= maxLength,
       COMMAND_PRIORITY_CRITICAL,
     )
 
     const unregisterPaste = editor.registerCommand(
       PASTE_COMMAND,
-      () => isAtLimit(),
+      (event: ClipboardEvent | null) => {
+        const currentLength = getCurrentLength()
+        if (currentLength >= maxLength) return true
+
+        const pasteText = event?.clipboardData?.getData("text/plain") ?? ""
+        const remaining = maxLength - currentLength
+        if (pasteText.length <= remaining) return false
+
+        // Truncate paste to fit within remaining budget
+        editor.dispatchCommand(
+          CONTROLLED_TEXT_INSERTION_COMMAND,
+          pasteText.substring(0, remaining),
+        )
+        return true
+      },
       COMMAND_PRIORITY_CRITICAL,
     )
 
