@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import { Control, useWatch, useFormContext } from "react-hook-form";
+import { useCallback, useState } from "react";
+import { Control, useFormContext } from "react-hook-form";
 import {
   EventFormData,
   EVENT_TITLE_MAX,
@@ -62,8 +62,17 @@ export function EventDetailsSection({
   const { t } = useTranslation();
   const { setError, clearErrors } = useFormContext<EventFormData>();
 
-  const description = useWatch({ control, name: "description" }) || "";
-  const descriptionTextLength = description.replace(/<[^>]*>/g, "").length;
+  // Initialise from the initial HTML using DOM parsing so the counter is
+  // accurate before the first keystroke (avoids HTML-entity counting errors).
+  const [descriptionTextLength, setDescriptionTextLength] = useState(() => {
+    if (!initialDescription) return 0;
+    if (typeof window !== "undefined") {
+      const div = document.createElement("div");
+      div.innerHTML = initialDescription;
+      return (div.textContent || "").replace(/\n/g, "").length;
+    }
+    return initialDescription.replace(/<[^>]*>/g, "").length;
+  });
 
   const handleHtmlChange = useCallback(
     (html: string) => {
@@ -216,6 +225,7 @@ export function EventDetailsSection({
               key={isEditing ? `editor-${eventId}` : "editor-new"}
               initialHtml={isEditing ? initialDescription : ""}
               onHtmlChange={handleHtmlChange}
+              onLengthChange={setDescriptionTextLength}
               placeholder={t(
                 "event.placeholder.eventDescription",
                 "Write about your event...",

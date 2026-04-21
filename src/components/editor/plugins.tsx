@@ -1,5 +1,4 @@
-// import { useState } from "react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { ListPlugin } from "@lexical/react/LexicalListPlugin"
@@ -8,52 +7,82 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin"
 import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import {
-  CONTROLLED_TEXT_INSERTION_COMMAND,
-  PASTE_COMMAND,
-  COMMAND_PRIORITY_CRITICAL,
   $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  RootNode,
 } from "lexical"
+import { $restoreEditorState } from "@lexical/utils"
+import { $trimTextContentFromAnchor } from "@lexical/selection"
 
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable"
 import { ToolbarPlugin } from "./toolbar-plugin"
 import ImagesPlugin from "./images-plugin"
 
-function MaxLengthPlugin({ maxLength }: { maxLength: number }) {
+// Count characters the same way validation does: text content without newlines.
+const $getTextLength = (): number =>
+  $getRoot().getTextContent().replace(/\n/g, "").length
+
+function MaxLengthPlugin({
+  maxLength,
+  onLengthChange,
+}: {
+  maxLength: number
+  onLengthChange?: (length: number) => void
+}) {
   const [editor] = useLexicalComposerContext()
+  const onLengthChangeRef = useRef(onLengthChange)
 
   useEffect(() => {
-    const getCurrentLength = () =>
-      $getRoot().getTextContent().replace(/\n/g, "").length
+    onLengthChangeRef.current = onLengthChange
+  })
 
-    const unregisterText = editor.registerCommand(
-      CONTROLLED_TEXT_INSERTION_COMMAND,
-      () => getCurrentLength() >= maxLength,
-      COMMAND_PRIORITY_CRITICAL,
+  useEffect(() => {
+    // Atomic post-update enforcement via a RootNode transform. This runs
+    // synchronously during the same update cycle as the change, so the
+    // over-limit state is never committed or painted — handles typing, paste,
+    // drag-drop, IME, and any other text-inserting command uniformly.
+    const unregisterTransform = editor.registerNodeTransform(
+      RootNode,
+      () => {
+        const selection = $getSelection()
+        if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
+          return
+        }
+
+        const prevEditorState = editor.getEditorState()
+        const prevLength = prevEditorState.read($getTextLength)
+        const currentLength = $getTextLength()
+
+        if (prevLength === currentLength) return
+
+        const delCount = currentLength - maxLength
+        if (delCount <= 0) return
+
+        if (prevLength === maxLength) {
+          // Previous state was already exactly at the limit — roll back the
+          // entire transaction (including cursor/selection state).
+          $restoreEditorState(editor, prevEditorState)
+        } else {
+          // Trim the overflow characters backwards from the anchor (end of
+          // the just-inserted content), keeping the portion that fits.
+          $trimTextContentFromAnchor(editor, selection.anchor, delCount)
+        }
+      },
     )
 
-    const unregisterPaste = editor.registerCommand(
-      PASTE_COMMAND,
-      (event: ClipboardEvent | null) => {
-        const currentLength = getCurrentLength()
-        if (currentLength >= maxLength) return true
-
-        const pasteText = event?.clipboardData?.getData("text/plain") ?? ""
-        const remaining = maxLength - currentLength
-        if (pasteText.length <= remaining) return false
-
-        // Truncate paste to fit within remaining budget
-        editor.dispatchCommand(
-          CONTROLLED_TEXT_INSERTION_COMMAND,
-          pasteText.substring(0, remaining),
-        )
-        return true
+    // Report accurate length after every state commit so the UI counter
+    // matches what the transform enforces.
+    const unregisterListener = editor.registerUpdateListener(
+      ({ editorState }) => {
+        const length = editorState.read($getTextLength)
+        onLengthChangeRef.current?.(length)
       },
-      COMMAND_PRIORITY_CRITICAL,
     )
 
     return () => {
-      unregisterText()
-      unregisterPaste()
+      unregisterTransform()
+      unregisterListener()
     }
   }, [editor, maxLength])
 
@@ -95,9 +124,15 @@ const MATCHERS = [
   },
 ]
 
-export function Plugins({ placeholder = "Start typing ...", maxLength }: { placeholder?: string; maxLength?: number }) {
-
-
+export function Plugins({
+  placeholder = "Start typing ...",
+  maxLength,
+  onLengthChange,
+}: {
+  placeholder?: string
+  maxLength?: number
+  onLengthChange?: (length: number) => void
+}) {
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
       // setFloatingAnchorElem(_floatingAnchorElem)
@@ -123,7 +158,12 @@ export function Plugins({ placeholder = "Start typing ...", maxLength }: { place
         <LinkPlugin />
         <AutoLinkPlugin matchers={MATCHERS} />
         <ImagesPlugin />
-        {maxLength !== undefined && <MaxLengthPlugin maxLength={maxLength} />}
+        {maxLength !== undefined && (
+          <MaxLengthPlugin
+            maxLength={maxLength}
+            onLengthChange={onLengthChange}
+          />
+        )}
       </div>
     </div>
   )
