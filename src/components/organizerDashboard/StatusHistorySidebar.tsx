@@ -56,10 +56,12 @@ export default function StatusHistorySidebar({
             : [];
     }
 
-    return list.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    );
+    return list
+      .filter((item) => item.status_type !== "sales")
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
   }, [history]);
 
   const displayItems = useMemo(() => {
