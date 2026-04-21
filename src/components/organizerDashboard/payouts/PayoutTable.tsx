@@ -114,7 +114,7 @@ export function PayoutTable({
             variant="outline"
             className={`${getStatusColor(row.original.status)} border-0 px-2.5 py-0.5 capitalize`}
           >
-            {row.original.status}
+            {t(`payouts.status.${row.original.status}`, row.original.status)}
           </Badge>
         ),
       },
@@ -256,7 +256,7 @@ export function PayoutTable({
                     variant="outline"
                     className={`${getStatusColor(selectedPayout.status)} border-0 px-2.5 py-0.5 capitalize`}
                   >
-                    {selectedPayout.status}
+                    {t(`payouts.status.${selectedPayout.status}`, selectedPayout.status)}
                   </Badge>
                 </div>
               </div>

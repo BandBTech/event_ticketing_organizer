@@ -152,10 +152,11 @@
       "event": "Evento"
     },
     "status": {
-      "pending": "Pending",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "paid": "Paid"
+      "pending": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Respinto",
+      "paid": "Pagato",
+      "processing": "In elaborazione"
     },
     "type": {
       "event_payout": "Event Payout",
@@ -192,6 +193,27 @@
       "selectEvent": "Seleziona un evento.",
       "amountMustBeGreaterThanZero": "L'importo deve essere maggiore di 0.",
       "amountRequired": "Quantità"
+    },
+    "payoutDetails": "Dettagli del pagamento",
+    "requestDetails": "Dettagli della richiesta",
+    "created": "Creato",
+    "updated": "Ultimo aggiornamento",
+    "billSummary": "Riepilogo fattura",
+    "totalBilled": "Totale fatturato",
+    "totalPaid": "Totale pagato",
+    "remaining": "Rimanente",
+    "pending": "In attesa",
+    "paid": "Totale pagato",
+    "paymentCount": "Pagamenti",
+    "lastPayment": "Ultimo pagamento",
+    "paymentHistory": "Cronologia dei pagamenti",
+    "history": {
+      "method": "Metodo",
+      "amount": "Importo",
+      "date": "Data",
+      "processedBy": "Elaborato da",
+      "notes": "Note",
+      "receipt": "Ricevuta"
     }
   },
   "auth": {

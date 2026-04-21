@@ -162,7 +162,8 @@
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",
-      "paid": "Paid"
+      "paid": "Paid",
+      "processing": "Processing"
     },
     "type": {
       "event_payout": "Event Payout",
@@ -199,6 +200,27 @@
       "selectEvent": "Please select an event.",
       "amountMustBeGreaterThanZero": "Amount must be greater than 0.",
       "amountRequired": "Amount"
+    },
+    "payoutDetails": "Payout Details",
+    "requestDetails": "Request Details",
+    "created": "Created",
+    "updated": "Last Updated",
+    "billSummary": "Bill Summary",
+    "totalBilled": "Total Billed",
+    "totalPaid": "Total Paid",
+    "remaining": "Remaining",
+    "pending": "Pending",
+    "paid": "Total Paid",
+    "paymentCount": "Payments",
+    "lastPayment": "Last Payment",
+    "paymentHistory": "Payment History",
+    "history": {
+      "method": "Method",
+      "amount": "Amount",
+      "date": "Date",
+      "processedBy": "Processed By",
+      "notes": "Notes",
+      "receipt": "Receipt"
     }
   },
   "profile": {

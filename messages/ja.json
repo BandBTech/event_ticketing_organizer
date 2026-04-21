@@ -152,10 +152,11 @@
       "event": "イベント"
     },
     "status": {
-      "pending": "Pending",
-      "approved": "Approved",
-      "rejected": "Rejected",
-      "paid": "Paid"
+      "pending": "保留中",
+      "approved": "承認済み",
+      "rejected": "却下",
+      "paid": "支払い済み",
+      "processing": "処理中"
     },
     "type": {
       "event_payout": "Event Payout",
@@ -192,6 +193,27 @@
       "selectEvent": "イベントを選択してください。",
       "amountMustBeGreaterThanZero": "金額は 0 より大きくなければなりません。",
       "amountRequired": "額"
+    },
+    "payoutDetails": "支払いの詳細",
+    "requestDetails": "リクエストの詳細",
+    "created": "作成日",
+    "updated": "最終更新日",
+    "billSummary": "請求概要",
+    "totalBilled": "請求合計",
+    "totalPaid": "支払い済み合計",
+    "remaining": "残額",
+    "pending": "保留中",
+    "paid": "支払い済み合計",
+    "paymentCount": "支払い回数",
+    "lastPayment": "最終支払い",
+    "paymentHistory": "支払い履歴",
+    "history": {
+      "method": "方法",
+      "amount": "金額",
+      "date": "日付",
+      "processedBy": "処理者",
+      "notes": "メモ",
+      "receipt": "領収書"
     }
   },
   "auth": {

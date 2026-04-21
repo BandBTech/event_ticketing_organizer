@@ -44,14 +44,18 @@ const InfoRow = ({
   label: string;
   value: React.ReactNode;
   mono?: boolean;
-}) => (
-  <div className="flex items-start justify-between py-3 border-b border-slate-100 last:border-0">
-    <span className="text-sm text-slate-500 font-medium min-w-[160px]">{label}</span>
-    <span className={`text-sm text-slate-800 text-right ${mono ? "font-mono" : "font-medium"}`}>
-      {value ?? "N/A"}
-    </span>
-  </div>
-);
+}) => {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
+  return (
+    <div className="flex items-start justify-between py-3 border-b border-slate-100 last:border-0">
+      <span className="text-sm text-slate-500 font-medium min-w-[160px]">{label}</span>
+      <span className={`text-sm text-slate-800 text-right ${mono ? "font-mono" : "font-medium"}`}>
+        {value ?? t("common.notSpecified", "N/A")}
+      </span>
+    </div>
+  );
+};
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="text-xs text-slate-400 font-semibold uppercase tracking-widest mb-3">
@@ -59,75 +63,75 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   </p>
 );
 
-const paymentHistoryColumns: ColumnDef<PayoutPaymentHistory>[] = [
-  {
-    accessorKey: "payment_method",
-    header: "Method",
-    cell: ({ row }) => (
-      <span className="capitalize font-medium text-gray-900">
-        {row.original.payment_method}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => (
-      <span className="font-semibold text-emerald-600">
-        +{formatCurrency(row.original.amount)}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "payment_date",
-    header: "Date",
-    cell: ({ row }) => (
-      <span className="text-gray-500">
-        {format(new Date(row.original.payment_date), "MMM d, yyyy")}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "processed_by",
-    header: "Processed By",
-    cell: ({ row }) => (
-      <span className="text-gray-700">{row.original.processed_by || "-"}</span>
-    ),
-  },
-  {
-    id: "notes",
-    header: "Notes",
-    cell: ({ row }) => (
-      <span className="text-gray-500 text-sm max-w-[200px] truncate block">
-        {row.original.notes || "-"}
-      </span>
-    ),
-  },
-  {
-    id: "receipt",
-    header: "",
-    cell: ({ row }) =>
-      row.original.screenshot_url ? (
-        <a
-          href={row.original.screenshot_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 transition-colors"
-        >
-          <ArrowSquareOutIcon className="w-3.5 h-3.5" />
-          Receipt
-        </a>
-      ) : null,
-  },
-];
-
 export default function PayoutDetailPage() {
   const router = useRouter();
   const payoutId = router.query.id as string;
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
+  const paymentHistoryColumns: ColumnDef<PayoutPaymentHistory>[] = [
+    {
+      accessorKey: "payment_method",
+      header: t("payouts.history.method", "Method"),
+      cell: ({ row }) => (
+        <span className="capitalize font-medium text-gray-900">
+          {row.original.payment_method}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: t("payouts.history.amount", "Amount"),
+      cell: ({ row }) => (
+        <span className="font-semibold text-emerald-600">
+          +{formatCurrency(row.original.amount)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "payment_date",
+      header: t("payouts.history.date", "Date"),
+      cell: ({ row }) => (
+        <span className="text-gray-500">
+          {format(new Date(row.original.payment_date), "MMM d, yyyy")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "processed_by",
+      header: t("payouts.history.processedBy", "Processed By"),
+      cell: ({ row }) => (
+        <span className="text-gray-700">{row.original.processed_by || "-"}</span>
+      ),
+    },
+    {
+      id: "notes",
+      header: t("payouts.history.notes", "Notes"),
+      cell: ({ row }) => (
+        <span className="text-gray-500 text-sm max-w-[200px] truncate block">
+          {row.original.notes || "-"}
+        </span>
+      ),
+    },
+    {
+      id: "receipt",
+      header: "",
+      cell: ({ row }) =>
+        row.original.screenshot_url ? (
+          <a
+            href={row.original.screenshot_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-1 text-xs text-indigo-500 hover:text-indigo-700 transition-colors"
+          >
+            <ArrowSquareOutIcon className="w-3.5 h-3.5" />
+            {t("payouts.history.receipt", "Receipt")}
+          </a>
+        ) : null,
+    },
+  ];
 
   const { data: payoutData, isLoading } = useQuery<PayoutRequest>({
     queryKey: queryKeys.payouts.byId(payoutId ?? ""),
@@ -214,7 +218,7 @@ export default function PayoutDetailPage() {
                       "bg-slate-100 text-slate-600"
                     }
                   >
-                    {payoutData?.status}
+                    {t(`payouts.status.${payoutData?.status}`, payoutData?.status)}
                   </Badge>
                 )}
               </div>
@@ -237,7 +241,7 @@ export default function PayoutDetailPage() {
                   </div>
                   {payoutData?.event?.status && (
                     <Badge className="bg-slate-100 text-slate-600 capitalize flex-shrink-0">
-                      {payoutData.event.status}
+                      {t(`event.badge.${payoutData.event.status}`, payoutData.event.status)}
                     </Badge>
                   )}
                 </div>
@@ -293,18 +297,18 @@ export default function PayoutDetailPage() {
                     value={
                       payoutData?.status ? (
                         <Badge className={statusStyles[payoutData.status] ?? "bg-slate-100 text-slate-600"}>
-                          {payoutData.status}
+                          {t(`payouts.status.${payoutData.status}`, payoutData.status)}
                         </Badge>
                       ) : null
                     }
                   />
                   <InfoRow
                     label={t("payouts.created", "Created")}
-                    value={formatDateTimeLong(payoutData?.created_at, locale) || "N/A"}
+                    value={formatDateTimeLong(payoutData?.created_at, locale)}
                   />
                   <InfoRow
                     label={t("payouts.updated", "Last Updated")}
-                    value={formatDateTimeLong(payoutData?.updated_at, locale) || "N/A"}
+                    value={formatDateTimeLong(payoutData?.updated_at, locale)}
                   />
                 </div>
                 <div>
@@ -336,7 +340,7 @@ export default function PayoutDetailPage() {
                   {billSummary?.last_payment_date && (
                     <InfoRow
                       label={t("payouts.lastPayment", "Last Payment")}
-                      value={formatDateTimeLong(billSummary.last_payment_date, locale) || "N/A"}
+                      value={formatDateTimeLong(billSummary.last_payment_date, locale)}
                     />
                   )}
                 </div>
