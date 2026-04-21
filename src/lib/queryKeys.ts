@@ -71,6 +71,7 @@ export const queryKeys = {
       search?: string;
       role?: string;
       sort?: string;
+      status?: string;
     }) =>
       [
         "orgUsers",
@@ -79,6 +80,7 @@ export const queryKeys = {
         params.search,
         params.role,
         params.sort,
+        params.status,
       ] as const,
   },
 

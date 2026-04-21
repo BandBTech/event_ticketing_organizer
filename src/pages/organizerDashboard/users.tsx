@@ -66,6 +66,7 @@ function UsersPageContent() {
   const [globalFilter, setGlobalFilter] = useState("");
   const debouncedSearch = useDebounce(globalFilter, 500);
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deleteUser, setDeleteUser] = useState<OrgUser | null>(null);
 
   const { currentPage, limit, handlePageChange, handleLimitChange } =
@@ -90,6 +91,7 @@ function UsersPageContent() {
       search: debouncedSearch,
       role: roleFilter !== "all" ? roleFilter : undefined,
       sort: sortParam,
+      status: statusFilter !== "all" ? statusFilter : undefined,
     }),
     queryFn: () =>
       organizerUserService.getUsers(
@@ -98,6 +100,7 @@ function UsersPageContent() {
         debouncedSearch || undefined,
         roleFilter !== "all" ? roleFilter : undefined,
         sortParam,
+        statusFilter !== "all" ? statusFilter : undefined,
       ),
   });
 
@@ -158,6 +161,14 @@ function UsersPageContent() {
   const handleRoleChange = useCallback(
     (value: string) => {
       setRoleFilter(value);
+      handlePageChange(1);
+    },
+    [handlePageChange],
+  );
+
+  const handleStatusChange = useCallback(
+    (value: string) => {
+      setStatusFilter(value);
       handlePageChange(1);
     },
     [handlePageChange],
@@ -249,29 +260,56 @@ function UsersPageContent() {
             />
           </div>
 
-          <div className="relative">
-            <Select value={roleFilter} onValueChange={handleRoleChange}>
-              <SelectTrigger className="w-full sm:w-40 pl-9">
-                <FunnelIcon
-                  weight="duotone"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"
-                />
-                <SelectValue
-                  placeholder={t("users.filterByRole", "Filter by role")}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  {t("common.allRoles", "All Roles")}
-                </SelectItem>
-                <SelectItem value="manager">
-                  {t("common.manager", "Manager")}
-                </SelectItem>
-                <SelectItem value="staff">
-                  {t("common.staff", "Staff")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex gap-2">
+            <div className="relative">
+              <Select value={roleFilter} onValueChange={handleRoleChange}>
+                <SelectTrigger className="w-full sm:w-40 pl-9">
+                  <FunnelIcon
+                    weight="duotone"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"
+                  />
+                  <SelectValue
+                    placeholder={t("users.filterByRole", "Filter by role")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {t("common.allRoles", "All Roles")}
+                  </SelectItem>
+                  <SelectItem value="manager">
+                    {t("common.manager", "Manager")}
+                  </SelectItem>
+                  <SelectItem value="staff">
+                    {t("common.staff", "Staff")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative">
+              <Select value={statusFilter} onValueChange={handleStatusChange}>
+                <SelectTrigger className="w-full sm:w-40 pl-9">
+                  <FunnelIcon
+                    weight="duotone"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4"
+                  />
+                  <SelectValue
+                    placeholder={t("users.filterByStatus", "Filter by status")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {t("common.allStatuses", "All Statuses")}
+                  </SelectItem>
+                  <SelectItem value="active">
+                    {t("common.active", "Active")}
+                  </SelectItem>
+                  <SelectItem value="inactive">
+                    {t("common.inactive", "Inactive")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 

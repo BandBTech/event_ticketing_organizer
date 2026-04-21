@@ -39,6 +39,7 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       accessorFn: (row) => row.roles?.[0]?.name || "-",
       id: "role_name",
       header: t('common.role', "Role"),
+      meta: { sortKey: 'role' },
       cell: (info) => <span className="capitalize text-gray-900">{info.getValue<string>()}</span>,
     },
     {
@@ -54,6 +55,7 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       accessorKey: "account_status",
       id: "account_status",
       header: t('common.status', "Status"),
+      meta: { sortKey: 'account_status' },
       cell: (info) => {
         const status = info.getValue<string>();
         const isActive = status === "active";
