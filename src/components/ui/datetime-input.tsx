@@ -134,14 +134,14 @@ const DateTimeInput = React.forwardRef<HTMLInputElement, DateTimeInputProps>((op
   const inputValue = useMemo(() => {
     const allHasValue = !validSegments.some((s) => !s.value);
     if (!allHasValue) return undefined;
-    const date = parse(inputStr, formatStr, value ? new Date(value) : new Date());
+    const date = parse(inputStr, formatStr, safeDate(timezone));
     const year = getYear(date);
     // console.log('inputValue', {allHasValue, validSegments, inputStr, formatStr, date, year});
     if (year >= 1000 && year <= 9999) {
       return date;
     }
     return undefined;
-  }, [validSegments, inputStr, formatStr, value, timezone]);
+  }, [validSegments, inputStr, formatStr, timezone]);
 
   useEffect(() => {
     // Skip if this update came from external value changes (parent prop)
