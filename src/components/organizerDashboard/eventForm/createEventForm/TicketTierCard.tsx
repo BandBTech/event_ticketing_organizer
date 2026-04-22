@@ -109,12 +109,12 @@ const TicketTierCard = ({
                   type="number"
                   placeholder="e.g. 100"
                   max={MAX_PRICE}
-                  inputMode="decimal"
-                  step="0.01"
+                  inputMode="numeric"
+                  step="1"
                   {...field}
                   onKeyDown={(e) => {
-                    // Allow decimal point for price
                     if (
+                      e.key === "." ||
                       e.key === "e" ||
                       e.key === "E" ||
                       e.key === "-" ||
@@ -132,21 +132,7 @@ const TicketTierCard = ({
                       field.onChange("");
                       return;
                     }
-                    // Allow trailing decimal point (e.g., "100.")
-                    if (val.endsWith(".")) {
-                      field.onChange(val);
-                      return;
-                    }
-                    // Allow only one decimal point
-                    const parts = val.split(".");
-                    if (parts.length > 2) {
-                      return;
-                    }
-                    // Allow only 2 decimal places
-                    if (parts[1] && parts[1].length > 2) {
-                      return;
-                    }
-                    const num = Number(val);
+                    const num = parseInt(val, 10);
                     if (isNaN(num)) return;
                     field.onChange(num);
                   }}
