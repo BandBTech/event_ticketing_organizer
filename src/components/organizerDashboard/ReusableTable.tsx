@@ -142,6 +142,10 @@ export function ReusableTable<TData, TValue>({
                   const isSortable = !!sortKey && !!onSortChange;
                   const isActive = sortBy === sortKey;
 
+                  const headerClassName = (
+                    header.column.columnDef.meta as { headerClassName?: string }
+                  )?.headerClassName;
+
                   return (
                     <TableHead
                       key={header.id}
@@ -149,7 +153,7 @@ export function ReusableTable<TData, TValue>({
                         isSortable
                           ? "cursor-pointer select-none group/sortable hover:text-gray-700 transition-colors"
                           : ""
-                      } `}
+                      } ${headerClassName ?? ""}`}
                       onClick={
                         isSortable
                           ? () => handleHeaderClick(sortKey)

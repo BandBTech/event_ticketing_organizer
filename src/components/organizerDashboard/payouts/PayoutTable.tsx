@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { WarningCircleIcon, EyeIcon } from "@phosphor-icons/react";
+import { EyeIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import { PayoutRequest } from "@/types/payout";
@@ -19,7 +19,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { usePayoutRequest } from "@/hooks/usePayouts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -76,9 +75,6 @@ export function PayoutTable({
   const { locale } = useLanguageStore();
   const { currency } = useCurrencyStore();
   const router = useRouter();
-  const [adminNotesContent, setAdminNotesContent] = useState<string | null>(
-    null,
-  );
   const [selectedPayoutId, setSelectedPayoutId] = useState<string | null>(null);
 
   const { data: selectedPayout, isLoading: isLoadingSelected } =
@@ -130,42 +126,13 @@ export function PayoutTable({
       },
       {
         accessorKey: "amount",
-        header: () => (
-          <div className="text-right">
-            {t("payouts.table.amount", "Amount")}
-          </div>
-        ),
-        meta: { sortKey: "amount" },
+        header: t("payouts.table.amount", "Amount"),
+        meta: { sortKey: "amount", headerClassName: "!text-right" },
         cell: ({ row }) => (
           <div className="font-semibold text-right">
             {formatCurrency(row.original.amount)}
           </div>
         ),
-      },
-      {
-        id: "admin_notes",
-        header: "",
-        cell: ({ row }) =>
-          row.original.admin_notes ? (
-            <div className="flex justify-center">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setAdminNotesContent(row.original.admin_notes!);
-                    }}
-                    className="text-orange-500 hover:text-orange-600 transition-colors"
-                  >
-                    <WarningCircleIcon weight="duotone" className="w-5 h-5" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {t("common.adminNotes", "Admin Notes")}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          ) : null,
       },
       {
         id: "actions",
@@ -193,30 +160,11 @@ export function PayoutTable({
         ),
       },
     ],
-    [t, locale, setAdminNotesContent, router],
+    [t, locale, router],
   );
 
   return (
     <>
-      <Dialog
-        open={adminNotesContent !== null}
-        onOpenChange={(open) => {
-          if (!open) setAdminNotesContent(null);
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-orange-600">
-              <WarningCircleIcon weight="fill" className="w-5 h-5" />
-              {t("common.adminNotes", "Admin Notes")}
-            </DialogTitle>
-            <DialogDescription className="text-gray-700 pt-2">
-              {adminNotesContent}
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-
       {/* Payout Detail Dialog */}
       <Dialog
         open={selectedPayoutId !== null}
@@ -239,26 +187,13 @@ export function PayoutTable({
             </div>
           ) : selectedPayout ? (
             <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">
-                    {t("payouts.table.requestNumber", "Request #")}
-                  </p>
-                  <p className="font-medium text-gray-900">
-                    {selectedPayout.request_number}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">
-                    {t("payouts.table.status", "Status")}
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className={`${getStatusColor(selectedPayout.status)} border-0 px-2.5 py-0.5 capitalize`}
-                  >
-                    {t(`payouts.status.${selectedPayout.status}`, selectedPayout.status)}
-                  </Badge>
-                </div>
+              <div>
+                <p className="text-sm text-gray-500">
+                  {t("payouts.table.requestNumber", "Request #")}
+                </p>
+                <p className="font-medium text-gray-900">
+                  {selectedPayout.request_number}
+                </p>
               </div>
 
               <div>
@@ -277,6 +212,18 @@ export function PayoutTable({
                 <p className="font-semibold text-gray-900">
                   {formatCurrency(selectedPayout.amount)}
                 </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">
+                  {t("payouts.table.status", "Status")}
+                </p>
+                <Badge
+                  variant="outline"
+                  className={`${getStatusColor(selectedPayout.status)} border-0 px-2.5 py-0.5 capitalize`}
+                >
+                  {t(`payouts.status.${selectedPayout.status}`, selectedPayout.status)}
+                </Badge>
               </div>
 
               <div>
