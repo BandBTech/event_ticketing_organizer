@@ -1202,6 +1202,7 @@
     "on_sale": "On Sale",
     "pending": "Pending",
     "rejected": "Rejected",
+    "sales_end": "Sales Ended",
     "sales_upcoming": "Sales Upcoming",
     "scheduled": "Scheduled"
   }

@@ -1085,6 +1085,7 @@
     "on_sale": "In Vendita",
     "pending": "In attesa",
     "rejected": "Rifiutato",
+    "sales_end": "Vendite Finite",
     "sales_upcoming": "Vendite Future",
     "scheduled": "Programmato"
   }
