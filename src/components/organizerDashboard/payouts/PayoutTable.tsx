@@ -227,7 +227,7 @@ export function PayoutTable({
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 wrap-break-word">
                   {t("payouts.table.description", "Description")}
                 </p>
                 <p className="text-gray-700 pt-1">
@@ -241,11 +241,11 @@ export function PayoutTable({
                   <p className="text-sm text-gray-500 flex items-center gap-1">
                     <WarningCircleIcon
                       weight="fill"
-                      className="w-4 h-4 text-orange-500"
+                      className="w-4 h-4 text-orange-500 wrap-break-word"
                     />
                     {t("common.adminNotes", "Admin Notes")}
                   </p>
-                  <p className="text-gray-700 pt-1">
+                  <p className="text-gray-700 pt-1 ">
                     {selectedPayout.admin_notes}
                   </p>
                 </div>
