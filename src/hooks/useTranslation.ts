@@ -1,49 +1,31 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useLanguageStore } from '@/store/languageStore';
+import en from '../../messages/en.json';
+import ja from '../../messages/ja.json';
+import it from '../../messages/it.json';
 
 type Locale = 'en' | 'ja' | 'it';
 
 interface TranslationMessages {
-  [key: string]: string | TranslationMessages;
+  [key: string]: any;
 }
 
-const translations: Record<Locale, () => Promise<TranslationMessages>> = {
-  en: () => import('../../messages/en.json').then(m => m.default),
-  ja: () => import('../../messages/ja.json').then(m => m.default),
-  it: () => import('../../messages/it.json').then(m => m.default),
+const messagesMap: Record<Locale, TranslationMessages> = {
+  en,
+  ja,
+  it,
 };
-
-import { useLanguageStore } from '@/store/languageStore';
 
 export function useTranslation(localeOverride?: Locale) {
   const { locale: storeLocale } = useLanguageStore();
   const locale = localeOverride || storeLocale || 'ja';
-
-  const [messages, setMessages] = useState<TranslationMessages>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadMessages = async () => {
-      setIsLoading(true);
-      try {
-        const msgs = await translations[locale]();
-        setMessages(msgs);
-      } catch {
-        // Fallback to English
-        const fallback = await translations.en();
-        setMessages(fallback);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMessages();
-  }, [locale]);
+  const messages = messagesMap[locale as Locale] || messagesMap['ja'];
 
   const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: string | TranslationMessages = messages;
+    let value: any = messages;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
@@ -65,7 +47,7 @@ export function useTranslation(localeOverride?: Locale) {
     return result;
   }, [messages]);
 
-  return { t, isLoading, locale };
+  return { t, isLoading: false, locale };
 }
 
 export const locales: Locale[] = ['en', 'ja', 'it'];
