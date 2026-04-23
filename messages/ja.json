@@ -156,7 +156,8 @@
       "approved": "承認済み",
       "rejected": "却下",
       "paid": "支払い済み",
-      "processing": "処理中"
+      "processing": "処理中",
+      "cancelled": "キャンセル済み"
     },
     "type": {
       "event_payout": "Event Payout",

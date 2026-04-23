@@ -163,7 +163,8 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "paid": "Paid",
-      "processing": "Processing"
+      "processing": "Processing",
+      "cancelled": "Cancelled"
     },
     "type": {
       "event_payout": "Event Payout",

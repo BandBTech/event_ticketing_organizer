@@ -12,9 +12,16 @@ import {
   ArrowSquareOutIcon,
 } from "@phosphor-icons/react";
 import { format } from "date-fns";
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -34,6 +41,7 @@ const statusStyles: Record<StatusKey, string> = {
   rejected: "bg-red-100 text-red-800",
   pending: "bg-yellow-100 text-yellow-800",
   processing: "bg-indigo-100 text-indigo-800",
+  cancelled: "bg-gray-100 text-gray-800",
 };
 
 const InfoRow = ({
@@ -69,6 +77,7 @@ export default function PayoutDetailPage() {
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const [selectedPayment, setSelectedPayment] = useState<PayoutPaymentHistory | null>(null);
 
   const paymentHistoryColumns: ColumnDef<PayoutPaymentHistory>[] = [
     {
@@ -103,15 +112,6 @@ export default function PayoutDetailPage() {
       header: t("payouts.history.processedBy", "Processed By"),
       cell: ({ row }) => (
         <span className="text-gray-700">{row.original.processed_by || "-"}</span>
-      ),
-    },
-    {
-      id: "notes",
-      header: t("payouts.history.notes", "Notes"),
-      cell: ({ row }) => (
-        <span className="text-gray-500 text-sm max-w-[200px] truncate block">
-          {row.original.notes || "-"}
-        </span>
       ),
     },
     {
@@ -391,9 +391,96 @@ export default function PayoutDetailPage() {
                   hasNextPage={false}
                   hasPreviousPage={false}
                   onPageChange={() => {}}
+                  onRowClick={(row) => setSelectedPayment(row)}
                 />
               </motion.div>
             )}
+
+            {/* Payment Detail Modal */}
+            <Dialog
+              open={selectedPayment !== null}
+              onOpenChange={(open) => { if (!open) setSelectedPayment(null); }}
+            >
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="text-xl">
+                    {t("payouts.history.paymentDetails", "Payment Details")}
+                  </DialogTitle>
+                </DialogHeader>
+                {selectedPayment && (
+                  <div className="space-y-4 py-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.amount", "Amount")}</p>
+                        <p className="font-semibold text-emerald-600 text-lg">
+                          +{formatCurrency(selectedPayment.amount)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.method", "Method")}</p>
+                        <p className="font-medium text-gray-900 capitalize">
+                          {selectedPayment.payment_method || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.date", "Payment Date")}</p>
+                        <p className="font-medium text-gray-900">
+                          {format(new Date(selectedPayment.payment_date), "MMM d, yyyy")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.processedBy", "Processed By")}</p>
+                        <p className="font-medium text-gray-900">
+                          {selectedPayment.processed_by || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {selectedPayment.payment_ref && (
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.reference", "Reference")}</p>
+                        <p className="font-mono text-blue-600 font-medium">
+                          {selectedPayment.payment_ref}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedPayment.notes && (
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.notes", "Notes")}</p>
+                        <p className="text-gray-700 pt-1 wrap-anywhere">
+                          {selectedPayment.notes}
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedPayment.screenshot_url && (
+                      <div>
+                        <p className="text-sm text-gray-500">{t("payouts.history.receipt", "Receipt")}</p>
+                        <a
+                          href={selectedPayment.screenshot_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-indigo-500 hover:text-indigo-700 transition-colors mt-1"
+                        >
+                          <ArrowSquareOutIcon className="w-4 h-4" />
+                          {t("payouts.history.viewReceipt", "View Receipt")}
+                        </a>
+                      </div>
+                    )}
+
+                    <div className="pt-2 border-t border-gray-100">
+                      <p className="text-xs text-gray-400">
+                        {t("payouts.created", "Created")}: {format(new Date(selectedPayment.created_at), "MMM d, yyyy 'at' h:mm a")}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         </ProtectedRoute>
       </DashboardLayout>

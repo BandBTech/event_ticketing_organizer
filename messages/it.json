@@ -156,7 +156,8 @@
       "approved": "Approvato",
       "rejected": "Respinto",
       "paid": "Pagato",
-      "processing": "In elaborazione"
+      "processing": "In elaborazione",
+      "cancelled": "Annullato"
     },
     "type": {
       "event_payout": "Event Payout",
