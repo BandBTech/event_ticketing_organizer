@@ -146,7 +146,10 @@ export function PayoutTable({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push({ pathname: "/organizerDashboard/payouts/detail", query: { id: row.original.id } });
+                    router.push({
+                      pathname: "/organizerDashboard/payouts/detail",
+                      query: { id: row.original.id },
+                    });
                   }}
                   className="text-gray-400 hover:text-indigo-600 transition-colors"
                   title={t("common.viewDetail", "View Detail")}
@@ -224,7 +227,10 @@ export function PayoutTable({
                   variant="outline"
                   className={`${getStatusColor(selectedPayout.status)} border-0 px-2.5 py-0.5 capitalize`}
                 >
-                  {t(`payouts.status.${selectedPayout.status}`, selectedPayout.status)}
+                  {t(
+                    `payouts.status.${selectedPayout.status}`,
+                    selectedPayout.status,
+                  )}
                 </Badge>
               </div>
 
@@ -232,7 +238,7 @@ export function PayoutTable({
                 <p className="text-sm text-gray-500">
                   {t("payouts.table.description", "Description")}
                 </p>
-                <p className="text-gray-700 pt-1 wrap-anywhere">
+                <p className="text-gray-700 pt-1 wrap-anywhere max-w-[464px]">
                   {selectedPayout.description ||
                     t("common.noDescription", "No description provided")}
                 </p>
@@ -243,11 +249,11 @@ export function PayoutTable({
                   <p className="text-sm text-gray-500 flex items-center gap-1">
                     <WarningCircleIcon
                       weight="fill"
-                      className="w-4 h-4 text-orange-500 wrap-anywhere"
+                      className="w-4 h-4 text-orange-500"
                     />
                     {t("common.adminNotes", "Admin Notes")}
                   </p>
-                  <p className="text-gray-700 pt-1 ">
+                  <p className="text-gray-700 pt-1  wrap-anywhere max-w-[464px]">
                     {selectedPayout.admin_notes}
                   </p>
                 </div>
@@ -289,6 +295,7 @@ export function PayoutTable({
       </Dialog>
 
       <ReusableTable
+        wrapperClassName="flex-1 min-h-0 overflow-auto"
         columns={columns}
         data={payouts}
         isLoading={isLoading}

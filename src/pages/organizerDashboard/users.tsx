@@ -224,7 +224,7 @@ function UsersPageContent() {
     );
 
   return (
-    <div className="flex-1 min-=w-0 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col">
+    <div className="flex-1 min-w-0 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col overflow-hidden">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -248,7 +248,7 @@ function UsersPageContent() {
         </PermissionGuard>
       </div>
 
-      <div className="glass-card-lowest rounded-2xl flex-1 flex flex-col">
+      <div className="glass-card-lowest rounded-2xl flex-1 min-h-0 flex flex-col">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-4 min-w-0">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -314,7 +314,7 @@ function UsersPageContent() {
         </div>
 
         <ReusableTable
-          wrapperClassName="md:max-h-[calc(100vh-327px)] overflow-auto"
+          wrapperClassName="flex-1 min-h-0 overflow-auto"
           columns={columns}
           data={users}
           isLoading={isUsersLoading}

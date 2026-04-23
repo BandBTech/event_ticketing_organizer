@@ -33,7 +33,13 @@ import { formatCurrency, formatDateTimeLong } from "@/lib/utils";
 import { ReusableTable } from "@/components/organizerDashboard/ReusableTable";
 import Head from "next/head";
 
-type StatusKey = "approved" | "paid" | "rejected" | "pending" | "processing" | string;
+type StatusKey =
+  | "approved"
+  | "paid"
+  | "rejected"
+  | "pending"
+  | "processing"
+  | string;
 
 const statusStyles: Record<StatusKey, string> = {
   approved: "bg-green-100 text-green-800",
@@ -57,8 +63,12 @@ const InfoRow = ({
   const { t } = useTranslation(locale);
   return (
     <div className="flex items-start justify-between py-3 border-b border-slate-100 last:border-0">
-      <span className="text-sm text-slate-500 font-medium min-w-[160px]">{label}</span>
-      <span className={`text-sm text-slate-800 text-right ${mono ? "font-mono" : "font-medium"}`}>
+      <span className="text-sm text-slate-500 font-medium min-w-[160px]">
+        {label}
+      </span>
+      <span
+        className={`text-sm text-slate-800 text-right ${mono ? "font-mono" : "font-medium"}`}
+      >
         {value ?? t("common.notSpecified", "N/A")}
       </span>
     </div>
@@ -77,7 +87,8 @@ export default function PayoutDetailPage() {
 
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const [selectedPayment, setSelectedPayment] = useState<PayoutPaymentHistory | null>(null);
+  const [selectedPayment, setSelectedPayment] =
+    useState<PayoutPaymentHistory | null>(null);
 
   const paymentHistoryColumns: ColumnDef<PayoutPaymentHistory>[] = [
     {
@@ -111,7 +122,9 @@ export default function PayoutDetailPage() {
       accessorKey: "processed_by",
       header: t("payouts.history.processedBy", "Processed By"),
       cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.processed_by || "-"}</span>
+        <span className="text-gray-700">
+          {row.original.processed_by || "-"}
+        </span>
       ),
     },
     {
@@ -144,31 +157,43 @@ export default function PayoutDetailPage() {
 
   const statCards = [
     {
-      icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" weight="duotone" />,
+      icon: (
+        <CurrencyDollarIcon className="w-6 h-6 text-primary" weight="duotone" />
+      ),
       label: t("payouts.totalBilled", "Total Billed"),
-      value: isLoading ? null : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0),
+      value: isLoading
+        ? null
+        : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0),
     },
     {
-      icon: <CheckCircleIcon className="w-6 h-6 text-primary" weight="duotone" />,
+      icon: (
+        <CheckCircleIcon className="w-6 h-6 text-primary" weight="duotone" />
+      ),
       label: t("payouts.paid", "Total Paid"),
       value: isLoading ? null : formatCurrency(billSummary?.total_paid ?? 0),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.remaining", "Remaining"),
-      value: isLoading ? null : formatCurrency(billSummary?.remaining_amount ?? 0),
+      value: isLoading
+        ? null
+        : formatCurrency(billSummary?.remaining_amount ?? 0),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.pending", "Pending"),
-      value: isLoading ? null : formatCurrency(billSummary?.pending_amount ?? 0),
+      value: isLoading
+        ? null
+        : formatCurrency(billSummary?.pending_amount ?? 0),
     },
   ];
 
   return (
     <>
       <Head>
-        <title>{t("payouts.payoutDetails", "Payout Details")} | Organizer Dashboard</title>
+        <title>
+          {t("payouts.payoutDetails", "Payout Details")} | Organizer Dashboard
+        </title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
@@ -182,7 +207,9 @@ export default function PayoutDetailPage() {
                 weight="duotone"
                 className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
               />
-              <span className="font-medium">{t("payouts.title", "Payout Requests")}</span>
+              <span className="font-medium">
+                {t("payouts.title", "Payout Requests")}
+              </span>
             </button>
 
             {/* Header Card */}
@@ -194,7 +221,10 @@ export default function PayoutDetailPage() {
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                    <FileTextIcon className="w-[26px] h-[26px] text-indigo-500" weight="duotone" />
+                    <FileTextIcon
+                      className="w-[26px] h-[26px] text-indigo-500"
+                      weight="duotone"
+                    />
                   </div>
                   <div>
                     <p className="text-xs text-slate-400 font-semibold uppercase tracking-widest mb-0.5">
@@ -218,7 +248,10 @@ export default function PayoutDetailPage() {
                       "bg-slate-100 text-slate-600"
                     }
                   >
-                    {t(`payouts.status.${payoutData?.status}`, payoutData?.status)}
+                    {t(
+                      `payouts.status.${payoutData?.status}`,
+                      payoutData?.status,
+                    )}
                   </Badge>
                 )}
               </div>
@@ -241,7 +274,10 @@ export default function PayoutDetailPage() {
                   </div>
                   {payoutData?.event?.status && (
                     <Badge className="bg-slate-100 text-slate-600 capitalize flex-shrink-0">
-                      {t(`event.badge.${payoutData.event.status}`, payoutData.event.status)}
+                      {t(
+                        `event.badge.${payoutData.event.status}`,
+                        payoutData.event.status,
+                      )}
                     </Badge>
                   )}
                 </div>
@@ -261,7 +297,9 @@ export default function PayoutDetailPage() {
                     className="@container/card p-2.5 rounded-2xl glass-card-lowest transition-all"
                   >
                     <div className="flex gap-3 items-center @max-[180px]/card:flex-col @max-[180px]/card:items-start">
-                      <div className="p-4 rounded-lg bg-primary/10">{card.icon}</div>
+                      <div className="p-4 rounded-lg bg-primary/10">
+                        {card.icon}
+                      </div>
                       <div>
                         <p className="text-sm text-gray-500">{card.label}</p>
                         {card.value === null ? (
@@ -287,17 +325,31 @@ export default function PayoutDetailPage() {
             >
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <SectionTitle>{t("payouts.requestDetails", "Request Details")}</SectionTitle>
+                  <SectionTitle>
+                    {t("payouts.requestDetails", "Request Details")}
+                  </SectionTitle>
                   <InfoRow
                     label={t("payouts.table.requestNumber", "Request #")}
-                    value={<span className="font-mono">{payoutData?.request_number}</span>}
+                    value={
+                      <span className="font-mono">
+                        {payoutData?.request_number}
+                      </span>
+                    }
                   />
                   <InfoRow
                     label={t("payouts.table.status", "Status")}
                     value={
                       payoutData?.status ? (
-                        <Badge className={statusStyles[payoutData.status] ?? "bg-slate-100 text-slate-600"}>
-                          {t(`payouts.status.${payoutData.status}`, payoutData.status)}
+                        <Badge
+                          className={
+                            statusStyles[payoutData.status] ??
+                            "bg-slate-100 text-slate-600"
+                          }
+                        >
+                          {t(
+                            `payouts.status.${payoutData.status}`,
+                            payoutData.status,
+                          )}
                         </Badge>
                       ) : null
                     }
@@ -312,7 +364,9 @@ export default function PayoutDetailPage() {
                   />
                 </div>
                 <div>
-                  <SectionTitle>{t("payouts.billSummary", "Bill Summary")}</SectionTitle>
+                  <SectionTitle>
+                    {t("payouts.billSummary", "Bill Summary")}
+                  </SectionTitle>
                   <InfoRow
                     label={t("payouts.totalBilled", "Total Billed")}
                     value={formatCurrency(billSummary?.total_billed ?? 0)}
@@ -340,7 +394,10 @@ export default function PayoutDetailPage() {
                   {billSummary?.last_payment_date && (
                     <InfoRow
                       label={t("payouts.lastPayment", "Last Payment")}
-                      value={formatDateTimeLong(billSummary.last_payment_date, locale)}
+                      value={formatDateTimeLong(
+                        billSummary.last_payment_date,
+                        locale,
+                      )}
                     />
                   )}
                 </div>
@@ -350,8 +407,12 @@ export default function PayoutDetailPage() {
                 <>
                   <div className="border-t border-slate-100" />
                   <div>
-                    <SectionTitle>{t("payouts.table.description", "Description")}</SectionTitle>
-                    <p className="text-sm text-slate-700 leading-relaxed">{payoutData.description}</p>
+                    <SectionTitle>
+                      {t("payouts.table.description", "Description")}
+                    </SectionTitle>
+                    <p className="text-sm text-slate-700 leading-relaxed">
+                      {payoutData.description}
+                    </p>
                   </div>
                 </>
               )}
@@ -360,10 +421,17 @@ export default function PayoutDetailPage() {
                 <>
                   <div className="border-t border-slate-100" />
                   <div>
-                    <SectionTitle>{t("common.adminNotes", "Admin Notes")}</SectionTitle>
+                    <SectionTitle>
+                      {t("common.adminNotes", "Admin Notes")}
+                    </SectionTitle>
                     <div className="flex items-start gap-2 bg-orange-50 rounded-xl p-4">
-                      <WarningCircleIcon weight="fill" className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-slate-700">{payoutData.admin_notes}</p>
+                      <WarningCircleIcon
+                        weight="fill"
+                        className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5"
+                      />
+                      <p className="text-sm text-slate-700">
+                        {payoutData.admin_notes}
+                      </p>
                     </div>
                   </div>
                 </>
@@ -379,7 +447,9 @@ export default function PayoutDetailPage() {
                 className="glass-card-lowest rounded-2xl overflow-hidden"
               >
                 <div className="px-6 pt-5 pb-2">
-                  <SectionTitle>{t("payouts.paymentHistory", "Payment History")}</SectionTitle>
+                  <SectionTitle>
+                    {t("payouts.paymentHistory", "Payment History")}
+                  </SectionTitle>
                 </div>
                 <ReusableTable
                   columns={paymentHistoryColumns}
@@ -399,7 +469,9 @@ export default function PayoutDetailPage() {
             {/* Payment Detail Modal */}
             <Dialog
               open={selectedPayment !== null}
-              onOpenChange={(open) => { if (!open) setSelectedPayment(null); }}
+              onOpenChange={(open) => {
+                if (!open) setSelectedPayment(null);
+              }}
             >
               <DialogContent className="max-w-lg">
                 <DialogHeader>
@@ -411,13 +483,17 @@ export default function PayoutDetailPage() {
                   <div className="space-y-4 py-2">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.amount", "Amount")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.amount", "Amount")}
+                        </p>
                         <p className="font-semibold text-emerald-600 text-lg">
                           +{formatCurrency(selectedPayment.amount)}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.method", "Method")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.method", "Method")}
+                        </p>
                         <p className="font-medium text-gray-900 capitalize">
                           {selectedPayment.payment_method || "—"}
                         </p>
@@ -426,13 +502,20 @@ export default function PayoutDetailPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.date", "Payment Date")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.date", "Payment Date")}
+                        </p>
                         <p className="font-medium text-gray-900">
-                          {format(new Date(selectedPayment.payment_date), "MMM d, yyyy")}
+                          {format(
+                            new Date(selectedPayment.payment_date),
+                            "MMM d, yyyy",
+                          )}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.processedBy", "Processed By")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.processedBy", "Processed By")}
+                        </p>
                         <p className="font-medium text-gray-900">
                           {selectedPayment.processed_by || "—"}
                         </p>
@@ -441,7 +524,9 @@ export default function PayoutDetailPage() {
 
                     {selectedPayment.payment_ref && (
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.reference", "Reference")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.reference", "Reference")}
+                        </p>
                         <p className="font-mono text-blue-600 font-medium">
                           {selectedPayment.payment_ref}
                         </p>
@@ -450,8 +535,10 @@ export default function PayoutDetailPage() {
 
                     {selectedPayment.notes && (
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.notes", "Notes")}</p>
-                        <p className="text-gray-700 pt-1 wrap-anywhere">
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.notes", "Notes")}
+                        </p>
+                        <p className="text-gray-700 pt-1 wrap-anywhere max-w-[464px]">
                           {selectedPayment.notes}
                         </p>
                       </div>
@@ -459,7 +546,9 @@ export default function PayoutDetailPage() {
 
                     {selectedPayment.screenshot_url && (
                       <div>
-                        <p className="text-sm text-gray-500">{t("payouts.history.receipt", "Receipt")}</p>
+                        <p className="text-sm text-gray-500">
+                          {t("payouts.history.receipt", "Receipt")}
+                        </p>
                         <a
                           href={selectedPayment.screenshot_url}
                           target="_blank"
@@ -474,7 +563,11 @@ export default function PayoutDetailPage() {
 
                     <div className="pt-2 border-t border-gray-100">
                       <p className="text-xs text-gray-400">
-                        {t("payouts.created", "Created")}: {format(new Date(selectedPayment.created_at), "MMM d, yyyy 'at' h:mm a")}
+                        {t("payouts.created", "Created")}:{" "}
+                        {format(
+                          new Date(selectedPayment.created_at),
+                          "MMM d, yyyy 'at' h:mm a",
+                        )}
                       </p>
                     </div>
                   </div>

@@ -406,3 +406,9 @@ button {
     /* rounded-xl */
   }
 }
+
+@media (min-height: 720px) {
+  .scrollable-height {
+    min-height: 0;
+  }
+}

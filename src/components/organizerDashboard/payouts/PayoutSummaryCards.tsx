@@ -77,7 +77,7 @@ export function PayoutSummaryCards({
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @2xl:grid-cols-4 gap-4">
         {cards.map((card, i) => (
           <motion.div
             key={i}
@@ -87,7 +87,7 @@ export function PayoutSummaryCards({
             whileHover={{ scale: 1.03 }}
             className={`@container/card p-2.5 rounded-2xl glass-card-lowest transition-all`}
           >
-            <div className="flex gap-3 items-center @max-[180px]/card:flex-col @max-[180px]/card:items-start">
+            <div className="flex gap-3 items-center @max-[220px]/card:flex-col @max-[220px]/card:items-start">
               <div className="p-4 rounded-lg bg-primary/10 ">{card.icon}</div>
               <div>
                 <p className="text-sm text-gray-500">{card.label}</p>

@@ -123,10 +123,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
       0);
 
   // Check if all ticket tiers have 0 sales
-  const hasZeroTicketSales = useMemo(() => {
-    if (!event.tiers || event.tiers.length === 0) return true;
-    return event.tiers.every((tier) => !tier.sold || tier.sold === 0);
-  }, [event.tiers]);
+  // const hasZeroTicketSales = useMemo(() => {
+  //   if (!event.tiers || event.tiers.length === 0) return true;
+  //   return event.tiers.every((tier) => !tier.sold || tier.sold === 0);
+  // }, [event.tiers]);
 
   const salesControlMutation = useMutation({
     mutationFn: ({
@@ -347,8 +347,15 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
               )}
               {/* {!isEventCancelled && event.status !== "rejected" && event.status !== "completed" && event.status !== "active" && ( */}
               {!isEventCancelled &&
-                ["pending", "scheduled"].includes(event.status) &&
-                hasZeroTicketSales && (
+                [
+                  "pending",
+                  "scheduled",
+                  "on_sale",
+                  "on_hold",
+                  "sales_upcoming",
+                  "sales_ended",
+                ].includes(event.status) && (
+                  // hasZeroTicketSales && (
                   <Button
                     onClick={() => setCancelDialogOpen(true)}
                     variant="destructive"

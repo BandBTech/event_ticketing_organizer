@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -36,25 +37,36 @@ export function TierDetailModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 pt-2">
+        <div className="space-y-5 pt-2 overflow-y-auto">
           <div>
-            <label className="text-sm font-medium text-gray-500">{t("tierTemplates.columns.templateName", "Tier Template Name")}</label>
-            <p className="text-gray-900 font-medium  break-all">{template.template_name}</p>
+            <label className="text-sm font-medium text-gray-500">
+              {t("tierTemplates.columns.templateName", "Tier Template Name")}
+            </label>
+            <p className="text-gray-900 font-medium max-w-[464px] wrap-anywhere">
+              {template.template_name}
+            </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-500">{t("tierTemplates.columns.description", "Description")}</label>
-            <p className="text-gray-900 ">{template.description || "-"}</p>
+            <label className="text-sm font-medium text-gray-500">
+              {t("tierTemplates.columns.description", "Description")}
+            </label>
+            <p className="text-gray-900 max-w-[464px] wrap-anywhere">
+              {template.description || "-"}
+            </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-500">{t("tierTemplates.columns.status", "Status")}</label>
+            <label className="text-sm font-medium text-gray-500">
+              {t("tierTemplates.columns.status", "Status")}
+            </label>
             <div className="">
               <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${template.is_active
-                  ? "bg-emerald-400 text-white"
-                  : "bg-gray-400 text-white"
-                  }`}
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  template.is_active
+                    ? "bg-emerald-400 text-white"
+                    : "bg-gray-400 text-white"
+                }`}
               >
                 {template.is_active ? "Active" : "Inactive"}
               </span>
@@ -62,20 +74,25 @@ export function TierDetailModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-500">{t("common.createdAt", "Created At")}</label>
+            <label className="text-sm font-medium text-gray-500">
+              {t("common.createdAt", "Created At")}
+            </label>
             <p className="text-gray-900 ">
               {formatDateTimeLong(template.created_at)}
             </p>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-500">{t("common.updatedAt", "Last Updated")}</label>
+            <label className="text-sm font-medium text-gray-500">
+              {t("common.updatedAt", "Last Updated")}
+            </label>
             <p className="text-gray-900 ">
               {formatDateTimeLong(template.updated_at)}
             </p>
           </div>
-
-          <div className="flex gap-3 pt-4 border-t justify-end">
+        </div>
+        <DialogFooter>
+          <div className="flex w-full gap-3 pt-4 border-t justify-end">
             <Button
               variant="outline"
               onClick={() => {
@@ -95,7 +112,7 @@ export function TierDetailModal({
               {t("common.delete", "Delete")}
             </Button>
           </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
