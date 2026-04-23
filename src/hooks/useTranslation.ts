@@ -8,9 +8,9 @@ import it from '../../messages/it.json';
 
 type Locale = 'en' | 'ja' | 'it';
 
-interface TranslationMessages {
-  [key: string]: any;
-}
+type TranslationMessages = {
+  [key: string]: TranslationMessages | string;
+};
 
 const messagesMap: Record<Locale, TranslationMessages> = {
   en,
@@ -25,7 +25,7 @@ export function useTranslation(localeOverride?: Locale) {
 
   const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
-    let value: any = messages;
+    let value: TranslationMessages | string = messages;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
