@@ -172,9 +172,9 @@ export default function DashboardHeader() {
 
         <LanguageSelector />
 
-        <button className="flex items-center justify-center w-9 h-9 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+        {/*<button className="flex items-center justify-center w-9 h-9 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
           <BellIcon className="h-4 w-4 text-gray-700" />
-        </button>
+        </button>*/}
       </div>
     </div>
   );
