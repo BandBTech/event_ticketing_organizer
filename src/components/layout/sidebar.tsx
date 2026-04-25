@@ -36,8 +36,6 @@ const navLinks = [
   { href: "/staffDashboard", label: "Staff", icon: IdentificationBadgeIcon },
 ];
 
-
-
 import { useAuthStore } from "@/store/authStore";
 import { navigationGuard } from "@/store/navigationGuardStore";
 
@@ -69,24 +67,27 @@ export default function Sidebar({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.user-menu')) {
+      if (!target.closest(".user-menu")) {
         setOpenMenu(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   // Get user display name
-  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : "User";
+  const displayName = user
+    ? `${user.firstName} ${user.lastName}`.trim()
+    : "User";
   const displayEmail = user?.email || "";
   const displayLogo = user?.organization?.logo_url || "/john.jpg";
 
   return (
     <aside
-      className={`relative transition-all duration-300 ${showSidebar ? "w-56" : "w-20"
-        }  min-h-screen bg-white  border-r border-gray-200 flex flex-col`}
+      className={`relative transition-all duration-300 ${
+        showSidebar ? "w-56" : "w-20"
+      }  min-h-screen bg-white  border-r border-gray-200 flex flex-col`}
     >
       <div className="flex justify-between items-center px-4 py-6">
         {showSidebar ? (
@@ -123,10 +124,11 @@ export default function Sidebar({
             >
               <div
                 className={`group flex items-center gap-3 px-4 py-2 cursor-pointer transition-all
-                ${isActive
+                ${
+                  isActive
                     ? "border-l-2 border-blue-500 bg-blue-50 "
                     : "border-l-2 border-transparent hover:border-blue-600 hover:bg-blue-50 "
-                  }`}
+                }`}
               >
                 <Icon className="text-blue-600" size={25} />
                 {showSidebar && <span className="text-gray-700 ">{label}</span>}

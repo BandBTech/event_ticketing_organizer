@@ -157,22 +157,32 @@ export function AppSidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 md:relative flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${collapsed ? "w-20" : "w-56"
-          } ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        className={`fixed inset-y-0 left-0 z-50 md:relative flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
+          collapsed ? "w-20" : "w-56"
+        } ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Header with Logo and Collapse Button */}
         <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
           {collapsed ? (
             <div className="flex justify-center w-full">
-              <TicketIcon
-                size={28}
-                className="text-blue-600"
-                weight="duotone"
+              {/*<TicketIcon
+                          size={28}
+                          className="text-blue-600"
+                          weight="duotone"
+                        />*/}
+              <img
+                src="/timro-ticket-logo-collapsed.png"
+                alt="Timro-Ticket"
+                className="h-11"
               />
             </div>
           ) : (
             <>
-              <span className="text-xl font-bold text-blue-600">E-Ticket</span>
+              <img
+                src="/timro-ticket-logo.png"
+                alt="Timro-Ticket"
+                className="h-11"
+              />
               <button
                 onClick={onToggle}
                 className="hidden md:block p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
@@ -210,10 +220,11 @@ export function AppSidebar() {
                 onClick={() => setSidebarOpen(false)}
               >
                 <div
-                  className={`group flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all relative ${isActive
-                    ? "active-menu text-primary font-medium before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-primary before:shadow-md"
-                    : "hover:bg-gray-50 text-gray-700 hover:text-gray-900"
-                    } ${collapsed ? "justify-center" : ""}`}
+                  className={`group flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all relative ${
+                    isActive
+                      ? "active-menu text-primary font-medium before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[2px] before:bg-primary before:shadow-md"
+                      : "hover:bg-gray-50 text-gray-700 hover:text-gray-900"
+                  } ${collapsed ? "justify-center" : ""}`}
                 >
                   <Icon
                     className={`${isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-700"}`}
@@ -238,8 +249,9 @@ export function AppSidebar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div
-                className={`flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors ${collapsed ? "justify-center" : ""
-                  }`}
+                className={`flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors ${
+                  collapsed ? "justify-center" : ""
+                }`}
               >
                 <div className="relative w-9 h-9 shrink-0">
                   <Image
@@ -271,8 +283,6 @@ export function AppSidebar() {
               align="start"
               sideOffset={8}
             >
-
-
               {/* Profile */}
               <DropdownMenuItem
                 onClick={() => {
