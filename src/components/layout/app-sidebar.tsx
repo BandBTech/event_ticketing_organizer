@@ -170,19 +170,23 @@ export function AppSidebar() {
                           className="text-blue-600"
                           weight="duotone"
                         />*/}
-              <img
-                src="/timro-ticket-logo-collapsed.png"
-                alt="Timro-Ticket"
-                className="h-11"
-              />
+              <Link href="/organizerDashboard/">
+                <img
+                  src="/timro-ticket-logo-collapsed.png"
+                  alt="Timro-Ticket"
+                  className="h-11"
+                />
+              </Link>
             </div>
           ) : (
             <>
-              <img
-                src="/timro-ticket-logo.png"
-                alt="Timro-Ticket"
-                className="h-11"
-              />
+              <Link href="/">
+                <img
+                  src="/timro-ticket-logo.png"
+                  alt="Timro-Ticket"
+                  className="h-11"
+                />
+              </Link>
               <button
                 onClick={onToggle}
                 className="hidden md:block p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
