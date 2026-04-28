@@ -184,7 +184,7 @@ export function AppSidebar() {
                 <img
                   src="/timro-ticket-logo.png"
                   alt="Timro-Ticket"
-                  className="h-11"
+                  className="h-11 mr-0.5"
                 />
               </Link>
               <button

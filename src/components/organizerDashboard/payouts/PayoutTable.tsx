@@ -129,9 +129,9 @@ export function PayoutTable({
       {
         accessorKey: "amount",
         header: t("payouts.table.amount", "Amount"),
-        meta: { sortKey: "amount", headerClassName: "!text-right" },
+        meta: { sortKey: "amount", headerClassName: "!text-left" },
         cell: ({ row }) => (
-          <div className="font-semibold text-right">
+          <div className="font-semibold text-left">
             {formatCurrency(row.original.amount)}
           </div>
         ),
