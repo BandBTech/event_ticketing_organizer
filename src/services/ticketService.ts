@@ -107,6 +107,7 @@ export class TicketService {
       data || {},
       {
         requiresAuth: true,
+        showErrorToast: false,
       }
     );
   }
@@ -124,6 +125,7 @@ export class TicketService {
       data || {},
       {
         requiresAuth: true,
+        showErrorToast: false,
       }
     );
   }
@@ -239,6 +241,7 @@ export class TicketService {
       {
         requiresAuth: true,
         returnFullResponse: true,
+        showErrorToast: false,
       }
     );
   }
