@@ -172,7 +172,7 @@ class AuthService {
       last_name: userData.last_name,
       phone: userData.country_code && userData.phone ? userData.country_code + userData.phone : userData.phone,
       country_code: userData.country_code
-    });
+    }, { showErrorToast: false });
 
     return {
       user: response,
@@ -216,7 +216,7 @@ class AuthService {
       new_password: data.new_password,
       confirm_password: data.confirm_password,
       role: data.role || 'user'
-    });
+    }, { showErrorToast: false });
   }
 
   /**
@@ -264,7 +264,7 @@ class AuthService {
     return await api.post<{ message: string; success: boolean; expires_in: number }>('/auth/organizer/send-otp', {
       identifier: data.identifier,
       otp_type: data.otp_type,
-    });
+    }, { showErrorToast: false });
   }
 
   /**
@@ -282,7 +282,7 @@ class AuthService {
       otp_code: data.otp_code,
       otp_type: data.otp_type,
       role: data.role || 'user'
-    });
+    }, { showErrorToast: false });
   }
 
   /**
@@ -295,6 +295,7 @@ class AuthService {
   }): Promise<{ user: UserProfileResponse; message?: string }> {
     const response = await api.post<AuthApiResponse<UserProfileResponse>>('/auth/organizer/set-password', data, {
       returnFullResponse: true,
+      showErrorToast: false,
     });
 
     return {
