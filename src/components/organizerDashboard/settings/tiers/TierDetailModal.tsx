@@ -30,14 +30,14 @@ export function TierDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {t("tierTemplates.detailModal.title", "Tier Template Details")}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 pt-2 overflow-y-auto">
+        <div className="space-y-5 pt-2 overflow-y-auto flex-1 min-h-0">
           <div>
             <label className="text-sm font-medium text-gray-500">
               {t("tierTemplates.columns.templateName", "Tier Template Name")}

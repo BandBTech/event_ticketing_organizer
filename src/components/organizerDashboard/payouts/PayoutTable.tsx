@@ -177,21 +177,21 @@ export function PayoutTable({
           if (!open) setSelectedPayoutId(null);
         }}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-xl">
               {t("payouts.payoutDetails", "Payout Details")}
             </DialogTitle>
           </DialogHeader>
           {isLoadingSelected ? (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 overflow-y-auto flex-1 min-h-0">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-6 w-1/2" />
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-2/3" />
             </div>
           ) : selectedPayout ? (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <p className="text-sm text-gray-500">
                   {t("payouts.table.requestNumber", "Request #")}
