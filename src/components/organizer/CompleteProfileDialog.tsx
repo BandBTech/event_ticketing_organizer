@@ -22,12 +22,18 @@ import { OrganizerProfileFormValues } from "@/lib/validation";
 import { useUIStore } from "@/store/uiStore";
 
 export function CompleteProfileDialog() {
-  const { isOrganizerComplete, isAuthenticated, updateOrganizerProfile, hasRole } = useAuthStore();
+  const {
+    isOrganizerComplete,
+    isAuthenticated,
+    updateOrganizerProfile,
+    hasRole,
+  } = useAuthStore();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const { currency: storedCurrency } = useCurrencyStore();
   const [isOpen, setIsOpen] = useState(false);
-  const { showCompleteProfileDialog, setShowCompleteProfileDialog } = useUIStore();
+  const { showCompleteProfileDialog, setShowCompleteProfileDialog } =
+    useUIStore();
 
   const isOrganizer = hasRole("organizer");
 
@@ -45,7 +51,12 @@ export function CompleteProfileDialog() {
       localStorage.getItem("profile_popup_dismissed") === "true";
 
     // Only show if authenticated, user is an organizer (not staff/manager), profile is incomplete, and hasn't been dismissed
-    if (isAuthenticated && isOrganizer && isOrganizerComplete === false && !dismissed) {
+    if (
+      isAuthenticated &&
+      isOrganizer &&
+      isOrganizerComplete === false &&
+      !dismissed
+    ) {
       setIsOpen(true);
       // Mark as dismissed for this tab
       localStorage.setItem("profile_popup_dismissed", "true");
@@ -56,7 +67,13 @@ export function CompleteProfileDialog() {
   }, [isOrganizerComplete, isAuthenticated, isOrganizer]);
 
   const mutation = useMutation({
-    mutationFn: async ({ data, logo }: { data: OrganizerProfileFormValues; logo: File | null | undefined }) => {
+    mutationFn: async ({
+      data,
+      logo,
+    }: {
+      data: OrganizerProfileFormValues;
+      logo: File | null | undefined;
+    }) => {
       await updateOrganizerProfile({
         business_name: data.business_name,
         business_description: data.business_description,
@@ -64,17 +81,24 @@ export function CompleteProfileDialog() {
       });
     },
     onSuccess: () => {
-      toast.success("profile.toast.updateSuccess", "Profile updated successfully!");
+      toast.success(
+        "profile.toast.updateSuccess",
+        "Profile updated successfully!",
+      );
       setIsOpen(false);
     },
     onError: (error: unknown) => {
       console.error("Failed to update profile", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to update profile.";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update profile.";
       toast.error("profile.toast.updateError", errorMessage);
     },
   });
 
-  const handleSubmit = (data: OrganizerProfileFormValues, logo: File | null | undefined) => {
+  const handleSubmit = (
+    data: OrganizerProfileFormValues,
+    logo: File | null | undefined,
+  ) => {
     mutation.mutate({ data, logo });
   };
 
@@ -92,21 +116,21 @@ export function CompleteProfileDialog() {
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={handleOpenChange}
-    >
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-[500px] px-6">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold text-gray-900">
             {t("completeProfile.title", "Complete Your Organizer Profile")}
           </DialogTitle>
           <DialogDescription className="text-gray-600">
-            {t("completeProfile.description", "Please provide your business details to start creating events.")}
+            {t(
+              "completeProfile.description",
+              "Please provide your business details to start creating events.",
+            )}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="pt-4 max-h-[70vh] overflow-y-auto">
+        <div className="pt-4 max-h-[70vh] overflow-y-auto px-1 -mx-1">
           <OrganizerProfileForm
             isEditing={true}
             isPending={mutation.isPending}
@@ -135,11 +159,11 @@ export function CompleteProfileDialog() {
                 "bg-blue-600 hover:bg-blue-700 text-white",
                 "shadow-lg hover:shadow-xl",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
-                mutation.isPending && "animate-pulse"
+                mutation.isPending && "animate-pulse",
               )}
               onClick={() => {
                 // Trigger form submission programmatically
-                const form = document.querySelector('form');
+                const form = document.querySelector("form");
                 if (form) {
                   form.requestSubmit();
                 }
