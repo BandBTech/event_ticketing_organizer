@@ -14,7 +14,6 @@ import {
   HouseIcon,
   SignOutIcon,
   SpeedometerIcon,
-  TicketIcon,
   UserIcon,
   UsersIcon,
   WalletIcon,
@@ -272,9 +271,6 @@ export function AppSidebar() {
                       <span className="text-sm text-gray-800 font-medium truncate">
                         {displayName}
                       </span>
-                      <span className="text-xs text-gray-500 truncate">
-                        {displayEmail}
-                      </span>
                     </div>
                     <CaretRightIcon className="h-4 w-4 text-gray-400 shrink-0 ml-1" />
                   </div>
@@ -287,6 +283,25 @@ export function AppSidebar() {
               align="start"
               sideOffset={8}
             >
+              {/* User Info Header */}
+              <div className="flex items-center gap-3 px-3 py-3">
+                <div className="relative w-9 h-9 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
+                  <UserIcon
+                    weight="duotone"
+                    className="h-5 w-5 text-gray-600"
+                  />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm text-gray-800 font-medium truncate">
+                    {displayName}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate">
+                    {displayEmail}
+                  </span>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+
               {/* Profile */}
               <DropdownMenuItem
                 onClick={() => {
