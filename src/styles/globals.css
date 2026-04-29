@@ -407,7 +407,7 @@ button {
   }
 }
 
-@media (min-height: 720px) {
+@media (min-height: 640px) {
   .scrollable-height {
     min-height: 0;
   }
