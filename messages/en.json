@@ -57,6 +57,9 @@
     "status": "Status",
     "unknown": "Unknown",
     "allRoles": "All Roles",
+    "allStatuses": "All Statuses",
+    "active": "Active",
+    "inactive": "Inactive",
     "characters": "characters",
     "ticket": "ticket",
     "sold": "sold",
@@ -809,6 +812,7 @@
     },
     "search": "Search Users",
     "filterByRole": "Filter by role",
+    "filterByStatus": "Filter by status",
     "pageTitle": "Team Management",
     "pageSubtitle": "Manage your organization team and user access.",
     "validation": {
@@ -842,7 +846,13 @@
     "eventStatusOverview": "Event Status Overview",
     "failedToLoadData": "Failed to load dashboard data. Please try again.",
     "upcomingEvents": "Upcoming Events",
-    "noUpcomingEvents": "No upcoming events found."
+    "noUpcomingEvents": "No upcoming events found.",
+    "totalEventsOrganized": "Total Events Organized",
+    "totalRevenue": "Total Revenue",
+    "organizerEarnings": "Organizer Earnings",
+    "totalTicketsSold": "Total Tickets Sold",
+    "totalPendingAmount": "Total Pending Amount",
+    "totalAmountReceived": "Total Amount Received"
   },
   "All Statuses": "All Statuses",
   "Approved": "Approved",

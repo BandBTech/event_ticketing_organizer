@@ -50,6 +50,9 @@
     "status": "Stato",
     "unknown": "Sconosciuto",
     "allRoles": "Tutti i ruoli",
+    "allStatuses": "Tutti gli stati",
+    "active": "Attivo",
+    "inactive": "Inattivo",
     "characters": "caratteri",
     "ticket": "biglietto",
     "sold": "venduto",
@@ -702,6 +705,7 @@
     },
     "search": "Cerca Utenti",
     "filterByRole": "Filtra per ruolo",
+    "filterByStatus": "Filtra per stato",
     "pageTitle": "Gestione della squadra",
     "pageSubtitle": "Gestisci il team della tua organizzazione e l'accesso degli utenti.",
     "validation": {
@@ -735,7 +739,13 @@
     "eventStatusOverview": "Panoramica sullo stato degli eventi",
     "failedToLoadData": "Impossibile caricare i dati del dashboard. \nPer favore riprova.",
     "upcomingEvents": "Prossimi eventi",
-    "noUpcomingEvents": "Nessun evento imminente trovato."
+    "noUpcomingEvents": "Nessun evento imminente trovato.",
+    "totalEventsOrganized": "Totale eventi organizzati",
+    "totalRevenue": "Entrate totali",
+    "organizerEarnings": "Guadagni organizzatore",
+    "totalTicketsSold": "Biglietti totali venduti",
+    "totalPendingAmount": "Importo totale in sospeso",
+    "totalAmountReceived": "Importo totale ricevuto"
   },
   "All Statuses": "Tutti gli stati",
   "Approved": "Approvato",

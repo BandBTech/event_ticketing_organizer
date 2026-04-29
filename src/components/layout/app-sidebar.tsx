@@ -156,7 +156,7 @@ export function AppSidebar() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 md:relative flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 md:relative flex flex-col h-dvh bg-white border-r border-gray-200 transition-all duration-300 ${
           collapsed ? "w-20" : "w-56"
         } ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >

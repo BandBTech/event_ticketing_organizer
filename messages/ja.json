@@ -50,6 +50,9 @@
     "status": "状態",
     "unknown": "未知",
     "allRoles": "すべての役割",
+    "allStatuses": "すべてのステータス",
+    "active": "有効",
+    "inactive": "無効",
     "characters": "キャラクター",
     "ticket": "チケット",
     "sold": "売られた",
@@ -698,6 +701,7 @@
     },
     "search": "ユーザーを検索",
     "filterByRole": "役割でフィルタリングする",
+    "filterByStatus": "ステータスでフィルタリングする",
     "pageTitle": "チームマネジメント",
     "pageSubtitle": "組織のチームとユーザーのアクセスを管理します。",
     "validation": {
@@ -731,7 +735,13 @@
     "eventStatusOverview": "イベントステータスの概要",
     "failedToLoadData": "ダッシュボードデータのロードに失敗しました。\nもう一度試してください。",
     "upcomingEvents": "今後のイベント",
-    "noUpcomingEvents": "今後のイベントは見つかりませんでした。"
+    "noUpcomingEvents": "今後のイベントは見つかりませんでした。",
+    "totalEventsOrganized": "総イベント数",
+    "totalRevenue": "総収益",
+    "organizerEarnings": "主催者の収益",
+    "totalTicketsSold": "販売済みチケット総数",
+    "totalPendingAmount": "保留中の合計金額",
+    "totalAmountReceived": "受領済み合計金額"
   },
   "All Statuses": "すべてのステータス",
   "Approved": "承認された",

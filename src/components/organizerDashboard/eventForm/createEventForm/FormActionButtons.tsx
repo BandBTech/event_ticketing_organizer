@@ -27,7 +27,7 @@ export function FormActionButtons({
   return (
     <div className="flex justify-between items-center gap-3">
       <Button type="button" variant="outline" onClick={onCancel}>
-        {t("common.button.cancel", "Cancel")}
+        {t("common.cancel", "Cancel")}
       </Button>
       <div className="flex gap-3">
         <Button

@@ -33,37 +33,37 @@ export default function DashboardHome() {
   const statCards = [
     {
       icon: <CalendarCheckIcon className="w-10 h-10 text-yellow-500" />,
-      label: "Total Events Organized",
+      label: t("dashboard.totalEventsOrganized", "Total Events Organized"),
       value: stats.events.total,
       gradient: "from-yellow-50 to-white",
     },
     {
       icon: <CurrencyDollarIcon className="w-10 h-10 text-green-500" />,
-      label: "Total Revenue",
+      label: t("dashboard.totalRevenue", "Total Revenue"),
       value: formatCurrency(stats.totalRevenue),
       gradient: "from-green-50 to-white",
     },
     {
       icon: <MoneyIcon className="w-10 h-10 text-emerald-600" />,
-      label: "Organizer Earnings",
+      label: t("dashboard.organizerEarnings", "Organizer Earnings"),
       value: formatCurrency(stats.organizerEarnings),
       gradient: "from-emerald-50 to-white",
     },
     {
       icon: <TicketIcon className="w-10 h-10 text-blue-500" />,
-      label: "Total Tickets Sold",
+      label: t("dashboard.totalTicketsSold", "Total Tickets Sold"),
       value: stats.totalTicketsSold,
       gradient: "from-blue-50 to-white",
     },
     {
       icon: <HourglassIcon className="w-10 h-10 text-orange-500" />,
-      label: "Total Pending Amount",
+      label: t("dashboard.totalPendingAmount", "Total Pending Amount"),
       value: formatCurrency(stats.totalPendingAmount),
       gradient: "from-orange-50 to-white",
     },
     {
       icon: <BankIcon className="w-10 h-10 text-teal-600" />,
-      label: "Total Amount Received",
+      label: t("dashboard.totalAmountReceived", "Total Amount Received"),
       value: formatCurrency(stats.totalAmountReceived),
       gradient: "from-teal-50 to-white",
     },
@@ -122,20 +122,20 @@ export default function DashboardHome() {
       {(() => {
         const statusItems = [
           {
-            label: "Live",
+            label: t("status.live", "Live"),
             value: stats.events.live,
             hex: "#10b981",
             icon: <BroadcastIcon weight="fill" className="w-6 h-6" />,
           },
           {
-            label: "On Sale",
+            label: t("status.on_sale", "On Sale"),
             value: stats.events.on_sale,
             hex: "#8edb01",
             icon: <ShoppingCartIcon weight="fill" className="w-6 h-6" />,
           },
           // { label: "Draft", value: stats.events.draft, hex: "#94a3b8", icon: <NoteIcon weight="fill" className="w-6 h-6 },
           {
-            label: "Pending",
+            label: t("status.pending", "Pending"),
             value: stats.events.pending,
             hex: "#fbbf24",
             icon: (
@@ -143,25 +143,25 @@ export default function DashboardHome() {
             ),
           },
           {
-            label: "Approved",
+            label: t("status.approved", "Approved"),
             value: stats.events.approved,
             hex: "#3b82f6",
             icon: <ThumbsUpIcon weight="fill" className="w-6 h-6" />,
           },
           {
-            label: "Rejected",
+            label: t("status.rejected", "Rejected"),
             value: stats.events.rejected,
             hex: "#f43f5e",
             icon: <ThumbsDownIcon weight="fill" className="w-6 h-6" />,
           },
           {
-            label: "Completed",
+            label: t("status.completed", "Completed"),
             value: stats.events.completed,
             hex: "#254cda",
             icon: <CheckCircleIcon weight="fill" className="w-6 h-6" />,
           },
           {
-            label: "Cancelled",
+            label: t("status.cancelled", "Cancelled"),
             value: stats.events.cancelled,
             hex: "#a1a1aa",
             icon: <XCircleIcon weight="fill" className="w-6 h-6" />,

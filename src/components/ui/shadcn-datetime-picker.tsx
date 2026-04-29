@@ -13,6 +13,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useLanguageStore } from "@/store/languageStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ShadcnDateTimePickerProps {
   value?: Date | null;
@@ -37,6 +39,8 @@ export function ShadcnDateTimePicker({
   minDate,
   maxDate,
 }: ShadcnDateTimePickerProps) {
+  const { locale } = useLanguageStore();
+  const { t } = useTranslation(locale);
   const [isOpen, setIsOpen] = React.useState(false);
 
   // Default to disabling dates before today (or specific minDate if provided)
@@ -155,14 +159,14 @@ export function ShadcnDateTimePicker({
                       size="icon"
                       variant={
                         value &&
-                          ((value.getHours() % 12 === 0 ? 12 : value.getHours() % 12) === hour)
+                        (value.getHours() % 12 === 0
+                          ? 12
+                          : value.getHours() % 12) === hour
                           ? "default"
                           : "ghost"
                       }
                       className="sm:w-full shrink-0 aspect-square"
-                      onClick={() =>
-                        handleTimeChange("hour", hour.toString())
-                      }
+                      onClick={() => handleTimeChange("hour", hour.toString())}
                     >
                       {hour}
                     </Button>
@@ -172,27 +176,24 @@ export function ShadcnDateTimePicker({
             </ScrollArea>
             <ScrollArea className="w-64 sm:w-auto">
               <div className="flex sm:flex-col p-2">
-                {Array.from({ length: 12 }, (_, i) => i * 5).map(
-                  (minute) => (
-                    <Button
-                      type="button"
-                      key={minute}
-                      size="icon"
-                      variant={
-                        value &&
-                          value.getMinutes() === minute
-                          ? "default"
-                          : "ghost"
-                      }
-                      className="sm:w-full shrink-0 aspect-square"
-                      onClick={() =>
-                        handleTimeChange("minute", minute.toString())
-                      }
-                    >
-                      {minute.toString().padStart(2, '0')}
-                    </Button>
-                  )
-                )}
+                {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+                  <Button
+                    type="button"
+                    key={minute}
+                    size="icon"
+                    variant={
+                      value && value.getMinutes() === minute
+                        ? "default"
+                        : "ghost"
+                    }
+                    className="sm:w-full shrink-0 aspect-square"
+                    onClick={() =>
+                      handleTimeChange("minute", minute.toString())
+                    }
+                  >
+                    {minute.toString().padStart(2, "0")}
+                  </Button>
+                ))}
               </div>
               <ScrollBar orientation="horizontal" className="sm:hidden" />
             </ScrollArea>
@@ -205,10 +206,8 @@ export function ShadcnDateTimePicker({
                     size="icon"
                     variant={
                       value &&
-                        ((ampm === "AM" &&
-                          value.getHours() < 12) ||
-                          (ampm === "PM" &&
-                            value.getHours() >= 12))
+                      ((ampm === "AM" && value.getHours() < 12) ||
+                        (ampm === "PM" && value.getHours() >= 12))
                         ? "default"
                         : "ghost"
                     }
@@ -223,11 +222,8 @@ export function ShadcnDateTimePicker({
           </div>
         </div>
         <div className="p-3 border-t">
-          <Button
-            className="w-full"
-            onClick={() => setIsOpen(false)}
-          >
-            Done
+          <Button className="w-full" onClick={() => setIsOpen(false)}>
+            {t("common.done", "Done")}
           </Button>
         </div>
       </PopoverContent>
