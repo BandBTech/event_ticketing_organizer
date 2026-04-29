@@ -8,7 +8,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 // Icons
-import { EyeIcon, KeyIcon, EyeClosedIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  EyeIcon,
+  KeyIcon,
+  EyeClosedIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -29,10 +33,7 @@ import { authService } from "@/services/authService";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import {
-  resetPasswordSchema,
-  ResetPasswordFormData,
-} from "@/lib/validation";
+import { resetPasswordSchema, ResetPasswordFormData } from "@/lib/validation";
 
 // Local components
 import { PasswordRequirements } from "./PasswordRequirements";
@@ -66,7 +67,7 @@ function ResetPasswordContent() {
   // Use centralized schema with memoization
   const schema = useMemo(
     () => resetPasswordSchema((key, fallback, params) => key),
-    []
+    [],
   );
 
   const form = useForm<ResetPasswordFormData>({
@@ -89,7 +90,10 @@ function ResetPasswordContent() {
       });
     },
     onSuccess: () => {
-      toast.success("auth.toast.passwordResetSuccess", "Password reset successful!");
+      toast.success(
+        "auth.toast.passwordResetSuccess",
+        "Password reset successful!",
+      );
       setIsSuccess(true);
       sessionStorage.removeItem("password_reset_email");
       router.push("/login");
@@ -98,10 +102,13 @@ function ResetPasswordContent() {
       if (err instanceof AuthError) {
         toast.error(
           "auth.toast.serverError",
-          err.message || "Failed to reset password. Please try again."
+          err.message || "Failed to reset password. Please try again.",
         );
       } else {
-        toast.error("auth.toast.serverError", "Failed to reset password. Please try again.");
+        toast.error(
+          "auth.toast.serverError",
+          "Failed to reset password. Please try again.",
+        );
       }
     },
   });
@@ -111,7 +118,7 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+    <div className="min-h-dvh relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
       <div className="w-full max-w-[480px] relative z-10">
         <div className="relative">
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
@@ -133,7 +140,7 @@ function ResetPasswordContent() {
                     <p className="text-sm text-green-700 text-center">
                       {t(
                         "auth.resetPassword.successMessage",
-                        "Password reset successful! Redirecting to login..."
+                        "Password reset successful! Redirecting to login...",
                       )}
                     </p>
                   </div>
@@ -142,7 +149,10 @@ function ResetPasswordContent() {
                 <>
                   {/* Form */}
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <form
+                      onSubmit={form.handleSubmit(onSubmit)}
+                      className="space-y-6"
+                    >
                       {/* New Password Field */}
                       <FormField
                         control={form.control}
@@ -150,7 +160,10 @@ function ResetPasswordContent() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-medium text-gray-900">
-                               {t("auth.resetPassword.newPassword", "New Password")}
+                              {t(
+                                "auth.resetPassword.newPassword",
+                                "New Password",
+                              )}
                             </FormLabel>
                             <FormControl>
                               <div className="relative">
@@ -158,29 +171,44 @@ function ResetPasswordContent() {
                                   className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
                                   aria-hidden="true"
                                 >
-                                  <KeyIcon weight="duotone" size={24} className="text-gray-600" />
+                                  <KeyIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
                                 </div>
                                 <Input
                                   type={showNewPassword ? "text" : "password"}
                                   autoComplete="new-password"
                                   placeholder={t(
                                     "auth.resetPassword.newPasswordPlaceholder",
-                                    "••••••••••••"
+                                    "••••••••••••",
                                   )}
                                   className={cn(
                                     "h-12 pl-16 pr-16 login-input",
-                                    form.formState.errors.newPassword && "border-destructive"
+                                    form.formState.errors.newPassword &&
+                                      "border-destructive",
                                   )}
                                   {...field}
                                 />
                                 <button
                                   type="button"
-                                  onClick={() => setShowNewPassword(!showNewPassword)}
-                                  aria-label={showNewPassword ? "Hide password" : "Show password"}
+                                  onClick={() =>
+                                    setShowNewPassword(!showNewPassword)
+                                  }
+                                  aria-label={
+                                    showNewPassword
+                                      ? "Hide password"
+                                      : "Show password"
+                                  }
                                   className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                                 >
                                   {showNewPassword ? (
-                                    <EyeIcon weight="duotone" size={24} className="text-gray-600" />
+                                    <EyeIcon
+                                      weight="duotone"
+                                      size={24}
+                                      className="text-gray-600"
+                                    />
                                   ) : (
                                     <EyeClosedIcon
                                       weight="duotone"
@@ -192,15 +220,24 @@ function ResetPasswordContent() {
                               </div>
                             </FormControl>
                             {form.formState.errors.newPassword &&
-                              form.formState.errors.newPassword.message !== "Invalid input" &&
+                              form.formState.errors.newPassword.message !==
+                                "Invalid input" &&
                               // Filter out messages that are already covered by PasswordRequirements
-                              !form.formState.errors.newPassword.message?.includes("must be at least 8 characters") &&
-                              !form.formState.errors.newPassword.message?.includes("uppercase and one lowercase") &&
-                              !form.formState.errors.newPassword.message?.includes("special character") &&
-                              !form.formState.errors.newPassword.message?.includes("numeric digit") && (
-                                <TranslatedFormMessage t={t} />
-                              )}
-                            <PasswordRequirements password={form.watch("newPassword")} />
+                              !form.formState.errors.newPassword.message?.includes(
+                                "must be at least 8 characters",
+                              ) &&
+                              !form.formState.errors.newPassword.message?.includes(
+                                "uppercase and one lowercase",
+                              ) &&
+                              !form.formState.errors.newPassword.message?.includes(
+                                "special character",
+                              ) &&
+                              !form.formState.errors.newPassword.message?.includes(
+                                "numeric digit",
+                              ) && <TranslatedFormMessage t={t} />}
+                            <PasswordRequirements
+                              password={form.watch("newPassword")}
+                            />
                           </FormItem>
                         )}
                       />
@@ -212,7 +249,10 @@ function ResetPasswordContent() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-sm font-medium text-gray-900">
-                               {t("auth.resetPassword.confirmPassword", "Confirm Password")}
+                              {t(
+                                "auth.resetPassword.confirmPassword",
+                                "Confirm Password",
+                              )}
                             </FormLabel>
                             <FormControl>
                               <div className="relative">
@@ -220,31 +260,46 @@ function ResetPasswordContent() {
                                   className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
                                   aria-hidden="true"
                                 >
-                                  <KeyIcon weight="duotone" size={24} className="text-gray-600" />
+                                  <KeyIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
                                 </div>
                                 <Input
-                                  type={showConfirmPassword ? "text" : "password"}
+                                  type={
+                                    showConfirmPassword ? "text" : "password"
+                                  }
                                   autoComplete="new-password"
                                   placeholder={t(
                                     "auth.resetPassword.confirmPasswordPlaceholder",
-                                    "••••••••••••"
+                                    "••••••••••••",
                                   )}
                                   className={cn(
                                     "h-12 pl-16 pr-16 login-input",
-                                    form.formState.errors.confirmPassword && "border-destructive"
+                                    form.formState.errors.confirmPassword &&
+                                      "border-destructive",
                                   )}
                                   {...field}
                                 />
                                 <button
                                   type="button"
-                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                  onClick={() =>
+                                    setShowConfirmPassword(!showConfirmPassword)
+                                  }
                                   aria-label={
-                                    showConfirmPassword ? "Hide password" : "Show password"
+                                    showConfirmPassword
+                                      ? "Hide password"
+                                      : "Show password"
                                   }
                                   className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
                                 >
                                   {showConfirmPassword ? (
-                                    <EyeIcon weight="duotone" size={24} className="text-gray-600" />
+                                    <EyeIcon
+                                      weight="duotone"
+                                      size={24}
+                                      className="text-gray-600"
+                                    />
                                   ) : (
                                     <EyeClosedIcon
                                       weight="duotone"
@@ -270,12 +325,12 @@ function ResetPasswordContent() {
                             "bg-blue-600 hover:bg-blue-700 text-white",
                             "shadow-lg hover:shadow-xl",
                             "disabled:opacity-50 disabled:cursor-not-allowed",
-                            resetMutation.isPending && "animate-pulse"
+                            resetMutation.isPending && "animate-pulse",
                           )}
                         >
                           {resetMutation.isPending
                             ? t("auth.resetPassword.resetting", "Resetting...")
-                              : t("auth.resetPassword.title", "Reset Password")}
+                            : t("auth.resetPassword.title", "Reset Password")}
                         </Button>
                       </div>
                     </form>
@@ -307,7 +362,7 @@ export default function ResetPasswordForm() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-dvh flex items-center justify-center">
           {t("common.loading", "Loading...")}
         </div>
       }

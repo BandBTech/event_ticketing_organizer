@@ -248,7 +248,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-gray-50/50 text-gray-700">
+      <div className="flex flex-col min-h-dvh bg-gray-50/50 text-gray-700">
         <div className="grow p-6 space-y-6 container mx-auto max-w-7xl">
           <div className="flex flex-col flex-wrap gap-4 md:items-start md:justify-between lg:flex-row">
             <div className="space-y-3">

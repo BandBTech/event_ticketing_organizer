@@ -87,7 +87,7 @@ export default function Sidebar({
     <aside
       className={`relative transition-all duration-300 ${
         showSidebar ? "w-56" : "w-20"
-      }  min-h-screen bg-white  border-r border-gray-200 flex flex-col`}
+      }  min-h-dvh bg-white  border-r border-gray-200 flex flex-col`}
     >
       <div className="flex justify-between items-center px-4 py-6">
         {showSidebar ? (

@@ -32,10 +32,7 @@ import { useAuthStore } from "@/store/authStore";
 import { AuthError } from "@/lib/errors";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import {
-  registerOTPSchema,
-  RegisterOTPFormData,
-} from "@/lib/validation";
+import { registerOTPSchema, RegisterOTPFormData } from "@/lib/validation";
 
 function VerifyOTPContent() {
   const router = useRouter();
@@ -76,7 +73,7 @@ function VerifyOTPContent() {
   // Use centralized schema with memoization
   const otpSchema = useMemo(
     () => registerOTPSchema((key, fallback, params) => key),
-    []
+    [],
   );
 
   const form = useForm<RegisterOTPFormData>({
@@ -103,7 +100,7 @@ function VerifyOTPContent() {
       if (otpType === "password_reset") {
         // For password reset, redirect to reset password page
         router.push(
-          `/resetpassword?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(form.getValues("otp"))}`
+          `/resetpassword?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(form.getValues("otp"))}`,
         );
       } else if (password) {
         // For registration, auto-login
@@ -115,7 +112,11 @@ function VerifyOTPContent() {
     },
     onError: (err: Error) => {
       if (err instanceof AuthError) {
-        toast.error("", err.message || "Invalid OTP. Please try again.", err.details);
+        toast.error(
+          "",
+          err.message || "Invalid OTP. Please try again.",
+          err.details,
+        );
       } else {
         toast.error("auth.toast.serverError", "Invalid OTP. Please try again.");
       }
@@ -137,7 +138,11 @@ function VerifyOTPContent() {
     },
     onError: (err: Error) => {
       if (err instanceof AuthError) {
-        toast.error("", err.message || "Failed to resend OTP. Please try again.", err.details);
+        toast.error(
+          "",
+          err.message || "Failed to resend OTP. Please try again.",
+          err.details,
+        );
       } else {
         toast.error("", "Failed to resend OTP. Please try again.");
       }
@@ -178,17 +183,26 @@ function VerifyOTPContent() {
                   {t("auth.verifyOTP.title", "Verify Your Email")}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {t("auth.verifyOTP.subtitle", "Enter the 6-digit code sent to")}
+                  {t(
+                    "auth.verifyOTP.subtitle",
+                    "Enter the 6-digit code sent to",
+                  )}
                   <br />
                   <strong>{email}</strong>
                   <br />
-                  {t("auth.verifyOTP.otpValidity", "The code will expire in 10 minutes.")}
+                  {t(
+                    "auth.verifyOTP.otpValidity",
+                    "The code will expire in 10 minutes.",
+                  )}
                 </p>
               </div>
 
               {/* OTP Form */}
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={form.control}
                     name="otp"
@@ -202,12 +216,30 @@ function VerifyOTPContent() {
                               onChange={field.onChange}
                             >
                               <InputOTPGroup>
-                                <InputOTPSlot index={0} className="h-14 w-14 text-lg" />
-                                <InputOTPSlot index={1} className="h-14 w-14 text-lg" />
-                                <InputOTPSlot index={2} className="h-14 w-14 text-lg" />
-                                <InputOTPSlot index={3} className="h-14 w-14 text-lg" />
-                                <InputOTPSlot index={4} className="h-14 w-14 text-lg" />
-                                <InputOTPSlot index={5} className="h-14 w-14 text-lg" />
+                                <InputOTPSlot
+                                  index={0}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={1}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={2}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={3}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={4}
+                                  className="h-14 w-14 text-lg"
+                                />
+                                <InputOTPSlot
+                                  index={5}
+                                  className="h-14 w-14 text-lg"
+                                />
                               </InputOTPGroup>
                             </InputOTP>
                           </div>
@@ -222,13 +254,15 @@ function VerifyOTPContent() {
                   {/* Verify Button */}
                   <Button
                     type="submit"
-                    disabled={verifyMutation.isPending || form.watch("otp").length < 6}
+                    disabled={
+                      verifyMutation.isPending || form.watch("otp").length < 6
+                    }
                     className={cn(
                       "w-full h-12 rounded-lg font-medium transition-all duration-200",
                       "bg-blue-600 hover:bg-blue-700 text-white",
                       "shadow-lg hover:shadow-xl",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
-                      verifyMutation.isPending && "animate-pulse"
+                      verifyMutation.isPending && "animate-pulse",
                     )}
                   >
                     {verifyMutation.isPending
@@ -245,20 +279,28 @@ function VerifyOTPContent() {
                   <button
                     type="button"
                     onClick={handleResendOTP}
-                    disabled={resendMutation.isPending || verifyMutation.isPending || resendTimer > 0}
+                    disabled={
+                      resendMutation.isPending ||
+                      verifyMutation.isPending ||
+                      resendTimer > 0
+                    }
                     className="font-medium cursor-pointer text-primary hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {resendMutation.isPending
                       ? t("auth.verifyOTP.resending", "Resending...")
                       : resendTimer > 0
-                        ? t("auth.verifyOTP.resendIn", "Resend in {resendTimer}s", { resendTimer })
+                        ? t(
+                            "auth.verifyOTP.resendIn",
+                            "Resend in {resendTimer}s",
+                            { resendTimer },
+                          )
                         : t("auth.verifyOTP.resend", "Resend")}
                   </button>
                 </p>
                 <p className="text-xs text-gray-500">
                   {t(
                     "auth.verifyOTP.checkSpam",
-                    "Check your spam folder if you don't see the email"
+                    "Check your spam folder if you don't see the email",
                   )}
                 </p>
               </div>
@@ -273,12 +315,12 @@ function VerifyOTPContent() {
 export default function VerifyOtpForm() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  
+
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-           {t("common.loading", "Loading...")}
+        <div className="min-h-dvh flex items-center justify-center">
+          {t("common.loading", "Loading...")}
         </div>
       }
     >

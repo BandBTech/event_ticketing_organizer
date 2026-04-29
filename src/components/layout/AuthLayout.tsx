@@ -6,7 +6,11 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { authService } from "@/services/authService";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -17,7 +21,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           // Double check with profile to ensure token is actually valid for session
           const profile = await authService.getProfile();
           const userRoles = profile?.roles || [];
-          if (userRoles.includes('staff') || userRoles.includes('manager')) {
+          if (userRoles.includes("staff") || userRoles.includes("manager")) {
             router.push("/staffDashboard");
           } else {
             router.push("/organizerDashboard");
@@ -39,7 +43,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="relative z-10 min-h-screen flex flex-col">
+    <div className="relative z-10 min-h-dvh flex flex-col">
       {/* Auth Header */}
       <Header />
       {/* Main Auth Content */}

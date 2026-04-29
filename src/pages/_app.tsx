@@ -49,7 +49,9 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <div className={`${inter.variable} ${poppins.variable} font-sans antialiased min-h-screen`}>
+    <div
+      className={`${inter.variable} ${poppins.variable} font-sans antialiased min-h-dvh`}
+    >
       <QueryProvider>
         <AuthProvider>
           <Component {...pageProps} />
