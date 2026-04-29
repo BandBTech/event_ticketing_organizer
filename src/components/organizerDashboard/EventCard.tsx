@@ -122,11 +122,15 @@ export default function EventCard({
         </h3>
 
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <CalendarDotsIcon className="w-4 h-4" />
+          <CalendarDotsIcon
+            className="w-4 h-4 shrink-0"
+            width={16}
+            height={16}
+          />
           {formatDateTime(event.start_date)}
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <MapPinAreaIcon className="w-4 h-4" />
+          <MapPinAreaIcon className="w-4 h-4 shrink-0" width={16} height={16} />
           {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim())
             ? event.venue_name
             : [event.venue_name, event.address].filter(Boolean).join(", ")}

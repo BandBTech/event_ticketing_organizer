@@ -454,7 +454,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       <h4 className="text-sm font-medium text-gray-500 mb-1">
                         {t("event.field.venueName", "Venue Name")}
                       </h4>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 break-words">
                         {event.venue_name}
                       </p>
                     </div>
@@ -462,7 +462,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       <h4 className="text-sm font-medium text-gray-500 mb-1">
                         {t("event.field.location", "Location")}
                       </h4>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 break-words">
                         {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
                           event.address?.trim() || "",
                         )
