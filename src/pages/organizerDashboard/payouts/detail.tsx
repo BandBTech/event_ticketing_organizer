@@ -410,7 +410,7 @@ export default function PayoutDetailPage() {
                     <SectionTitle>
                       {t("payouts.table.description", "Description")}
                     </SectionTitle>
-                    <p className="text-sm text-slate-700 leading-relaxed">
+                    <p className="text-sm text-slate-700 leading-relaxed wrap-anywhere">
                       {payoutData.description}
                     </p>
                   </div>
@@ -429,7 +429,7 @@ export default function PayoutDetailPage() {
                         weight="fill"
                         className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5"
                       />
-                      <p className="text-sm text-slate-700">
+                      <p className="text-sm text-slate-700 wrap-anywhere">
                         {payoutData.admin_notes}
                       </p>
                     </div>
