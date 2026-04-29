@@ -118,7 +118,7 @@ export function CompleteProfileDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[500px] px-6">
-        <DialogHeader>
+        <DialogHeader className=" px-1">
           <DialogTitle className="text-2xl font-semibold text-gray-900">
             {t("completeProfile.title", "Complete Your Organizer Profile")}
           </DialogTitle>
@@ -130,17 +130,18 @@ export function CompleteProfileDialog() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="pt-4 max-h-[70vh] overflow-y-auto px-1 -mx-1">
-          <OrganizerProfileForm
-            isEditing={true}
-            isPending={mutation.isPending}
-            onSubmit={handleSubmit}
-            showActions={false}
-            showLogoUploader={true}
-            defaultValues={{ currency: storedCurrency }}
-          />
-
-          <div className="mt-6 flex flex-col sm:flex-row gap-4 sticky bottom-0 bg-white pt-4 border-t border-gray-200 z-10">
+        <div className="pt-4">
+          <div className="max-h-[calc(90vh-250px)] md:max-h-[calc(90vh-190px)] overflow-y-auto px-1 pb-3">
+            <OrganizerProfileForm
+              isEditing={true}
+              isPending={mutation.isPending}
+              onSubmit={handleSubmit}
+              showActions={false}
+              showLogoUploader={true}
+              defaultValues={{ currency: storedCurrency }}
+            />
+          </div>
+          <div className=" px-1 flex flex-col sm:flex-row gap-4  bg-white pt-4 border-t border-gray-200 z-10">
             <Button
               type="button"
               variant="outline"
