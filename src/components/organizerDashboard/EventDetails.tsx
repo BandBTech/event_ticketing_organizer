@@ -612,7 +612,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                             >
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <p className="font-medium text-gray-900">
+                                  <p className="font-medium text-gray-900 wrap-anywhere">
                                     {tier.tier_name}
                                   </p>
                                 </div>

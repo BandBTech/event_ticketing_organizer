@@ -21,6 +21,7 @@ export interface UseNavigationGuardReturn {
   confirmLeave: () => void;
   cancelLeave: () => void;
   handleNavigateAway: (navigationAction: () => void) => void;
+  bypassNextNavigation: () => void;
 }
 
 /**
@@ -111,11 +112,16 @@ export function useNavigationGuard({
     return () => navigationGuard.unregister();
   }, [handleNavigateAway]);
 
+  const bypassNextNavigation = useCallback(() => {
+    isConfirmedNavigation.current = true;
+  }, []);
+
   return {
     showLeaveDialog,
     setShowLeaveDialog,
     confirmLeave,
     cancelLeave,
     handleNavigateAway,
+    bypassNextNavigation,
   };
 }

@@ -121,6 +121,7 @@ export default function CreateEventsForm({
     confirmLeave,
     cancelLeave,
     handleNavigateAway,
+    bypassNextNavigation,
   } = useNavigationGuard({
     hasUnsavedChanges,
     onBeforeLeave: () => {
@@ -206,14 +207,12 @@ export default function CreateEventsForm({
         `Event has been successfully ${isEditing ? "updated" : "created"}.`,
       );
 
-      // Reset ALL form dirty state before navigation to prevent unsaved changes dialog
+      // Mark navigation as intentional so the guard doesn't intercept it
+      bypassNextNavigation();
+      // Reset form and image state
       form.reset(undefined, { keepValues: false });
-      // Reset image state completely
       resetImage("");
-      // Wait a tick for state to settle before navigating
-      setTimeout(() => {
-        router.push("/organizerDashboard/event");
-      }, 50);
+      router.push("/organizerDashboard/event");
     },
   });
 
