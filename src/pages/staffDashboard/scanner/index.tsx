@@ -45,7 +45,7 @@ export default function ScannerPage() {
   return (
     <>
       <Head>
-        <title>Ticket Scanner | Staff Dashboard</title>
+        <title>{t("staffDashboard.scannerTitle", "Ticket Scanner")}</title>
       </Head>
 
       <StaffDashboardLayout>

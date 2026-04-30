@@ -47,7 +47,7 @@ export default function EventsList() {
   const hasActiveFilters = searchInput.trim() !== "" || statusFilter !== "all";
 
   return (
-    <div className="flex-1 px-6 py-4 container mx-auto max-w-7xl">
+    <div className="flex-1 px-6 py-4 mx-auto">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center w-full max-w-md relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -79,14 +79,14 @@ export default function EventsList() {
       )}
 
       {showContentLoading && !isError && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
           <EventCardSkeleton count={6} />
         </div>
       )}
 
       {!showContentLoading && !isError && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {safeEvents.length === 0 ? (
               <div className="col-span-full grid place-items-center py-12 text-gray-500">
                 <CalendarXIcon className="w-12 h-12 mb-2" />

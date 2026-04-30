@@ -8,9 +8,12 @@ import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function DashboardPage() {
-  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } =
+    useAuthStore();
+  const { t } = useTranslation();
 
   const renderContent = () => {
     if (isOrganizerRejected()) {
@@ -43,13 +46,11 @@ export default function DashboardPage() {
   return (
     <>
       <Head>
-        <title>Dashboard | Organizer Dashboard</title>
+        <title>{t("navigation.dashboard", "Dashboard")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
-          <div className="max-w-7xl mx-auto">
-            {renderContent()}
-          </div>
+          <div className="mx-auto">{renderContent()}</div>
         </ProtectedRoute>
       </DashboardLayout>
     </>

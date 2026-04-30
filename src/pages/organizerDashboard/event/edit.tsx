@@ -8,9 +8,11 @@ import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { PERMISSIONS } from "@/lib/permissions";
 import { Loader2 } from "lucide-react";
 import Head from "next/head";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EditEventPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { id } = router.query;
   const eventId = id as string;
 
@@ -23,7 +25,7 @@ export default function EditEventPage() {
   return (
     <>
       <Head>
-        <title>Edit Event | Organizer Dashboard</title>
+        <title>{t("event.editEvent", "Edit Event")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute permission={[PERMISSIONS.EVENT_UPDATE]}>

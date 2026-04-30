@@ -10,7 +10,6 @@ const useSearchParams = () => {
 const usePathname = () => useRouter().pathname;
 
 import React, { useMemo } from "react";
-import { useUser } from "@/components/organizerDashboard/users/UserContext";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/organizerDashboard/LanguageSelector";
 import { useAuthStore } from "@/store/authStore";
@@ -29,7 +28,6 @@ export default function DashboardHeader() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation();
   const { toggleSidebar, setShowCompleteProfileDialog } = useUIStore();
-  // const { openCreateUserModal } = useUser();
   const {
     user,
     isOrganizerRejected,
@@ -38,63 +36,52 @@ export default function DashboardHeader() {
     isOrganizerComplete,
   } = useAuthStore();
 
-  /**
-   * Get time-based greeting message
-   */
-  const getGreeting = (): string => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t("greeting.morning", "Good Morning");
-    if (hour < 17) return t("greeting.afternoon", "Good Afternoon");
-    return t("greeting.evening", "Good Evening");
-  };
-
-  // Get user's first name or fallback
-  const userName = user?.firstName || "there";
   const orgId = user?.organization?.id || user?.organizationId;
 
-  const pageHeaders: {
-    prefix: string;
-    title: string;
-    editTitle?: string;
-    isDynamic?: boolean;
-  }[] = useMemo(
-    () => [
-      {
-        prefix: "/organizerDashboard/event/create",
-        title: t("event.createNewEvent", "Create New Event"),
-      },
-      {
-        prefix: "/organizerDashboard/event/details",
-        title: t("event.eventDetails", "Event details"),
-      },
-      {
-        prefix: "/organizerDashboard/event/edit",
-        title: t("event.editEvent", "Edit Event"),
-      },
-      {
-        prefix: "/organizerDashboard/event",
-        title: t("navigation.events", "Events"),
-      },
-      { prefix: "/organizerDashboard/settings", title: "" },
-      {
-        prefix: "/organizerDashboard/reports",
-        title: t("navigation.reports", "Reports"),
-      },
-      {
-        prefix: "/organizerDashboard/users",
-        title: t("navigation.users", "Users"),
-      },
-      { prefix: "/organizerDashboard", title: "", isDynamic: true }, // Dynamic greeting
-      { prefix: "/staffDashboard/events", title: "Events" }, // Staff Events
-      { prefix: "/staffDashboard", title: "", isDynamic: true }, // Staff Dashboard Dynamic greeting
-    ],
-    [t],
-  );
-
-  // Dynamic greeting for dashboard
-  const dynamicGreeting = useMemo(() => {
-    return `${getGreeting()}, ${userName}!`;
-  }, [userName, t]);
+  const pageHeaders: { prefix: string; title: string; editTitle?: string }[] =
+    useMemo(
+      () => [
+        {
+          prefix: "/organizerDashboard/event/create",
+          title: t("event.createNewEvent", "Create New Event"),
+        },
+        {
+          prefix: "/organizerDashboard/event/details",
+          title: t("event.eventDetails", "Event details"),
+        },
+        {
+          prefix: "/organizerDashboard/event/edit",
+          title: t("event.editEvent", "Edit Event"),
+        },
+        {
+          prefix: "/organizerDashboard/event",
+          title: t("navigation.events", "Events"),
+        },
+        {
+          prefix: "/organizerDashboard/payouts",
+          title: t("navigation.payouts", "Payouts"),
+        },
+        {
+          prefix: "/organizerDashboard/settings",
+          title: t("settings.title", "Settings"),
+        },
+        {
+          prefix: "/organizerDashboard/reports",
+          title: t("navigation.reports", "Reports"),
+        },
+        {
+          prefix: "/organizerDashboard/users",
+          title: t("navigation.users", "Users"),
+        },
+        {
+          prefix: "/organizerDashboard",
+          title: t("navigation.dashboard", "Dashboard"),
+        },
+        { prefix: "/staffDashboard/events", title: "Events" },
+        { prefix: "/staffDashboard", title: "Dashboard" },
+      ],
+      [t],
+    );
 
   // Pick the best match (longest prefix first)
   const matched = pageHeaders
@@ -111,19 +98,12 @@ export default function DashboardHeader() {
   const isActuallyEditing =
     pathname.endsWith("/edit") || pathname.endsWith("/edit/");
 
-  // Use edit title if in edit mode and available, or dynamic greeting for dashboard
   const headerText =
     isActuallyEditing || isEditMode
       ? t("event.editEvent", "Edit Event")
-      : matched?.isDynamic &&
-          (matched.prefix === "/organizerDashboard" ||
-            matched.prefix === "/staffDashboard")
-        ? dynamicGreeting
-        : (matched?.title ?? "Dashboard");
+      : (matched?.title ?? "Dashboard");
 
-  // const isUsersPage = matched?.title === "Users";
   const isEventsPage = matched?.prefix === "/organizerDashboard/event";
-  const isDashboard = pathname === "/organizerDashboard";
 
   // Don't show create button when editing an event, or if no organization, or if organizer is restricted
   const isOrganizerRestricted =
@@ -154,7 +134,7 @@ export default function DashboardHeader() {
         >
           <List className="h-5 w-5 text-gray-600" />
         </button>
-        <h2 className="text-lg text-gray-900 font-semibold">{headerText}</h2>
+        <h2 className="text-2xl text-gray-900 font-medium">{headerText}</h2>
       </div>
 
       <div className="flex items-center gap-3">

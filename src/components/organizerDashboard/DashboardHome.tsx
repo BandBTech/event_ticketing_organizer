@@ -71,7 +71,7 @@ export default function DashboardHome() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-4">
+      <div className="space-y-6 p-4 md:p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div
@@ -97,7 +97,7 @@ export default function DashboardHome() {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 lg:p-6">
       {/* Stats Cards — 3 cols × 2 rows */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {statCards.map((stat, i) => (

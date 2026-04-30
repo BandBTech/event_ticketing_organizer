@@ -26,7 +26,7 @@ export function PayoutFilterTabs({
   ];
 
   return (
-    <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2">
       {tabs.map((tab) => (
         <Button
           key={tab.value}

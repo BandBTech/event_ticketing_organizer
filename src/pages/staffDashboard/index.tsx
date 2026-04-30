@@ -4,10 +4,12 @@ import StaffDashboardHome from "@/pages/staffDashboard/components/StaffDashboard
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Head from "next/head";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function StaffDashboardPage() {
   const router = useRouter();
   const { user, _authChecked } = useAuthStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!_authChecked) return;
@@ -22,7 +24,7 @@ export default function StaffDashboardPage() {
   return (
     <>
       <Head>
-        <title>Staff Dashboard | Timro-Ticket</title>
+        <title>{t("staffDashboard.title", "Staff Dashboard")}</title>
       </Head>
       <DashboardLayout>
         <StaffDashboardHome />

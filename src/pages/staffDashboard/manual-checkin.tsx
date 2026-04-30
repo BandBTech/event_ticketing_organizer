@@ -78,7 +78,7 @@ export default function ManualCheckinPage() {
     <>
       <Head>
         <title>
-          {t("manualCheckin.title", "Manual Check-in")} | Staff Dashboard
+          {t("manualCheckin.title", "Manual Check-in")}
         </title>
       </Head>
 

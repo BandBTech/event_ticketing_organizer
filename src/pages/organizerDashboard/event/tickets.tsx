@@ -163,7 +163,7 @@ export default function EventTicketsPage() {
   return (
     <>
       <Head>
-        <title>Event Tickets | Organizer Dashboard</title>
+        <title>{t("tickets.pageTitle", "Event Tickets")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute permission={[PERMISSIONS.EVENT_READ]}>

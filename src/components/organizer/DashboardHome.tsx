@@ -95,7 +95,7 @@ export default function DashboardHome() {
   ];
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 md:p-6">
       {/* Stats Cards */}
       <div className="grid md:grid-cols-4 sm:grid-cols-2 gap-6">
         {stats.map((stat, i) => (
@@ -110,9 +110,7 @@ export default function DashboardHome() {
             {stat.icon}
             <div>
               <h2 className="text-2xl text-gray-700 font-bold">{stat.value}</h2>
-              <p className="text-sm text-gray-700 ">
-                {stat.label}
-              </p>
+              <p className="text-sm text-gray-700 ">{stat.label}</p>
             </div>
           </motion.div>
         ))}
@@ -139,7 +137,9 @@ export default function DashboardHome() {
             </select>
           </div>
 
-          <h4 className="text-lg text-gray-700 font-medium mb-2">Ticket Sales</h4>
+          <h4 className="text-lg text-gray-700 font-medium mb-2">
+            Ticket Sales
+          </h4>
           <p className="text-sm text-gray-500 mb-4">Oct 1 – Oct 7</p>
 
           <div className="h-64 text-gray-700">

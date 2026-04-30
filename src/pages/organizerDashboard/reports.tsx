@@ -145,29 +145,17 @@ export default function ReportsPage() {
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
-          <div className="flex-1 space-y-6 max-w-7xl mx-auto p-4 md:p-6">
-            <div className="flex max-md:flex-col gap-4 md:items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {t("reports.title", "Reports")}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t(
-                    "reports.subtitle",
-                    "Analyze your event performance, sales, and financials",
-                  )}
-                </p>
-              </div>
+          <div className="flex-1 space-y-6 mx-auto p-4 lg:p-6 lg:pt-2 @container">
+            <div className="flex @max-3xl:flex-col flex-wrap gap-4 @3xl:items-end justify-between">
+              <ReportTabNav activeTab={activeTab} onTabChange={setActiveTab} />
               <ReportFilters
                 dateRangePreset={dateRangePreset}
                 onDateRangePresetChange={setDateRangePreset}
                 activeTab={activeTab}
-                selectedEventId={selectedEventId}
                 onEventChange={setSelectedEventId}
+                selectedEventId={selectedEventId}
               />
             </div>
-
-            <ReportTabNav activeTab={activeTab} onTabChange={setActiveTab} />
 
             {activeTab === "overview" && (
               <OverviewTab

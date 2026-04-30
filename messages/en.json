@@ -873,6 +873,8 @@
     "saveButton": "Save & Continue"
   },
   "staffDashboard": {
+    "title": "Staff Dashboard",
+    "scannerTitle": "Ticket Scanner",
     "readyToScan": "Ready to Scan?",
     "readyToScanDescription": "Start scanning tickets to check in attendees for the event.",
     "readyToScanButton": "Start Ticket Scan",

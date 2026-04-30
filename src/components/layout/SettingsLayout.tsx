@@ -93,9 +93,9 @@ export default function SettingsLayout({
           {/* Settings Sidebar */}
           <aside className="w-full md:w-64 shrink-0">
             <div className="rounded-xl">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 px-2">
+              {/*<h2 className="text-lg font-semibold text-gray-900 mb-4 px-2">
                 {t("settings.title", "Settings")}
-              </h2>
+              </h2>*/}
               <nav className="space-y-1 max-sm:flex">
                 {filteredMenuItems.map((item) => {
                   const Icon = item.icon;

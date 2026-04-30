@@ -132,11 +132,11 @@ export default function SecuritySettingsPage() {
   return (
     <>
       <Head>
-        <title>Security Settings | Organizer Dashboard</title>
+        <title>{t("settings.security.title", "Security Settings")}</title>
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6">
+          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6 md:pt-0">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 font-poppins">
                 {t("settings.security.title", "Security Settings")}

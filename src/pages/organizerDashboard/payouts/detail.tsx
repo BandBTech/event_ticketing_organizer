@@ -192,7 +192,7 @@ export default function PayoutDetailPage() {
     <>
       <Head>
         <title>
-          {t("payouts.payoutDetails", "Payout Details")} | Organizer Dashboard
+          {t("payouts.payoutDetails", "Payout Details")}
         </title>
       </Head>
       <DashboardLayout>

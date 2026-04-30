@@ -114,11 +114,11 @@ export default function OrganizerProfileSettings() {
   return (
     <>
       <Head>
-        <title>Organizer Profile | Organizer Dashboard</title>
+        <title>{t("settings.menu.organizer", "Organizer Profile")}</title>
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6">
+          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6 md:pt-0">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 font-poppins">

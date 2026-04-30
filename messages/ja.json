@@ -593,6 +593,7 @@
     }
   },
   "settings": {
+    "title": "設定",
     "menu": {
       "organizer": "主催者プロフィール",
       "tiers": "階層テンプレート",
@@ -770,6 +771,8 @@
     }
   },
   "staffDashboard": {
+    "title": "スタッフダッシュボード",
+    "scannerTitle": "チケットスキャナー",
     "readyToScan": "スキャンする準備はできましたか?",
     "readyToScanDescription": "チケットのスキャンを開始して、イベントの参加者をチェックインします。",
     "readyToScanButton": "チケットスキャンの開始",

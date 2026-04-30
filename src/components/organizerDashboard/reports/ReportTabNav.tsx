@@ -28,15 +28,31 @@ export function ReportTabNav({ activeTab, onTabChange }: ReportTabNavProps) {
   const { t } = useTranslation(locale);
 
   const tabs: Tab[] = [
-    { value: "overview", labelKey: "reports.tabs.overview", icon: ChartLineIcon },
+    {
+      value: "overview",
+      labelKey: "reports.tabs.overview",
+      icon: ChartLineIcon,
+    },
     { value: "sales", labelKey: "reports.tabs.sales", icon: ShoppingCartIcon },
-    { value: "customer-analytics", labelKey: "reports.tabs.customerAnalytics", icon: UsersIcon },
-    { value: "financial", labelKey: "reports.tabs.financial", icon: CurrencyDollarIcon },
-    { value: "event-performance", labelKey: "reports.tabs.eventPerformance", icon: CalendarCheckIcon },
+    {
+      value: "customer-analytics",
+      labelKey: "reports.tabs.customerAnalytics",
+      icon: UsersIcon,
+    },
+    {
+      value: "financial",
+      labelKey: "reports.tabs.financial",
+      icon: CurrencyDollarIcon,
+    },
+    {
+      value: "event-performance",
+      labelKey: "reports.tabs.eventPerformance",
+      icon: CalendarCheckIcon,
+    },
   ];
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex max-md:flex-wrap gap-2">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.value;

@@ -5,9 +5,11 @@ import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
 import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 import Head from "next/head";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EventsPage() {
   const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } = useAuthStore();
+  const { t } = useTranslation();
 
   const renderContent = () => {
     if (isOrganizerRejected()) {
@@ -40,7 +42,7 @@ export default function EventsPage() {
   return (
     <>
       <Head>
-        <title>Events | Organizer Dashboard</title>
+        <title>{t("navigation.events", "Events")}</title>
       </Head>
       <DashboardLayout>
         {renderContent()}

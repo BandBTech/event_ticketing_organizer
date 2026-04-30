@@ -224,8 +224,8 @@ function UsersPageContent() {
     );
 
   return (
-    <div className="flex-1 min-w-0 space-y-6 max-w-7xl mx-auto p-4 md:p-6 h-full flex flex-col overflow-hidden">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="flex-1 min-w-0 space-y-6 mx-auto p-4 md:p-6 h-full flex flex-col overflow-hidden">
+      {/*<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             {t("users.pageTitle", "Team Management")}
@@ -237,16 +237,7 @@ function UsersPageContent() {
             )}
           </p>
         </div>
-        <PermissionGuard permission={PERMISSIONS.USER_CREATE}>
-          <Button
-            onClick={openCreateUserModal}
-            className="gap-2 w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4" />
-            {t("users.create.button", "Add User")}
-          </Button>
-        </PermissionGuard>
-      </div>
+        </div>*/}
 
       <div className="glass-card-lowest rounded-2xl flex-1 min-h-0 flex flex-col">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 p-4 min-w-0">
@@ -310,6 +301,16 @@ function UsersPageContent() {
                 </SelectContent>
               </Select>
             </div>
+
+            <PermissionGuard permission={PERMISSIONS.USER_CREATE}>
+              <Button
+                onClick={openCreateUserModal}
+                className="gap-2 w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4" />
+                {t("users.create.button", "Add User")}
+              </Button>
+            </PermissionGuard>
           </div>
         </div>
 

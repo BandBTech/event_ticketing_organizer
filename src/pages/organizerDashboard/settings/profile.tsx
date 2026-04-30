@@ -159,11 +159,11 @@ export default function ProfileSettingsPage() {
   return (
     <>
       <Head>
-        <title>Profile Settings | Organizer Dashboard</title>
+        <title>{t("settings.profile.title", "Profile Settings")}</title>
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6">
+          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6 md:pt-0">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 font-poppins">

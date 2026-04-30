@@ -104,14 +104,14 @@ export default function PayoutsPage() {
     <>
       <Head>
         <title>
-          {t("payouts.title", "Payout Requests")} | Organizer Dashboard
+          {t("payouts.title", "Payout Requests")}
         </title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
-          <div className="flex-1 space-y-6 md:h-full max-w-7xl mx-auto p-4 md:p-6 flex flex-col">
+          <div className="flex-1 space-y-6 md:h-full mx-auto p-4 md:p-6 flex flex-col">
             {/* Page Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            {/*<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   {t("payouts.title", "Payout Requests")}
@@ -124,22 +124,8 @@ export default function PayoutsPage() {
                 </p>
               </div>
 
-              <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
-                <Button
-                  onClick={() => setIsDialogOpen(true)}
-                  className="gap-2 w-full sm:w-auto "
-                >
-                  <PlusIcon size={18} weight="bold" />
-                  {t("payouts.requestPayout", "Request Payout")}
-                </Button>
 
-                <PayoutRequestDialog
-                  open={isDialogOpen}
-                  onOpenChange={setIsDialogOpen}
-                  events={summary?.events}
-                />
-              </PermissionGuard>
-            </div>
+            </div>*/}
 
             {/* Summary Cards */}
             <PayoutSummaryCards
@@ -149,10 +135,27 @@ export default function PayoutsPage() {
 
             {/* Payout Requests Table */}
             <div className="glass-card-lowest rounded-2xl flex-1 scrollable-height flex flex-col">
-              <PayoutFilterTabs
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-              />
+              <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between">
+                <PayoutFilterTabs
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
+                <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
+                  <Button
+                    onClick={() => setIsDialogOpen(true)}
+                    className="gap-2 w-full sm:w-auto "
+                  >
+                    <PlusIcon size={18} weight="bold" />
+                    {t("payouts.requestPayout", "Request Payout")}
+                  </Button>
+
+                  <PayoutRequestDialog
+                    open={isDialogOpen}
+                    onOpenChange={setIsDialogOpen}
+                    events={summary?.events}
+                  />
+                </PermissionGuard>
+              </div>
               <PayoutTable
                 payouts={payouts}
                 isLoading={isPayoutsLoading}

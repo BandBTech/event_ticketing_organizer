@@ -597,6 +597,7 @@
     }
   },
   "settings": {
+    "title": "Impostazioni",
     "menu": {
       "organizer": "Profilo dell'organizzatore",
       "tiers": "Modelli di livello",
@@ -766,6 +767,8 @@
     "saveButton": "Salva e continua"
   },
   "staffDashboard": {
+    "title": "Dashboard Staff",
+    "scannerTitle": "Scanner Biglietti",
     "readyToScan": "Pronto per la scansione?",
     "readyToScanDescription": "Inizia a scansionare i biglietti per effettuare il check-in dei partecipanti all'evento.",
     "readyToScanButton": "Avvia la scansione del biglietto",
