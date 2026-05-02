@@ -448,96 +448,101 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                     </div>
                   )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 text-gray-700">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        {t("event.field.venueName", "Venue Name")}
-                      </h4>
-                      <p className="font-medium text-gray-900 break-words">
-                        {event.venue_name}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        {t("event.field.location", "Location")}
-                      </h4>
-                      <p className="font-medium text-gray-900 break-words">
-                        {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
-                          event.address?.trim() || "",
-                        )
-                          ? event.venue_name
-                          : event.address}
-                      </p>
-                    </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">
+                    {t("event.field.venueName", "Venue Name")}
+                  </h4>
+                  <p className="font-medium text-gray-900 break-words">
+                    {event.venue_name}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">
+                    {t("event.field.location", "Location")}
+                  </h4>
+                  <p className="font-medium text-gray-900 break-words">
+                    {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(
+                      event.address?.trim() || "",
+                    )
+                      ? event.venue_name
+                      : event.address}
+                  </p>
+                </div>
+                <div className="flex justify-between space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">
+                      {t("event.field.eventStartsOn", "Event Starts On")}
+                    </h4>
+                    <p className="font-medium text-gray-900">
+                      {isValid(new Date(event.start_date))
+                        ? format(
+                            new Date(event.start_date),
+                            "MMM dd, yyyy h:mm a",
+                          )
+                        : "TBD"}
+                    </p>
                   </div>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        {t("event.field.eventStartsOn", "Event Starts On")}
-                      </h4>
-                      <p className="font-medium text-gray-900">
-                        {isValid(new Date(event.start_date))
-                          ? format(
-                              new Date(event.start_date),
-                              "MMM dd, yyyy h:mm a",
-                            )
-                          : "TBD"}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 mb-1">
-                        {t("event.field.eventEndsOn", "Event Ends On")}
-                      </h4>
-                      <p className="font-medium text-gray-900">
-                        {isValid(new Date(event.end_date))
-                          ? format(
-                              new Date(event.end_date),
-                              "MMM dd, yyyy h:mm a",
-                            )
-                          : "TBD"}
-                      </p>
-                    </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">
+                      {t("event.field.eventEndsOn", "Event Ends On")}
+                    </h4>
+                    <p className="font-medium text-gray-900">
+                      {isValid(new Date(event.end_date))
+                        ? format(
+                            new Date(event.end_date),
+                            "MMM dd, yyyy h:mm a",
+                          )
+                        : "TBD"}
+                    </p>
                   </div>
                 </div>
 
                 {event.tiers && event.tiers.length > 0 && (
                   <div className="pt-6 border-t border-gray-100">
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">
+                    <h4 className="text-sm font-medium text-gray-500 mb-3">
                       {t(
-                        "event.section.ticketSalesDuration",
+                        "events.sections.ticketSalesDuration",
                         "Ticket Sales Duration",
                       )}
                     </h4>
-                    <div className="gap-6">
+                    <div className="space-y-3">
                       {event.tiers.map((tier) => (
                         <div
                           key={tier.id}
-                          className="grid sm:grid-cols-3 gap-2 py-2"
+                          className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3"
                         >
-                          <span className="font-bold text-gray-800">
+                          <span className="font-semibold text-gray-900 break-words block">
                             {tier.tier_name}
                           </span>
-                          <div className="flex col-span-2 flex-wrap gap-x-2 gap-y-2 text-gray-500">
-                            <span className="text-gray-900 font-medium">
-                              {tier.sales_start &&
-                              isValid(new Date(tier.sales_start))
-                                ? format(
-                                    new Date(tier.sales_start),
-                                    "MMM dd, yyyy h:mm a",
-                                  )
-                                : "—"}
-                            </span>
-                            -
-                            <span className="text-gray-900 font-medium">
-                              {tier.sales_end &&
-                              isValid(new Date(tier.sales_end))
-                                ? format(
-                                    new Date(tier.sales_end),
-                                    "MMM dd, yyyy h:mm a",
-                                  )
-                                : "—"}
-                            </span>
+                          <div className="grid sm:grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                                {t("events.tiers.salesStart", "Sales Start")}
+                              </p>
+                              <p className="text-sm font-medium text-gray-800">
+                                {tier.sales_start &&
+                                isValid(new Date(tier.sales_start))
+                                  ? format(
+                                      new Date(tier.sales_start),
+                                      "MMM dd, yyyy h:mm a",
+                                    )
+                                  : "—"}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                                {t("events.tiers.salesEnd", "Sales End")}
+                              </p>
+                              <p className="text-sm font-medium text-gray-800">
+                                {tier.sales_end &&
+                                isValid(new Date(tier.sales_end))
+                                  ? format(
+                                      new Date(tier.sales_end),
+                                      "MMM dd, yyyy h:mm a",
+                                    )
+                                  : "—"}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       ))}
