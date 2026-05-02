@@ -232,11 +232,11 @@ export default function StatusHistorySidebar({
 
           return (
             <div key={historyItem.id} className="relative pl-10 group">
-              <div className="absolute left-0 -top-1 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 border border-gray-100 group-last:border-emerald-500 z-10">
+              <div className="absolute left-0 top-1 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 border border-gray-100 group-first:border-emerald-500 z-10">
                 {getStatusIcon(historyItem.new_status, historyItem.status_type)}
               </div>
 
-              <div className="flex flex-col gap-1 border-y border-transparent group-last:border-emerald-500 group-last:bg-emerald-50 rounded-lg p-3 transition-colors ">
+              <div className="flex flex-col gap-1 border-y border-transparent group-first:border-emerald-500 group-first:bg-emerald-50 rounded-lg p-3 transition-colors ">
                 <div className="flex flex-col gap-1 @sm:flex-row @sm:items-center @sm:justify-between">
                   <Badge
                     variant="outline"
