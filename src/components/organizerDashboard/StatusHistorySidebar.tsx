@@ -91,7 +91,7 @@ export default function StatusHistorySidebar({
       case "cancelled":
         return <XCircle size={16} className="text-red-500" />;
       case "pending":
-        return <Circle size={16} weight="fill" className="text-amber-500" />;
+        return <Circle size={16} className="text-amber-500" />;
       case "draft":
         return <Circle size={16} className="text-gray-500" />;
       default:
@@ -236,7 +236,7 @@ export default function StatusHistorySidebar({
                 {getStatusIcon(historyItem.new_status, historyItem.status_type)}
               </div>
 
-              <div className="flex flex-col gap-1 border-y border-transparent group-first:border-emerald-500 group-first:bg-emerald-50 rounded-lg p-3 transition-colors ">
+              <div className="flex flex-col gap-1 border border-transparent group-first:border-emerald-500 group-first:bg-emerald-50 rounded-lg p-3 transition-colors ">
                 <div className="flex flex-col gap-1 @sm:flex-row @sm:items-center @sm:justify-between">
                   <Badge
                     variant="outline"
