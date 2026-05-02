@@ -236,7 +236,7 @@ export default function StatusHistorySidebar({
                 {getStatusIcon(historyItem.new_status, historyItem.status_type)}
               </div>
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 border-y border-transparent group-last:border-emerald-500 group-last:bg-emerald-50 rounded-lg p-3 transition-colors ">
                 <div className="flex flex-col gap-1 @sm:flex-row @sm:items-center @sm:justify-between">
                   <Badge
                     variant="outline"
