@@ -103,9 +103,7 @@ export default function PayoutsPage() {
   return (
     <>
       <Head>
-        <title>
-          {t("payouts.title", "Payout Requests")}
-        </title>
+        <title>{t("payouts.title", "Payout Requests")}</title>
       </Head>
       <DashboardLayout>
         <ProtectedRoute>
@@ -135,7 +133,7 @@ export default function PayoutsPage() {
 
             {/* Payout Requests Table */}
             <div className="glass-card-lowest rounded-2xl flex-1 scrollable-height flex flex-col">
-              <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between">
+              <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap gap-4 items-center justify-between">
                 <PayoutFilterTabs
                   activeTab={activeTab}
                   onTabChange={handleTabChange}

@@ -72,7 +72,7 @@ export default function DashboardHome() {
   if (isLoading) {
     return (
       <div className="space-y-6 p-4 md:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 3xl:grid-cols-6 gap-6">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
@@ -99,7 +99,7 @@ export default function DashboardHome() {
   return (
     <div className="space-y-6 p-4 lg:p-6">
       {/* Stats Cards — 3 cols × 2 rows */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 3xl:grid-cols-6 gap-6">
         {statCards.map((stat, i) => (
           <motion.div
             key={i}
@@ -219,7 +219,7 @@ export default function DashboardHome() {
               </div>
 
               {/* Legend Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 flex-1 w-full">
+              <div className="grid auto-fit-[200px] gap-x-6 gap-y-4 flex-1 w-full">
                 {statusItems.map((s, i) => {
                   return (
                     <motion.div

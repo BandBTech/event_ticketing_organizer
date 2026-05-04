@@ -79,14 +79,14 @@ export default function EventsList() {
       )}
 
       {showContentLoading && !isError && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid auto-fill-[400px] gap-6">
           <EventCardSkeleton count={6} />
         </div>
       )}
 
       {!showContentLoading && !isError && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <div className="grid auto-fill-[360px] gap-6">
             {safeEvents.length === 0 ? (
               <div className="col-span-full grid place-items-center py-12 text-gray-500">
                 <CalendarXIcon className="w-12 h-12 mb-2" />

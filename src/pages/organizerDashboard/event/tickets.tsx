@@ -176,7 +176,7 @@ export default function EventTicketsPage() {
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 {t("common.backToEvent", "Back to Event")}
               </button>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              {/*<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
                     {t("tickets.pageTitle", "Event Tickets")}
@@ -190,7 +190,7 @@ export default function EventTicketsPage() {
                         )}
                   </p>
                 </div>
-              </div>
+              </div>*/}
             </div>
             <div className="glass-card-lowest rounded-2xl flex-1 min-h-0 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4">
