@@ -932,7 +932,10 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
         open={cancelDialogOpen}
         onOpenChange={(open) => {
           setCancelDialogOpen(open);
-          if (open) cancelForm.reset();
+          if (!open) {
+            cancelForm.reset();
+            setCancelReason(undefined);
+          }
         }}
       >
         <DialogContent className="text-gray-900">
