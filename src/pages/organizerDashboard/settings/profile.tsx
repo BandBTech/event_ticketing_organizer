@@ -240,11 +240,11 @@ export default function ProfileSettingsPage() {
                               <Input
                                 {...field}
                                 type="text"
-                                disabled={!isEditing}
+                                disabled={!isEditing || mutation.isPending}
                                 maxLength={FIRST_NAME_MAX}
                                 className={cn(
                                   "h-11 pl-11 pr-4",
-                                  !isEditing &&
+                                  (!isEditing || mutation.isPending) &&
                                     "bg-gray-50/50 cursor-not-allowed",
                                 )}
                               />
@@ -286,11 +286,11 @@ export default function ProfileSettingsPage() {
                               <Input
                                 {...field}
                                 type="text"
-                                disabled={!isEditing}
+                                disabled={!isEditing || mutation.isPending}
                                 maxLength={LAST_NAME_MAX}
                                 className={cn(
                                   "h-11 pl-11 pr-4",
-                                  !isEditing &&
+                                  (!isEditing || mutation.isPending) &&
                                     "bg-gray-50/50 cursor-not-allowed",
                                 )}
                               />
@@ -356,10 +356,10 @@ export default function ProfileSettingsPage() {
                           <PhoneInput
                             value={field.value || ""}
                             onChange={(value) => field.onChange(value || "")}
-                            disabled={!isEditing}
+                            disabled={!isEditing || mutation.isPending}
                             defaultCountry="NP"
                             className={cn(
-                              !isEditing && "opacity-50 cursor-not-allowed",
+                              (!isEditing || mutation.isPending) && "opacity-50 cursor-not-allowed",
                             )}
                           />
                         </FormControl>

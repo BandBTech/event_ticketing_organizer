@@ -193,6 +193,7 @@ export default function SecuritySettingsPage() {
                               {...field}
                               type={showCurrentPassword ? "text" : "password"}
                               autoComplete="current-password"
+                              disabled={mutation.isPending}
                               placeholder={t(
                                 "settings.security.currentPasswordPlaceholder",
                                 "Enter current password",
@@ -205,7 +206,8 @@ export default function SecuritySettingsPage() {
                             onClick={() =>
                               setShowCurrentPassword(!showCurrentPassword)
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            disabled={mutation.isPending}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
                           >
                             {showCurrentPassword ? (
                               <EyeIcon
@@ -248,6 +250,7 @@ export default function SecuritySettingsPage() {
                               {...field}
                               type={showNewPassword ? "text" : "password"}
                               autoComplete="new-password"
+                              disabled={mutation.isPending}
                               placeholder={t(
                                 "settings.security.newPasswordPlaceholder",
                                 "Enter new password",
@@ -258,7 +261,8 @@ export default function SecuritySettingsPage() {
                           <button
                             type="button"
                             onClick={() => setShowNewPassword(!showNewPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            disabled={mutation.isPending}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
                           >
                             {showNewPassword ? (
                               <EyeIcon
@@ -308,6 +312,7 @@ export default function SecuritySettingsPage() {
                               {...field}
                               type={showConfirmPassword ? "text" : "password"}
                               autoComplete="new-password"
+                              disabled={mutation.isPending}
                               placeholder={t(
                                 "settings.security.confirmPasswordPlaceholder",
                                 "Enter new password again",
@@ -320,7 +325,8 @@ export default function SecuritySettingsPage() {
                             onClick={() =>
                               setShowConfirmPassword(!showConfirmPassword)
                             }
-                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            disabled={mutation.isPending}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer disabled:cursor-not-allowed"
                           >
                             {showConfirmPassword ? (
                               <EyeIcon

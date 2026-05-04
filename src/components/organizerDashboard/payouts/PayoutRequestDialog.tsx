@@ -300,6 +300,7 @@ export function PayoutRequestDialog({
                         className="resize-none md:max-w-[398px]"
                         maxLength={BUSINESS_DESC_MAX}
                         rows={3}
+                        disabled={createPayoutMutation.isPending}
                         {...field}
                       />
                     </FormControl>

@@ -180,6 +180,7 @@ function ResetPasswordContent() {
                                 <Input
                                   type={showNewPassword ? "text" : "password"}
                                   autoComplete="new-password"
+                                  disabled={resetMutation.isPending}
                                   placeholder={t(
                                     "auth.resetPassword.newPasswordPlaceholder",
                                     "••••••••••••",
@@ -196,12 +197,13 @@ function ResetPasswordContent() {
                                   onClick={() =>
                                     setShowNewPassword(!showNewPassword)
                                   }
+                                  disabled={resetMutation.isPending}
                                   aria-label={
                                     showNewPassword
                                       ? "Hide password"
                                       : "Show password"
                                   }
-                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
                                 >
                                   {showNewPassword ? (
                                     <EyeIcon
@@ -271,6 +273,7 @@ function ResetPasswordContent() {
                                     showConfirmPassword ? "text" : "password"
                                   }
                                   autoComplete="new-password"
+                                  disabled={resetMutation.isPending}
                                   placeholder={t(
                                     "auth.resetPassword.confirmPasswordPlaceholder",
                                     "••••••••••••",
@@ -287,12 +290,13 @@ function ResetPasswordContent() {
                                   onClick={() =>
                                     setShowConfirmPassword(!showConfirmPassword)
                                   }
+                                  disabled={resetMutation.isPending}
                                   aria-label={
                                     showConfirmPassword
                                       ? "Hide password"
                                       : "Show password"
                                   }
-                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
                                 >
                                   {showConfirmPassword ? (
                                     <EyeIcon

@@ -233,7 +233,7 @@ export function OrganizerProfileForm({
                 <FormControl>
                   <Input
                     {...field}
-                    disabled={!isEditing}
+                    disabled={!isEditing || isPending}
                     maxLength={50}
                     placeholder={t(
                       "settings.organizerProfile.businessNamePlaceholder",
@@ -241,7 +241,7 @@ export function OrganizerProfileForm({
                     )}
                     className={cn(
                       "pl-10",
-                      !isEditing && "bg-gray-50 cursor-not-allowed",
+                      (!isEditing || isPending) && "bg-gray-50 cursor-not-allowed",
                     )}
                   />
                 </FormControl>
@@ -271,7 +271,7 @@ export function OrganizerProfileForm({
               <FormControl>
                 <Textarea
                   {...field}
-                  disabled={!isEditing}
+                  disabled={!isEditing || isPending}
                   maxLength={500}
                   placeholder={t(
                     "settings.organizerProfile.aboutPlaceholder",
@@ -279,7 +279,7 @@ export function OrganizerProfileForm({
                   )}
                   className={cn(
                     "min-h-[100px]",
-                    !isEditing && "bg-gray-50 cursor-not-allowed",
+                    (!isEditing || isPending) && "bg-gray-50 cursor-not-allowed",
                   )}
                 />
               </FormControl>

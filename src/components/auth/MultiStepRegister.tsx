@@ -419,6 +419,7 @@ export default function MultiStepRegister() {
                                 </div>
                                 <Input
                                   type="text"
+                                  disabled={registerMutation.isPending}
                                   placeholder={t(
                                     "auth.signup.firstNamePlaceholder",
                                     "John"
@@ -456,6 +457,7 @@ export default function MultiStepRegister() {
                                 </div>
                                 <Input
                                   type="text"
+                                  disabled={registerMutation.isPending}
                                   placeholder={t(
                                     "auth.signup.lastNamePlaceholder",
                                     "Doe"
@@ -495,6 +497,7 @@ export default function MultiStepRegister() {
                               </div>
                               <Input
                                 type="email"
+                                disabled={registerMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.emailPlaceholder",
                                   "Enter email address"
@@ -527,6 +530,7 @@ export default function MultiStepRegister() {
                               value={field.value}
                               onChange={field.onChange}
                               defaultCountry={defaultCountry}
+                              disabled={registerMutation.isPending}
                               placeholder={t(
                                 "auth.signup.phonePlaceholder",
                                 "981-234-5678"
@@ -597,6 +601,7 @@ export default function MultiStepRegister() {
                                 maxLength={6}
                                 value={field.value}
                                 onChange={field.onChange}
+                                disabled={verifyOTPMutation.isPending || resendOTPMutation.isPending}
                               >
                                 <InputOTPGroup>
                                   <InputOTPSlot
@@ -702,6 +707,7 @@ export default function MultiStepRegister() {
                               </div>
                               <Input
                                 type={showPassword ? "text" : "password"}
+                                disabled={setPasswordMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.passwordPlaceholder",
                                   "••••••••••••"
@@ -716,7 +722,8 @@ export default function MultiStepRegister() {
                               <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
+                                disabled={setPasswordMutation.isPending}
+                                className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 disabled:cursor-not-allowed"
                               >
                                 {showPassword ? (
                                   <EyeIcon
@@ -771,6 +778,7 @@ export default function MultiStepRegister() {
                               </div>
                               <Input
                                 type={showConfirmPassword ? "text" : "password"}
+                                disabled={setPasswordMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.confirmPasswordPlaceholder",
                                   "••••••••••••"
@@ -787,7 +795,8 @@ export default function MultiStepRegister() {
                                 onClick={() =>
                                   setShowConfirmPassword(!showConfirmPassword)
                                 }
-                                className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2"
+                                disabled={setPasswordMutation.isPending}
+                                className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 disabled:cursor-not-allowed"
                               >
                                 {showConfirmPassword ? (
                                   <EyeIcon

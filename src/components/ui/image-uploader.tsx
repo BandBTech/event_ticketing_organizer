@@ -33,6 +33,7 @@ interface ImageUploaderProps {
   maxHeight?: number; // Max height in pixels
   imageClassName?: string; // Custom class for the image
   uploaderClassName?: string; // Custom class for the uploader area
+  disabled?: boolean;
 }
 
 export function ImageUploader({
@@ -62,6 +63,7 @@ export function ImageUploader({
   maxHeight,
   imageClassName,
   uploaderClassName,
+  disabled = false,
 }: ImageUploaderProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -195,6 +197,7 @@ export function ImageUploader({
     maxSize: maxSizeMB * 1024 * 1024,
     multiple: false,
     noClick: true, // We handle click manually to support "change image" overlay
+    disabled,
     onDrop: (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
       if (file) {
@@ -250,10 +253,12 @@ export function ImageUploader({
   });
 
   const handleClick = () => {
+    if (disabled) return;
     fileInputRef.current?.click();
   };
 
   const handleRemove = (e: React.MouseEvent) => {
+    if (disabled) return;
     e.stopPropagation();
     setInternalError("");
 
@@ -280,10 +285,11 @@ export function ImageUploader({
 
       <div
         {...getRootProps()}
-        onClick={!value ? handleClick : undefined}
+        onClick={!value && !disabled ? handleClick : undefined}
         className={cn(
           "image-uploader border-2 border-dashed grow flex flex-col items-center justify-center rounded-lg text-center text-gray-500 transition-colors relative overflow-hidden",
-          !value && "cursor-pointer min-h-[100px]",
+          !value && !disabled && "cursor-pointer min-h-[100px]",
+          disabled && "opacity-50 cursor-not-allowed pointer-events-none",
           hasError
             ? "border-red-500 bg-red-50/50"
             : isDragActive

@@ -214,6 +214,7 @@ function VerifyOTPContent() {
                               maxLength={6}
                               value={field.value}
                               onChange={field.onChange}
+                              disabled={verifyMutation.isPending || resendMutation.isPending}
                             >
                               <InputOTPGroup>
                                 <InputOTPSlot

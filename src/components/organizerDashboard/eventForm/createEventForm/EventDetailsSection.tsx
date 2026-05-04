@@ -39,6 +39,7 @@ interface EventDetailsSectionProps {
   initialDescription?: string;
   onTagsChange?: (tags: string[]) => void;
   registerFieldRef?: (name: string, element: HTMLElement | null) => void;
+  isPending?: boolean;
 }
 
 export function EventDetailsSection({
@@ -58,6 +59,7 @@ export function EventDetailsSection({
   initialDescription = "",
   onTagsChange,
   registerFieldRef,
+  isPending = false,
 }: EventDetailsSectionProps) {
   const { t } = useTranslation();
   const { setError, clearErrors } = useFormContext<EventFormData>();
@@ -119,6 +121,7 @@ export function EventDetailsSection({
                 "Browse File",
               )}
               required
+              disabled={isPending}
             />
           </div>
 
@@ -231,6 +234,7 @@ export function EventDetailsSection({
                 "Write about your event...",
               )}
               maxLength={EVENT_DESC_MAX}
+              disabled={isPending}
             />
           </div>
           <div className="flex justify-between items-center mt-1 min-h-[20px]">

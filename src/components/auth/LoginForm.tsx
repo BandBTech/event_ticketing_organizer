@@ -186,6 +186,7 @@ export default function LoginForm() {
                             <Input
                               type="email"
                               autoComplete="email"
+                              disabled={loginMutation.isPending}
                               placeholder={t(
                                 "auth.login.emailPlaceholder",
                                 "Enter email address",
@@ -228,6 +229,7 @@ export default function LoginForm() {
                             <Input
                               type={showPassword ? "text" : "password"}
                               autoComplete="current-password"
+                              disabled={loginMutation.isPending}
                               placeholder={t(
                                 "auth.login.passwordPlaceholder",
                                 "••••••••••••",
@@ -242,6 +244,7 @@ export default function LoginForm() {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
+                              disabled={loginMutation.isPending}
                               aria-label={
                                 showPassword
                                   ? t(
@@ -253,7 +256,7 @@ export default function LoginForm() {
                                     "Show password",
                                   )
                               }
-                              className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors"
+                              className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
                             >
                               {showPassword ? (
                                 <EyeIcon
@@ -287,6 +290,7 @@ export default function LoginForm() {
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
+                              disabled={loginMutation.isPending}
                               className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                             />
                           </FormControl>

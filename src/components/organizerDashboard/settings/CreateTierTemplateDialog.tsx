@@ -185,6 +185,7 @@ export function CreateTierTemplateDialog({
                         "e.g., VIP, Early Bird",
                       )}
                       maxLength={TIER_NAME_MAX}
+                      disabled={isSubmitting}
                       {...field}
                     />
                   </FormControl>
@@ -215,6 +216,7 @@ export function CreateTierTemplateDialog({
                       rows={3}
                       maxLength={TIER_DESC_MAX}
                       className="md:max-w-[460px]"
+                      disabled={isSubmitting}
                       {...field}
                     />
                   </FormControl>

@@ -33,6 +33,7 @@ export function Editor({
   onLengthChange,
   placeholder = "Start typing ...",
   maxLength,
+  disabled = false,
 }: {
   editorState?: EditorState
   editorSerializedState?: SerializedEditorState
@@ -43,6 +44,7 @@ export function Editor({
   onLengthChange?: (length: number) => void
   placeholder?: string
   maxLength?: number
+  disabled?: boolean
 }) {
   const onHtmlChangeRef = useRef(onHtmlChange)
 
@@ -51,7 +53,7 @@ export function Editor({
   }, [onHtmlChange])
 
   return (
-    <div className="bg-background overflow-hidden rounded-lg shadow">
+    <div className={cn("bg-background overflow-hidden rounded-lg shadow", disabled && "opacity-50 pointer-events-none cursor-not-allowed")}>
       <LexicalComposer
         initialConfig={{
           ...editorConfig,
@@ -66,6 +68,7 @@ export function Editor({
             Better to use a plugin for initialization if initialHtml is present.
         */}
         <HtmlInitPlugin initialHtml={initialHtml} />
+        <EditablePlugin disabled={disabled} />
 
         <TooltipProvider>
           <Plugins
@@ -96,6 +99,15 @@ export function Editor({
 import { $getRoot, $insertNodes } from "lexical"
 import { useEffect, useRef } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import { cn } from "@/lib/utils"
+
+function EditablePlugin({ disabled }: { disabled: boolean }) {
+  const [editor] = useLexicalComposerContext()
+  useEffect(() => {
+    editor.setEditable(!disabled)
+  }, [editor, disabled])
+  return null
+}
 
 function HtmlInitPlugin({ initialHtml }: { initialHtml?: string }) {
   const [editor] = useLexicalComposerContext()

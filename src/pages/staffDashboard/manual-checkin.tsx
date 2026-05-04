@@ -112,6 +112,7 @@ export default function ManualCheckinPage() {
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  disabled={searchMutation.isPending}
                   placeholder={t(
                     "manualCheckin.searchPlaceholder",
                     "Search by ticket number...",

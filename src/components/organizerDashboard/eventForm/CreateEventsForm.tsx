@@ -478,6 +478,7 @@ export default function CreateEventsForm({
     <div className="p-6 space-y-6 container mx-auto max-w-7xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          <fieldset disabled={saveEventMutation.isPending} className="contents">
           <EventDetailsSection
             control={form.control}
             imagePreview={imagePreview}
@@ -502,6 +503,7 @@ export default function CreateEventsForm({
               }, 0);
             }}
             registerFieldRef={registerFieldRef}
+            isPending={saveEventMutation.isPending}
           />
 
           <VenueScheduleSection
@@ -525,6 +527,7 @@ export default function CreateEventsForm({
             isDirty={isDirty}
             hasImageChange={imageFile !== null}
           />
+          </fieldset>
         </form>
       </Form>
 

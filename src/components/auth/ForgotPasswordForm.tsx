@@ -145,6 +145,7 @@ export default function ForgotPasswordForm() {
                             <Input
                               type="email"
                               autoComplete="email"
+                              disabled={sendResetMutation.isPending}
                               placeholder={t(
                                 "auth.login.emailPlaceholder",
                                 "Enter your email address"
