@@ -104,6 +104,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         isOrganizerComplete: true,
         _authChecked: true,
       });
+      if (typeof window !== 'undefined') {
+        const bc = new BroadcastChannel('auth_channel');
+        bc.postMessage({ type: 'logout' });
+        bc.close();
+      }
       return result;
     } catch {
       // Clear state even on error
@@ -116,6 +121,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         isOrganizerComplete: true,
         _authChecked: true,
       });
+      if (typeof window !== 'undefined') {
+        const bc = new BroadcastChannel('auth_channel');
+        bc.postMessage({ type: 'logout' });
+        bc.close();
+      }
       return { message: undefined };
     }
   },
