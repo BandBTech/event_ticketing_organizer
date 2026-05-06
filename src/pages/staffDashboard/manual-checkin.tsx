@@ -179,8 +179,7 @@ export default function ManualCheckinPage() {
                                 ? "bg-green-100 text-green-700"
                                 : ticket.status === "active"
                                   ? "bg-green-100 text-green-700"
-                                  : ticket.status === "cancelled" ||
-                                      ticket.status === "rejected"
+                                  : ticket.status === "cancelled"
                                     ? "bg-red-100 text-red-700"
                                     : "bg-gray-100 text-gray-600"
                             }`}
