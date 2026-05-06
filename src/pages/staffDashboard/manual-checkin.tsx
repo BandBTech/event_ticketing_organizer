@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import {
   ArrowLeft,
   ArrowLeftIcon,
+  CheckCircle,
   MagnifyingGlass,
   MagnifyingGlassIcon,
   X,
@@ -164,8 +165,9 @@ export default function ManualCheckinPage() {
                   return (
                     <li
                       key={ticket.id}
-                      className="flex justify-between flex-col gap-4 rounded-xl border p-4 bg-white shadow-sm"
+                      className="flex flex-row items-center gap-4 rounded-xl border p-4 bg-white shadow-sm"
                     >
+                      {/* Left: ticket info */}
                       <div className="space-y-1 flex-1 min-w-0">
                         <div className="flex mb-2 justify-between items-center">
                           <p className="font-semibold text-md truncate">
@@ -174,17 +176,17 @@ export default function ManualCheckinPage() {
                           <span
                             className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                               checkedIn
-                                ? "bg-red-100 text-red-700"
+                                ? "bg-green-100 text-green-700"
                                 : ticket.status === "active"
                                   ? "bg-green-100 text-green-700"
-                                  : "bg-gray-100 text-gray-600"
+                                  : ticket.status === "cancelled" ||
+                                      ticket.status === "rejected"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-600"
                             }`}
                           >
                             {checkedIn
-                              ? t(
-                                  "manualCheckin.alreadyCheckedIn",
-                                  "Already Checked In",
-                                )
+                              ? t("manualCheckin.checkedIn", "Checked In")
                               : ticket.status.toLocaleUpperCase()}
                           </span>
                         </div>
@@ -201,17 +203,26 @@ export default function ManualCheckinPage() {
                         </div>
                       </div>
 
-                      {!checkedIn && (
-                        <Button
-                          disabled={isCheckingIn}
-                          onClick={() => handleCheckIn(ticket)}
-                          className="shrink-0"
-                        >
-                          {isCheckingIn
-                            ? t("common.processing", "Processing...")
-                            : t("manualCheckin.checkIn", "Check In")}
-                        </Button>
-                      )}
+                      {/* Right: action or checked-in indicator */}
+                      <div className="shrink-0 flex items-center">
+                        {checkedIn ? (
+                          <div className="flex flex-col items-center gap-1 text-green-600">
+                            <CheckCircle size={32} weight="fill" />
+                            <span className="text-xs font-semibold whitespace-nowrap">
+                              {t("manualCheckin.checkedIn", "Checked In")}
+                            </span>
+                          </div>
+                        ) : (
+                          <Button
+                            disabled={isCheckingIn}
+                            onClick={() => handleCheckIn(ticket)}
+                          >
+                            {isCheckingIn
+                              ? t("common.processing", "Processing...")
+                              : t("manualCheckin.checkIn", "Check In")}
+                          </Button>
+                        )}
+                      </div>
                     </li>
                   );
                 })}
