@@ -90,7 +90,7 @@ export default function SecuritySettingsPage() {
     return isDirty;
   }, [isDirty]);
 
-  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave } =
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave, bypassNextNavigation } =
     useNavigationGuard({
       hasUnsavedChanges,
       onBeforeLeave: () => {
@@ -114,6 +114,7 @@ export default function SecuritySettingsPage() {
       );
 
       setTimeout(async () => {
+        bypassNextNavigation();
         await logout();
         router.push("/login");
       }, 500);
