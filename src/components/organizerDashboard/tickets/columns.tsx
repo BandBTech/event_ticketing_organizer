@@ -103,6 +103,7 @@ export function getColumns({
     {
       id: "check_in_time",
       header: t("tickets.columns.checkInTime", "Check-In Time"),
+      meta: { sortKey: "check_in_time" },
       cell: (info) => {
         const checkInTime = info.row.original.check_in_time;
         return (
@@ -115,6 +116,7 @@ export function getColumns({
     {
       id: "checked_in_by",
       header: t("tickets.columns.checkedInBy", "Checked In By"),
+      meta: { sortKey: "checked_in_by" },
       cell: (info) => {
         const checkedInBy = info.row.original.checked_in_by_name;
         return (
