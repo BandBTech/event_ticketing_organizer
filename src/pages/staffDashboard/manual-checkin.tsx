@@ -144,7 +144,7 @@ export default function ManualCheckinPage() {
                 <span className="max-md:hidden">
                   {searchMutation.isPending
                     ? t("common.searching", "Searching...")
-                    : t("manualCheckin.search", "Search")}
+                    : t("common.search", "Search")}
                 </span>
               </Button>
             </form>

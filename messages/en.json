@@ -115,7 +115,8 @@
     "backToEvent": "Back to Event",
     "guest": "Guest",
     "submit": "Submit",
-    "results": "Results"
+    "results": "Results",
+    "searching": "Searching..."
   },
   "navigation": {
     "events": "Events",
@@ -988,7 +989,6 @@
   },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
-  "On Hold": "On Hold",
   "reports": {
     "title": "Reports",
     "subtitle": "Analyze your event performance, sales, and financials",

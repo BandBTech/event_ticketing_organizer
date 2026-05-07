@@ -108,7 +108,8 @@
     "backToEvent": "Torna all'evento",
     "guest": "Ospite",
     "submit": "Invia",
-    "results": "Risultati"
+    "results": "Risultati",
+    "searching": "Ricerca..."
   },
   "navigation": {
     "events": "Eventi",
@@ -872,7 +873,6 @@
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
   "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",
-  "On Hold": "In attesa",
   "reports": {
     "title": "Rapporti",
     "subtitle": "Analizza prestazioni eventi, vendite e finanziari",
@@ -1102,5 +1102,8 @@
     "sales_end": "Vendite Finite",
     "sales_upcoming": "Vendite Future",
     "scheduled": "Programmato"
+  },
+  "manualCheckin": {
+    "title": "Check-in manuale"
   }
 }

@@ -108,7 +108,8 @@
     "backToEvent": "イベントに戻る",
     "guest": "ゲスト",
     "submit": "提出する",
-    "results": "結果"
+    "results": "結果",
+    "searching": "検索中..."
   },
   "navigation": {
     "events": "イベント",
@@ -763,12 +764,10 @@
     "saveButton": "保存して続行"
   },
   "events": {
-    "fields": {
-      "eventEndsOn": "イベント終了日"
-    },
     "analytics": {
       "progress": "販売進捗状況"
-    }
+    },
+    "allStatus": "すべてのステータス"
   },
   "staffDashboard": {
     "title": "スタッフダッシュボード",
@@ -868,15 +867,8 @@
       "valid": "Active"
     }
   },
-  "events": {
-    "analytics": {
-      "progress": "Sales Progress"
-    },
-    "allStatus": "すべてのステータス"
-  },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
-  "On Hold": "On Hold",
   "reports": {
     "title": "レポート",
     "subtitle": "イベントのパフォーマンス、売上、財務を分析",
@@ -1106,5 +1098,8 @@
     "sales_end": "販売終了",
     "sales_upcoming": "販売予定",
     "scheduled": "スケジュール済み"
+  },
+  "manualCheckin": {
+    "title": "手動チェックイン"
   }
 }
