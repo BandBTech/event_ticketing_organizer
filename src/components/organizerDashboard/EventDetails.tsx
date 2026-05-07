@@ -983,7 +983,11 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setCancelDialogOpen(false)}
+                  onClick={() => {
+                    setCancelDialogOpen(false);
+                    cancelForm.reset();
+                    setCancelReason(undefined);
+                  }}
                 >
                   {t("event.button.keepEvent", "Keep Event")}
                 </Button>
