@@ -78,9 +78,7 @@ export default function ManualCheckinPage() {
   return (
     <>
       <Head>
-        <title>
-          {t("manualCheckin.title", "Manual Check-in")}
-        </title>
+        <title>{t("manualCheckin.title", "Manual Check-in")}</title>
       </Head>
 
       <StaffDashboardLayout>
@@ -165,7 +163,7 @@ export default function ManualCheckinPage() {
                   return (
                     <li
                       key={ticket.id}
-                      className="flex flex-row items-center gap-4 rounded-xl border p-4 bg-white shadow-sm"
+                      className="flex flex-col md:flex-row items-stretch md:items-center gap-4 rounded-xl border p-4 bg-white shadow-sm"
                     >
                       {/* Left: ticket info */}
                       <div className="space-y-1 flex-1 min-w-0">
@@ -173,23 +171,8 @@ export default function ManualCheckinPage() {
                           <p className="font-semibold text-md truncate">
                             #{ticket.ticket_number}
                           </p>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                              checkedIn
-                                ? "bg-green-100 text-green-700"
-                                : ticket.status === "active"
-                                  ? "bg-green-100 text-green-700"
-                                  : ticket.status === "cancelled"
-                                    ? "bg-red-100 text-red-700"
-                                    : "bg-gray-100 text-gray-600"
-                            }`}
-                          >
-                            {checkedIn
-                              ? t("manualCheckin.checkedIn", "Checked In")
-                              : ticket.status.toLocaleUpperCase()}
-                          </span>
                         </div>
-                        <div className="bg-gray-50 border p-2 rounded-md">
+                        <div className="bg-gray-50 border p-2 rounded-md relative">
                           <div className="text-sm text-primary -mb-0.5">
                             Buyer
                           </div>
@@ -199,29 +182,39 @@ export default function ManualCheckinPage() {
                           <p className="text-xs text-gray-500 truncate">
                             {ticket.attendee?.email || ticket.buyer_email}
                           </p>
+                          <span
+                            className={`absolute top-1.5 right-1 text-xs px-2 py-0.5 rounded-full font-semibold ${
+                              checkedIn
+                                ? "bg-green-100 text-green-700"
+                                : ticket.status === "active"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : ticket.status === "cancelled"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {checkedIn
+                              ? t("manualCheckin.checkedIn", "Checked In")
+                              : ticket.status.charAt(0).toUpperCase() +
+                                ticket.status.slice(1)}
+                          </span>
                         </div>
                       </div>
 
                       {/* Right: action or checked-in indicator */}
-                      <div className="shrink-0 flex items-center">
-                        {checkedIn ? (
-                          <div className="flex flex-col items-center gap-1 text-green-600">
-                            <CheckCircle size={32} weight="fill" />
-                            <span className="text-xs font-semibold whitespace-nowrap">
-                              {t("manualCheckin.checkedIn", "Checked In")}
-                            </span>
-                          </div>
-                        ) : (
+                      {!checkedIn && (
+                        <div className="shrink-0 flex items-center">
                           <Button
                             disabled={isCheckingIn}
                             onClick={() => handleCheckIn(ticket)}
+                            className="w-full"
                           >
                             {isCheckingIn
                               ? t("common.processing", "Processing...")
                               : t("manualCheckin.checkIn", "Check In")}
                           </Button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </li>
                   );
                 })}
