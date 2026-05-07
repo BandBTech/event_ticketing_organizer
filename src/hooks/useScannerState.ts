@@ -248,15 +248,22 @@ export function useScannerState() {
       return;
     }
 
-    // Check both the committed queue AND the in-flight processing set
-    if (
-      currentQueue.some((item) => item.code === code) ||
-      processingCodesRef.current.has(code)
-    ) {
-      // Silently ignore — no error toast. The ticket is either already queued
-      // or currently being validated. This prevents the annoying "already in queue"
-      // toast that fires when the camera re-reads the same QR before the first
-      // validation response arrives.
+    // If already in the queue: silent within 2 s of being added (camera re-read),
+    // toast after that (intentional duplicate scan).
+    const existingItem = currentQueue.find((item) => item.code === code);
+    if (existingItem) {
+      const age = Date.now() - new Date(existingItem.timestamp).getTime();
+      if (age >= 2000) {
+        toast.error(
+          t("staffScanner.alreadyInQueue", "Already in queue"),
+          t("staffScanner.ticketAlreadyQueued", "This ticket is already queued for check-in"),
+        );
+      }
+      return;
+    }
+
+    // In-flight validation for this code — silently ignore to avoid double-processing.
+    if (processingCodesRef.current.has(code)) {
       return;
     }
 

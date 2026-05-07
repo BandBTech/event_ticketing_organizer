@@ -862,7 +862,10 @@
       "cancelled": "Annullato",
       "checkedIn": "Check-in",
       "used": "Usato",
-      "valid": "Attivo"
+      "valid": "Attivo",
+      "pendingRefund": "Rimborso in sospeso",
+      "expired": "Scaduto",
+      "allStatuses": "Tutti gli stati"
     }
   },
   "events": {

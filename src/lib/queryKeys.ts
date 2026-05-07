@@ -38,6 +38,7 @@ export const queryKeys = {
         search?: string;
         sort_by?: string;
         sort_order?: string;
+        status?: string;
       },
     ) => ["eventTickets", id, params] as const,
   },

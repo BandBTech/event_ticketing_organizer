@@ -9,9 +9,9 @@ import { useCurrencyStore } from "@/store/currencyStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePaginationSync } from "@/hooks/usePaginationSync";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
+import { TicketStatusSelect } from "@/components/organizerDashboard/tickets/TicketStatusSelect";
 import { Input } from "@/components/ui/input";
 import { TicketIcon, Search, ArrowLeft, Loader2 } from "lucide-react";
-import Link from "next/link";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import { PERMISSIONS } from "@/lib/permissions";
@@ -23,6 +23,7 @@ function EventTicketsTable({
   currentPage,
   limit,
   search,
+  statusFilter,
   t,
   sortBy,
   sortOrder,
@@ -34,6 +35,7 @@ function EventTicketsTable({
   currentPage: number;
   limit: number;
   search: string;
+  statusFilter: string;
   t: (key: string, fallback?: string) => string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
@@ -46,6 +48,8 @@ function EventTicketsTable({
 }) {
   const { locale } = useLanguageStore();
   const { currency } = useCurrencyStore();
+  const resolvedStatus =
+    statusFilter && statusFilter !== "all" ? statusFilter : undefined;
   const { data: ticketsResponse, isLoading } = useQuery({
     queryKey: queryKeys.events.tickets(eventId, {
       page: currentPage,
@@ -53,6 +57,7 @@ function EventTicketsTable({
       search: search,
       sort_by: sortBy,
       sort_order: sortOrder,
+      status: resolvedStatus,
     }),
     queryFn: () =>
       eventService.getEventTickets(
@@ -62,6 +67,7 @@ function EventTicketsTable({
         search || undefined,
         sortBy,
         sortOrder,
+        resolvedStatus,
       ),
     enabled: !!eventId,
   });
@@ -127,6 +133,7 @@ export default function EventTicketsPage() {
 
   const [globalFilter, setGlobalFilter] = useState("");
   const debouncedSearch = useDebounce(globalFilter, 500);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const { currentPage, limit, handlePageChange, handleLimitChange } =
     usePaginationSync();
@@ -147,6 +154,11 @@ export default function EventTicketsPage() {
     setGlobalFilter(value);
     handlePageChange(1);
   };
+
+  // const handleStatusFilter = (value: string) => {
+  //   setStatusFilter(value);
+  //   handlePageChange(1);
+  // };
 
   const handleSortChange = useCallback(
     (
@@ -206,6 +218,7 @@ export default function EventTicketsPage() {
                     className="pl-9 bg-white border-gray-200"
                   />
                 </div>
+                {/*<TicketStatusSelect value={statusFilter} onChange={handleStatusFilter} />*/}
               </div>
 
               {!router.isReady || (isEventLoading && !event) ? (
@@ -218,6 +231,7 @@ export default function EventTicketsPage() {
                   currentPage={currentPage}
                   limit={limit}
                   search={debouncedSearch}
+                  statusFilter={statusFilter}
                   t={t}
                   sortBy={sortBy}
                   sortOrder={sortOrder}

@@ -862,9 +862,12 @@
       "paymentPending": "Payment Pending",
       "refunded": "Refunded",
       "cancelled": "Cancelled",
-      "checkedIn": "Checked In",
-      "used": "Used",
-      "valid": "Active"
+      "checkedIn": "チェックイン済み",
+      "used": "使用済み",
+      "valid": "有効",
+      "pendingRefund": "返金保留中",
+      "expired": "期限切れ",
+      "allStatuses": "すべてのステータス"
     }
   },
   "Your account is inactive.": "Your account is inactive.",

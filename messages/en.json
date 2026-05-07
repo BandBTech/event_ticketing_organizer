@@ -978,7 +978,10 @@
       "cancelled": "Cancelled",
       "checkedIn": "Checked In",
       "used": "Used",
-      "valid": "Active"
+      "valid": "Active",
+      "pendingRefund": "Pending Refund",
+      "expired": "Expired",
+      "allStatuses": "All Statuses"
     }
   },
   "events": {

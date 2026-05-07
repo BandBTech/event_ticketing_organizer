@@ -59,6 +59,22 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
           className:
             "bg-yellow-50 text-yellow-700 border-yellow-600 hover:bg-yellow-100",
         };
+      case "pending_refund":
+        return {
+          variant: "outline",
+          label: t("tickets.status.pendingRefund", "Pending Refund"),
+          icon: AlertCircle,
+          className:
+            "bg-amber-50 text-amber-700 border-amber-600 hover:bg-amber-100",
+        };
+      case "expired":
+        return {
+          variant: "outline",
+          label: t("tickets.status.expired", "Expired"),
+          icon: Clock,
+          className:
+            "bg-gray-50 text-gray-500 border-gray-400 hover:bg-gray-100",
+        };
       default:
         return {
           variant: "outline",
