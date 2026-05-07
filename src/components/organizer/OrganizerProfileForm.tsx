@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BuildingOfficeIcon } from "@phosphor-icons/react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import {
   Form,
   FormControl,
@@ -24,6 +25,7 @@ import {
   OrganizerProfileFormValues,
 } from "@/lib/validation";
 import { Loader2 } from "lucide-react";
+import { UnsavedChangesDialog } from "@/components/organizerDashboard/eventForm/createEventForm/UnsavedChangesDialog";
 
 interface OrganizerProfileFormProps {
   /** Default values for the form */
@@ -100,6 +102,21 @@ export function OrganizerProfileForm({
   const isInitialMount = useRef(true);
   const prevDefaultValuesRef = useRef<string | null>(null);
 
+  const { isDirty } = form.formState;
+
+  const hasUnsavedChanges = useCallback(() => {
+    // Check both form dirty state and image changes
+    return isDirty || (selectedFile == null && !previewUrl);
+  }, [isDirty, selectedFile, previewUrl]);
+
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave } =
+    useNavigationGuard({
+      hasUnsavedChanges,
+      onBeforeLeave: () => {
+        form.reset(form.getValues());
+      },
+    });
+
   // Only reset form when defaultValues actually change (by content, not reference)
   // Skip on initial mount since useForm already handles initial defaultValues
   useEffect(() => {
@@ -173,155 +190,166 @@ export function OrganizerProfileForm({
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
-        className="space-y-6"
-      >
-        {/* Logo Uploader */}
-        {showLogoUploader && isEditing && (
-          <div className="space-y-2 organizer-profile-form">
-            <ImageUploader
-              label={t(
-                "settings.organizerProfile.businessLogo",
-                "Business Logo",
-              )}
-              value={previewUrl || ""}
-              onChange={handleLogoChange}
-              onRemove={handleLogoRemove}
-              maxSizeMB={2}
-              minWidth={100}
-              minHeight={100}
-              maxWidth={500}
-              maxHeight={500}
-              required={true}
-              error={logoError || undefined}
-              helperText={t(
-                "settings.organizerProfile.logoHelperText",
-                "Recommended size: 500x500px. Minimum size: 100x100px.",
-              )}
-              helperTextSize={t(
-                "settings.organizerProfile.logoHelperTextSize",
-                "Max size: 2MB.",
-              )}
-              browseButtonText={t(
-                "event.helperText.bannerImageBrowse",
-                "Browse File",
-              )}
-            />
-          </div>
-        )}
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
+          className="space-y-6"
+        >
+          {/* Logo Uploader */}
+          {showLogoUploader && isEditing && (
+            <div className="space-y-2 organizer-profile-form">
+              <ImageUploader
+                label={t(
+                  "settings.organizerProfile.businessLogo",
+                  "Business Logo",
+                )}
+                value={previewUrl || ""}
+                onChange={handleLogoChange}
+                onRemove={handleLogoRemove}
+                maxSizeMB={2}
+                minWidth={100}
+                minHeight={100}
+                maxWidth={500}
+                maxHeight={500}
+                required={true}
+                error={logoError || undefined}
+                helperText={t(
+                  "settings.organizerProfile.logoHelperText",
+                  "Recommended size: 500x500px. Minimum size: 100x100px.",
+                )}
+                helperTextSize={t(
+                  "settings.organizerProfile.logoHelperTextSize",
+                  "Max size: 2MB.",
+                )}
+                browseButtonText={t(
+                  "event.helperText.bannerImageBrowse",
+                  "Browse File",
+                )}
+              />
+            </div>
+          )}
 
-        {/* Business Name Field */}
-        <FormField
-          control={form.control}
-          name="business_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-900">
-                {t("settings.organizerProfile.businessName", "Business Name")}{" "}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                  <BuildingOfficeIcon
-                    size={18}
-                    className="text-gray-600"
-                    weight="duotone"
-                  />
+          {/* Business Name Field */}
+          <FormField
+            control={form.control}
+            name="business_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-gray-900">
+                  {t("settings.organizerProfile.businessName", "Business Name")}{" "}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <BuildingOfficeIcon
+                      size={18}
+                      className="text-gray-600"
+                      weight="duotone"
+                    />
+                  </div>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={!isEditing || isPending}
+                      maxLength={50}
+                      placeholder={t(
+                        "settings.organizerProfile.businessNamePlaceholder",
+                        "Enter your business name",
+                      )}
+                      className={cn(
+                        "pl-10",
+                        (!isEditing || isPending) &&
+                          "bg-gray-50 cursor-not-allowed",
+                      )}
+                    />
+                  </FormControl>
                 </div>
+                <div className="flex justify-between">
+                  <TranslatedFormMessage t={t} />
+                  {isEditing && (
+                    <p className="text-xs text-gray-400 ml-auto">
+                      {field.value?.length || 0}/50 characters
+                    </p>
+                  )}
+                </div>
+              </FormItem>
+            )}
+          />
+
+          {/* Description Field */}
+          <FormField
+            control={form.control}
+            name="business_description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-gray-900">
+                  {t("settings.organizerProfile.about", "About")}{" "}
+                  <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     {...field}
                     disabled={!isEditing || isPending}
-                    maxLength={50}
+                    maxLength={500}
                     placeholder={t(
-                      "settings.organizerProfile.businessNamePlaceholder",
-                      "Enter your business name",
+                      "settings.organizerProfile.aboutPlaceholder",
+                      "Write about your organization...",
                     )}
                     className={cn(
-                      "pl-10",
-                      (!isEditing || isPending) && "bg-gray-50 cursor-not-allowed",
+                      "min-h-[100px]",
+                      (!isEditing || isPending) &&
+                        "bg-gray-50 cursor-not-allowed",
                     )}
                   />
                 </FormControl>
-              </div>
-              <div className="flex justify-between">
-                <TranslatedFormMessage t={t} />
-                {isEditing && (
-                  <p className="text-xs text-gray-400 ml-auto">
-                    {field.value?.length || 0}/50 characters
-                  </p>
-                )}
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Description Field */}
-        <FormField
-          control={form.control}
-          name="business_description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium text-gray-900">
-                {t("settings.organizerProfile.about", "About")}{" "}
-                <span className="text-red-500">*</span>
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  {...field}
-                  disabled={!isEditing || isPending}
-                  maxLength={500}
-                  placeholder={t(
-                    "settings.organizerProfile.aboutPlaceholder",
-                    "Write about your organization...",
+                <div className="flex justify-between">
+                  <TranslatedFormMessage t={t} />
+                  {isEditing && (
+                    <p className="text-xs text-gray-400 ml-auto">
+                      {field.value?.length || 0}/500 characters
+                    </p>
                   )}
-                  className={cn(
-                    "min-h-[100px]",
-                    (!isEditing || isPending) && "bg-gray-50 cursor-not-allowed",
-                  )}
-                />
-              </FormControl>
-              <div className="flex justify-between">
-                <TranslatedFormMessage t={t} />
-                {isEditing && (
-                  <p className="text-xs text-gray-400 ml-auto">
-                    {field.value?.length || 0}/500 characters
-                  </p>
-                )}
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Action Buttons */}
-        {showActions && isEditing && (
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending
-                ? t("common.saving", "Saving...")
-                : t("common.saveChanges", "Save Changes")}
-            </Button>
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-600"
-              >
-                {t("common.cancel", "Cancel")}
-              </Button>
+                </div>
+              </FormItem>
             )}
-          </div>
-        )}
-      </form>
-    </Form>
+          />
+
+          {/* Action Buttons */}
+          {showActions && isEditing && (
+            <div className="flex gap-3 pt-4 border-t border-gray-200">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isPending
+                  ? t("common.saving", "Saving...")
+                  : t("common.saveChanges", "Save Changes")}
+              </Button>
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-600"
+                >
+                  {t("common.cancel", "Cancel")}
+                </Button>
+              )}
+            </div>
+          )}
+        </form>
+      </Form>
+
+      <UnsavedChangesDialog
+        open={showLeaveDialog}
+        onOpenChange={setShowLeaveDialog}
+        onConfirm={confirmLeave}
+        onCancel={cancelLeave}
+      />
+    </>
   );
 }
 

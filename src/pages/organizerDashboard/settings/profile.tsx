@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +17,7 @@ import {
   TranslatedFormMessage,
 } from "@/components/ui/form";
 import { FIRST_NAME_MAX, LAST_NAME_MAX } from "@/lib/validation";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useAuthStore } from "@/store/authStore";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -28,6 +29,7 @@ import { isValidPhoneNumber, parsePhoneNumber } from "react-phone-number-input";
 import SettingsLayout from "@/components/layout/SettingsLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
+import { UnsavedChangesDialog } from "@/components/organizerDashboard/eventForm/createEventForm/UnsavedChangesDialog";
 
 const createProfileSchema = () => {
   return z.object({
@@ -140,6 +142,24 @@ export default function ProfileSettingsPage() {
       } else {
         toast.error("settings.toast.updateFailed", "Failed to update profile.");
       }
+    },
+  });
+
+  const { isDirty } = form.formState;
+
+  const hasUnsavedChanges = useCallback(() => {
+    return isDirty;
+  }, [isDirty]);
+
+  const {
+    showLeaveDialog,
+    setShowLeaveDialog,
+    confirmLeave,
+    cancelLeave,
+  } = useNavigationGuard({
+    hasUnsavedChanges,
+    onBeforeLeave: () => {
+      form.reset(form.getValues());
     },
   });
 
@@ -359,7 +379,8 @@ export default function ProfileSettingsPage() {
                             disabled={!isEditing || mutation.isPending}
                             defaultCountry="NP"
                             className={cn(
-                              (!isEditing || mutation.isPending) && "opacity-50 cursor-not-allowed",
+                              (!isEditing || mutation.isPending) &&
+                                "opacity-50 cursor-not-allowed",
                             )}
                           />
                         </FormControl>
@@ -394,6 +415,13 @@ export default function ProfileSettingsPage() {
                   )}
                 </form>
               </Form>
+
+              <UnsavedChangesDialog
+                open={showLeaveDialog}
+                onOpenChange={setShowLeaveDialog}
+                onConfirm={confirmLeave}
+                onCancel={cancelLeave}
+              />
             </div>
           </div>
         </ProtectedRoute>

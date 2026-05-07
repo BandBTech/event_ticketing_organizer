@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,6 +7,7 @@ import { EyeIcon, EyeClosedIcon, KeyIcon } from "@phosphor-icons/react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import {
   Form,
   FormControl,
@@ -26,6 +27,7 @@ import { PasswordRequirements } from "@/components/auth/PasswordRequirements";
 import SettingsLayout from "@/components/layout/SettingsLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
+import { UnsavedChangesDialog } from "@/components/organizerDashboard/eventForm/createEventForm/UnsavedChangesDialog";
 
 const createChangePasswordSchema = () => {
   return z
@@ -81,6 +83,20 @@ export default function SecuritySettingsPage() {
     },
     mode: "onChange",
   });
+
+  const { isDirty } = form.formState;
+
+  const hasUnsavedChanges = useCallback(() => {
+    return isDirty;
+  }, [isDirty]);
+
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave } =
+    useNavigationGuard({
+      hasUnsavedChanges,
+      onBeforeLeave: () => {
+        form.reset(form.getValues());
+      },
+    });
 
   const mutation = useMutation({
     mutationFn: async (data: ChangePasswordFormData) => {
@@ -375,6 +391,13 @@ export default function SecuritySettingsPage() {
                   </div>
                 </form>
               </Form>
+
+              <UnsavedChangesDialog
+                open={showLeaveDialog}
+                onOpenChange={setShowLeaveDialog}
+                onConfirm={confirmLeave}
+                onCancel={cancelLeave}
+              />
             </div>
           </div>
         </ProtectedRoute>
