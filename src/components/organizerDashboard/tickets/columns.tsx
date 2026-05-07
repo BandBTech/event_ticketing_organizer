@@ -40,6 +40,7 @@ export function getColumns({
     {
       id: "purchaser",
       header: t("tickets.columns.purchaser", "Purchased By"),
+      meta: { sortKey: "purchased_by" },
       cell: (info) => {
         const isGuest = info.row.original.is_guest_purchase;
         const attendee = info.row.original.attendee;
@@ -69,6 +70,7 @@ export function getColumns({
     {
       id: "tier",
       header: t("tickets.columns.tier", "Tier"),
+      meta: { sortKey: "tier" },
       cell: (info) => (
         <span className="font-medium text-gray-900">
           {info.row.original.tier?.name || "-"}
