@@ -1,10 +1,12 @@
 "use client";
 
-import { QrCodeIcon, ListNumbers } from "@phosphor-icons/react";
+import { QrCodeIcon, MagnifyingGlass } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { eventService } from "@/services/eventService";
 import EventCard from "@/components/organizerDashboard/EventCard";
 import EventCardSkeleton from "@/components/organizerDashboard/EventCardSkeleton";
@@ -13,6 +15,7 @@ import { useLanguageStore } from "@/store/languageStore";
 export default function StaffDashboardHome() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [search, setSearch] = useState("");
 
   const { data: eventsData, isLoading } = useQuery({
     queryKey: ["staff", "events"],
@@ -20,12 +23,21 @@ export default function StaffDashboardHome() {
   });
 
   const liveEvents =
-    eventsData?.events.filter((e) => {
-      if (!["approved", "on_sale", "live"].includes(e.status)) return false;
-      const scanStartTime =
-        new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
-      return Date.now() >= scanStartTime;
-    }) || [];
+    eventsData?.events
+      .filter((e) => {
+        if (!["approved", "on_sale", "live", "sales_end"].includes(e.status))
+          return false;
+        const scanStartTime =
+          new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
+        return Date.now() >= scanStartTime;
+      })
+      .sort((a, b) => a.title.localeCompare(b.title)) || [];
+
+  const filteredEvents = search.trim()
+    ? liveEvents.filter((e) =>
+        e.title.toLowerCase().includes(search.trim().toLowerCase()),
+      )
+    : liveEvents;
 
   return (
     <div className="space-y-6 p-6">
@@ -41,13 +53,27 @@ export default function StaffDashboardHome() {
         </p>
       </div>
 
+      <div className="relative">
+        <MagnifyingGlass
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+        <Input
+          type="text"
+          placeholder={t("staffDashboard.searchEvents", "Search events...")}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <EventCardSkeleton count={8} />
         </div>
-      ) : liveEvents.length > 0 ? (
+      ) : filteredEvents.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {liveEvents.map((event) => (
+          {filteredEvents.map((event) => (
             <EventCard
               key={event.id}
               event={event}
@@ -88,7 +114,9 @@ export default function StaffDashboardHome() {
       ) : (
         <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed">
           <p className="text-gray-500">
-            {t("staffDashboard.noEvents", "No ongoing events found.")}
+            {search.trim()
+              ? t("staffDashboard.noSearchResults", "No events match your search.")
+              : t("staffDashboard.noEvents", "No ongoing events found.")}
           </p>
         </div>
       )}

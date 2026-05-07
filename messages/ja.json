@@ -779,7 +779,9 @@
     "welcome": "いらっしゃいませ",
     "scan": "チケットをスキャンする",
     "bulkScan": "一括スキャン",
-    "noEvents": "進行中のイベントは見つかりませんでした。"
+    "noEvents": "進行中のイベントは見つかりませんでした。",
+    "searchEvents": "イベントを検索...",
+    "noSearchResults": "検索に一致するイベントはありません。"
   },
   "staffScanner": {
     "cameraErrorDescription": "ブラウザの設定でカメラへのアクセスを許可し、ページを更新してください。",

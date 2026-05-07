@@ -777,7 +777,9 @@
     "welcome": "Benvenuto",
     "scan": "Scansiona i biglietti",
     "bulkScan": "Scansione in blocco",
-    "noEvents": "Nessun evento in corso trovato."
+    "noEvents": "Nessun evento in corso trovato.",
+    "searchEvents": "Cerca eventi...",
+    "noSearchResults": "Nessun evento corrisponde alla tua ricerca."
   },
   "staffScanner": {
     "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",

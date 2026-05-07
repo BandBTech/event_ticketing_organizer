@@ -884,7 +884,9 @@
     "scan": "Scan Tickets",
     "bulkScan": "Bulk Scan",
     "noEvents": "No ongoing events found.",
-    "manualCheckin": "Manual Check-in"
+    "manualCheckin": "Manual Check-in",
+    "noSearchResults": "No events match your search.",
+    "searchEvents": "Search events..."
   },
   "manualCheckin": {
     "title": "Manual Check-in",
