@@ -27,6 +27,8 @@ export default function StaffDashboardHome() {
       .filter((e) => {
         if (!["approved", "on_sale", "live", "sales_end"].includes(e.status))
           return false;
+        if (e.end_date && Date.now() > new Date(e.end_date).getTime())
+          return false;
         const scanStartTime =
           new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
         return Date.now() >= scanStartTime;
