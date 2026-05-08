@@ -213,6 +213,7 @@ export function useScannerState() {
   const clearQueue = () => {
     setBulkQueue([]);
     setBulkResult(null);
+    setShowBulkList(false);
     processingCodesRef.current.clear();
     failedCodesRef.current.forEach((t) => clearTimeout(t));
     failedCodesRef.current.clear();
