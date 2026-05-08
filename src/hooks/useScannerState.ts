@@ -330,10 +330,12 @@ export function useScannerState() {
             // Validation failed — keep the code locked for a short window so
             // the same QR in frame doesn't re-toast every scanDelay tick.
             markFailed(code);
-            toast.error(
-              t("staffScanner.ticketInvalid", "Invalid ticket"),
-              data.message || "Ticket cannot be checked in",
-            );
+            // Messages follow "Title: Description: extra blurb" — split and
+            // use only the first two segments for a clean toast.
+            const msgParts = (data.message || "").split(": ");
+            const toastTitle = msgParts[0] || t("staffScanner.ticketInvalid", "Invalid ticket");
+            const toastDesc = msgParts[1] || t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in");
+            toast.error(toastTitle, toastDesc);
             return;
           }
 
