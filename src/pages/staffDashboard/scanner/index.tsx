@@ -80,6 +80,11 @@ export default function ScannerPage() {
                   onScan={handleQRScan}
                   onError={handleCameraError}
                     disabled={isScanDisabled}
+                  externalPaused={mode === "bulk" && showBulkList}
+                  resumeHintText={t(
+                    "staffScanner.tapToResume",
+                    "Tap to resume scanning",
+                  )}
                   scanHintText={
                     isScanDisabled
                       ? t("staffScanner.allCheckedIn", "All tickets checked in — tap Done to finish")

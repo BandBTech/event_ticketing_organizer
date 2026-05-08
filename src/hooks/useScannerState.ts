@@ -74,6 +74,13 @@ export function useScannerState() {
   // multiple rapid API calls before scanResult state is set.
   const singleScanCooldownRef = useRef(false);
 
+  // Tracks codes that recently failed validation so the scanner doesn't
+  // re-fire toasts every ~1.2s while the same QR sits in the camera frame.
+  // Map of code -> timeout id; the timeout releases the lock after a TTL.
+  const failedCodesRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  );
+
   // Ref mirror of bulkQueue so async callbacks always see latest queue state
   const bulkQueueRef = useRef<BulkScanItem[]>(bulkQueue);
   bulkQueueRef.current = bulkQueue;
@@ -170,11 +177,45 @@ export function useScannerState() {
     }
   }, [t]);
 
+  // ─── Failed-code TTL helpers ─────────────────────────────────────────────────
+  const clearFailedTimer = useCallback((code: string) => {
+    const existing = failedCodesRef.current.get(code);
+    if (existing) {
+      clearTimeout(existing);
+      failedCodesRef.current.delete(code);
+    }
+  }, []);
+
+  // Keep the code locked for ttlMs so the scanner won't re-validate (and
+  // re-toast) the same failed QR while it's still in frame.
+  const markFailed = useCallback(
+    (code: string, ttlMs = 3000) => {
+      clearFailedTimer(code);
+      const timer = setTimeout(() => {
+        processingCodesRef.current.delete(code);
+        failedCodesRef.current.delete(code);
+      }, ttlMs);
+      failedCodesRef.current.set(code, timer);
+    },
+    [clearFailedTimer],
+  );
+
+  // Drop all pending failure timers on unmount to avoid leaks.
+  useEffect(() => {
+    const timers = failedCodesRef.current;
+    return () => {
+      timers.forEach((t) => clearTimeout(t));
+      timers.clear();
+    };
+  }, []);
+
   // ─── Queue Helpers ────────────────────────────────────────────────────────────
   const clearQueue = () => {
     setBulkQueue([]);
     setBulkResult(null);
     processingCodesRef.current.clear();
+    failedCodesRef.current.forEach((t) => clearTimeout(t));
+    failedCodesRef.current.clear();
   };
 
   const removeFromQueue = (index: number) => {
@@ -182,8 +223,18 @@ export function useScannerState() {
       const next = [...prev];
       const removed = next.splice(index, 1);
       // Also remove from processing set so re-scan is possible
-      if (removed[0]) processingCodesRef.current.delete(removed[0].code);
-      if (next.length === 0) setEventId(null);
+      if (removed[0]) {
+        processingCodesRef.current.delete(removed[0].code);
+        clearFailedTimer(removed[0].code);
+      }
+      // Only reset event context when it was self-detected from a scan
+      // (no eventId in the URL). If the user opened the scanner from the
+      // dashboard with ?eventId=..., keep that event context so emptying
+      // the queue doesn't bounce them back to "Please select an event".
+      if (next.length === 0 && !router.query.eventId) {
+        setEventId(null);
+        setScannedEventTitle(null);
+      }
       return next;
     });
   };
@@ -275,8 +326,9 @@ export function useScannerState() {
       {
         onSuccess: (data) => {
           if (!data.can_checkin) {
-            // Validation failed — remove from processing set and show reason
-            processingCodesRef.current.delete(code);
+            // Validation failed — keep the code locked for a short window so
+            // the same QR in frame doesn't re-toast every scanDelay tick.
+            markFailed(code);
             toast.error(
               t("staffScanner.ticketInvalid", "Invalid ticket"),
               data.message || "Ticket cannot be checked in",
@@ -334,8 +386,9 @@ export function useScannerState() {
           // or the queue is cleared.
         },
         onError: () => {
-          // Release the lock on failure so the user can retry
-          processingCodesRef.current.delete(code);
+          // Network/API failure — same throttle as validation failure so we
+          // don't spin-retry the same QR every scanDelay tick.
+          markFailed(code);
         },
       },
     );

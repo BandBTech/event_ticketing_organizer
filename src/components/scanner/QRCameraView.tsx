@@ -1,6 +1,9 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { QrCode, CheckCircle } from "@phosphor-icons/react";
 import type { ScanMode } from "@/hooks/useScannerState";
+
+const IDLE_PAUSE_MS = 30_000;
 
 interface QRCameraViewProps {
   mode: ScanMode;
@@ -8,6 +11,8 @@ interface QRCameraViewProps {
   onError: (error: unknown) => void;
   scanHintText: string;
   disabled?: boolean;
+  externalPaused?: boolean;
+  resumeHintText?: string;
 }
 
 export function QRCameraView({
@@ -16,18 +21,84 @@ export function QRCameraView({
   onError,
   scanHintText,
   disabled = false,
+  externalPaused = false,
+  resumeHintText = "Tap to resume scanning",
 }: QRCameraViewProps) {
+  // Mobile browsers pause/end the MediaStream while the page is hidden.
+  // On return we bump cameraKey to force the Scanner to remount with a fresh
+  // getUserMedia track — pausing alone isn't enough on iOS Safari.
+  const [hiddenPaused, setHiddenPaused] = useState(false);
+  const [idlePaused, setIdlePaused] = useState(false);
+  const [cameraKey, setCameraKey] = useState(0);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearIdleTimer = useCallback(() => {
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = null;
+    }
+  }, []);
+
+  const armIdleTimer = useCallback(() => {
+    clearIdleTimer();
+    idleTimerRef.current = setTimeout(() => setIdlePaused(true), IDLE_PAUSE_MS);
+  }, [clearIdleTimer]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setHiddenPaused(true);
+        clearIdleTimer();
+      } else {
+        setHiddenPaused(false);
+        setCameraKey((k) => k + 1);
+        if (!externalPaused && !idlePaused) armIdleTimer();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearIdleTimer();
+    };
+  }, [armIdleTimer, clearIdleTimer, externalPaused, idlePaused]);
+
+  // Arm/disarm idle timer based on the active paused state.
+  const isPaused = hiddenPaused || externalPaused || idlePaused || disabled;
+  useEffect(() => {
+    if (isPaused) {
+      clearIdleTimer();
+    } else {
+      armIdleTimer();
+    }
+  }, [isPaused, armIdleTimer, clearIdleTimer]);
+
+  const handleScanWrapped = useCallback(
+    (result: unknown[]) => {
+      armIdleTimer();
+      onScan(result);
+    },
+    [armIdleTimer, onScan],
+  );
+
+  const handleResumeTap = useCallback(() => {
+    setIdlePaused(false);
+    setCameraKey((k) => k + 1);
+    armIdleTimer();
+  }, [armIdleTimer]);
+
   return (
     <>
       {/* Camera feed */}
       <div className="w-full h-full relative">
         <Scanner
+          key={cameraKey}
+          paused={isPaused}
           scanDelay={1200}
-          onScan={disabled ? () => { } : onScan}
+          onScan={disabled ? () => { } : handleScanWrapped}
           onError={onError}
           classNames={{ container: "scanner-wrapper" }}
           components={{ finder: false }}
-          constraints={{ facingMode: "environment", width: { ideal: 1080 } }}
+          constraints={{ facingMode: "environment", width: { ideal: 720 } }}
           styles={{
             container: {
               width: "100vw",
@@ -37,12 +108,26 @@ export function QRCameraView({
               width: "100vw",
               height: "calc(100dvh - 64px)",
               objectFit: "cover",
-              filter: disabled ? "brightness(0.4)" : undefined,
+              filter: disabled || idlePaused ? "brightness(0.4)" : undefined,
               transition: "filter 0.4s ease",
             },
           }}
         />
       </div>
+
+      {/* Tap-to-resume overlay — only shown when idle-paused and nothing else is blocking */}
+      {idlePaused && !hiddenPaused && !externalPaused && !disabled && (
+        <button
+          type="button"
+          onClick={handleResumeTap}
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 text-white text-base font-medium"
+          aria-label={resumeHintText}
+        >
+          <span className="px-6 py-3 rounded-full bg-white/15 backdrop-blur-sm">
+            {resumeHintText}
+          </span>
+        </button>
+      )}
 
       {/* Finder overlay — rendered on top of the camera feed */}
       <div className="absolute inset-0 pointer-events-none">
