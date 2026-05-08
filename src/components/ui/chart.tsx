@@ -108,7 +108,7 @@ const ChartTooltipContent = React.forwardRef<
     React.ComponentProps<"div"> &
     Pick<
       React.ComponentProps<typeof RechartsPrimitive.DefaultTooltipContent>,
-      "payload" | "label" | "active"
+      "payload" | "label"
     > & {
       hideLabel?: boolean;
       hideIndicator?: boolean;
@@ -198,7 +198,7 @@ const ChartTooltipContent = React.forwardRef<
 
               return (
                 <div
-                  key={item.dataKey}
+                  key={typeof item.dataKey === "function" ? String(item.dataKey) : item.dataKey}
                   className={cn(
                     "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
                     indicator === "dot" && "items-center",
@@ -311,7 +311,8 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-    Partial<Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign">> & {
+    Partial<Pick<RechartsPrimitive.LegendProps, "verticalAlign">> &
+    Partial<Pick<React.ComponentProps<typeof RechartsPrimitive.DefaultLegendContent>, "payload">> & {
       hideIcon?: boolean;
       nameKey?: string;
     }
