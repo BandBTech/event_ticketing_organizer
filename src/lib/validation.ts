@@ -732,10 +732,9 @@ export const createEventSchema = (
             });
           }
         }),
-      currency: z
-        .string()
-        .min(1, t("event.validation.currencyRequired", "Currency is required."))
-        .default("jpy"),
+      event_type: z.string().optional(),
+      country: z.string().optional(),
+      currency: z.string().optional(),
       tags: z
         .array(z.string())
         .min(

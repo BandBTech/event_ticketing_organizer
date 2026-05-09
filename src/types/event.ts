@@ -23,6 +23,8 @@ export interface Event {
   venue_name: string;
   address: string;
   currency?: string;
+  event_type?: string;
+  country?: string;
   start_date: string;
   end_date: string;
   timezone?: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Control, useFormContext } from "react-hook-form";
+import { Control, useFormContext, useWatch } from "react-hook-form";
 import {
   EventFormData,
   EVENT_TITLE_MAX,
@@ -18,9 +18,52 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ImageUploader } from "@/components/ui/image-uploader";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Editor } from "@/components/editor/editor";
 import CategoryTagsSelector from "@/components/organizerDashboard/CategoryTagsSelector";
 import { cn } from "@/lib/utils";
+
+const COUNTRY_OPTIONS = [
+  { value: "np", label: "Nepal" },
+  { value: "jp", label: "Japan" },
+  { value: "dk", label: "Denmark" },
+  { value: "in", label: "India" },
+] as const;
+
+const COUNTRY_CURRENCY_MAP: Record<string, string> = {
+  np: "npr",
+  jp: "jpy",
+  dk: "dkk",
+  in: "inr",
+};
+
+const CURRENCY_OPTIONS = [
+  { value: "npr", label: "NPR – Nepalese Rupee" },
+  { value: "jpy", label: "JPY – Japanese Yen" },
+  { value: "dkk", label: "DKK – Danish Krone" },
+  { value: "inr", label: "INR – Indian Rupee" },
+  { value: "usd", label: "USD – US Dollar" },
+  { value: "eur", label: "EUR – Euro" },
+  { value: "gbp", label: "GBP – British Pound" },
+] as const;
+
+const EVENT_TYPE_OPTIONS = [
+  { value: "conference", label: "Conference" },
+  { value: "concert", label: "Concert" },
+  { value: "festival", label: "Festival" },
+  { value: "workshop", label: "Workshop" },
+  { value: "sports", label: "Sports" },
+  { value: "exhibition", label: "Exhibition" },
+  { value: "networking", label: "Networking" },
+  { value: "webinar", label: "Webinar" },
+  { value: "other", label: "Other" },
+] as const;
 
 interface EventDetailsSectionProps {
   control: Control<EventFormData>;
@@ -62,7 +105,8 @@ export function EventDetailsSection({
   isPending = false,
 }: EventDetailsSectionProps) {
   const { t } = useTranslation();
-  const { setError, clearErrors } = useFormContext<EventFormData>();
+  const { setError, clearErrors, setValue } = useFormContext<EventFormData>();
+  const currentCurrency = useWatch({ control, name: "currency" });
 
   // Initialise from the initial HTML using DOM parsing so the counter is
   // accurate before the first keystroke (avoids HTML-entity counting errors).
@@ -266,6 +310,115 @@ export function EventDetailsSection({
               {t("common.characters", "characters")}
             </div>
           </div>
+        </div>
+
+        <div className="grid @2xl:grid-cols-3 gap-5">
+          <FormField
+            control={control}
+            name="event_type"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel className="inline-block">
+                  {t("event.field.eventType", "Event Type")}
+                </FormLabel>
+                <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger
+                      className={cn(
+                        "h-13 md:text-md",
+                        !!fieldState.error && "border-red-500 focus:ring-red-500/20",
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={t("event.placeholder.eventType", "Select event type")}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {EVENT_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <TranslatedFormMessage t={t} />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="country"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel className="inline-block">
+                  {t("event.field.country", "Country")}
+                </FormLabel>
+                <Select
+                  value={field.value ?? ""}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setValue("currency", COUNTRY_CURRENCY_MAP[value] ?? "");
+                  }}
+                >
+                  <FormControl>
+                    <SelectTrigger
+                      className={cn(
+                        "h-13 md:text-md",
+                        !!fieldState.error && "border-red-500 focus:ring-red-500/20",
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={t("event.placeholder.country", "Select country")}
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {COUNTRY_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <TranslatedFormMessage t={t} />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="currency"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="inline-block">
+                  {t("event.field.currency", "Currency")}
+                </FormLabel>
+                <Select value={field.value ?? ""} onValueChange={field.onChange} disabled>
+                  <FormControl>
+                    <SelectTrigger className="h-13 md:text-md opacity-70 cursor-not-allowed">
+                      <SelectValue
+                        placeholder={
+                          currentCurrency
+                            ? undefined
+                            : t("event.placeholder.currency", "Select country first")
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {CURRENCY_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <TranslatedFormMessage t={t} />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
     </div>
