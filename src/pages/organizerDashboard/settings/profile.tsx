@@ -151,17 +151,13 @@ export default function ProfileSettingsPage() {
     return isDirty;
   }, [isDirty]);
 
-  const {
-    showLeaveDialog,
-    setShowLeaveDialog,
-    confirmLeave,
-    cancelLeave,
-  } = useNavigationGuard({
-    hasUnsavedChanges,
-    onBeforeLeave: () => {
-      form.reset(form.getValues());
-    },
-  });
+  const { showLeaveDialog, setShowLeaveDialog, confirmLeave, cancelLeave } =
+    useNavigationGuard({
+      hasUnsavedChanges,
+      onBeforeLeave: () => {
+        form.reset(form.getValues());
+      },
+    });
 
   const onSubmit = (data: ProfileFormData) => {
     mutation.mutate(data);
@@ -183,7 +179,17 @@ export default function ProfileSettingsPage() {
       </Head>
       <SettingsLayout>
         <ProtectedRoute>
-          <div className="space-y-4 max-w-4xl mx-auto px-1 md:p-6 md:pt-0">
+          <div className="relative space-y-4 max-w-4xl mx-auto px-1 md:p-6 md:pt-0">
+            {(isEditing && mutation.isPending) && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                  <p className="text-sm font-medium text-gray-700">
+                    {t("common.updating", "Updating")}
+                  </p>
+                </div> 
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 font-poppins">

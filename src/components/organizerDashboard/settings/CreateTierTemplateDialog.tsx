@@ -170,6 +170,16 @@ export function CreateTierTemplateDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {isSubmitting && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                  <p className="text-sm font-medium text-gray-700">
+                    {isEditing ? t("common.updating", "Updating") : t("common.creating", "Creating")}
+                  </p>
+                </div>
+              </div>
+            )}
             <FormField
               control={form.control}
               name="template_name"
