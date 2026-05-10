@@ -142,7 +142,9 @@ export default function CreateEventsForm({
       }
 
       const isReInitWithTemplates =
-        sameEvent && !lastInitializedWithTemplates.current && templatesNowAvailable;
+        sameEvent &&
+        !lastInitializedWithTemplates.current &&
+        templatesNowAvailable;
 
       lastInitializedEventId.current = initialData.id;
       lastInitializedWithTemplates.current = templatesNowAvailable;
@@ -476,57 +478,68 @@ export default function CreateEventsForm({
 
   return (
     <div className="p-6 space-y-6 container mx-auto max-w-7xl">
+      {saveEventMutation.isPending && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            <p className="text-sm font-medium text-gray-700">
+              {t("common.creating", "Creating")}
+            </p>
+          </div>
+        </div>
+      )}
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <fieldset disabled={saveEventMutation.isPending} className="contents">
-          <EventDetailsSection
-            control={form.control}
-            imagePreview={imagePreview}
-            imageError={
-              imageError || form.formState.errors.image?.message || ""
-            }
-            imageErrorParams={imageError ? imageErrorParams : {}}
-            imageRemoved={imageRemoved}
-            initialBannerImage={initialData?.banner_image}
-            onImageChange={handleImageChange}
-            onImageRemove={handleImageRemove}
-            descriptionError={form.formState.errors.description?.message}
-            onDescriptionChange={handleDescriptionChange}
-            onDescriptionClearError={handleDescriptionClearError}
-            isEditing={isEditing}
-            eventId={initialData?.id}
-            initialDescription={initialData?.description || ""}
-            onTagsChange={() => {
-              // Trigger validation for tags explicitly
-              setTimeout(() => {
-                form.trigger("tags");
-              }, 0);
-            }}
-            registerFieldRef={registerFieldRef}
-            isPending={saveEventMutation.isPending}
-          />
+            <EventDetailsSection
+              control={form.control}
+              imagePreview={imagePreview}
+              imageError={
+                imageError || form.formState.errors.image?.message || ""
+              }
+              imageErrorParams={imageError ? imageErrorParams : {}}
+              imageRemoved={imageRemoved}
+              initialBannerImage={initialData?.banner_image}
+              onImageChange={handleImageChange}
+              onImageRemove={handleImageRemove}
+              descriptionError={form.formState.errors.description?.message}
+              onDescriptionChange={handleDescriptionChange}
+              onDescriptionClearError={handleDescriptionClearError}
+              isEditing={isEditing}
+              eventId={initialData?.id}
+              initialDescription={initialData?.description || ""}
+              onTagsChange={() => {
+                // Trigger validation for tags explicitly
+                setTimeout(() => {
+                  form.trigger("tags");
+                }, 0);
+              }}
+              registerFieldRef={registerFieldRef}
+              isPending={saveEventMutation.isPending}
+            />
 
-          <VenueScheduleSection
-            control={form.control}
-            registerFieldRef={registerFieldRef}
-          />
+            <VenueScheduleSection
+              control={form.control}
+              registerFieldRef={registerFieldRef}
+            />
 
-          <TicketingSection
-            control={form.control}
-            tierTemplates={tierTemplates}
-            onCreateNewTier={handleCreateNewTier}
-            registerFieldRef={registerFieldRef}
-          />
+            <TicketingSection
+              control={form.control}
+              tierTemplates={tierTemplates}
+              onCreateNewTier={handleCreateNewTier}
+              registerFieldRef={registerFieldRef}
+            />
 
-          {/* <DiscountsPromoSection control={form.control} /> */}
+            {/* <DiscountsPromoSection control={form.control} /> */}
 
-          <FormActionButtons
-            isEditing={isEditing}
-            isPending={saveEventMutation.isPending}
-            onCancel={handleCancel}
-            isDirty={isDirty}
-            hasImageChange={imageFile !== null}
-          />
+            <FormActionButtons
+              isEditing={isEditing}
+              isPending={saveEventMutation.isPending}
+              onCancel={handleCancel}
+              isDirty={isDirty}
+              hasImageChange={imageFile !== null}
+            />
           </fieldset>
         </form>
       </Form>

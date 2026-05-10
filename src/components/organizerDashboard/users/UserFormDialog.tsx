@@ -264,8 +264,28 @@ export default function UserFormDialog({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col flex-1 overflow-hidden h-full"
+          className="flex flex-col flex-1 overflow-hidden h-full relative"
         >
+          {isPending && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                <p className="text-sm font-medium text-gray-700">
+                  {t("common.creating", "Creating")}
+                </p>
+              </div>
+            </div>
+          )}
+          {isEditing && isPending && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-xl">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                <p className="text-sm font-medium text-gray-700">
+                  {t("common.updating", "Updating")}
+                </p>
+              </div>
+            </div>
+          )}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {!isEditing && (
               <>
