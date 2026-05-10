@@ -43,7 +43,8 @@ export default function LoginForm() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
-  const { login, isAuthenticated, isLoading, clearError, user } = useAuthStore();
+  const { login, isAuthenticated, isLoading, clearError, user } =
+    useAuthStore();
 
   // Redirect if already authenticated - role-based
   // Also check !isLoading to avoid premature redirect during login flow
@@ -139,213 +140,225 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
-      <div className="w-full max-w-[480px] relative z-10">
-        <div className="relative">
-          <div className="glass-login-card rounded-2xl p-4 sm:p-6">
-            <div className="space-y-6 p-2 sm:p-3">
-              {/* Header */}
-              <div className="space-y-1">
-                <div className="flex flex-col sm:flex-row items-baseline gap-1">
-                  <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
-                    {t("auth.login.title", "Login")}
-                  </h1>
-                  <span className="text-sm font-medium text-blue-500">
-                    {t("auth.login.asOrganizer", "as Organizer")}
-                  </span>
+    <>
+      {loginMutation.isPending && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            <p className="text-sm font-medium text-gray-700">
+              {t("auth.login.signingIn")}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+        <div className="w-full max-w-[480px] relative z-10">
+          <div className="relative">
+            <div className="glass-login-card rounded-2xl p-4 sm:p-6">
+              <div className="space-y-6 p-2 sm:p-3">
+                {/* Header */}
+                <div className="space-y-1">
+                  <div className="flex flex-col sm:flex-row items-baseline gap-1">
+                    <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
+                      {t("auth.login.title", "Login")}
+                    </h1>
+                    <span className="text-sm font-medium text-blue-500">
+                      {t("auth.login.asOrganizer", "as Organizer")}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Form with shadcn Form components */}
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  {/* Email Field */}
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-900">
-                          {t("auth.login.email", "Email")}
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div
-                              className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                              aria-hidden="true"
-                            >
-                              <EnvelopeIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            </div>
-                            <Input
-                              type="email"
-                              autoComplete="email"
-                              disabled={loginMutation.isPending}
-                              placeholder={t(
-                                "auth.login.emailPlaceholder",
-                                "Enter email address",
-                              )}
-                              className={cn(
-                                "h-12 pl-16 pr-4 login-input",
-                                form.formState.errors.email &&
-                                "border-destructive",
-                              )}
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <TranslatedFormMessage t={t} />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Password Field */}
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-900">
-                          {t("auth.login.password", "Password")}
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div
-                              className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                              aria-hidden="true"
-                            >
-                              <KeyIcon
-                                weight="duotone"
-                                size={24}
-                                className="text-gray-600"
-                              />
-                            </div>
-                            <Input
-                              type={showPassword ? "text" : "password"}
-                              autoComplete="current-password"
-                              disabled={loginMutation.isPending}
-                              placeholder={t(
-                                "auth.login.passwordPlaceholder",
-                                "••••••••••••",
-                              )}
-                              className={cn(
-                                "h-12 pl-16 pr-16 login-input",
-                                form.formState.errors.password &&
-                                "border-destructive",
-                              )}
-                              {...field}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              disabled={loginMutation.isPending}
-                              aria-label={
-                                showPassword
-                                  ? t(
-                                    "auth.login.hidePassword",
-                                    "Hide password",
-                                  )
-                                  : t(
-                                    "auth.login.showPassword",
-                                    "Show password",
-                                  )
-                              }
-                              className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
-                            >
-                              {showPassword ? (
-                                <EyeIcon
-                                  weight="duotone"
-                                  size={24}
-                                  className="text-gray-600"
-                                />
-                              ) : (
-                                <EyeClosedIcon
-                                  weight="duotone"
-                                  size={24}
-                                  className="text-gray-600"
-                                />
-                              )}
-                            </button>
-                          </div>
-                        </FormControl>
-                        <TranslatedFormMessage t={t} />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Remember Me & Forgot Password */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                {/* Form with shadcn Form components */}
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    {/* Email Field */}
                     <FormField
                       control={form.control}
-                      name="rememberMe"
+                      name="email"
                       render={({ field }) => (
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              disabled={loginMutation.isPending}
-                              className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-medium text-gray-900 cursor-pointer">
-                            {t("auth.login.rememberMe", "Remember Me")}
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-gray-900">
+                            {t("auth.login.email", "Email")}
                           </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div
+                                className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                aria-hidden="true"
+                              >
+                                <EnvelopeIcon
+                                  weight="duotone"
+                                  size={24}
+                                  className="text-gray-600"
+                                />
+                              </div>
+                              <Input
+                                type="email"
+                                autoComplete="email"
+                                disabled={loginMutation.isPending}
+                                placeholder={t(
+                                  "auth.login.emailPlaceholder",
+                                  "Enter email address",
+                                )}
+                                className={cn(
+                                  "h-12 pl-16 pr-4 login-input",
+                                  form.formState.errors.email &&
+                                    "border-destructive",
+                                )}
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <TranslatedFormMessage t={t} />
                         </FormItem>
                       )}
                     />
 
-                    <Link
-                      href="/forgotpassword"
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
-                    >
-                      {t("auth.login.forgotPassword", "Forgot Password?")}
-                    </Link>
-                  </div>
-
-                  {/* Login Button */}
-                  <div className="space-y-4 pt-2">
-                    <Button
-                      type="submit"
-                      disabled={loginMutation.isPending}
-                      className={cn(
-                        "w-full h-12 rounded-lg font-medium transition-all duration-200",
-                        "bg-blue-600 hover:bg-blue-700 text-white",
-                        "shadow-lg hover:shadow-xl",
-                        "disabled:opacity-50 disabled:cursor-not-allowed",
-                        loginMutation.isPending && "animate-pulse",
+                    {/* Password Field */}
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-gray-900">
+                            {t("auth.login.password", "Password")}
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div
+                                className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                aria-hidden="true"
+                              >
+                                <KeyIcon
+                                  weight="duotone"
+                                  size={24}
+                                  className="text-gray-600"
+                                />
+                              </div>
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
+                                disabled={loginMutation.isPending}
+                                placeholder={t(
+                                  "auth.login.passwordPlaceholder",
+                                  "••••••••••••",
+                                )}
+                                className={cn(
+                                  "h-12 pl-16 pr-16 login-input",
+                                  form.formState.errors.password &&
+                                    "border-destructive",
+                                )}
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={loginMutation.isPending}
+                                aria-label={
+                                  showPassword
+                                    ? t(
+                                        "auth.login.hidePassword",
+                                        "Hide password",
+                                      )
+                                    : t(
+                                        "auth.login.showPassword",
+                                        "Show password",
+                                      )
+                                }
+                                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
+                              >
+                                {showPassword ? (
+                                  <EyeIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                ) : (
+                                  <EyeClosedIcon
+                                    weight="duotone"
+                                    size={24}
+                                    className="text-gray-600"
+                                  />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <TranslatedFormMessage t={t} />
+                        </FormItem>
                       )}
-                    >
-                      {loginMutation.isPending
-                        ? t("auth.login.signingIn", "Signing in...")
-                        : t("auth.login.loginButton", "Login")}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
+                    />
 
-              {/* Sign Up Link */}
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  {t("auth.login.noAccount", "Don't have an account?")}{" "}
-                  <Link
-                    href="/register"
-                    className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    {t("auth.login.signUpHere", "Sign up here")}
-                  </Link>
-                </p>
+                    {/* Remember Me & Forgot Password */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                      <FormField
+                        control={form.control}
+                        name="rememberMe"
+                        render={({ field }) => (
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                disabled={loginMutation.isPending}
+                                className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-medium text-gray-900 cursor-pointer">
+                              {t("auth.login.rememberMe", "Remember Me")}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+
+                      <Link
+                        href="/forgotpassword"
+                        className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                      >
+                        {t("auth.login.forgotPassword", "Forgot Password?")}
+                      </Link>
+                    </div>
+
+                    {/* Login Button */}
+                    <div className="space-y-4 pt-2">
+                      <Button
+                        type="submit"
+                        disabled={loginMutation.isPending}
+                        className={cn(
+                          "w-full h-12 rounded-lg font-medium transition-all duration-200",
+                          "bg-blue-600 hover:bg-blue-700 text-white",
+                          "shadow-lg hover:shadow-xl",
+                          "disabled:opacity-50 disabled:cursor-not-allowed",
+                          loginMutation.isPending && "animate-pulse",
+                        )}
+                      >
+                        {loginMutation.isPending
+                          ? t("auth.login.signingIn", "Signing in...")
+                          : t("auth.login.loginButton", "Login")}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+
+                {/* Sign Up Link */}
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    {t("auth.login.noAccount", "Don't have an account?")}{" "}
+                    <Link
+                      href="/register"
+                      className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    >
+                      {t("auth.login.signUpHere", "Sign up here")}
+                    </Link>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

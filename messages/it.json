@@ -251,6 +251,7 @@
       "asOrganizer": "come Organizzatore"
     },
     "signup": {
+      "signingUp": "Creazione account...",
       "phonePlaceholder": "Inserisci un numero di contatto valido",
       "validation": {
         "phoneRequired": "Il numero di contatto è obbligatorio",

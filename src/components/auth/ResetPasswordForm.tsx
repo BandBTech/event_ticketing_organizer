@@ -118,244 +118,261 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="min-h-dvh relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
-      <div className="w-full max-w-[480px] relative z-10">
-        <div className="relative">
-          <div className="glass-login-card rounded-2xl p-4 sm:p-6">
-            <div className="space-y-6 p-2 sm:p-3">
-              {/* Header */}
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
-                  {t("auth.resetPassword.title", "Reset Password")}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {t("auth.resetPassword.subtitle", "Set a new password for")}{" "}
-                  <strong>{email}</strong>
-                </p>
-              </div>
-
-              {isSuccess ? (
-                <div className="space-y-6">
-                  <div className="p-4 rounded-lg bg-green-50 border border-green-200">
-                    <p className="text-sm text-green-700 text-center">
-                      {t(
-                        "auth.resetPassword.successMessage",
-                        "Password reset successful! Redirecting to login...",
-                      )}
-                    </p>
-                  </div>
+    <>
+      {resetMutation.isPending && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            <p className="text-sm font-medium text-gray-700">
+              {t("auth.resetPassword.resetting", "Resetting password...")}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="min-h-dvh relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+        <div className="w-full max-w-[480px] relative z-10">
+          <div className="relative">
+            <div className="glass-login-card rounded-2xl p-4 sm:p-6">
+              <div className="space-y-6 p-2 sm:p-3">
+                {/* Header */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
+                    {t("auth.resetPassword.title", "Reset Password")}
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    {t("auth.resetPassword.subtitle", "Set a new password for")}{" "}
+                    <strong>{email}</strong>
+                  </p>
                 </div>
-              ) : (
-                <>
-                  {/* Form */}
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-6"
-                    >
-                      {/* New Password Field */}
-                      <FormField
-                        control={form.control}
-                        name="newPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium text-gray-900">
-                              {t(
-                                "auth.resetPassword.newPassword",
-                                "New Password",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <div
-                                  className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                                  aria-hidden="true"
-                                >
-                                  <KeyIcon
-                                    weight="duotone"
-                                    size={24}
-                                    className="text-gray-600"
-                                  />
-                                </div>
-                                <Input
-                                  type={showNewPassword ? "text" : "password"}
-                                  autoComplete="new-password"
-                                  disabled={resetMutation.isPending}
-                                  placeholder={t(
-                                    "auth.resetPassword.newPasswordPlaceholder",
-                                    "••••••••••••",
-                                  )}
-                                  className={cn(
-                                    "h-12 pl-16 pr-16 login-input",
-                                    form.formState.errors.newPassword &&
-                                      "border-destructive",
-                                  )}
-                                  {...field}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setShowNewPassword(!showNewPassword)
-                                  }
-                                  disabled={resetMutation.isPending}
-                                  aria-label={
-                                    showNewPassword
-                                      ? "Hide password"
-                                      : "Show password"
-                                  }
-                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
-                                >
-                                  {showNewPassword ? (
-                                    <EyeIcon
-                                      weight="duotone"
-                                      size={24}
-                                      className="text-gray-600"
-                                    />
-                                  ) : (
-                                    <EyeClosedIcon
-                                      weight="duotone"
-                                      size={24}
-                                      className="text-gray-600"
-                                    />
-                                  )}
-                                </button>
-                              </div>
-                            </FormControl>
-                            {form.formState.errors.newPassword &&
-                              form.formState.errors.newPassword.message !==
-                                "Invalid input" &&
-                              // Filter out messages that are already covered by PasswordRequirements
-                              !form.formState.errors.newPassword.message?.includes(
-                                "must be at least 8 characters",
-                              ) &&
-                              !form.formState.errors.newPassword.message?.includes(
-                                "uppercase and one lowercase",
-                              ) &&
-                              !form.formState.errors.newPassword.message?.includes(
-                                "special character",
-                              ) &&
-                              !form.formState.errors.newPassword.message?.includes(
-                                "numeric digit",
-                              ) && <TranslatedFormMessage t={t} />}
-                            <PasswordRequirements
-                              password={form.watch("newPassword")}
-                            />
-                          </FormItem>
+
+                {isSuccess ? (
+                  <div className="space-y-6">
+                    <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                      <p className="text-sm text-green-700 text-center">
+                        {t(
+                          "auth.resetPassword.successMessage",
+                          "Password reset successful! Redirecting to login...",
                         )}
-                      />
-
-                      {/* Confirm Password Field */}
-                      <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm font-medium text-gray-900">
-                              {t(
-                                "auth.resetPassword.confirmPassword",
-                                "Confirm Password",
-                              )}
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <div
-                                  className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
-                                  aria-hidden="true"
-                                >
-                                  <KeyIcon
-                                    weight="duotone"
-                                    size={24}
-                                    className="text-gray-600"
-                                  />
-                                </div>
-                                <Input
-                                  type={
-                                    showConfirmPassword ? "text" : "password"
-                                  }
-                                  autoComplete="new-password"
-                                  disabled={resetMutation.isPending}
-                                  placeholder={t(
-                                    "auth.resetPassword.confirmPasswordPlaceholder",
-                                    "••••••••••••",
-                                  )}
-                                  className={cn(
-                                    "h-12 pl-16 pr-16 login-input",
-                                    form.formState.errors.confirmPassword &&
-                                      "border-destructive",
-                                  )}
-                                  {...field}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                  }
-                                  disabled={resetMutation.isPending}
-                                  aria-label={
-                                    showConfirmPassword
-                                      ? "Hide password"
-                                      : "Show password"
-                                  }
-                                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
-                                >
-                                  {showConfirmPassword ? (
-                                    <EyeIcon
-                                      weight="duotone"
-                                      size={24}
-                                      className="text-gray-600"
-                                    />
-                                  ) : (
-                                    <EyeClosedIcon
-                                      weight="duotone"
-                                      size={24}
-                                      className="text-gray-600"
-                                    />
-                                  )}
-                                </button>
-                              </div>
-                            </FormControl>
-                            <TranslatedFormMessage t={t} />
-                          </FormItem>
-                        )}
-                      />
-
-                      {/* Submit Button */}
-                      <div className="space-y-4 pt-2">
-                        <Button
-                          type="submit"
-                          disabled={resetMutation.isPending}
-                          className={cn(
-                            "w-full h-12 rounded-lg font-medium transition-all duration-200",
-                            "bg-blue-600 hover:bg-blue-700 text-white",
-                            "shadow-lg hover:shadow-xl",
-                            "disabled:opacity-50 disabled:cursor-not-allowed",
-                            resetMutation.isPending && "animate-pulse",
-                          )}
-                        >
-                          {resetMutation.isPending
-                            ? t("auth.resetPassword.resetting", "Resetting...")
-                            : t("auth.resetPassword.title", "Reset Password")}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-
-                  {/* Back to Login */}
-                  <div className="text-center">
-                    <Link
-                      href="/login"
-                      className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                    >
-                      {t("auth.resetPassword.backToLogin", "Back to login")}
-                    </Link>
+                      </p>
+                    </div>
                   </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    {/* Form */}
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-6"
+                      >
+                        {/* New Password Field */}
+                        <FormField
+                          control={form.control}
+                          name="newPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium text-gray-900">
+                                {t(
+                                  "auth.resetPassword.newPassword",
+                                  "New Password",
+                                )}
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <div
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                    aria-hidden="true"
+                                  >
+                                    <KeyIcon
+                                      weight="duotone"
+                                      size={24}
+                                      className="text-gray-600"
+                                    />
+                                  </div>
+                                  <Input
+                                    type={showNewPassword ? "text" : "password"}
+                                    autoComplete="new-password"
+                                    disabled={resetMutation.isPending}
+                                    placeholder={t(
+                                      "auth.resetPassword.newPasswordPlaceholder",
+                                      "••••••••••••",
+                                    )}
+                                    className={cn(
+                                      "h-12 pl-16 pr-16 login-input",
+                                      form.formState.errors.newPassword &&
+                                        "border-destructive",
+                                    )}
+                                    {...field}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setShowNewPassword(!showNewPassword)
+                                    }
+                                    disabled={resetMutation.isPending}
+                                    aria-label={
+                                      showNewPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                    }
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
+                                  >
+                                    {showNewPassword ? (
+                                      <EyeIcon
+                                        weight="duotone"
+                                        size={24}
+                                        className="text-gray-600"
+                                      />
+                                    ) : (
+                                      <EyeClosedIcon
+                                        weight="duotone"
+                                        size={24}
+                                        className="text-gray-600"
+                                      />
+                                    )}
+                                  </button>
+                                </div>
+                              </FormControl>
+                              {form.formState.errors.newPassword &&
+                                form.formState.errors.newPassword.message !==
+                                  "Invalid input" &&
+                                // Filter out messages that are already covered by PasswordRequirements
+                                !form.formState.errors.newPassword.message?.includes(
+                                  "must be at least 8 characters",
+                                ) &&
+                                !form.formState.errors.newPassword.message?.includes(
+                                  "uppercase and one lowercase",
+                                ) &&
+                                !form.formState.errors.newPassword.message?.includes(
+                                  "special character",
+                                ) &&
+                                !form.formState.errors.newPassword.message?.includes(
+                                  "numeric digit",
+                                ) && <TranslatedFormMessage t={t} />}
+                              <PasswordRequirements
+                                password={form.watch("newPassword")}
+                              />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Confirm Password Field */}
+                        <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium text-gray-900">
+                                {t(
+                                  "auth.resetPassword.confirmPassword",
+                                  "Confirm Password",
+                                )}
+                              </FormLabel>
+                              <FormControl>
+                                <div className="relative">
+                                  <div
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 rounded-full"
+                                    aria-hidden="true"
+                                  >
+                                    <KeyIcon
+                                      weight="duotone"
+                                      size={24}
+                                      className="text-gray-600"
+                                    />
+                                  </div>
+                                  <Input
+                                    type={
+                                      showConfirmPassword ? "text" : "password"
+                                    }
+                                    autoComplete="new-password"
+                                    disabled={resetMutation.isPending}
+                                    placeholder={t(
+                                      "auth.resetPassword.confirmPasswordPlaceholder",
+                                      "••••••••••••",
+                                    )}
+                                    className={cn(
+                                      "h-12 pl-16 pr-16 login-input",
+                                      form.formState.errors.confirmPassword &&
+                                        "border-destructive",
+                                    )}
+                                    {...field}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setShowConfirmPassword(
+                                        !showConfirmPassword,
+                                      )
+                                    }
+                                    disabled={resetMutation.isPending}
+                                    aria-label={
+                                      showConfirmPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                    }
+                                    className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 transition-colors disabled:cursor-not-allowed"
+                                  >
+                                    {showConfirmPassword ? (
+                                      <EyeIcon
+                                        weight="duotone"
+                                        size={24}
+                                        className="text-gray-600"
+                                      />
+                                    ) : (
+                                      <EyeClosedIcon
+                                        weight="duotone"
+                                        size={24}
+                                        className="text-gray-600"
+                                      />
+                                    )}
+                                  </button>
+                                </div>
+                              </FormControl>
+                              <TranslatedFormMessage t={t} />
+                            </FormItem>
+                          )}
+                        />
+
+                        {/* Submit Button */}
+                        <div className="space-y-4 pt-2">
+                          <Button
+                            type="submit"
+                            disabled={resetMutation.isPending}
+                            className={cn(
+                              "w-full h-12 rounded-lg font-medium transition-all duration-200",
+                              "bg-blue-600 hover:bg-blue-700 text-white",
+                              "shadow-lg hover:shadow-xl",
+                              "disabled:opacity-50 disabled:cursor-not-allowed",
+                              resetMutation.isPending && "animate-pulse",
+                            )}
+                          >
+                            {resetMutation.isPending
+                              ? t(
+                                  "auth.resetPassword.resetting",
+                                  "Resetting...",
+                                )
+                              : t("auth.resetPassword.title", "Reset Password")}
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+
+                    {/* Back to Login */}
+                    <div className="text-center">
+                      <Link
+                        href="/login"
+                        className="text-sm cursor-pointer font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                      >
+                        {t("auth.resetPassword.backToLogin", "Back to login")}
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

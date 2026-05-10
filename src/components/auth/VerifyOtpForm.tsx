@@ -158,158 +158,176 @@ function VerifyOTPContent() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
-      <div className="w-full max-w-[410px] relative z-10">
-        <div className="relative">
-          <div className="glass-login-card rounded-2xl p-4 sm:p-6">
-            <div className="space-y-6 p-2 sm:p-3">
-              {/* Back Button */}
-              <button
-                onClick={() => {
-                  if (otpType === "password_reset") {
-                    sessionStorage.setItem("password_reset_email", email);
-                  }
-                  router.back();
-                }}
-                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
-              >
-                <ArrowLeftIcon size={16} />
-                {t("auth.verifyOTP.back", "Back")}
-              </button>
-
-              {/* Header */}
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
-                  {t("auth.verifyOTP.title", "Verify Your Email")}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {t(
-                    "auth.verifyOTP.subtitle",
-                    "Enter the 6-digit code sent to",
-                  )}
-                  <br />
-                  <strong>{email}</strong>
-                  <br />
-                  {t(
-                    "auth.verifyOTP.otpValidity",
-                    "The code will expire in 10 minutes.",
-                  )}
-                </p>
-              </div>
-
-              {/* OTP Form */}
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
+    <>
+      {verifyMutation.isPending && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+            <p className="text-sm font-medium text-gray-700">
+              {t("auth.verifyOTP.verifying", "Verifying...")}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
+        <div className="w-full max-w-[410px] relative z-10">
+          <div className="relative">
+            <div className="glass-login-card rounded-2xl p-4 sm:p-6">
+              <div className="space-y-6 p-2 sm:p-3">
+                {/* Back Button */}
+                <button
+                  onClick={() => {
+                    if (otpType === "password_reset") {
+                      sessionStorage.setItem("password_reset_email", email);
+                    }
+                    router.back();
+                  }}
+                  className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors cursor-pointer"
                 >
-                  <FormField
-                    control={form.control}
-                    name="otp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="flex justify-center">
-                            <InputOTP
-                              maxLength={6}
-                              value={field.value}
-                              onChange={field.onChange}
-                              disabled={verifyMutation.isPending || resendMutation.isPending}
-                            >
-                              <InputOTPGroup>
-                                <InputOTPSlot
-                                  index={0}
-                                  className="h-14 w-14 text-lg"
-                                />
-                                <InputOTPSlot
-                                  index={1}
-                                  className="h-14 w-14 text-lg"
-                                />
-                                <InputOTPSlot
-                                  index={2}
-                                  className="h-14 w-14 text-lg"
-                                />
-                                <InputOTPSlot
-                                  index={3}
-                                  className="h-14 w-14 text-lg"
-                                />
-                                <InputOTPSlot
-                                  index={4}
-                                  className="h-14 w-14 text-lg"
-                                />
-                                <InputOTPSlot
-                                  index={5}
-                                  className="h-14 w-14 text-lg"
-                                />
-                              </InputOTPGroup>
-                            </InputOTP>
+                  <ArrowLeftIcon size={16} />
+                  {t("auth.verifyOTP.back", "Back")}
+                </button>
+
+                {/* Header */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-poppins">
+                    {t("auth.verifyOTP.title", "Verify Your Email")}
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    {t(
+                      "auth.verifyOTP.subtitle",
+                      "Enter the 6-digit code sent to",
+                    )}
+                    <br />
+                    <strong>{email}</strong>
+                    <br />
+                    {t(
+                      "auth.verifyOTP.otpValidity",
+                      "The code will expire in 10 minutes.",
+                    )}
+                  </p>
+                </div>
+
+                {/* OTP Form */}
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="otp"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="flex justify-center">
+                              <InputOTP
+                                maxLength={6}
+                                value={field.value}
+                                onChange={field.onChange}
+                                disabled={
+                                  verifyMutation.isPending ||
+                                  resendMutation.isPending
+                                }
+                              >
+                                <InputOTPGroup>
+                                  <InputOTPSlot
+                                    index={0}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                  <InputOTPSlot
+                                    index={1}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                  <InputOTPSlot
+                                    index={2}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                  <InputOTPSlot
+                                    index={3}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                  <InputOTPSlot
+                                    index={4}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                  <InputOTPSlot
+                                    index={5}
+                                    className="h-14 w-14 text-lg"
+                                  />
+                                </InputOTPGroup>
+                              </InputOTP>
+                            </div>
+                          </FormControl>
+                          <div className="text-center">
+                            <TranslatedFormMessage t={t} />
                           </div>
-                        </FormControl>
-                        <div className="text-center">
-                          <TranslatedFormMessage t={t} />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Verify Button */}
-                  <Button
-                    type="submit"
-                    disabled={
-                      verifyMutation.isPending || form.watch("otp").length < 6
-                    }
-                    className={cn(
-                      "w-full h-12 rounded-lg font-medium transition-all duration-200",
-                      "bg-blue-600 hover:bg-blue-700 text-white",
-                      "shadow-lg hover:shadow-xl",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      verifyMutation.isPending && "animate-pulse",
-                    )}
-                  >
-                    {verifyMutation.isPending
-                      ? t("auth.verifyOTP.verifying", "Verifying...")
-                      : t("auth.verifyOTP.verifyButton", "Verify OTP")}
-                  </Button>
-                </form>
-              </Form>
+                    {/* Verify Button */}
+                    <Button
+                      type="submit"
+                      disabled={
+                        verifyMutation.isPending || form.watch("otp").length < 6
+                      }
+                      className={cn(
+                        "w-full h-12 rounded-lg font-medium transition-all duration-200",
+                        "bg-blue-600 hover:bg-blue-700 text-white",
+                        "shadow-lg hover:shadow-xl",
+                        "disabled:opacity-50 disabled:cursor-not-allowed",
+                        verifyMutation.isPending && "animate-pulse",
+                      )}
+                    >
+                      {verifyMutation.isPending
+                        ? t("auth.verifyOTP.verifying", "Verifying...")
+                        : t("auth.verifyOTP.verifyButton", "Verify OTP")}
+                    </Button>
+                  </form>
+                </Form>
 
-              {/* Resend OTP */}
-              <div className="text-center space-y-2">
-                <p className="text-sm text-gray-600">
-                  {t("auth.verifyOTP.didntReceive", "Didn't receive the code?")}{" "}
-                  <button
-                    type="button"
-                    onClick={handleResendOTP}
-                    disabled={
-                      resendMutation.isPending ||
-                      verifyMutation.isPending ||
-                      resendTimer > 0
-                    }
-                    className="font-medium cursor-pointer text-primary hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {resendMutation.isPending
-                      ? t("auth.verifyOTP.resending", "Resending...")
-                      : resendTimer > 0
-                        ? t(
-                            "auth.verifyOTP.resendIn",
-                            "Resend in {resendTimer}s",
-                            { resendTimer },
-                          )
-                        : t("auth.verifyOTP.resend", "Resend")}
-                  </button>
-                </p>
-                <p className="text-xs text-gray-500">
-                  {t(
-                    "auth.verifyOTP.checkSpam",
-                    "Check your spam folder if you don't see the email",
-                  )}
-                </p>
+                {/* Resend OTP */}
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-gray-600">
+                    {t(
+                      "auth.verifyOTP.didntReceive",
+                      "Didn't receive the code?",
+                    )}{" "}
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      disabled={
+                        resendMutation.isPending ||
+                        verifyMutation.isPending ||
+                        resendTimer > 0
+                      }
+                      className="font-medium cursor-pointer text-primary hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {resendMutation.isPending
+                        ? t("auth.verifyOTP.resending", "Resending...")
+                        : resendTimer > 0
+                          ? t(
+                              "auth.verifyOTP.resendIn",
+                              "Resend in {resendTimer}s",
+                              { resendTimer },
+                            )
+                          : t("auth.verifyOTP.resend", "Resend")}
+                    </button>
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {t(
+                      "auth.verifyOTP.checkSpam",
+                      "Check your spam folder if you don't see the email",
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

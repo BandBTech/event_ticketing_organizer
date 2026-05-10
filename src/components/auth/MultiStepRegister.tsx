@@ -74,7 +74,7 @@ export default function MultiStepRegister() {
   // Load step and data from URL/sessionStorage on mount
   React.useEffect(() => {
     if (!router.isReady) return;
-    
+
     const stepParam = router.query.step;
     const savedDataStr = sessionStorage.getItem("registration_data");
 
@@ -103,14 +103,14 @@ export default function MultiStepRegister() {
   // Update URL when step changes
   React.useEffect(() => {
     if (!router.isReady) return;
-    
+
     router.replace(
       {
         pathname: router.pathname,
         query: { ...router.query, step: currentStep },
       },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   }, [currentStep, router.isReady]);
 
@@ -119,7 +119,7 @@ export default function MultiStepRegister() {
     if (registrationData) {
       sessionStorage.setItem(
         "registration_data",
-        JSON.stringify(registrationData)
+        JSON.stringify(registrationData),
       );
     }
   }, [registrationData]);
@@ -159,7 +159,10 @@ export default function MultiStepRegister() {
   }, []);
 
   // Step 1: Basic Info Form
-  const basicInfoSchema = useMemo(() => registerBasicInfoSchema((key, fallback, params) => key), []);
+  const basicInfoSchema = useMemo(
+    () => registerBasicInfoSchema((key, fallback, params) => key),
+    [],
+  );
 
   const basicInfoForm = useForm<RegisterBasicInfoFormData>({
     resolver: zodResolver(basicInfoSchema),
@@ -189,7 +192,13 @@ export default function MultiStepRegister() {
         country_code: countryCode,
       });
 
-      return { email: data.email, firstName: data.firstName, lastName: data.lastName, phone, countryCode };
+      return {
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone,
+        countryCode,
+      };
     },
     onSuccess: (data) => {
       setRegistrationData({
@@ -199,13 +208,20 @@ export default function MultiStepRegister() {
         phone: data.phone,
         countryCode: data.countryCode,
       });
-      toast.success("auth.toast.otpSent", "Verification code sent to your email");
+      toast.success(
+        "auth.toast.otpSent",
+        "Verification code sent to your email",
+      );
       setResendTimer(60);
       setCurrentStep(2);
     },
     onError: (error: Error) => {
       if (error instanceof AuthError) {
-        toast.error("", error.message || "Registration failed. Please try again.", error.details);
+        toast.error(
+          "",
+          error.message || "Registration failed. Please try again.",
+          error.details,
+        );
       } else {
         toast.error("", "Registration failed. Please try again.");
       }
@@ -217,7 +233,10 @@ export default function MultiStepRegister() {
   };
 
   // Step 2: OTP Verification Form
-  const otpSchema = useMemo(() => registerOTPSchema((key, fallback, params) => key), []);
+  const otpSchema = useMemo(
+    () => registerOTPSchema((key, fallback, params) => key),
+    [],
+  );
 
   const otpForm = useForm<RegisterOTPFormData>({
     resolver: zodResolver(otpSchema),
@@ -246,13 +265,10 @@ export default function MultiStepRegister() {
         toast.error(
           "",
           error.message || "Invalid OTP. Please try again.",
-          error.details
+          error.details,
         );
       } else {
-        toast.error(
-          "",
-          "Verification failed. Please try again."
-        );
+        toast.error("", "Verification failed. Please try again.");
       }
     },
   });
@@ -273,14 +289,14 @@ export default function MultiStepRegister() {
     onSuccess: () => {
       toast.success(
         "auth.toast.otpResent",
-        "New verification code sent to your email"
+        "New verification code sent to your email",
       );
       setResendTimer(60);
     },
     onError: () => {
       toast.error(
         "auth.toast.resendFailed",
-        "Failed to resend code. Please try again."
+        "Failed to resend code. Please try again.",
       );
     },
   });
@@ -290,7 +306,10 @@ export default function MultiStepRegister() {
   };
 
   // Step 3: Set Password Form
-  const passwordSchema = useMemo(() => registerPasswordSchema((key, fallback, params) => key), []);
+  const passwordSchema = useMemo(
+    () => registerPasswordSchema((key, fallback, params) => key),
+    [],
+  );
 
   const passwordForm = useForm<RegisterPasswordFormData>({
     resolver: zodResolver(passwordSchema),
@@ -313,7 +332,7 @@ export default function MultiStepRegister() {
     onSuccess: (result) => {
       toast.success(
         "auth.toast.signupSuccess",
-        result.message || "Account created successfully!"
+        result.message || "Account created successfully!",
       );
       sessionStorage.removeItem("registration_data");
       router.push("/login");
@@ -323,12 +342,12 @@ export default function MultiStepRegister() {
         toast.error(
           "",
           error.message || "Failed to set password. Please try again.",
-          error.details
+          error.details,
         );
       } else {
         toast.error(
           "auth.toast.signupError",
-          "Failed to complete registration."
+          "Failed to complete registration.",
         );
       }
     },
@@ -342,6 +361,24 @@ export default function MultiStepRegister() {
     <div className="relative flex flex-col items-center justify-center px-4 py-8 sm:py-20">
       <div className="w-full max-w-[480px] relative z-10">
         <div className="relative">
+          {(registerMutation.isPending ||
+            verifyOTPMutation.isPending ||
+            setPasswordMutation.isPending) && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+                <p className="text-sm font-medium text-gray-700">
+                  {registerMutation.isPending
+                    ? t("auth.signup.sendingOTP", "Sending verification code")
+                    : verifyOTPMutation.isPending
+                      ? t("auth.verifyOTP.verifying", "Verifying OTP")
+                      : setPasswordMutation.isPending
+                        ? t("auth.signup.signingUp", "Creating account...")
+                        : null}
+                </p>
+              </div>
+            </div>
+          )}
           <div className="glass-login-card rounded-2xl p-4 sm:p-6">
             <div className="space-y-6 p-2 sm:p-3">
               {/* Back Button for Step 2 */}
@@ -374,15 +411,15 @@ export default function MultiStepRegister() {
                       key={step}
                       className={cn(
                         "flex-1 h-1 rounded-full transition-colors",
-                        step <= currentStep
-                          ? "bg-blue-600"
-                          : "bg-gray-200"
+                        step <= currentStep ? "bg-blue-600" : "bg-gray-200",
                       )}
                     />
                   ))}
                 </div>
                 <p className="text-xs text-gray-600 mt-2">
-                  {t("auth.signup.pageStep", "Step {currentStep} of 3:", { currentStep })}{" "}
+                  {t("auth.signup.pageStep", "Step {currentStep} of 3:", {
+                    currentStep,
+                  })}{" "}
                   {currentStep === 1
                     ? t("auth.signup.basicInfo", "Basic Information")
                     : currentStep === 2
@@ -422,12 +459,12 @@ export default function MultiStepRegister() {
                                   disabled={registerMutation.isPending}
                                   placeholder={t(
                                     "auth.signup.firstNamePlaceholder",
-                                    "John"
+                                    "John",
                                   )}
                                   className={cn(
                                     "h-12 pl-14 pr-4 login-input",
                                     basicInfoForm.formState.errors.firstName &&
-                                    "border-destructive"
+                                      "border-destructive",
                                   )}
                                   {...field}
                                 />
@@ -460,12 +497,12 @@ export default function MultiStepRegister() {
                                   disabled={registerMutation.isPending}
                                   placeholder={t(
                                     "auth.signup.lastNamePlaceholder",
-                                    "Doe"
+                                    "Doe",
                                   )}
                                   className={cn(
                                     "h-12 login-input pl-14 pr-4",
                                     basicInfoForm.formState.errors.lastName &&
-                                    "border-destructive"
+                                      "border-destructive",
                                   )}
                                   {...field}
                                 />
@@ -500,12 +537,12 @@ export default function MultiStepRegister() {
                                 disabled={registerMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.emailPlaceholder",
-                                  "Enter email address"
+                                  "Enter email address",
                                 )}
                                 className={cn(
                                   "h-12 pl-14 pr-4 login-input",
                                   basicInfoForm.formState.errors.email &&
-                                  "border-destructive"
+                                    "border-destructive",
                                 )}
                                 {...field}
                               />
@@ -533,11 +570,11 @@ export default function MultiStepRegister() {
                               disabled={registerMutation.isPending}
                               placeholder={t(
                                 "auth.signup.phonePlaceholder",
-                                "981-234-5678"
+                                "981-234-5678",
                               )}
                               className={cn(
                                 basicInfoForm.formState.errors.phone &&
-                                "border-destructive"
+                                  "border-destructive",
                               )}
                             />
                           </FormControl>
@@ -552,11 +589,14 @@ export default function MultiStepRegister() {
                       className={cn(
                         "w-full h-12 rounded-lg font-medium",
                         "bg-blue-600 hover:bg-blue-700 text-white",
-                        "shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                        "shadow-lg hover:shadow-xl flex items-center justify-center gap-3",
                       )}
                     >
                       {registerMutation.isPending ? (
-                        t("auth.signup.sendingOTP", "Sending verification code...")
+                        t(
+                          "auth.signup.sendingOTP",
+                          "Sending verification code...",
+                        )
                       ) : (
                         <>
                           {t("common.continue", "Continue")}
@@ -577,15 +617,16 @@ export default function MultiStepRegister() {
                   >
                     <div className="text-center">
                       <p className="text-gray-600">
-                        {t("auth.verifyOTP.subtitle", "Enter the 6-digit code sent to")}
+                        {t(
+                          "auth.verifyOTP.subtitle",
+                          "Enter the 6-digit code sent to",
+                        )}
                       </p>
-                      <p className="font-medium">
-                        {registrationData.email}
-                      </p>
+                      <p className="font-medium">{registrationData.email}</p>
                       <p className="text-gray-600">
                         {t(
                           "auth.verifyOTP.otpValidity",
-                          "The code will automatically expire after 10 minutes."
+                          "The code will automatically expire after 10 minutes.",
                         )}
                       </p>
                     </div>
@@ -601,7 +642,10 @@ export default function MultiStepRegister() {
                                 maxLength={6}
                                 value={field.value}
                                 onChange={field.onChange}
-                                disabled={verifyOTPMutation.isPending || resendOTPMutation.isPending}
+                                disabled={
+                                  verifyOTPMutation.isPending ||
+                                  resendOTPMutation.isPending
+                                }
                               >
                                 <InputOTPGroup>
                                   <InputOTPSlot
@@ -643,24 +687,38 @@ export default function MultiStepRegister() {
                       <Button
                         type="submit"
                         disabled={
-                          verifyOTPMutation.isPending || otpForm.watch("otp").length < 6
+                          verifyOTPMutation.isPending ||
+                          otpForm.watch("otp").length < 6
                         }
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
-                        {verifyOTPMutation.isPending ? t("auth.verifyOTP.verifying", "Verifying...") : t("auth.verifyOTP.title", "Verify OTP")}
+                        {verifyOTPMutation.isPending
+                          ? t("auth.verifyOTP.verifying", "Verifying...")
+                          : t("auth.verifyOTP.title", "Verify OTP")}
                       </Button>
                     </div>
 
                     <div className="text-center">
-                      {t("auth.verifyOTP.didntReceiveCode", "Didn't receive code?")}{" "}
+                      {t(
+                        "auth.verifyOTP.didntReceiveCode",
+                        "Didn't receive code?",
+                      )}{" "}
                       <button
                         type="button"
                         onClick={handleResendOTP}
-                        disabled={verifyOTPMutation.isPending || resendOTPMutation.isPending || resendTimer > 0}
+                        disabled={
+                          verifyOTPMutation.isPending ||
+                          resendOTPMutation.isPending ||
+                          resendTimer > 0
+                        }
                         className="text-blue-600 hover:text-blue-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {resendTimer > 0
-                          ? t("auth.verifyOTP.resendIn", "Resend in {resendTimer}s", { resendTimer })
+                          ? t(
+                              "auth.verifyOTP.resendIn",
+                              "Resend in {resendTimer}s",
+                              { resendTimer },
+                            )
                           : t("auth.verifyOTP.resend", "Resend")}
                       </button>
                     </div>
@@ -679,7 +737,7 @@ export default function MultiStepRegister() {
                       <p className="text-sm text-gray-600">
                         {t(
                           "auth.signup.setPassword",
-                          "Create a secure password for"
+                          "Create a secure password for",
                         )}
                       </p>
                       <p className="font-medium text-gray-900">
@@ -710,12 +768,12 @@ export default function MultiStepRegister() {
                                 disabled={setPasswordMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.passwordPlaceholder",
-                                  "••••••••••••"
+                                  "••••••••••••",
                                 )}
                                 className={cn(
                                   "h-12 pl-14 pr-16 login-input",
                                   passwordForm.formState.errors.password &&
-                                  "border-destructive"
+                                    "border-destructive",
                                 )}
                                 {...field}
                               />
@@ -742,15 +800,24 @@ export default function MultiStepRegister() {
                             </div>
                           </FormControl>
                           {passwordForm.formState.errors.password &&
-                            passwordForm.formState.errors.password.message !== "Invalid input" &&
+                            passwordForm.formState.errors.password.message !==
+                              "Invalid input" &&
                             // Filter out messages that are already covered by PasswordRequirements
-                            !passwordForm.formState.errors.password.message?.includes("must be at least 8 characters") &&
-                            !passwordForm.formState.errors.password.message?.includes("uppercase and one lowercase") &&
-                            !passwordForm.formState.errors.password.message?.includes("special character") &&
-                            !passwordForm.formState.errors.password.message?.includes("numeric digit") && (
-                              <TranslatedFormMessage t={t} />
-                            )}
-                          <PasswordRequirements password={passwordForm.watch("password")} />
+                            !passwordForm.formState.errors.password.message?.includes(
+                              "must be at least 8 characters",
+                            ) &&
+                            !passwordForm.formState.errors.password.message?.includes(
+                              "uppercase and one lowercase",
+                            ) &&
+                            !passwordForm.formState.errors.password.message?.includes(
+                              "special character",
+                            ) &&
+                            !passwordForm.formState.errors.password.message?.includes(
+                              "numeric digit",
+                            ) && <TranslatedFormMessage t={t} />}
+                          <PasswordRequirements
+                            password={passwordForm.watch("password")}
+                          />
                         </FormItem>
                       )}
                     />
@@ -764,7 +831,7 @@ export default function MultiStepRegister() {
                           <FormLabel className="text-sm font-medium text-gray-900">
                             {t(
                               "auth.signup.confirmPassword",
-                              "Confirm Password"
+                              "Confirm Password",
                             )}
                           </FormLabel>
                           <FormControl>
@@ -781,12 +848,12 @@ export default function MultiStepRegister() {
                                 disabled={setPasswordMutation.isPending}
                                 placeholder={t(
                                   "auth.signup.confirmPasswordPlaceholder",
-                                  "••••••••••••"
+                                  "••••••••••••",
                                 )}
                                 className={cn(
                                   "h-12 pl-14 pr-16 login-input",
-                                  passwordForm.formState.errors.confirmPassword &&
-                                  "border-destructive"
+                                  passwordForm.formState.errors
+                                    .confirmPassword && "border-destructive",
                                 )}
                                 {...field}
                               />
@@ -826,8 +893,14 @@ export default function MultiStepRegister() {
                         className="flex-1 bg-blue-600 hover:bg-blue-700"
                       >
                         {setPasswordMutation.isPending
-                          ? t("auth.signup.creatingAccount", "Creating Account...")
-                          : t("auth.signup.completeRegistration", "Complete Registration")}
+                          ? t(
+                              "auth.signup.creatingAccount",
+                              "Creating Account...",
+                            )
+                          : t(
+                              "auth.signup.completeRegistration",
+                              "Complete Registration",
+                            )}
                       </Button>
                     </div>
                   </form>
@@ -839,17 +912,14 @@ export default function MultiStepRegister() {
                 <div className="space-y-4">
                   <div className="text-center">
                     <p className="text-sm text-gray-600">
-                      {t(
-                        "auth.signup.haveAccount",
-                        "Already have an account?"
-                      )}{" "}
+                      {t("auth.signup.haveAccount", "Already have an account?")}{" "}
                       <Link
                         href="/login"
                         className="cursor-pointer font-medium text-blue-600 hover:text-blue-700"
                       >
                         {t(
                           "auth.signup.loginAsOrganizer",
-                          "Sign in as Organizer."
+                          "Sign in as Organizer.",
                         )}
                       </Link>
                     </p>
@@ -865,7 +935,7 @@ export default function MultiStepRegister() {
                     <p className="text-xs text-gray-600 leading-relaxed">
                       {t(
                         "auth.signup.termsPrefix",
-                        "By continuing, you consent to the fact that you have read and understood our"
+                        "By continuing, you consent to the fact that you have read and understood our",
                       )}{" "}
                       <Link
                         href="/terms"

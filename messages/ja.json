@@ -251,6 +251,7 @@
       "asOrganizer": "主催者として"
     },
     "signup": {
+      "signingUp": "アカウント作成...",
       "phonePlaceholder": "有効な連絡先番号を入力してください",
       "validation": {
         "phoneRequired": "連絡先番号は必須です",
