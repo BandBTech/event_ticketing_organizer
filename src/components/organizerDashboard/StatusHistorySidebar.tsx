@@ -85,15 +85,29 @@ export default function StatusHistorySidebar({
 
     switch (status) {
       case "approved":
-        return <CheckCircle size={16} className="text-emerald-500" />;
+        return <CheckCircle size={16} className="text-green-600" />;
       case "rejected":
         return <XCircle size={16} className="text-red-500" />;
       case "cancelled":
         return <XCircle size={16} className="text-red-500" />;
       case "pending":
-        return <Circle size={16} className="text-amber-500" />;
+        return <Circle size={16} className="text-yellow-600" />;
       case "draft":
         return <Circle size={16} className="text-gray-500" />;
+      case "on_sale":
+        return <Circle size={16} className="text-green-600" />;
+      case "on_hold":
+        return <Circle size={16} className="text-amber-600" />;
+      case "live":
+        return <Circle size={16} className="text-green-600" />;
+      case "completed":
+        return <Circle size={16} className="text-slate-600" />;
+      case "sales_end":
+        return <Circle size={16} className="text-red-600" />;
+      case "sales_upcoming":
+        return <Circle size={16} className="text-green-500" />;
+      case "scheduled":
+        return <Circle size={16} className="text-blue-600" />;
       default:
         return <Circle size={16} className="text-blue-500" />;
     }
