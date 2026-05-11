@@ -267,7 +267,7 @@ export default function StatusHistorySidebar({
                       historyItem.status_type,
                     )}
                   </Badge>
-                  <span className="text-[12px] text-gray-400">
+                  <span className="text-[12px] text-black">
                     {formatDateTime(historyItem.created_at)}
                   </span>
                 </div>
@@ -286,7 +286,7 @@ export default function StatusHistorySidebar({
                       )}
                 </div>*/}
 
-                <div className="flex items-center gap-1 mt-1 text-[12px] text-gray-400">
+                <div className="flex items-center gap-1 mt-1 text-[12px] text-black">
                   <User size={10} />
                   <span>
                     {historyItem.changed_by_name ||
