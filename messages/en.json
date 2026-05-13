@@ -853,7 +853,28 @@
     "organizerEarnings": "Organizer Earnings",
     "totalTicketsSold": "Total Tickets Sold",
     "totalPendingAmount": "Total Pending Amount",
-    "totalAmountReceived": "Total Amount Received"
+    "totalAmountReceived": "Total Amount Received",
+    "overview": "Overview",
+    "totalEvents": "Total Events",
+    "upcoming": "upcoming",
+    "ticketsSold": "Tickets Sold",
+    "active": "active",
+    "transactions": "Transactions",
+    "completed": "completed",
+    "refunds": "Refunds",
+    "pending": "pending",
+    "noPending": "none pending",
+    "earnings": "Earnings by Event",
+    "filteringBy": "Filtering by",
+    "grossRevenue": "Gross Revenue",
+    "beforeFees": "Before fees & commissions",
+    "netRevenue": "Net Revenue",
+    "afterFees": "After platform fees",
+    "pendingPayout": "Pending Payout",
+    "awaitingWithdrawal": "Awaiting withdrawal",
+    "paidOut": "Paid Out",
+    "alreadyWithdrawn": "Already withdrawn",
+    "noEarningsData": "No earnings data available."
   },
   "All Statuses": "All Statuses",
   "Approved": "Approved",
@@ -990,7 +1011,10 @@
     "analytics": {
       "progress": "Sales Progress"
     },
-    "allStatus": "All Statuses"
+    "allStatus": "All Statuses",
+    "select": {
+      "placeholder": "Select an event"
+    }
   },
   "Your account is inactive.": "Your account is inactive.",
   "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",

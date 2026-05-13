@@ -748,7 +748,28 @@
     "organizerEarnings": "Guadagni organizzatore",
     "totalTicketsSold": "Biglietti totali venduti",
     "totalPendingAmount": "Importo totale in sospeso",
-    "totalAmountReceived": "Importo totale ricevuto"
+    "totalAmountReceived": "Importo totale ricevuto",
+    "overview": "Panoramica",
+    "totalEvents": "Totale eventi",
+    "upcoming": "in programma",
+    "ticketsSold": "Biglietti venduti",
+    "active": "attivi",
+    "transactions": "Transazioni",
+    "completed": "completate",
+    "refunds": "Rimborsi",
+    "pending": "in sospeso",
+    "noPending": "nessuno in sospeso",
+    "earnings": "Guadagni per evento",
+    "filteringBy": "Filtro per",
+    "grossRevenue": "Entrate lorde",
+    "beforeFees": "Prima di commissioni e spese",
+    "netRevenue": "Entrate nette",
+    "afterFees": "Dopo le commissioni della piattaforma",
+    "pendingPayout": "Pagamento in sospeso",
+    "awaitingWithdrawal": "In attesa di prelievo",
+    "paidOut": "Pagato",
+    "alreadyWithdrawn": "Già prelevato",
+    "noEarningsData": "Nessun dato sui guadagni disponibile."
   },
   "All Statuses": "Tutti gli stati",
   "Approved": "Approvato",
@@ -875,7 +896,10 @@
     "analytics": {
       "progress": "Avanzamento delle vendite"
     },
-    "allStatus": "Tutti gli Stati"
+    "allStatus": "Tutti gli Stati",
+    "select": {
+      "placeholder": "Seleziona un evento"
+    }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",
   "Please contact support to reactivate your account.": "Si prega di contattare il supporto per riattivare il proprio account.",

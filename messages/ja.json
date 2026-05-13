@@ -744,7 +744,28 @@
     "organizerEarnings": "主催者の収益",
     "totalTicketsSold": "販売済みチケット総数",
     "totalPendingAmount": "保留中の合計金額",
-    "totalAmountReceived": "受領済み合計金額"
+    "totalAmountReceived": "受領済み合計金額",
+    "overview": "概要",
+    "totalEvents": "総イベント数",
+    "upcoming": "予定",
+    "ticketsSold": "販売済みチケット",
+    "active": "有効",
+    "transactions": "取引",
+    "completed": "完了",
+    "refunds": "払い戻し",
+    "pending": "保留中",
+    "noPending": "保留なし",
+    "earnings": "イベント別収益",
+    "filteringBy": "フィルター中",
+    "grossRevenue": "総収益",
+    "beforeFees": "手数料・コミッション前",
+    "netRevenue": "純収益",
+    "afterFees": "プラットフォーム手数料後",
+    "pendingPayout": "保留中の支払い",
+    "awaitingWithdrawal": "出金待ち",
+    "paidOut": "支払済み",
+    "alreadyWithdrawn": "出金済み",
+    "noEarningsData": "収益データがありません。"
   },
   "All Statuses": "すべてのステータス",
   "Approved": "承認された",
@@ -768,7 +789,10 @@
     "analytics": {
       "progress": "販売進捗状況"
     },
-    "allStatus": "すべてのステータス"
+    "allStatus": "すべてのステータス",
+    "select": {
+      "placeholder": "イベントを選択"
+    }
   },
   "staffDashboard": {
     "title": "スタッフダッシュボード",

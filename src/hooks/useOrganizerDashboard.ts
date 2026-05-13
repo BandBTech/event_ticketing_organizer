@@ -5,13 +5,10 @@ import { dashboardService } from "@/services/dashboardService";
 import { queryKeys } from "@/lib/queryKeys";
 import { OrganizerDashboardResponse } from "@/types/dashboard";
 
-/**
- * Custom hook for fetching organizer dashboard statistics
- */
-export function useOrganizerDashboard() {
+export function useOrganizerDashboard(eventId?: string) {
   const query = useQuery({
-    queryKey: queryKeys.dashboard.all,
-    queryFn: () => dashboardService.getDashboard(),
+    queryKey: [...queryKeys.dashboard.all, eventId ?? 'all'],
+    queryFn: () => dashboardService.getDashboard(eventId),
   });
 
   const response = query.data as OrganizerDashboardResponse | undefined;
@@ -19,6 +16,7 @@ export function useOrganizerDashboard() {
   return {
     ...query,
     data: response,
+    selectedEvent: response?.selected_event ?? null,
     stats: {
       events: response?.events ?? {
         approved: 0,
@@ -30,14 +28,14 @@ export function useOrganizerDashboard() {
         pending: 0,
         rejected: 0,
         total: 0,
+        upcoming: 0,
       },
-      organizerEarnings: response?.organizer_earnings ?? 0,
-      totalAmountReceived: response?.total_amount_received ?? 0,
-      totalPendingAmount: response?.total_pending_amount ?? 0,
-      totalRevenue: response?.total_revenue ?? 0,
-      totalTicketsSold: response?.total_tickets_sold ?? 0,
-      upcomingEventsCount: response?.upcoming_list?.length ?? (typeof response?.upcoming_events === 'number' ? response.upcoming_events : 0),
+      earnings: response?.earnings ?? [],
+      totalTicketsSold: response?.tickets?.total_sold ?? 0,
+      tickets: response?.tickets ?? { active: 0, cancelled: 0, refunded: 0, total_sold: 0, used: 0 },
+      refunds: response?.refunds ?? { completed: 0, failed: 0, pending: 0, processing: 0 },
+      transactions: response?.transactions ?? { completed: 0, failed: 0, pending: 0, processing: 0, refunded: 0, total: 0 },
     },
-    upcomingEvents: response?.upcoming_list ?? [],
+    upcomingEvents: response?.upcoming_events ?? [],
   };
 }
