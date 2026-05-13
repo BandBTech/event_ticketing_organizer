@@ -30,3 +30,6 @@ logs
 .env*
 
 shared_ui/
+
+# ---- TypeScript ----
+*.tsbuildinfo

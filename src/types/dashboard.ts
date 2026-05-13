@@ -3,6 +3,9 @@ export interface DashboardUpcomingEvent {
   title: string;
   banner_image: string;
   category: string;
+  event_type?: string;
+  country?: string;
+  currency?: string;
   start_date: string;
   end_date: string;
   status: string;
@@ -33,6 +36,6 @@ export interface OrganizerDashboardResponse {
   total_pending_amount: number;
   total_revenue: number;
   total_tickets_sold: number;
-  upcoming_events: number;
+  upcoming_events: number | DashboardUpcomingEvent;
   upcoming_list: DashboardUpcomingEvent[];
 }

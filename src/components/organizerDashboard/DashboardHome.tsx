@@ -257,7 +257,7 @@ export default function DashboardHome() {
         <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
           <CalendarIcon className="w-6 h-6 text-blue-600" />
           {t("dashboard.upcomingEvents", "Upcoming Events")} (
-          {stats.upcomingEventsCount})
+          {upcomingEvents.length})
         </h3>
 
         {upcomingEvents.length === 0 ? (

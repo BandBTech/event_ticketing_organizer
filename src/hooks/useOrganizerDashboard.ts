@@ -36,7 +36,7 @@ export function useOrganizerDashboard() {
       totalPendingAmount: response?.total_pending_amount ?? 0,
       totalRevenue: response?.total_revenue ?? 0,
       totalTicketsSold: response?.total_tickets_sold ?? 0,
-      upcomingEventsCount: response?.upcoming_events ?? 0,
+      upcomingEventsCount: response?.upcoming_list?.length ?? (typeof response?.upcoming_events === 'number' ? response.upcoming_events : 0),
     },
     upcomingEvents: response?.upcoming_list ?? [],
   };
