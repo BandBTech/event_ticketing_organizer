@@ -1,10 +1,18 @@
-import { Event, TierTemplate, CreateEventData, UpdateEventRequest, CreateEventTierRequest } from "@/types/event";
+import {
+  Event,
+  TierTemplate,
+  CreateEventData,
+  UpdateEventRequest,
+  CreateEventTierRequest,
+} from "@/types/event";
 import { EventFormData } from "@/lib/validation";
 
 /**
  * Parse category which might be a comma-separated string from backend
  */
-export function parseCategory(category: string | string[] | undefined): string[] {
+export function parseCategory(
+  category: string | string[] | undefined,
+): string[] {
   if (!category) return [];
   if (Array.isArray(category)) {
     return category.map((c) => c.trim().replace(/^[{"]+|[}"]+$/g, ""));
@@ -23,7 +31,7 @@ export function parseCategory(category: string | string[] | undefined): string[]
  */
 export function getTierName(
   tier: { tier_name?: string; tier_template_id?: string },
-  tierTemplates: TierTemplate[]
+  tierTemplates: TierTemplate[],
 ): string {
   if (tier.tier_name) return tier.tier_name;
   // Look up from tier templates if tier_name is empty
@@ -40,7 +48,7 @@ export function getTierName(
 export function getEventFormDefaults(
   initialData?: Event,
   tierTemplates: TierTemplate[] = [],
-  _locale?: string
+  _locale?: string,
 ): EventFormData {
   if (!initialData) {
     return {
@@ -76,7 +84,7 @@ export function getEventFormDefaults(
     description: initialData.description || "",
     event_type: initialData.event_type || "",
     country: initialData.country || "",
-    currency: initialData.currency || "",
+    currency: initialData.currency?.toUpperCase() || "",
     tags: parseCategory(initialData.category),
     image: initialData.banner_image || "",
     venue: initialData.venue_name || "",
@@ -85,25 +93,24 @@ export function getEventFormDefaults(
     timezone: initialData.timezone || "",
     startDate: initialData.start_date || "",
     endDate: initialData.end_date || "",
-    tickets:
-      initialData.tiers?.map((t) => ({
-        id: t.id,
-        name: getTierName(t, tierTemplates),
-        price: t.price,
-        quantity: t.quantity,
-        gst: t.gst || 0,
-        salesStart: t.sales_start || "",
-        salesEnd: t.sales_end || "",
-      })) || [
-        {
-          name: "",
-          price: 0,
-          quantity: 0,
-          gst: 0,
-          salesStart: "",
-          salesEnd: "",
-        },
-      ],
+    tickets: initialData.tiers?.map((t) => ({
+      id: t.id,
+      name: getTierName(t, tierTemplates),
+      price: t.price,
+      quantity: t.quantity,
+      gst: t.gst || 0,
+      salesStart: t.sales_start || "",
+      salesEnd: t.sales_end || "",
+    })) || [
+      {
+        name: "",
+        price: 0,
+        quantity: 0,
+        gst: 0,
+        salesStart: "",
+        salesEnd: "",
+      },
+    ],
     promoCodes: [],
   };
 }
@@ -125,7 +132,7 @@ export function getChangedFields(
   currentData: EventFormData,
   tiersData: TierData[],
   initialData: Event,
-  imageFile: File | null
+  imageFile: File | null,
 ): UpdateEventRequest | null {
   const changedFields: Partial<UpdateEventRequest> = {};
 
@@ -136,10 +143,19 @@ export function getChangedFields(
   if (currentData.description !== initialData.description) {
     changedFields.description = currentData.description;
   }
-  if (currentData.currency !== initialData.currency) {
+  if (currentData.currency !== initialData.currency?.toUpperCase()) {
     changedFields.currency = currentData.currency;
   }
-  if (JSON.stringify(currentData.tags) !== JSON.stringify(parseCategory(initialData.category))) {
+  if (currentData.event_type !== initialData.event_type) {
+    changedFields.event_type = currentData.event_type;
+  }
+  if (currentData.country !== initialData.country) {
+    changedFields.country = currentData.country;
+  }
+  if (
+    JSON.stringify(currentData.tags) !==
+    JSON.stringify(parseCategory(initialData.category))
+  ) {
     changedFields.category = currentData.tags;
   }
   if (currentData.venue !== initialData.venue_name) {
@@ -201,12 +217,14 @@ export function getChangedFields(
 export function prepareCreateEventData(
   data: EventFormData,
   tiersData: TierData[],
-  imageFile: File | null
+  imageFile: File | null,
 ): CreateEventData {
   const eventData: CreateEventData = {
     title: data.name,
     description: data.description,
     currency: data.currency,
+    event_type: data.event_type,
+    country: data.country,
     category: data.tags,
     venue_name: data.venue,
     address: data.venueAddress,

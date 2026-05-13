@@ -33,6 +33,9 @@ function createEventFormData(data: CreateEventData | UpdateEventRequest): FormDa
     // Send as comma-separated string: "music,concert"
     formData.append('category', data.category.join(','));
   }
+  if (data.currency) formData.append('currency', data.currency);
+  if ('event_type' in data && data.event_type) formData.append('event_type', data.event_type);
+  if ('country' in data && data.country) formData.append('country', data.country);
   if (data.venue_name) formData.append('venue_name', data.venue_name);
   if (data.address) formData.append('address', data.address);
   if (data.start_date) formData.append('start_date', data.start_date);

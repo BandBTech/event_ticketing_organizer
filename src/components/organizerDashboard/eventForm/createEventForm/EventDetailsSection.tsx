@@ -37,20 +37,20 @@ const COUNTRY_OPTIONS = [
 ] as const;
 
 const COUNTRY_CURRENCY_MAP: Record<string, string> = {
-  np: "npr",
-  jp: "jpy",
-  dk: "dkk",
-  in: "inr",
+  np: "NPR",
+  jp: "JPY",
+  dk: "DKK",
+  in: "INR",
 };
 
 const CURRENCY_OPTIONS = [
-  { value: "npr", label: "NPR – Nepalese Rupee" },
-  { value: "jpy", label: "JPY – Japanese Yen" },
-  { value: "dkk", label: "DKK – Danish Krone" },
-  { value: "inr", label: "INR – Indian Rupee" },
-  { value: "usd", label: "USD – US Dollar" },
-  { value: "eur", label: "EUR – Euro" },
-  { value: "gbp", label: "GBP – British Pound" },
+  { value: "NPR", label: "NPR – Nepalese Rupee" },
+  { value: "JPY", label: "JPY – Japanese Yen" },
+  { value: "DKK", label: "DKK – Danish Krone" },
+  { value: "INR", label: "INR – Indian Rupee" },
+  { value: "USD", label: "USD – US Dollar" },
+  { value: "EUR", label: "EUR – Euro" },
+  { value: "GBP", label: "GBP – British Pound" },
 ] as const;
 
 const EVENT_TYPE_OPTIONS = [
@@ -319,7 +319,8 @@ export function EventDetailsSection({
             render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="inline-block">
-                  {t("event.field.eventType", "Event Type")}
+                  {t("event.field.eventType", "Event Type")}{" "}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <Select value={field.value ?? ""} onValueChange={field.onChange}>
                   <FormControl>
@@ -353,7 +354,8 @@ export function EventDetailsSection({
             render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel className="inline-block">
-                  {t("event.field.country", "Country")}
+                  {t("event.field.country", "Country")}{" "}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <Select
                   value={field.value ?? ""}
@@ -393,7 +395,8 @@ export function EventDetailsSection({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="inline-block">
-                  {t("event.field.currency", "Currency")}
+                  {t("event.field.currency", "Currency")}{" "}
+                  <span className="text-red-500">*</span>
                 </FormLabel>
                 <Select value={field.value ?? ""} onValueChange={field.onChange} disabled>
                   <FormControl>

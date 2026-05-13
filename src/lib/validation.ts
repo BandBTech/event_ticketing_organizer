@@ -732,9 +732,15 @@ export const createEventSchema = (
             });
           }
         }),
-      event_type: z.string().optional(),
-      country: z.string().optional(),
-      currency: z.string().optional(),
+      event_type: z
+        .string()
+        .min(1, t("event.validation.eventTypeRequired", "Event Type is required.")),
+      country: z
+        .string()
+        .min(1, t("event.validation.countryRequired", "Country is required.")),
+      currency: z
+        .string()
+        .min(1, t("event.validation.currencyRequired", "Currency is required.")),
       tags: z
         .array(z.string())
         .min(
