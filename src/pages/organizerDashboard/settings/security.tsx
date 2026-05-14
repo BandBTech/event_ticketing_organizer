@@ -95,7 +95,6 @@ export default function SecuritySettingsPage() {
     setShowLeaveDialog,
     confirmLeave,
     cancelLeave,
-    bypassNextNavigation,
   } = useNavigationGuard({
     hasUnsavedChanges,
     onBeforeLeave: () => {
@@ -119,7 +118,7 @@ export default function SecuritySettingsPage() {
       );
 
       setTimeout(async () => {
-        bypassNextNavigation();
+        form.reset();
         await logout();
         router.push("/login");
       }, 500);
