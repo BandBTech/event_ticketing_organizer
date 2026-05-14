@@ -217,10 +217,11 @@ export function isValidRegistrationData(data: unknown): data is {
  */
 export const formatCurrency = (amount: number, currencyCode?: string) => {
   const hasFraction = amount % 1 !== 0;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currencyCode || "USD",
-    minimumFractionDigits: hasFraction ? 2 : 0,
-    maximumFractionDigits: hasFraction ? 2 : 0,
-  }).format(amount);
+return new Intl.NumberFormat("en-US", {
+     style: "currency",
+     currency: currencyCode || "USD",
+     minimumFractionDigits: hasFraction ? 2 : 0,
+     maximumFractionDigits: hasFraction ? 2 : 0,
+     currencyDisplay: "narrowSymbol",
+   }).format(amount);
 };
