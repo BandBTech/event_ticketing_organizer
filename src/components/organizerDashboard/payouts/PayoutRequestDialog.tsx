@@ -137,7 +137,7 @@ export function PayoutRequestDialog({
           onOpenChange(false);
           form.reset();
           queryClient.invalidateQueries({
-            queryKey: queryKeys.payouts.summary,
+            queryKey: queryKeys.payouts.summary(),
           });
         },
       },
