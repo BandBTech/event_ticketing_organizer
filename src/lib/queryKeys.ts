@@ -124,8 +124,8 @@ export const queryKeys = {
     }) => ["payouts", "list", params] as const,
     /** Key for fetching a single payout request by ID */
     byId: (id: string) => ["payout", id] as const,
-    /** Key for fetching payout summary */
-    summary: ["payouts", "summary"] as const,
+    /** Key for fetching payout summary (optionally filtered by event) */
+    summary: (eventId?: string) => ["payouts", "summary", eventId ?? "all"] as const,
   },
 
   /**

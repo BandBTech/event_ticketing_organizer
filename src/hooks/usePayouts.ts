@@ -66,10 +66,10 @@ export function usePayoutRequest(id: string | null) {
 /**
  * Custom hook for fetching payout summary statistics
  */
-export function usePayoutSummary() {
+export function usePayoutSummary(eventId?: string) {
   return useQuery({
-    queryKey: queryKeys.payouts.summary,
-    queryFn: () => payoutService.getPayoutSummary(),
+    queryKey: queryKeys.payouts.summary(eventId),
+    queryFn: () => payoutService.getPayoutSummary(eventId),
   });
 }
 

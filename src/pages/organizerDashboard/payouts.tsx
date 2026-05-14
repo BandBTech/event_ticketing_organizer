@@ -13,6 +13,7 @@ import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
 import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 import { Button } from "@/components/ui/button";
+import { EventSelect } from "@/components/ui/EventSelect";
 import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/PayoutRequestDialog";
 import { PayoutSummaryCards } from "@/components/organizerDashboard/payouts/PayoutSummaryCards";
 import { PayoutFilterTabs } from "@/components/organizerDashboard/payouts/PayoutFilterTabs";
@@ -30,6 +31,7 @@ export default function PayoutsPage() {
     usePaginationSync();
   const [activeTab, setActiveTab] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined);
 
   // Sorting state
   const [sortBy, setSortBy] = useState<string | undefined>(undefined);
@@ -52,7 +54,7 @@ export default function PayoutsPage() {
     sort_order: sortOrder,
   });
 
-  const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary();
+  const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary(selectedEventId);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -126,10 +128,22 @@ export default function PayoutsPage() {
             </div>*/}
 
             {/* Summary Cards */}
-            <PayoutSummaryCards
-              summary={summary}
-              isLoading={isSummaryLoading}
-            />
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <EventSelect
+                  value={selectedEventId}
+                  onValueChange={(id) =>
+                    setSelectedEventId(id === selectedEventId ? undefined : id)
+                  }
+                  triggerWidth="w-64"
+                  placeholder={t("events.select.allEvents", "All Events")}
+                />
+              </div>
+              <PayoutSummaryCards
+                summary={summary}
+                isLoading={isSummaryLoading}
+              />
+            </div>
 
             {/* Payout Requests Table */}
             <div className="glass-card-lowest rounded-2xl flex-1 scrollable-height flex flex-col">

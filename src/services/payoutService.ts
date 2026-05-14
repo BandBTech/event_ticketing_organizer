@@ -53,8 +53,11 @@ export const payoutService = {
   },
 
   // Get payout summary (earnings, withdrawn, pending)
-  getPayoutSummary: async () => {
-    return api.get<PayoutSummary>("/organizer/payouts/summary", {
+  getPayoutSummary: async (eventId?: string) => {
+    const endpoint = eventId
+      ? `/organizer/payouts/summary?event_id=${eventId}`
+      : "/organizer/payouts/summary";
+    return api.get<PayoutSummary>(endpoint, {
       requiresAuth: true,
     });
   },

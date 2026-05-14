@@ -85,7 +85,7 @@ export function getColumns({
         const amount = info.row.original.total_amount;
         return (
           <span className="font-medium text-emerald-600">
-            {formatCurrency(amount)}
+            {formatCurrency(amount, currency)}
           </span>
         );
       },
