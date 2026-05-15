@@ -352,7 +352,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                   "on_sale",
                   "on_hold",
                   "sales_upcoming",
-                  "sales_ended",
+                  "sales_end",
                 ].includes(event.status) && (
                   // hasZeroTicketSales && (
                   <Button
