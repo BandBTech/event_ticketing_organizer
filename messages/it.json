@@ -759,7 +759,8 @@
     "refunds": "Rimborsi",
     "pending": "in sospeso",
     "noPending": "nessuno in sospeso",
-    "earnings": "Guadagni per evento",
+    "earnings": "Guadagni",
+    "allEvents": "Tutti gli eventi",
     "filteringBy": "Filtro per",
     "grossRevenue": "Entrate lorde",
     "beforeFees": "Prima di commissioni e spese",
@@ -898,7 +899,8 @@
     },
     "allStatus": "Tutti gli Stati",
     "select": {
-      "placeholder": "Seleziona un evento"
+      "placeholder": "Seleziona evento",
+      "allEvents": "Tutti gli eventi"
     }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",

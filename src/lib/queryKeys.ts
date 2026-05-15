@@ -121,6 +121,7 @@ export const queryKeys = {
       status?: string;
       sort_by?: string;
       sort_order?: string;
+      event_id?: string;
     }) => ["payouts", "list", params] as const,
     /** Key for fetching a single payout request by ID */
     byId: (id: string) => ["payout", id] as const,

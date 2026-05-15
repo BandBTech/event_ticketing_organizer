@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label, Pie, PieChart } from "recharts";
 import {
   ChartContainer,
@@ -22,7 +22,6 @@ import {
   MoneyIcon,
   HourglassIcon,
   BankIcon,
-  TagIcon,
   ClockIcon,
   ReceiptIcon,
   ArrowBendUpLeftIcon,
@@ -30,6 +29,13 @@ import {
 import { useOrganizerDashboard } from "@/hooks/useOrganizerDashboard";
 import EventCard from "./EventCard";
 import { EventSelect } from "@/components/ui/EventSelect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -223,8 +229,41 @@ export default function DashboardHome() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>();
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("JPY");
+  const [allCurrencies, setAllCurrencies] = useState<{ currency: string; symbol: string }[]>([
+    { currency: "JPY", symbol: "¥" },
+  ]);
   const { stats, selectedEvent, upcomingEvents, isLoading, error } =
     useOrganizerDashboard(selectedEventId);
+
+  // Keep allCurrencies up-to-date from the unfiltered (no event) response
+  useEffect(() => {
+    if (!selectedEventId && stats.earnings.length > 0) {
+      setAllCurrencies(stats.earnings.map((e) => ({ currency: e.currency, symbol: e.symbol })));
+    }
+  }, [selectedEventId, stats.earnings]);
+
+  // Auto-sync currency when an event is selected
+  useEffect(() => {
+    if (selectedEvent?.currency) {
+      setSelectedCurrency(selectedEvent.currency);
+    }
+  }, [selectedEvent]);
+
+  const displayedEarning = stats.earnings.find(
+    (e) => e.currency === selectedCurrency,
+  );
+
+  const handleEventChange = (value: string) => {
+    setSelectedEventId(value || undefined);
+  };
+
+  const handleCurrencyChange = (currency: string) => {
+    setSelectedCurrency(currency);
+    if (selectedEventId && selectedEvent?.currency !== currency) {
+      setSelectedEventId(undefined);
+    }
+  };
 
   if (error) {
     return (
@@ -392,43 +431,36 @@ export default function DashboardHome() {
 
       {/* Earnings */}
       <div className="space-y-2">
-        {/* Earnings title row with EventSelect */}
-        <div className="flex items-center justify-between">
+        {/* Earnings title row with filters */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <h3 className="text-lg font-bold text-gray-900">
-            {t("dashboard.earnings", "Earnings by Event")}{" "}
-            {(selectedEvent?.currency || selectedEvent?.symbol) && (
-              <span className="text-primary text-sm font-medium">
-                • {selectedEvent.currency}({selectedEvent.symbol})
-              </span>
-            )}
+            {t("dashboard.earnings", "Earnings")}
           </h3>
-          <EventSelect
-            value={selectedEventId}
-            onValueChange={setSelectedEventId}
-            placeholder={t("events.select.placeholder", "Select an event")}
-            triggerWidth="w-64"
-            autoSelectFirst={true}
-            onAutoSelect={(id) => setSelectedEventId(id)}
-          />
+          <div className="flex items-center gap-2">
+            <EventSelect
+              value={selectedEventId ?? ""}
+              onValueChange={handleEventChange}
+              triggerWidth="w-52"
+              showAllOption={true}
+              allOptionLabel={t("dashboard.allEvents", "All events")}
+            />
+            <Select
+              value={selectedCurrency}
+              onValueChange={handleCurrencyChange}
+            >
+              <SelectTrigger className="w-28 text-sm bg-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {allCurrencies.map((c) => (
+                  <SelectItem key={c.currency} value={c.currency}>
+                    {c.symbol} {c.currency}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-
-        {/* Filtering by event banner */}
-        {/*{selectedEvent && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2.5 px-4 py-2.5 glass-card-lowest rounded-xl border border-blue-100 text-sm text-blue-700"
-          >
-            <TagIcon className="w-4 h-4 shrink-0" weight="duotone" />
-            <span>
-              {t("dashboard.filteringBy", "Filtering by")}:{" "}
-              <span className="font-semibold">{selectedEvent.title}</span>
-              <span className="ml-1.5 text-blue-400">
-                · {selectedEvent.symbol} {selectedEvent.currency}
-              </span>
-            </span>
-          </motion.div>
-        )}*/}
 
         {/* Earnings cards */}
         {isLoading ? (
@@ -442,18 +474,13 @@ export default function DashboardHome() {
               ))}
             </div>
           </div>
-        ) : stats.earnings.length > 0 ? (
-          <div className="space-y-4">
-            {stats.earnings.map((earning, i) => (
-              <EarningsSection
-                key={earning.currency}
-                earning={earning}
-                t={t}
-                isLoading={isLoading}
-                baseIndex={i * 4}
-              />
-            ))}
-          </div>
+        ) : displayedEarning ? (
+          <EarningsSection
+            earning={displayedEarning}
+            t={t}
+            isLoading={isLoading}
+            baseIndex={0}
+          />
         ) : (
           <div className="glass-card-lowest rounded-2xl p-8 text-center">
             <CurrencyDollarIcon

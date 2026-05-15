@@ -5,7 +5,6 @@ import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
-import { useCurrencyStore } from "@/store/currencyStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePaginationSync } from "@/hooks/usePaginationSync";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
@@ -24,6 +23,7 @@ function EventTicketsTable({
   limit,
   search,
   statusFilter,
+  symbol,
   t,
   sortBy,
   sortOrder,
@@ -36,6 +36,7 @@ function EventTicketsTable({
   limit: number;
   search: string;
   statusFilter: string;
+  symbol?: string;
   t: (key: string, fallback?: string) => string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
@@ -47,7 +48,6 @@ function EventTicketsTable({
   onLimitChange: (limit: number) => void;
 }) {
   const { locale } = useLanguageStore();
-  const { currency } = useCurrencyStore();
   const resolvedStatus =
     statusFilter && statusFilter !== "all" ? statusFilter : undefined;
   const { data: ticketsResponse, isLoading } = useQuery({
@@ -83,9 +83,9 @@ function EventTicketsTable({
         pageIndex: currentPage - 1,
         pageSize: limit,
         locale,
-        currency,
+        symbol,
       }),
-    [t, currentPage, limit, locale, currency],
+    [t, currentPage, limit, locale, symbol],
   );
 
   return (
@@ -232,6 +232,7 @@ export default function EventTicketsPage() {
                   limit={limit}
                   search={debouncedSearch}
                   statusFilter={statusFilter}
+                  symbol={event?.tiers?.[0]?.symbol}
                   t={t}
                   sortBy={sortBy}
                   sortOrder={sortOrder}

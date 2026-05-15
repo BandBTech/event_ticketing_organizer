@@ -864,7 +864,8 @@
     "refunds": "Refunds",
     "pending": "pending",
     "noPending": "none pending",
-    "earnings": "Earnings by Event",
+    "earnings": "Earnings",
+    "allEvents": "All events",
     "filteringBy": "Filtering by",
     "grossRevenue": "Gross Revenue",
     "beforeFees": "Before fees & commissions",
@@ -1013,7 +1014,8 @@
     },
     "allStatus": "All Statuses",
     "select": {
-      "placeholder": "Select an event"
+      "placeholder": "Select event",
+      "allEvents": "All events"
     }
   },
   "Your account is inactive.": "Your account is inactive.",

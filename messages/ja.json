@@ -755,7 +755,8 @@
     "refunds": "払い戻し",
     "pending": "保留中",
     "noPending": "保留なし",
-    "earnings": "イベント別収益",
+    "earnings": "収益",
+    "allEvents": "すべてのイベント",
     "filteringBy": "フィルター中",
     "grossRevenue": "総収益",
     "beforeFees": "手数料・コミッション前",
@@ -791,7 +792,8 @@
     },
     "allStatus": "すべてのステータス",
     "select": {
-      "placeholder": "イベントを選択"
+      "placeholder": "イベントを選択",
+      "allEvents": "すべてのイベント"
     }
   },
   "staffDashboard": {

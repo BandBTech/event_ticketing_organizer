@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PayoutSummary } from "@/types/payout";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
-import { useCurrencyStore } from "@/store/currencyStore";
 import { formatCurrency } from "@/lib/utils";
 
 interface PayoutSummaryCardsProps {
@@ -26,11 +25,11 @@ export function PayoutSummaryCards({
 }: PayoutSummaryCardsProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
-  const { currency } = useCurrencyStore();
-  const totalEarnings = formatCurrency(summary?.total_earnings ?? 0);
-  const totalReceived = formatCurrency(summary?.total_received ?? 0);
-  const availableAmount = formatCurrency(summary?.available_amount ?? 0);
-  const pendingAmount = formatCurrency(summary?.pending_amount ?? 0);
+  const symbol = summary?.symbol;
+  const totalEarnings = formatCurrency(summary?.total_earnings ?? 0, symbol);
+  const totalReceived = formatCurrency(summary?.total_received ?? 0, symbol);
+  const availableAmount = formatCurrency(summary?.available_amount ?? 0, symbol);
+  const pendingAmount = formatCurrency(summary?.pending_amount ?? 0, symbol);
   const cards = [
     {
       icon: <CurrencyDollarIcon className="w-6 h-6 text-primary" />,

@@ -215,13 +215,10 @@ export function isValidRegistrationData(data: unknown): data is {
  * @param amount - The amount to format
  * @returns Formatted USD currency string
  */
-export const formatCurrency = (amount: number, currencyCode?: string) => {
-  const hasFraction = amount % 1 !== 0;
-return new Intl.NumberFormat("en-US", {
-     style: "currency",
-     currency: currencyCode || "USD",
-     minimumFractionDigits: hasFraction ? 2 : 0,
-     maximumFractionDigits: hasFraction ? 2 : 0,
-     currencyDisplay: "narrowSymbol",
-   }).format(amount);
+export const formatCurrency = (amount: number, symbol?: string) => {
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  return symbol ? `${symbol}${formatted}` : formatted;
 };

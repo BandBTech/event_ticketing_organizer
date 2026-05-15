@@ -58,7 +58,6 @@ import { SalesStatusBadge } from "./SalesStatusBadge";
 import { EventStatusBadge } from "./EventStatusBadge";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguageStore } from "@/store/languageStore";
-import { useCurrencyStore } from "@/store/currencyStore";
 import { format, isValid } from "date-fns";
 import {
   CalendarBlankIcon,
@@ -90,7 +89,7 @@ interface EventDetailsProps {
 export default function EventDetails({ event, analytics }: EventDetailsProps) {
   const { t } = useTranslation();
   const { locale } = useLanguageStore();
-  const { currency: storedCurrency } = useCurrencyStore();
+  const symbol = analytics?.tiers?.[0]?.symbol ?? event.tiers?.[0]?.symbol;
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -590,7 +589,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                         {t("event.label.totalRevenue", "Revenue")}
                       </p>
                       <p className="text-lg font-bold text-emerald-700">
-                        {formatCurrency(totalRevenue, analytics?.tiers?.[0]?.currency ?? event.tiers?.[0]?.currency)}
+                        {formatCurrency(totalRevenue, symbol)}
                       </p>
                     </div>
                   </div>
@@ -618,7 +617,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium text-emerald-600">
-                                    {formatCurrency(tier.revenue, tier.currency)}
+                                    {formatCurrency(tier.revenue, tier.symbol)}
                                   </p>
                                 </div>
                               </div>
@@ -637,7 +636,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {t("common.sold", "sold")}
                                   </span>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(tier.price, tier.currency)} /{" "}
+                                    {formatCurrency(tier.price, tier.symbol)} /{" "}
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
@@ -723,7 +722,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                                     {tier.tier_name}
                                   </p>
                                   <p className="text-xs text-gray-500">
-                                    {formatCurrency(tier.price, tier.currency)} /{" "}
+                                    {formatCurrency(tier.price, tier.symbol)} /{" "}
                                     {t("common.ticket", "ticket")}
                                   </p>
                                 </div>
@@ -832,8 +831,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                       const commissionAmount =
                         totalRevenue * (commissionRate / 100);
                       const organizerEarnings = totalRevenue - commissionAmount;
-                      const currency =
-                        event.tiers?.[0]?.currency || storedCurrency;
                       return (
                         <div className="space-y-3">
                           <div className="flex justify-between items-center text-sm">
@@ -841,7 +838,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               {t("event.label.grossRevenue", "Gross Revenue")}
                             </span>
                             <span className="font-medium text-gray-900">
-                              {formatCurrency(totalRevenue, currency)}
+                              {formatCurrency(totalRevenue, symbol)}
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-sm">
@@ -860,7 +857,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               {t("event.label.commissionAmount", "Commission")}
                             </span>
                             <span className="font-medium text-red-500">
-                              − {formatCurrency(commissionAmount, currency)}
+                              − {formatCurrency(commissionAmount, symbol)}
                             </span>
                           </div>
                           <Separator />
@@ -872,7 +869,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                               )}
                             </span>
                             <span className="font-bold text-emerald-600 text-lg">
-                              {formatCurrency(organizerEarnings, currency)}
+                              {formatCurrency(organizerEarnings, symbol)}
                             </span>
                           </div>
                           {(() => {

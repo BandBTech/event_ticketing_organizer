@@ -46,6 +46,7 @@ export interface PayoutRequest {
   id: string;
   organizer_id: string;
   amount: number;
+  symbol?: string;
   status: PayoutRequestStatus;
   request_type: PayoutRequestType;
   request_number: string;
@@ -88,6 +89,7 @@ export interface PayoutSummary {
   pending_requests: number;
   total_earnings: number;
   total_received: number;
+  symbol?: string;
   events: PayoutSummaryEvent[];
   filtered_by_event: boolean;
 }
@@ -112,4 +114,5 @@ export interface PayoutSearchParams {
   status?: string;
   sort_by?: string;
   sort_order?: 'asc' | 'desc';
+  event_id?: string;
 }

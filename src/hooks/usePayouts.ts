@@ -15,13 +15,14 @@ interface UsePayoutRequestsOptions {
   status?: string;
   sort_by?: string;
   sort_order?: "asc" | "desc";
+  event_id?: string;
 }
 
 /**
  * Custom hook for fetching payout requests with server-side pagination and filtering
  */
 export function usePayoutRequests(options: UsePayoutRequestsOptions = {}) {
-  const { page = 1, limit = 10, status, sort_by, sort_order } = options;
+  const { page = 1, limit = 10, status, sort_by, sort_order, event_id } = options;
 
   // Build params, only include non-empty values
   const params: PayoutSearchParams = {
@@ -30,6 +31,7 @@ export function usePayoutRequests(options: UsePayoutRequestsOptions = {}) {
     ...(status && status !== "all" && { status }),
     ...(sort_by && { sort_by }),
     ...(sort_order && { sort_order }),
+    ...(event_id && { event_id }),
   };
 
   const query = useQuery({

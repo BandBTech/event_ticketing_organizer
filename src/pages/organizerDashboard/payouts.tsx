@@ -52,6 +52,7 @@ export default function PayoutsPage() {
     status: activeTab === "all" ? undefined : activeTab,
     sort_by: sortBy,
     sort_order: sortOrder,
+    event_id: selectedEventId,
   });
 
   const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary(selectedEventId);
@@ -127,23 +128,13 @@ export default function PayoutsPage() {
 
             </div>*/}
 
-            {/* Summary Cards */}
-            <div className="space-y-3">
-              <div className="flex justify-end">
-                <EventSelect
-                  value={selectedEventId}
-                  onValueChange={(id) =>
-                    setSelectedEventId(id === selectedEventId ? undefined : id)
-                  }
-                  triggerWidth="w-64"
-                  placeholder={t("events.select.allEvents", "All Events")}
-                />
-              </div>
+            {/* Summary Cards — only visible when an event is selected */}
+            {selectedEventId && (
               <PayoutSummaryCards
                 summary={summary}
                 isLoading={isSummaryLoading}
               />
-            </div>
+            )}
 
             {/* Payout Requests Table */}
             <div className="glass-card-lowest rounded-2xl flex-1 scrollable-height flex flex-col">
@@ -152,21 +143,33 @@ export default function PayoutsPage() {
                   activeTab={activeTab}
                   onTabChange={handleTabChange}
                 />
-                <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
-                  <Button
-                    onClick={() => setIsDialogOpen(true)}
-                    className="gap-2 w-full sm:w-auto "
-                  >
-                    <PlusIcon size={18} weight="bold" />
-                    {t("payouts.requestPayout", "Request Payout")}
-                  </Button>
-
-                  <PayoutRequestDialog
-                    open={isDialogOpen}
-                    onOpenChange={setIsDialogOpen}
-                    events={summary?.events}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <EventSelect
+                    value={selectedEventId ?? ""}
+                    onValueChange={(id) => {
+                      setSelectedEventId(id || undefined);
+                      handlePageChange(1);
+                    }}
+                    triggerWidth="w-52"
+                    showAllOption={true}
                   />
-                </PermissionGuard>
+                  <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
+                    <Button
+                      onClick={() => setIsDialogOpen(true)}
+                      className="gap-2 w-full sm:w-auto"
+                    >
+                      <PlusIcon size={18} weight="bold" />
+                      {t("payouts.requestPayout", "Request Payout")}
+                    </Button>
+
+                    <PayoutRequestDialog
+                      open={isDialogOpen}
+                      onOpenChange={setIsDialogOpen}
+                      defaultEventId={selectedEventId}
+                      events={summary?.events}
+                    />
+                  </PermissionGuard>
+                </div>
               </div>
               <PayoutTable
                 payouts={payouts}

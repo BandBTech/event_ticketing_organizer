@@ -8,6 +8,7 @@ export interface EventTier {
   sales_start?: string;
   sales_end?: string;
   currency?: string;
+  symbol?: string;
   sort_order?: number;
   available?: number;
   sold?: number;
@@ -23,6 +24,7 @@ export interface Event {
   venue_name: string;
   address: string;
   currency?: string;
+  symbol?: string;
   event_type?: string;
   country?: string;
   start_date: string;
@@ -110,6 +112,7 @@ export interface EventTierAnalytics {
   tier_name: string;
   price: number;
   currency?: string;
+  symbol?: string;
   total_seats: number;
   sold_seats: number;
   available_seats: number;

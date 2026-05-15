@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { CalendarBlankIcon } from "@phosphor-icons/react";
+import { CalendarBlankIcon, XIcon } from "@phosphor-icons/react";
+import { ChevronDown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -52,6 +53,10 @@ interface EventSelectProps {
   autoSelectFirst?: boolean;
   /** Callback when auto-selection happens */
   onAutoSelect?: (eventId: string) => void;
+  /** Show an "All events" option at the top that clears the selection (calls onValueChange("")) */
+  showAllOption?: boolean;
+  /** Label for the "all events" option */
+  allOptionLabel?: string;
 }
 
 export function EventSelect({
@@ -71,6 +76,8 @@ export function EventSelect({
   id,
   autoSelectFirst = false,
   onAutoSelect,
+  showAllOption = false,
+  allOptionLabel,
 }: EventSelectProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
@@ -98,28 +105,65 @@ export function EventSelect({
     }
   }, [autoSelectFirst, isLoading, sortedEvents, value, onAutoSelect]);
 
-  const selectedEvent = sortedEvents.find((e) => e.id === value);
+  const ALL_SENTINEL = "__all__";
 
-  const defaultPlaceholder = placeholder ?? t("events.select.placeholder", "Select an event");
+  // Map empty/undefined → sentinel so Radix never sees value=""
+  const selectValue = !value ? (showAllOption ? ALL_SENTINEL : undefined) : value;
+
+  // Translate Radix value back: sentinel → "" (clear signal for parent)
+  const handleChange = (v: string) => {
+    onValueChange?.(v === ALL_SENTINEL ? "" : v);
+  };
+
+  const selectedEvent = sortedEvents.find((e) => e.id === value);
+  const allLabel = allOptionLabel ?? t("events.select.allEvents", "All events");
+
+  const defaultPlaceholder = placeholder ?? t("events.select.placeholder", "Select event");
   const defaultLoadingText = loadingText ?? t("events.select.loading", "Loading events...");
   const defaultEmptyText = emptyText ?? t("event.noEventsFound", "No events found");
+
+  const triggerLabel = isLoading
+    ? defaultLoadingText
+    : selectedEvent?.title ?? defaultPlaceholder;
 
   const content = (
     <>
       <SelectTrigger
         id={id}
+        hideIcon
         className={`${triggerWidth} text-sm bg-white ${className ?? ""}`}
         title={selectedEvent?.title}
         disabled={disabled || isLoading}
       >
-        <SelectValue
-          placeholder={isLoading ? defaultLoadingText : defaultPlaceholder}
-          className="line-clamp-1 truncate"
-        >
-          {selectedEvent?.title ?? (isLoading ? defaultLoadingText : defaultPlaceholder)}
+        <SelectValue placeholder={isLoading ? defaultLoadingText : defaultPlaceholder} className="line-clamp-1 truncate flex-1 min-w-0">
+          {triggerLabel}
         </SelectValue>
+        <div className="flex items-center gap-0.5 ml-1 shrink-0">
+          {selectedEvent && !disabled && (
+            <span
+              role="button"
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onValueChange?.("");
+              }}
+              className="p-0.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <XIcon className="w-3.5 h-3.5" />
+            </span>
+          )}
+          <ChevronDown className="h-4 w-4 opacity-50" />
+        </div>
       </SelectTrigger>
       <SelectContent className={maxHeight}>
+        {showAllOption && (
+          <SelectItem value={ALL_SENTINEL} className="cursor-pointer text-muted-foreground">
+            {allLabel}
+          </SelectItem>
+        )}
         {sortedEvents.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6 text-muted-foreground text-sm">
             <CalendarBlankIcon className="h-5 w-5" />
@@ -145,7 +189,7 @@ export function EventSelect({
     return (
       <div className="flex flex-col gap-1.5">
         <label className="text-xs text-gray-500">{label}</label>
-        <Select value={value} onValueChange={onValueChange} disabled={disabled || isLoading}>
+        <Select value={selectValue} onValueChange={handleChange} disabled={disabled || isLoading}>
           {content}
         </Select>
       </div>
@@ -153,7 +197,7 @@ export function EventSelect({
   }
 
   return (
-    <Select value={value} onValueChange={onValueChange} disabled={disabled || isLoading}>
+    <Select value={selectValue} onValueChange={handleChange} disabled={disabled || isLoading}>
       {content}
     </Select>
   );

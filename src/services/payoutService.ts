@@ -24,6 +24,7 @@ export const payoutService = {
       if (params.sort_by) searchParams.append("sort_by", params.sort_by);
       if (params.sort_order)
         searchParams.append("sort_order", params.sort_order);
+      if (params.event_id) searchParams.append("event_id", params.event_id);
 
       const queryString = searchParams.toString();
       if (queryString) {
