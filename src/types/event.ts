@@ -148,6 +148,19 @@ export interface EventSalesControlRequest {
 export interface EventCancellationRequest {
   reason: string;
 }
+
+export interface EventCancellationRecord {
+  id: string;
+  event_id: string;
+  organizer_id: string;
+  reason: string;
+  status: string;
+  admin_remark?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  created_at: string;
+  updated_at?: string;
+}
 // Event History Types
 export interface EventStatusHistory {
   id: string;

@@ -8,6 +8,7 @@ import {
   EventAnalyticsResponse,
   EventSalesControlRequest,
   EventCancellationRequest,
+  EventCancellationRecord,
   EventStatusHistory,
   EventListResponse,
   EventSearchParams,
@@ -116,12 +117,12 @@ export const eventService = {
     });
   },
 
-  // Cancel an event with reason
+  // Submit a cancellation request for an event (requires admin approval)
   cancelEvent: async (id: string, data: EventCancellationRequest) => {
-    return api.put<Event>(`/organizer/events/${id}/cancel`, data, {
+    return api.post<EventCancellationRecord>(`/organizer/events/${id}/cancellation`, data, {
       requiresAuth: true,
       showSuccessToast: true,
-      successMessage: 'Event cancelled successfully'
+      successMessage: 'Cancellation request submitted successfully'
     });
   },
 
