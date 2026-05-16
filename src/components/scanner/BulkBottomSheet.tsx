@@ -57,7 +57,10 @@ export function BulkBottomSheet({
           {/* Header row */}
           <div
             className="flex items-center justify-between mb-4 cursor-pointer"
+            role="button"
+            tabIndex={0}
             onClick={onToggleList}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onToggleList(); }}
           >
             <div className="flex items-center gap-3">
               <div className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm">

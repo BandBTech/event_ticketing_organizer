@@ -5,6 +5,11 @@ import type { ScanMode } from "@/hooks/useScannerState";
 
 const IDLE_PAUSE_MS = 30_000;
 
+export interface LastScanError {
+  message: string;
+  ticketNumber?: string;
+}
+
 interface QRCameraViewProps {
   mode: ScanMode;
   onScan: (result: unknown[]) => void;
@@ -13,6 +18,7 @@ interface QRCameraViewProps {
   disabled?: boolean;
   externalPaused?: boolean;
   resumeHintText?: string;
+  lastScanError?: LastScanError | null;
 }
 
 export function QRCameraView({
@@ -23,6 +29,7 @@ export function QRCameraView({
   disabled = false,
   externalPaused = false,
   resumeHintText = "Tap to resume scanning",
+  lastScanError = null,
 }: QRCameraViewProps) {
   // Mobile browsers pause/end the MediaStream while the page is hidden.
   // On return we bump cameraKey to force the Scanner to remount with a fresh
@@ -145,6 +152,22 @@ export function QRCameraView({
             )}
           </div>
         </div>
+
+        {/* Persistent scan error banner — shown after a failed bulk validation */}
+        {lastScanError && mode === "bulk" && !disabled && (
+          <div className="absolute bottom-44 left-4 right-4 z-10 pointer-events-auto">
+            <div className="bg-red-500/90 backdrop-blur-sm text-white rounded-xl px-4 py-3 shadow-lg flex items-start gap-2">
+              <span className="text-sm leading-tight flex-1">
+                {lastScanError.message}
+                {lastScanError.ticketNumber && (
+                  <span className="text-red-100 text-xs ml-1 font-mono">
+                    #{lastScanError.ticketNumber}
+                  </span>
+                )}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Hint text */}
         <div className="absolute bottom-32 left-0 right-0 text-center px-4">

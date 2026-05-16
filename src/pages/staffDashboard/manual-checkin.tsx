@@ -150,11 +150,8 @@ export default function ManualCheckinPage() {
             {/* Results */}
             {results.length > 0 ? (
               <ul className="space-y-3">
-                {results.map((ticket) => {
-                  {
-                    console.log(ticket);
-                  }
-                  const checkedIn = isCheckedIn(ticket);
+                  {results.map((ticket) => {
+                    const checkedIn = isCheckedIn(ticket);
                   const isCheckingIn =
                     checkInMutation.isPending &&
                     checkInMutation.variables?.ticketNumber ===

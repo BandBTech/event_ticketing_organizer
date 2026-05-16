@@ -71,12 +71,12 @@ export class TicketService {
       payload.event_id = eventId;
     }
 
-    return await api.post<{ success: boolean; message: string; data?: unknown }>(
+    return await api.post<TicketScanResult>(
       '/organizer/tickets/checkin',
       payload,
       {
         requiresAuth: true,
-        showErrorToast: false, // Handled by the caller (useScannerState) to avoid duplicate toasts
+        showErrorToast: false,
       }
     );
   }

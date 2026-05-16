@@ -25,6 +25,7 @@ export default function ScannerPage() {
     setShowBulkList,
     scanResult,
     clearScanResult,
+    lastScanError,
     cameraError,
     mounted,
     isProcessing,
@@ -79,7 +80,8 @@ export default function ScannerPage() {
                   mode={mode}
                   onScan={handleQRScan}
                   onError={handleCameraError}
-                    disabled={isScanDisabled}
+                  disabled={isScanDisabled}
+                  lastScanError={lastScanError}
                   externalPaused={mode === "bulk" && showBulkList}
                   resumeHintText={t(
                     "staffScanner.tapToResume",
@@ -87,16 +89,19 @@ export default function ScannerPage() {
                   )}
                   scanHintText={
                     isScanDisabled
-                      ? t("staffScanner.allCheckedIn", "All tickets checked in — tap Done to finish")
-                      : mode === "single"
                       ? t(
-                          "staffScanner.scanTicketInfo",
-                          "Scan a ticket to check in",
+                          "staffScanner.allCheckedIn",
+                          "All tickets checked in — tap Done to finish",
                         )
-                      : t(
-                          "staffScanner.scanMultipleTicketsInfo",
-                          "Scan multiple tickets to queue",
-                        )
+                      : mode === "single"
+                        ? t(
+                            "staffScanner.scanTicketInfo",
+                            "Scan a ticket to check in",
+                          )
+                        : t(
+                            "staffScanner.scanMultipleTicketsInfo",
+                            "Scan multiple tickets to queue",
+                          )
                   }
                 />
               ) : (
@@ -138,7 +143,9 @@ export default function ScannerPage() {
       </StaffDashboardLayout>
 
       {/* ── Overlays (above everything) ──────────────────────────────────── */}
-      {mode === "single" && <SingleScanResult result={scanResult} onClose={clearScanResult} />}
+      {mode === "single" && (
+        <SingleScanResult result={scanResult} onClose={clearScanResult} />
+      )}
 
       <UnsavedChangesDialog
         open={showLeaveDialog}

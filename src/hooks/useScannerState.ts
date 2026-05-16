@@ -63,6 +63,11 @@ export function useScannerState() {
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(
     null,
   );
+  const [lastScanError, setLastScanError] = useState<{
+    code: string;
+    message: string;
+    ticketNumber?: string;
+  } | null>(null);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
   // Tracks codes currently being processed (in-flight API calls).
@@ -73,13 +78,7 @@ export function useScannerState() {
   // Cooldown flag for single-scan mode — prevents the same QR from triggering
   // multiple rapid API calls before scanResult state is set.
   const singleScanCooldownRef = useRef(false);
-
-  // Tracks codes that recently failed validation so the scanner doesn't
-  // re-fire toasts every ~1.2s while the same QR sits in the camera frame.
-  // Map of code -> timeout id; the timeout releases the lock after a TTL.
-  const failedCodesRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
+  const scanResultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Ref mirror of bulkQueue so async callbacks always see latest queue state
   const bulkQueueRef = useRef<BulkScanItem[]>(bulkQueue);
@@ -177,35 +176,34 @@ export function useScannerState() {
     }
   }, [t]);
 
-  // ─── Failed-code TTL helpers ─────────────────────────────────────────────────
-  const clearFailedTimer = useCallback((code: string) => {
-    const existing = failedCodesRef.current.get(code);
-    if (existing) {
-      clearTimeout(existing);
-      failedCodesRef.current.delete(code);
-    }
+  // ─── Failed-code suppression ─────────────────────────────────────────────────
+  // Prevents re-validation spam while a failed QR is still in the camera frame.
+  // Short TTL (1500ms) so the user can re-scan the same code after a brief wait.
+  // Toast spam is prevented separately via toastedCodesRef.
+  // Uses refs + Sets (not state) so guards are synchronous with camera ticks.
+  const suppressedCodesRef = useRef<Set<string>>(new Set());
+
+  // Mark a code as suppressed for a short window to prevent rapid re-validations.
+  // After the window expires, the code is freed for a fresh scan.
+  const suppressCode = useCallback((code: string, ttlMs = 1500) => {
+    suppressedCodesRef.current.add(code);
+    setTimeout(() => {
+      suppressedCodesRef.current.delete(code);
+    }, ttlMs);
   }, []);
 
-  // Keep the code locked for ttlMs so the scanner won't re-validate (and
-  // re-toast) the same failed QR while it's still in frame.
-  const markFailed = useCallback(
-    (code: string, ttlMs = 3000) => {
-      clearFailedTimer(code);
-      const timer = setTimeout(() => {
-        processingCodesRef.current.delete(code);
-        failedCodesRef.current.delete(code);
-      }, ttlMs);
-      failedCodesRef.current.set(code, timer);
-    },
-    [clearFailedTimer],
-  );
+  // Track which codes have already shown a toast to avoid duplicate toasts.
+  const toastedCodesRef = useRef<Set<string>>(new Set());
 
-  // Drop all pending failure timers on unmount to avoid leaks.
+  // Drop suppression refs on unmount.
   useEffect(() => {
-    const timers = failedCodesRef.current;
     return () => {
-      timers.forEach((t) => clearTimeout(t));
-      timers.clear();
+      suppressedCodesRef.current.clear();
+      toastedCodesRef.current.clear();
+      if (scanResultTimeoutRef.current) {
+        clearTimeout(scanResultTimeoutRef.current);
+        scanResultTimeoutRef.current = null;
+      }
     };
   }, []);
 
@@ -214,19 +212,25 @@ export function useScannerState() {
     setBulkQueue([]);
     setBulkResult(null);
     setShowBulkList(false);
+    setLastScanError(null);
     processingCodesRef.current.clear();
-    failedCodesRef.current.forEach((t) => clearTimeout(t));
-    failedCodesRef.current.clear();
+    suppressedCodesRef.current.clear();
+    toastedCodesRef.current.clear();
   };
 
   const removeFromQueue = (index: number) => {
     setBulkQueue((prev) => {
       const next = [...prev];
       const removed = next.splice(index, 1);
-      // Also remove from processing set so re-scan is possible
+      // Also remove from suppression + processing so re-scan is possible
       if (removed[0]) {
         processingCodesRef.current.delete(removed[0].code);
-        clearFailedTimer(removed[0].code);
+        suppressedCodesRef.current.delete(removed[0].code);
+        toastedCodesRef.current.delete(removed[0].code);
+      }
+      // Clear error state when the last item is removed
+      if (next.length === 0) {
+        setLastScanError(null);
       }
       // Only reset event context when it was self-detected from a scan
       // (no eventId in the URL). If the user opened the scanner from the
@@ -248,10 +252,12 @@ export function useScannerState() {
     processingCodesRef.current.add(code);
     singleScanCooldownRef.current = true;
 
+    if (scanResultTimeoutRef.current) clearTimeout(scanResultTimeoutRef.current);
     scanMutation.mutate(
       { ticketCode: code, eventId: scanEventId },
       {
         onSuccess: (data) => {
+          if (navigator.vibrate) navigator.vibrate(50);
           setScanResult({
             success: data.success,
             alreadyCheckedIn: data.already_checked_in,
@@ -259,10 +265,10 @@ export function useScannerState() {
               ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
               : t("scanner.ticket_scanned_successfully", "Ticket checked in successfully."),
           });
-          // Auto-clear result after 3s so camera is ready for next scan
-          setTimeout(() => {
+          scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
             singleScanCooldownRef.current = false;
+            scanResultTimeoutRef.current = null;
           }, 3000);
         },
         onError: (error) => {
@@ -272,13 +278,13 @@ export function useScannerState() {
               error.message ||
               t("staffScanner.scanFailed", "Failed to scan ticket"),
           });
-          setTimeout(() => {
+          scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
             singleScanCooldownRef.current = false;
+            scanResultTimeoutRef.current = null;
           }, 3000);
         },
         onSettled: () => {
-          // Always release the per-code lock after the request finishes
           processingCodesRef.current.delete(code);
         },
       },
@@ -314,6 +320,12 @@ export function useScannerState() {
       return;
     }
 
+    // Suppressed — recent validation failure still within cooldown window.
+    // Silently drop so we don't hammer the API every 1.2s scanDelay tick.
+    if (suppressedCodesRef.current.has(code)) {
+      return;
+    }
+
     // In-flight validation for this code — silently ignore to avoid double-processing.
     if (processingCodesRef.current.has(code)) {
       return;
@@ -326,20 +338,29 @@ export function useScannerState() {
       { qrCode: code, eventId: eventIdRef.current ?? undefined },
       {
         onSuccess: (data) => {
+          // Immediately release in-flight lock so re-scan is possible
+          processingCodesRef.current.delete(code);
+
           if (!data.can_checkin) {
-            // Validation failed — keep the code locked for a short window so
-            // the same QR in frame doesn't re-toast every scanDelay tick.
-            markFailed(code);
-            // Messages follow "Title: Description: extra blurb" — split and
-            // use only the first two segments for a clean toast.
-            const msgParts = (data.message || "").split(": ");
-            const toastTitle = msgParts[0] || t("staffScanner.ticketInvalid", "Invalid ticket");
-            const toastDesc = msgParts[1] || t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in");
-            toast.error(toastTitle, toastDesc);
+            // Suppress rapid re-validations of the same code while still in frame
+            suppressCode(code);
+            setLastScanError({
+              code,
+              message: data.message || "Ticket cannot be checked in",
+            });
+            // Show toast only once per code to avoid spam
+            if (!toastedCodesRef.current.has(code)) {
+              toastedCodesRef.current.add(code);
+              const msgParts = (data.message || "").split(": ");
+              const toastTitle = msgParts[0] || t("staffScanner.ticketInvalid", "Invalid ticket");
+              const toastDesc = msgParts[1] || t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in");
+              toast.error(toastTitle, toastDesc);
+            }
             return;
           }
 
-          // Validation passed — add to queue
+          // Validation passed — clear any previous error and add to queue
+          setLastScanError(null);
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
             ticket_number?: string;
             attendee?: { name?: string; email?: string };
@@ -355,9 +376,7 @@ export function useScannerState() {
           const responseEventId = data.event_id;
           const responseEventTitle = data.event_title;
 
-          // Use functional setState so we always operate on the latest queue
           setBulkQueue((prev) => {
-            // Final dedup check against latest state
             if (prev.some((item) => item.code === code)) {
               processingCodesRef.current.delete(code);
               return prev;
@@ -376,6 +395,7 @@ export function useScannerState() {
             }
 
             if (navigator.vibrate) navigator.vibrate(50);
+            toastedCodesRef.current.delete(code);
             toast.success(
               "staffScanner.addedToQueue",
               "Added to queue",
@@ -383,15 +403,21 @@ export function useScannerState() {
             );
             return [...prev, newItem];
           });
-
-          // Note: we intentionally keep the code in processingCodesRef so it
-          // won't be re-scanned. It's cleared when the item is removed from queue
-          // or the queue is cleared.
         },
         onError: () => {
-          // Network/API failure — same throttle as validation failure so we
-          // don't spin-retry the same QR every scanDelay tick.
-          markFailed(code);
+          processingCodesRef.current.delete(code);
+          suppressCode(code);
+          setLastScanError({
+            code,
+            message: t("staffScanner.cannotConnect", "Cannot connect to server. Try again."),
+          });
+          if (!toastedCodesRef.current.has(code)) {
+            toastedCodesRef.current.add(code);
+            toast.error(
+              t("staffScanner.connectionError", "Connection error"),
+              t("staffScanner.scanRetry", "Tap to scan again when connected"),
+            );
+          }
         },
       },
     );
@@ -528,11 +554,18 @@ export function useScannerState() {
     singleScanCooldownRef.current = false;
   }, []);
 
+  const handleModeChange = useCallback((newMode: ScanMode) => {
+    setMode(newMode);
+    setLastScanError(null);
+    suppressedCodesRef.current.clear();
+    toastedCodesRef.current.clear();
+  }, []);
+
   return {
     // State
     isScanDisabled,
     mode,
-    setMode,
+    setMode: handleModeChange,
     bulkQueue,
     eventId,
     currentEventTitle,
@@ -542,6 +575,7 @@ export function useScannerState() {
     setBulkResult,
     scanResult,
     clearScanResult,
+    lastScanError,
     cameraError,
     mounted,
     isProcessing,

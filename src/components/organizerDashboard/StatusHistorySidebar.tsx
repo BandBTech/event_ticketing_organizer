@@ -96,7 +96,7 @@ export default function StatusHistorySidebar({
         return <Circle size={16} className="text-gray-500" />;
       case "on_sale":
         return <Circle size={16} className="text-green-600" />;
-      case "on_hold":
+      case "hold":
         return <Circle size={16} className="text-amber-600" />;
       case "live":
         return <Circle size={16} className="text-green-600" />;
