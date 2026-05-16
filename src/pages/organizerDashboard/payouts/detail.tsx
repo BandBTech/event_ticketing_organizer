@@ -105,7 +105,7 @@ export default function PayoutDetailPage() {
       header: t("payouts.history.amount", "Amount"),
       cell: ({ row }) => (
         <span className="font-semibold text-emerald-600">
-          +{formatCurrency(row.original.amount, symbol)}
+          +{formatCurrency(row.original.amount, currency, symbol)}
         </span>
       ),
     },
@@ -154,6 +154,7 @@ export default function PayoutDetailPage() {
 
   const billSummary = payoutData?.bill_summary;
   const paymentHistory = payoutData?.payment_history ?? [];
+  const currency = payoutData?.currency ?? "JPY";
   const symbol = payoutData?.symbol;
 
   const statCards = [
@@ -164,28 +165,28 @@ export default function PayoutDetailPage() {
       label: t("payouts.totalBilled", "Total Billed"),
       value: isLoading
         ? null
-        : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0, symbol),
+        : formatCurrency(billSummary?.total_billed ?? payoutData?.amount ?? 0, currency, symbol),
     },
     {
       icon: (
         <CheckCircleIcon className="w-6 h-6 text-primary" weight="duotone" />
       ),
       label: t("payouts.paid", "Total Paid"),
-      value: isLoading ? null : formatCurrency(billSummary?.total_paid ?? 0, symbol),
+      value: isLoading ? null : formatCurrency(billSummary?.total_paid ?? 0, currency, symbol),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.remaining", "Remaining"),
       value: isLoading
         ? null
-        : formatCurrency(billSummary?.remaining_amount ?? 0, symbol),
+        : formatCurrency(billSummary?.remaining_amount ?? 0, currency, symbol),
     },
     {
       icon: <ClockIcon className="w-6 h-6 text-primary" weight="duotone" />,
       label: t("payouts.pending", "Pending"),
       value: isLoading
         ? null
-        : formatCurrency(billSummary?.pending_amount ?? 0, symbol),
+        : formatCurrency(billSummary?.pending_amount ?? 0, currency, symbol),
     },
   ];
 
@@ -368,13 +369,13 @@ export default function PayoutDetailPage() {
                   </SectionTitle>
                   <InfoRow
                     label={t("payouts.totalBilled", "Total Billed")}
-                    value={formatCurrency(billSummary?.total_billed ?? 0, symbol)}
+                    value={formatCurrency(billSummary?.total_billed ?? 0, currency, symbol)}
                   />
                   <InfoRow
                     label={t("payouts.totalPaid", "Total Paid")}
                     value={
                       <span className="text-emerald-600">
-                        {formatCurrency(billSummary?.total_paid ?? 0, symbol)}
+                        {formatCurrency(billSummary?.total_paid ?? 0, currency, symbol)}
                       </span>
                     }
                   />
@@ -382,7 +383,7 @@ export default function PayoutDetailPage() {
                     label={t("payouts.remaining", "Remaining")}
                     value={
                       <span className="text-rose-500">
-                        {formatCurrency(billSummary?.remaining_amount ?? 0, symbol)}
+                        {formatCurrency(billSummary?.remaining_amount ?? 0, currency, symbol)}
                       </span>
                     }
                   />
@@ -486,7 +487,7 @@ export default function PayoutDetailPage() {
                           {t("payouts.history.amount", "Amount")}
                         </p>
                         <p className="font-semibold text-emerald-600 text-lg">
-                          +{formatCurrency(selectedPayment.amount, symbol)}
+                          +{formatCurrency(selectedPayment.amount, currency, symbol)}
                         </p>
                       </div>
                       <div>

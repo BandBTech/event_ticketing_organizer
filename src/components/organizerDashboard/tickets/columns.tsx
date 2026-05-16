@@ -10,6 +10,7 @@ interface ColumnProps {
   pageIndex: number;
   pageSize: number;
   locale: string;
+  currency?: string;
   symbol?: string;
 }
 
@@ -18,6 +19,7 @@ export function getColumns({
   pageIndex,
   pageSize,
   locale,
+  currency,
   symbol,
 }: ColumnProps): ColumnDef<TicketResponse>[] {
   return [
@@ -85,7 +87,7 @@ export function getColumns({
         const amount = info.row.original.total_amount;
         return (
           <span className="font-medium text-emerald-600">
-            {formatCurrency(amount, symbol)}
+            {formatCurrency(amount, currency ?? "JPY", symbol)}
           </span>
         );
       },

@@ -210,15 +210,24 @@ export function isValidRegistrationData(data: unknown): data is {
   );
 }
 
-/**
- * Format a currency amount in USD
- * @param amount - The amount to format
- * @returns Formatted USD currency string
- */
-export const formatCurrency = (amount: number, symbol?: string) => {
-  const formatted = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
-  return symbol ? `${symbol}${formatted}` : formatted;
+export const formatCurrency = (
+  amount: number,
+  currency: string,
+  symbol?: string,
+) => {
+  const hasFraction = amount % 1 !== 0;
+  const formatted = !symbol
+    ? new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "JPY",
+        minimumFractionDigits: hasFraction ? 2 : 0,
+        maximumFractionDigits: hasFraction ? 2 : 0,
+        currencyDisplay: "narrowSymbol",
+      }).format(amount)
+    : new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: hasFraction ? 2 : 0,
+        maximumFractionDigits: hasFraction ? 2 : 0,
+      }).format(amount);
+
+  return symbol ? `${symbol}${formatted}` : `${formatted}`;
 };

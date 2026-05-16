@@ -155,9 +155,9 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
     {
       icon: <CurrencyDollarIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.sales.totalRevenue", "Total Revenue"),
-      value: formatCurrency(summary?.total_revenue ?? 0),
+      value: formatCurrency(summary?.total_revenue ?? 0, currency),
       subValue: summary?.organizer_share
-        ? `${t("reports.sales.organizerShare", "Your Share")}: ${formatCurrency(summary.organizer_share)}`
+        ? `${t("reports.sales.organizerShare", "Your Share")}: ${formatCurrency(summary.organizer_share, currency)}`
         : undefined,
       colorClass: "bg-green-100 text-green-600",
     },
@@ -173,7 +173,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
     {
       icon: <TrendUpIcon className="w-6 h-6" weight="duotone" />,
       label: t("reports.sales.averageOrderValue", "Avg. Order Value"),
-      value: formatCurrency(summary?.average_order_value ?? 0),
+      value: formatCurrency(summary?.average_order_value ?? 0, currency),
       subValue: summary?.total_transactions
         ? `${summary.total_transactions.toLocaleString()} ${t("reports.sales.transactions", "transactions")}`
         : undefined,
@@ -193,12 +193,12 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
     {
       icon: <WalletIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.sales.totalCommission", "Total Commission"),
-      value: formatCurrency(summary?.total_commission ?? 0),
+      value: formatCurrency(summary?.total_commission ?? 0, currency),
     },
     {
       icon: <PresentationChartIcon className="w-5 h-5" weight="duotone" />,
       label: t("reports.sales.organizerShare", "Organizer Share"),
-      value: formatCurrency(summary?.organizer_share ?? 0),
+      value: formatCurrency(summary?.organizer_share ?? 0, currency),
     },
     {
       icon: <CreditCardIcon className="w-5 h-5" weight="duotone" />,
@@ -362,7 +362,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                       formatter={(value, name) => {
                         if (name === "revenue") {
                           return [
-                            formatCurrency(Number(value)),
+                            formatCurrency(Number(value), currency),
                             t("reports.sales.columns.revenue", "Revenue"),
                           ];
                         }
@@ -490,7 +490,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                   content={
                     <ChartTooltipContent
                       className="bg-white shadow-lg border border-gray-100 rounded-xl"
-                      formatter={(value) => formatCurrency(Number(value))}
+                      formatter={(value) => formatCurrency(Number(value), currency)}
                     />
                   }
                 />
@@ -554,7 +554,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                         {gw.total_transactions.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(gw.total_revenue)}
+                        {formatCurrency(gw.total_revenue, currency)}
                       </td>
                     </tr>
                   ))}
@@ -607,7 +607,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                         {event.tickets_sold.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(event.revenue)}
+                        {formatCurrency(event.revenue, currency)}
                       </td>
                     </tr>
                   ))}

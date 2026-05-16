@@ -298,7 +298,7 @@ export function CustomerAnalyticsTab({
                     <Skeleton className="h-7 w-24" />
                   ) : (
                     <p className="text-lg font-semibold text-gray-900">
-                      {formatCurrency(report?.average_order_value ?? 0)}
+                      {formatCurrency(report?.average_order_value ?? 0, currency)}
                     </p>
                   )}
                 </div>
@@ -447,7 +447,7 @@ export function CustomerAnalyticsTab({
                       formatter={(value, name) => {
                         if (name === "totalSpent") {
                           return [
-                            formatCurrency(Number(value)),
+                            formatCurrency(Number(value), currency),
                             t(
                               "reports.customerAnalytics.totalSpent",
                               "Total Spent",
@@ -456,7 +456,7 @@ export function CustomerAnalyticsTab({
                         }
                         if (name === "averageSpent") {
                           return [
-                            formatCurrency(Number(value)),
+                            formatCurrency(Number(value), currency),
                             t(
                               "reports.customerAnalytics.avgSpent",
                               "Avg Spent",
@@ -552,10 +552,10 @@ export function CustomerAnalyticsTab({
                         {seg.customer_count.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(seg.total_spent)}
+                        {formatCurrency(seg.total_spent, currency)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
-                        {formatCurrency(seg.average_spent)}
+                        {formatCurrency(seg.average_spent, currency)}
                       </td>
                       <td className="py-3 px-4 text-right text-gray-700">
                         {seg.percentage_of_total.toFixed(1)}%
@@ -625,7 +625,7 @@ export function CustomerAnalyticsTab({
                         {customer.total_orders.toLocaleString()}
                       </td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatCurrency(customer.total_spent)}
+                        {formatCurrency(customer.total_spent, currency)}
                       </td>
                     </tr>
                   ))}

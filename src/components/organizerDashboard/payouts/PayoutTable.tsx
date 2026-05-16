@@ -130,7 +130,7 @@ export function PayoutTable({
         meta: { sortKey: "amount", headerClassName: "!text-left" },
         cell: ({ row }) => (
           <div className="font-semibold text-left">
-            {formatCurrency(row.original.amount, row.original.symbol)}
+            {formatCurrency(row.original.amount, row.original.currency ?? "JPY", row.original.symbol)}
           </div>
         ),
       },
@@ -213,7 +213,7 @@ export function PayoutTable({
                   {t("payouts.table.amount", "Amount")}
                 </p>
                 <p className="font-semibold text-gray-900">
-                  {formatCurrency(selectedPayout.amount, selectedPayout.symbol)}
+                  {formatCurrency(selectedPayout.amount, selectedPayout.currency ?? "JPY", selectedPayout.symbol)}
                 </p>
               </div>
 

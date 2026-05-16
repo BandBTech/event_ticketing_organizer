@@ -23,6 +23,7 @@ function EventTicketsTable({
   limit,
   search,
   statusFilter,
+  currency,
   symbol,
   t,
   sortBy,
@@ -36,6 +37,7 @@ function EventTicketsTable({
   limit: number;
   search: string;
   statusFilter: string;
+  currency?: string;
   symbol?: string;
   t: (key: string, fallback?: string) => string;
   sortBy?: string;
@@ -83,9 +85,10 @@ function EventTicketsTable({
         pageIndex: currentPage - 1,
         pageSize: limit,
         locale,
+        currency,
         symbol,
       }),
-    [t, currentPage, limit, locale, symbol],
+    [t, currentPage, limit, locale, currency, symbol],
   );
 
   return (
@@ -232,6 +235,7 @@ export default function EventTicketsPage() {
                   limit={limit}
                   search={debouncedSearch}
                   statusFilter={statusFilter}
+                  currency={event?.tiers?.[0]?.currency}
                   symbol={event?.tiers?.[0]?.symbol}
                   t={t}
                   sortBy={sortBy}
