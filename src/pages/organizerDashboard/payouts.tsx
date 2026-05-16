@@ -52,10 +52,10 @@ export default function PayoutsPage() {
     status: activeTab === "all" ? undefined : activeTab,
     sort_by: sortBy,
     sort_order: sortOrder,
-    event_id: selectedEventId,
   });
 
   const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary(selectedEventId);
+  const { data: allEventsSummary } = usePayoutSummary();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -128,6 +128,20 @@ export default function PayoutsPage() {
 
             </div>*/}
 
+            {/* Event selector */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-600">Payout summary by event</span>
+              <EventSelect
+                value={selectedEventId ?? ""}
+                onValueChange={(id) => {
+                  setSelectedEventId(id || undefined);
+                  handlePageChange(1);
+                }}
+                triggerWidth="w-52"
+                showAllOption={true}
+              />
+            </div>
+
             {/* Summary Cards — only visible when an event is selected */}
             {selectedEventId && (
               <PayoutSummaryCards
@@ -144,15 +158,6 @@ export default function PayoutsPage() {
                   onTabChange={handleTabChange}
                 />
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <EventSelect
-                    value={selectedEventId ?? ""}
-                    onValueChange={(id) => {
-                      setSelectedEventId(id || undefined);
-                      handlePageChange(1);
-                    }}
-                    triggerWidth="w-52"
-                    showAllOption={true}
-                  />
                   <PermissionGuard permission={[PERMISSIONS.PAYOUT_CREATE]}>
                     <Button
                       onClick={() => setIsDialogOpen(true)}
@@ -166,7 +171,7 @@ export default function PayoutsPage() {
                       open={isDialogOpen}
                       onOpenChange={setIsDialogOpen}
                       defaultEventId={selectedEventId}
-                      events={summary?.events}
+                      events={allEventsSummary?.events}
                     />
                   </PermissionGuard>
                 </div>

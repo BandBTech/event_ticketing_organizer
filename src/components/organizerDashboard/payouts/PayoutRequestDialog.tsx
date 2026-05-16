@@ -70,7 +70,7 @@ export function PayoutRequestDialog({
       payoutRequestFormSchema,
     ) as Resolver<PayoutRequestFormData>,
     defaultValues: {
-      event_id: defaultEventId ?? "",
+      event_id: "",
       amount: 0,
       description: "",
     },
@@ -87,6 +87,11 @@ export function PayoutRequestDialog({
       )
       .sort((a, b) => a.event_title.localeCompare(b.event_title));
   }, [events]);
+
+  const effectiveDefaultId = useMemo(
+    () => (defaultEventId && safeEvents.some((e) => e.event_id === defaultEventId) ? defaultEventId : undefined),
+    [defaultEventId, safeEvents],
+  );
 
   // Find the selected event's summary data — memoized for stable reference
   const selectedEventInfo = useMemo(
@@ -105,18 +110,16 @@ export function PayoutRequestDialog({
   // Reset everything when dialog opens / defaultEventId changes
   useEffect(() => {
     if (open) {
-      // If a default event is provided and we already have its summary data,
-      // pre-fill the amount immediately so the user sees it on open.
-      const defaultEvent = defaultEventId
-        ? safeEvents.find((e) => e.event_id === defaultEventId)
+      const defaultEvent = effectiveDefaultId
+        ? safeEvents.find((e) => e.event_id === effectiveDefaultId)
         : undefined;
       form.reset({
-        event_id: defaultEventId ?? "",
+        event_id: effectiveDefaultId ?? "",
         amount: defaultEvent?.due_amount ?? 0,
         description: "",
       });
     }
-  }, [open, defaultEventId, form, safeEvents]);
+  }, [open, effectiveDefaultId, form, safeEvents]);
 
   // When a new event is selected, clear amount
   const handleEventChange = (eventId: string) => {
@@ -200,7 +203,7 @@ export function PayoutRequestDialog({
                           value={field.value}
                           onValueChange={handleEventChange}
                           events={eventOptions}
-                          disabled={!!defaultEventId}
+                          disabled={!!effectiveDefaultId}
                           triggerWidth="max-w-100"
                           placeholder={t(
                             "payouts.create.eventPlaceholder",
