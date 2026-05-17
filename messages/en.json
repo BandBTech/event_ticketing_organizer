@@ -223,6 +223,7 @@
       "method": "Method",
       "amount": "Amount",
       "date": "Date",
+      "paidAt": "Paid At",
       "processedBy": "Processed By",
       "notes": "Notes",
       "receipt": "Receipt"

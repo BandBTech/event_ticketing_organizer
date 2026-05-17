@@ -111,10 +111,10 @@ export default function PayoutDetailPage() {
     },
     {
       accessorKey: "paid_at",
-      header: t("payouts.history.date", "Date"),
+      header: t("payouts.history.paidAt", "Paid At"),
       cell: ({ row }) => (
         <span className="text-gray-500">
-          {format(new Date(row.original.paid_at), "MMM d, yyyy")}
+          {formatDateTimeLong(row.original.paid_at, locale)}
         </span>
       ),
     },

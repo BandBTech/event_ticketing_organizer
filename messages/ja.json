@@ -216,6 +216,7 @@
       "method": "方法",
       "amount": "金額",
       "date": "日付",
+      "paidAt": "支払日",
       "processedBy": "処理者",
       "notes": "メモ",
       "receipt": "領収書"

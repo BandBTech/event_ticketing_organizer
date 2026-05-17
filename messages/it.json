@@ -216,6 +216,7 @@
       "method": "Metodo",
       "amount": "Importo",
       "date": "Data",
+      "paidAt": "Pagato il",
       "processedBy": "Elaborato da",
       "notes": "Note",
       "receipt": "Ricevuta"
