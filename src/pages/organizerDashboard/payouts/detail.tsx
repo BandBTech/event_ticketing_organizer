@@ -92,11 +92,11 @@ export default function PayoutDetailPage() {
 
   const paymentHistoryColumns: ColumnDef<PayoutPaymentHistory>[] = [
     {
-      accessorKey: "payment_method",
+      accessorKey: "method",
       header: t("payouts.history.method", "Method"),
       cell: ({ row }) => (
         <span className="capitalize font-medium text-gray-900">
-          {row.original.payment_method}
+          {row.original.method}
         </span>
       ),
     },
@@ -110,11 +110,11 @@ export default function PayoutDetailPage() {
       ),
     },
     {
-      accessorKey: "payment_date",
+      accessorKey: "paid_at",
       header: t("payouts.history.date", "Date"),
       cell: ({ row }) => (
         <span className="text-gray-500">
-          {format(new Date(row.original.payment_date), "MMM d, yyyy")}
+          {format(new Date(row.original.paid_at), "MMM d, yyyy")}
         </span>
       ),
     },
@@ -495,7 +495,7 @@ export default function PayoutDetailPage() {
                           {t("payouts.history.method", "Method")}
                         </p>
                         <p className="font-medium text-gray-900 capitalize">
-                          {selectedPayment.payment_method || "—"}
+                          {selectedPayment.method || "—"}
                         </p>
                       </div>
                     </div>
@@ -507,7 +507,7 @@ export default function PayoutDetailPage() {
                         </p>
                         <p className="font-medium text-gray-900">
                           {format(
-                            new Date(selectedPayment.payment_date),
+                            new Date(selectedPayment.paid_at),
                             "MMM d, yyyy",
                           )}
                         </p>
@@ -522,13 +522,13 @@ export default function PayoutDetailPage() {
                       </div>
                     </div>
 
-                    {selectedPayment.payment_ref && (
+                    {selectedPayment.reference && (
                       <div>
                         <p className="text-sm text-gray-500">
                           {t("payouts.history.reference", "Reference")}
                         </p>
                         <p className="font-mono text-blue-600 font-medium">
-                          {selectedPayment.payment_ref}
+                          {selectedPayment.reference}
                         </p>
                       </div>
                     )}

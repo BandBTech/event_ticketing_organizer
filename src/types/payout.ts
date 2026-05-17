@@ -24,9 +24,9 @@ export type PayoutRequestUpdate = z.infer<typeof PayoutRequestUpdateSchema>;
 export interface PayoutPaymentHistory {
   id: number;
   amount: number;
-  payment_method: string;
-  payment_ref: string;
-  payment_date: string;
+  method: string;
+  reference: string;
+  paid_at: string;
   processed_by: string;
   notes: string;
   screenshot_url: string;
