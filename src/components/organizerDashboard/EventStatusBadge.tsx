@@ -62,7 +62,7 @@ const eventStatusConfig: Record<
     variant: "secondary",
   },
   cancel_pending: {
-    color: "bg-yellow-300 text-red-950 border-amber-400",
+    color: "bg-yellow-200 text-orange-800 border-amber-400",
     variant: "secondary",
   },
   sold_out: {

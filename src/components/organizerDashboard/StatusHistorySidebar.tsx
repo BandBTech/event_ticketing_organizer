@@ -126,7 +126,7 @@ export default function StatusHistorySidebar({
       case "cancelled":
         return "border-red-600 bg-red-700 text-white";
       case "cancel_pending":
-        return "bg-yellow-300 text-red-950 border-amber-400";
+        return "bg-yellow-200 text-orange-800 border-amber-400";
       case "draft":
         return "border-gray-600 bg-gray-700 text-gray-100";
       case "completed":
