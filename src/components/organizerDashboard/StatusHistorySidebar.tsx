@@ -90,6 +90,8 @@ export default function StatusHistorySidebar({
         return <XCircle size={16} className="text-red-500" />;
       case "cancelled":
         return <XCircle size={16} className="text-red-500" />;
+      case "cancel_pending":
+        return <XCircle size={16} className="text-orange-500" />;
       case "pending":
         return <Circle size={16} className="text-yellow-600" />;
       case "draft":
@@ -123,6 +125,8 @@ export default function StatusHistorySidebar({
         return "border-red-600 bg-red-700 text-red-100";
       case "cancelled":
         return "border-red-600 bg-red-700 text-white";
+      case "cancel_pending":
+        return "bg-yellow-300 text-red-950 border-amber-400";
       case "draft":
         return "border-gray-600 bg-gray-700 text-gray-100";
       case "completed":

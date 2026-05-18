@@ -603,7 +603,8 @@
       "discountsPromo": "Discounts & Promo Codes",
       "templates": "Templates",
       "statusHistory": "Status History",
-      "ticketSalesDuration": "Ticket Sales Duration"
+      "ticketSalesDuration": "Ticket Sales Duration",
+      "cancellationPending": "Cancellation Pending Approval"
     },
     "button": {
       "pauseSales": "Pause Sales",
@@ -627,7 +628,8 @@
     "text": {
       "noPromoCodes": "No promo codes configured for this event.",
       "noTierFound": "No tier found.",
-      "tierNameUsed": "Name already used"
+      "tierNameUsed": "Name already used",
+      "cancellationPendingNote": "Your cancellation request has been submitted and is awaiting admin review. Ticket sales are suspended until a decision is made."
     },
     "dialog": {
       "cancelEvent": {
@@ -730,7 +732,8 @@
       "featured": "Featured",
       "completed": "Completed",
       "scheduled": "Scheduled",
-      "resumed": "Sales Resumed"
+      "resumed": "Sales Resumed",
+      "cancel_pending": "Cancellation Pending"
     },
     "analytics": {
       "progress": "Sales Progress",
@@ -1249,6 +1252,7 @@
     "rejected": "Rejected",
     "sales_end": "Sales Ended",
     "sales_upcoming": "Sales Upcoming",
-    "scheduled": "Scheduled"
+    "scheduled": "Scheduled",
+    "cancel_pending": "Cancellation Pending"
   }
 }

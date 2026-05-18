@@ -218,6 +218,8 @@ export function EventPerformanceTab({
         return "bg-red-700 text-red-100";
       case "cancelled":
         return "bg-red-700 text-white";
+      case "cancel_pending":
+        return "bg-amber-500 text-white";
       case "draft":
         return "bg-gray-700 text-gray-100";
       case "completed":

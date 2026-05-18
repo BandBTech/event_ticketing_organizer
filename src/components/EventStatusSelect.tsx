@@ -19,6 +19,7 @@ export interface EventStatusSelectProps {
 export const EVENT_STATUS_OPTIONS = [
   { value: "all", label: "All Statuses" },
   { value: "approved", label: "Approved" },
+  { value: "cancel_pending", label: "Cancellation Pending" },
   { value: "cancelled", label: "Cancelled" },
   { value: "completed", label: "Completed" },
   // { value: "draft", label: "Draft" },

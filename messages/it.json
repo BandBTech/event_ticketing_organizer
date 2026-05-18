@@ -423,7 +423,8 @@
       "discountsPromo": "Sconti",
       "templates": "Modelli",
       "statusHistory": "Cronologia dello stato",
-      "ticketSalesDuration": "Durata della vendita dei biglietti"
+      "ticketSalesDuration": "Durata della vendita dei biglietti",
+      "cancellationPending": "Cancellazione in attesa di approvazione"
     },
     "button": {
       "pauseSales": "Metti in pausa le vendite",
@@ -447,7 +448,8 @@
     "text": {
       "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
       "noTierFound": "Nessun livello trovato.",
-      "tierNameUsed": "Nome già utilizzato"
+      "tierNameUsed": "Nome già utilizzato",
+      "cancellationPendingNote": "La tua richiesta di cancellazione è stata inviata ed è in attesa di revisione. Le vendite dei biglietti sono sospese fino alla decisione."
     },
     "dialog": {
       "cancelEvent": {
@@ -550,7 +552,8 @@
       "featured": "In primo piano",
       "completed": "Completato",
       "scheduled": "Scheduled",
-      "resumed": "Vendite riprimate"
+      "resumed": "Vendite riprimate",
+      "cancel_pending": "Cancellazione in sospeso"
     },
     "option": {
       "amountFixed": "Importo (fisso)",
@@ -1134,7 +1137,8 @@
     "rejected": "Rifiutato",
     "sales_end": "Vendite Finite",
     "sales_upcoming": "Vendite Future",
-    "scheduled": "Programmato"
+    "scheduled": "Programmato",
+    "cancel_pending": "Cancellazione in sospeso"
   },
   "manualCheckin": {
     "title": "Check-in manuale"

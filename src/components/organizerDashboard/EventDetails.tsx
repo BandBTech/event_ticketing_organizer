@@ -234,7 +234,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   };
 
   const salesStatus = analytics?.sales_status || "active";
-  const isEventCancelled = event.status === "cancelled";
+  const isEventCancelled = event.status === "cancelled" || event.status === "cancel_pending";
   const canControlSales =
     (event.status === "on_sale" || event.status === "hold") &&
     !isEventCancelled;
@@ -367,6 +367,21 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                 )}
             </div>
           </div>
+
+          {event.status === "cancel_pending" && (
+            <div className="p-4 rounded-xl border bg-amber-50 border-amber-200 text-amber-800">
+              <h3 className="font-semibold mb-1 flex items-center gap-2 text-gray-900">
+                <ShieldCheckIcon weight="duotone" size={16} />
+                {t("event.section.cancellationPending", "Cancellation Pending Approval")}
+              </h3>
+              <p className="text-sm opacity-90">
+                {t(
+                  "event.text.cancellationPendingNote",
+                  "Your cancellation request has been submitted and is awaiting admin review. Ticket sales are suspended until a decision is made.",
+                )}
+              </p>
+            </div>
+          )}
 
           {event.admin_remark && (
             <div

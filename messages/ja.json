@@ -423,7 +423,8 @@
       "discountsPromo": "割引",
       "templates": "テンプレート",
       "statusHistory": "ステータス履歴",
-      "ticketSalesDuration": "チケット販売期間"
+      "ticketSalesDuration": "チケット販売期間",
+      "cancellationPending": "キャンセル承認待ち"
     },
     "button": {
       "pauseSales": "販売の一時停止",
@@ -447,7 +448,8 @@
     "text": {
       "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
       "noTierFound": "階層が見つかりません。",
-      "tierNameUsed": "名前はすでに使用されています"
+      "tierNameUsed": "名前はすでに使用されています",
+      "cancellationPendingNote": "キャンセルリクエストが送信されました。管理者の審査待ちです。チケット販売は決定されるまで一時停止されます。"
     },
     "dialog": {
       "cancelEvent": {
@@ -549,7 +551,8 @@
       "featured": "注目の",
       "completed": "完了",
       "scheduled": "スケジュール",
-      "resumed": "販売再開"
+      "resumed": "販売再開",
+      "cancel_pending": "キャンセル申請中"
     },
     "option": {
       "amountFixed": "金額（固定）",
@@ -1130,7 +1133,8 @@
     "rejected": "却下",
     "sales_end": "販売終了",
     "sales_upcoming": "販売予定",
-    "scheduled": "スケジュール済み"
+    "scheduled": "スケジュール済み",
+    "cancel_pending": "キャンセル申請中"
   },
   "manualCheckin": {
     "title": "手動チェックイン"
