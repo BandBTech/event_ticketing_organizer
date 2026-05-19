@@ -40,7 +40,10 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       id: "role_name",
       header: t('common.role', "Role"),
       meta: { sortKey: 'role' },
-      cell: (info) => <span className="capitalize text-gray-900">{info.getValue<string>()}</span>,
+      cell: (info) => {
+        const role = info.getValue<string>();
+        return <span className="text-gray-900">{role === "-" ? role : t(`common.${role}`, role)}</span>;
+      },
     },
     {
       accessorKey: "phone",
@@ -59,12 +62,15 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       cell: (info) => {
         const status = info.getValue<string>();
         const isActive = status === "active";
+        const label = status
+          ? t(`common.${status}`, status)
+          : t('common.unknown', "Unknown");
         return (
           <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium capitalize ${isActive ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-medium ${isActive ? "bg-emerald-400 text-white" : "bg-red-400 text-white"
               }`}
           >
-            {status || t('common.unknown', "Unknown")}
+            {label}
           </span>
         );
       },

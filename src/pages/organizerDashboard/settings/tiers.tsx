@@ -115,7 +115,7 @@ export default function TierTemplatesPage() {
   return (
     <>
       <Head>
-        <title>{t("tiers.title", "Tier Templates")}</title>
+        <title>{t("tierTemplates.title", "Tier Templates")}</title>
       </Head>
       <SettingsLayout>
         <ProtectedRoute>

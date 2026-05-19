@@ -15,10 +15,22 @@
       "invalidDatetime": "有効な日時を入力してください。",
       "yearLimit": "年は 4 桁を超えることはできません。",
       "required": "{field}は必須です。",
+      "invalid": "{field}が無効です。",
+      "minLength": "{field}は少なくとも{length}文字以上である必要があります。",
+      "maxLength": "{field}は{length}文字を超えることはできません。",
+      "pattern": "{field}の形式が無効です。",
       "min": "{field}は少なくとも{value}でなければなりません。",
       "max": "{field}は{value}を超えることはできません。",
       "discountPercentageRequired": "割引率は必須です。",
       "integer": "{field}は整数（小数なし）である必要があります。"
+    },
+    "text": {
+      "system": "システム"
+    },
+    "button": {
+      "refresh": "更新",
+      "viewMore": "さらに{count}件表示",
+      "showLess": "表示を減らす"
     },
     "createdAt": "作成日",
     "updatedAt": "更新日",
@@ -45,7 +57,10 @@
       "sn": "S.N.",
       "name": "名前",
       "email": "電子メール",
-      "contact": "接触"
+      "contact": "接触",
+      "role": "役割",
+      "status": "状態",
+      "actions": "アクション"
     },
     "status": "状態",
     "unknown": "未知",
@@ -302,9 +317,30 @@
     "resetPassword": {
       "subtitle": "新しいパスワードを設定してください",
       "title": "パスワードのリセット",
+      "back": "戻る",
+      "otp": "確認コード",
+      "otpPlaceholder": "コードを入力してください",
       "newPassword": "新しいパスワード",
+      "newPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "パスワードの確認",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "resetButton": "パスワードをリセット",
       "resetting": "リセット中...",
-      "backToLogin": "ログインに戻る"
+      "backToLogin": "ログインに戻る",
+      "successMessage": "パスワードのリセットが完了しました。ログインページにリダイレクトします...",
+      "validation": {
+        "otpRequired": "OTPは必須です",
+        "otpInvalid": "OTPが無効です",
+        "passwordTooShort": "パスワードは8文字以上である必要があります",
+        "passwordTooLong": "パスワードが長すぎます",
+        "passwordUppercase": "大文字を含める必要があります",
+        "passwordLowercase": "小文字を含める必要があります",
+        "passwordNumber": "数字を含める必要があります",
+        "passwordMismatch": "パスワードが一致しません"
+      },
+      "errors": {
+        "resetFailed": "パスワードのリセットに失敗しました。もう一度お試しください。"
+      }
     },
     "verifyOTP": {
       "otpValidity": "コードは 10 分後に自動的に期限切れになります。",
@@ -312,6 +348,7 @@
       "didntReceiveCode": "コードを受信しませんでしたか?",
       "resendIn": "{resendTimer} 秒以内に再送信します",
       "resend": "再送信",
+      "resending": "再送信中...",
       "back": "戻る",
       "title": "OTP を確認する",
       "subtitle": "に送信された 6 桁のコードを入力してください",
@@ -424,7 +461,8 @@
       "templates": "テンプレート",
       "statusHistory": "ステータス履歴",
       "ticketSalesDuration": "チケット販売期間",
-      "cancellationPending": "キャンセル承認待ち"
+      "cancellationPending": "キャンセル承認待ち",
+      "organizerEarnings": "主催者の収益"
     },
     "button": {
       "pauseSales": "販売の一時停止",
@@ -443,13 +481,15 @@
       "totalRevenue": "総収益",
       "cancellationReason": "キャンセル理由（最低10文字）",
       "stopSalesReason": "理由（任意）",
-      "totalSold": "総販売数"
+      "totalSold": "総販売数",
+      "organizerEarnings": "主催者の収益"
     },
     "text": {
       "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
       "noTierFound": "階層が見つかりません。",
       "tierNameUsed": "名前はすでに使用されています",
-      "cancellationPendingNote": "キャンセルリクエストが送信されました。管理者の審査待ちです。チケット販売は決定されるまで一時停止されます。"
+      "cancellationPendingNote": "キャンセルリクエストが送信されました。管理者の審査待ちです。チケット販売は決定されるまで一時停止されます。",
+      "noStatusHistory": "このイベントにはステータス変更の記録がありません。"
     },
     "dialog": {
       "cancelEvent": {
@@ -875,26 +915,26 @@
   },
   "tickets": {
     "empty": {
-      "title": "No tickets found",
-      "description": "No tickets match your search criteria or none have been sold yet."
+      "title": "チケットが見つかりませんでした",
+      "description": "検索条件に一致するチケットがないか、まだ販売されていません。"
     },
-    "pageTitle": "Event Tickets",
-    "pageSubtitle": "View and manage all tickets purchased for this event.",
-    "search": "Search by Ticket Number, Name or Email",
+    "pageTitle": "イベントチケット",
+    "pageSubtitle": "このイベントで購入されたすべてのチケットを表示・管理します。",
+    "search": "チケット番号、名前、またはメールアドレスで検索",
     "columns": {
-      "ticketNumber": "Ticket Number",
-      "purchaser": "Purchased By",
-      "tier": "Tier",
-      "quantity": "Quantity",
-      "amount": "Amount",
-      "purchaseDate": "Purchase Date",
-      "checkedInBy": "Checked In By",
-      "checkInTime": "Check-In Time"
+      "ticketNumber": "チケット番号",
+      "purchaser": "購入者",
+      "tier": "ティア",
+      "quantity": "数量",
+      "amount": "金額",
+      "purchaseDate": "購入日",
+      "checkedInBy": "チェックイン担当者",
+      "checkInTime": "チェックイン時間"
     },
     "status": {
-      "paymentPending": "Payment Pending",
-      "refunded": "Refunded",
-      "cancelled": "Cancelled",
+      "paymentPending": "支払い保留中",
+      "refunded": "返金済み",
+      "cancelled": "キャンセル済み",
       "checkedIn": "チェックイン済み",
       "used": "使用済み",
       "valid": "有効",
@@ -903,8 +943,8 @@
       "allStatuses": "すべてのステータス"
     }
   },
-  "Your account is inactive.": "Your account is inactive.",
-  "Please contact support to reactivate your account.": "Please contact support to reactivate your account.",
+  "Your account is inactive.": "アカウントが無効化されています。",
+  "Please contact support to reactivate your account.": "アカウントを再開するにはサポートにお問い合わせください。",
   "reports": {
     "title": "レポート",
     "subtitle": "イベントのパフォーマンス、売上、財務を分析",
@@ -1138,5 +1178,8 @@
   },
   "manualCheckin": {
     "title": "手動チェックイン"
+  },
+  "organizer": {
+    "title": "主催者"
   }
 }

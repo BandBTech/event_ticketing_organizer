@@ -15,10 +15,22 @@
       "invalidDatetime": "Inserire una data e ora valida.",
       "yearLimit": "L'anno non può avere più di 4 cifre.",
       "required": "{field} è obbligatorio.",
+      "invalid": "{field} non è valido.",
+      "minLength": "{field} deve contenere almeno {length} caratteri.",
+      "maxLength": "{field} non può superare {length} caratteri.",
+      "pattern": "Il formato di {field} non è valido.",
       "integer": "{field} deve essere un numero intero (senza decimali).",
       "min": "{field} deve essere almeno {value}.",
       "max": "{field} non può superare {value}.",
       "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
+    },
+    "text": {
+      "system": "Sistema"
+    },
+    "button": {
+      "refresh": "Aggiorna",
+      "viewMore": "Mostra altri {count}",
+      "showLess": "Mostra meno"
     },
     "createdAt": "Creato a",
     "updatedAt": "Aggiornato a",
@@ -45,7 +57,10 @@
       "sn": "S.N.",
       "name": "Nome",
       "email": "E-mail",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "role": "Ruolo",
+      "status": "Stato",
+      "actions": "Azioni"
     },
     "status": "Stato",
     "unknown": "Sconosciuto",
@@ -302,9 +317,30 @@
     "resetPassword": {
       "subtitle": "Imposta una nuova password per",
       "title": "Reimposta password",
-      "newPassword": "Nuova parola d'ordine",
+      "back": "Indietro",
+      "otp": "Codice di verifica",
+      "otpPlaceholder": "Inserisci il codice",
+      "newPassword": "Nuova password",
+      "newPasswordPlaceholder": "••••••••••••",
+      "confirmPassword": "Conferma password",
+      "confirmPasswordPlaceholder": "••••••••••••",
+      "resetButton": "Reimposta password",
       "resetting": "Reimpostazione...",
-      "backToLogin": "Torna al login"
+      "backToLogin": "Torna al login",
+      "successMessage": "Password reimpostata con successo! Reindirizzamento al login...",
+      "validation": {
+        "otpRequired": "Il codice OTP è obbligatorio",
+        "otpInvalid": "OTP non valido",
+        "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+        "passwordTooLong": "La password è troppo lunga",
+        "passwordUppercase": "Deve contenere una lettera maiuscola",
+        "passwordLowercase": "Deve contenere una lettera minuscola",
+        "passwordNumber": "Deve contenere un numero",
+        "passwordMismatch": "Le password non corrispondono"
+      },
+      "errors": {
+        "resetFailed": "Reimpostazione della password non riuscita. Riprova."
+      }
     },
     "verifyOTP": {
       "otpValidity": "Il codice scadrà automaticamente dopo 10 minuti.",
@@ -312,6 +348,7 @@
       "didntReceiveCode": "Non hai ricevuto il codice?",
       "resendIn": "Invia di nuovo tra {resendTimer} s",
       "resend": "Invia nuovamente",
+      "resending": "Invio in corso...",
       "back": "Indietro",
       "title": "Verificare l'OTP",
       "subtitle": "Inserisci il codice di 6 cifre inviato a",
@@ -424,7 +461,8 @@
       "templates": "Modelli",
       "statusHistory": "Cronologia dello stato",
       "ticketSalesDuration": "Durata della vendita dei biglietti",
-      "cancellationPending": "Cancellazione in attesa di approvazione"
+      "cancellationPending": "Cancellazione in attesa di approvazione",
+      "organizerEarnings": "Guadagni organizzatore"
     },
     "button": {
       "pauseSales": "Metti in pausa le vendite",
@@ -443,13 +481,15 @@
       "totalRevenue": "Entrate totali",
       "cancellationReason": "Motivo della cancellazione (minimo 10 caratteri)",
       "stopSalesReason": "Motivo (facoltativo)",
-      "totalSold": "Totale venduto"
+      "totalSold": "Totale venduto",
+      "organizerEarnings": "Guadagni organizzatore"
     },
     "text": {
       "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
       "noTierFound": "Nessun livello trovato.",
       "tierNameUsed": "Nome già utilizzato",
-      "cancellationPendingNote": "La tua richiesta di cancellazione è stata inviata ed è in attesa di revisione. Le vendite dei biglietti sono sospese fino alla decisione."
+      "cancellationPendingNote": "La tua richiesta di cancellazione è stata inviata ed è in attesa di revisione. Le vendite dei biglietti sono sospese fino alla decisione.",
+      "noStatusHistory": "Nessuna modifica di stato registrata per questo evento."
     },
     "dialog": {
       "cancelEvent": {
@@ -538,7 +578,7 @@
       "pending": "In attesa di",
       "cancelled": "Annullato",
       "draft": "Bozza",
-      "live": "Live",
+      "live": "In diretta",
       "ended": "Finito",
       "rejected": "Respinto",
       "hold": "Vendite in sospeso",
@@ -551,8 +591,8 @@
       "on_sale": "Vendite in diretta",
       "featured": "In primo piano",
       "completed": "Completato",
-      "scheduled": "Scheduled",
-      "resumed": "Vendite riprimate",
+      "scheduled": "Programmato",
+      "resumed": "Vendite riprese",
       "cancel_pending": "Cancellazione in sospeso"
     },
     "option": {
@@ -1142,5 +1182,8 @@
   },
   "manualCheckin": {
     "title": "Check-in manuale"
+  },
+  "organizer": {
+    "title": "Organizzatore"
   }
 }

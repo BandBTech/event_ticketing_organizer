@@ -7,8 +7,10 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { queryKeys } from "@/lib/queryKeys";
 import Head from "next/head";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EventDetailsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const eventId = id as string;
@@ -58,7 +60,7 @@ export default function EventDetailsPage() {
   return (
     <>
       <Head>
-        <title>{eventData.title} | Event Details</title>
+        <title>{eventData.title} | {t("event.eventDetails", "Event Details")}</title>
       </Head>
       <DashboardLayout>
         <EventDetails event={eventData} analytics={analyticsData} />
