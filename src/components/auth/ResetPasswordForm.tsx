@@ -235,18 +235,19 @@ function ResetPasswordContent() {
                               {form.formState.errors.newPassword &&
                                 form.formState.errors.newPassword.message !==
                                   "Invalid input" &&
-                                // Filter out messages that are already covered by PasswordRequirements
+                                // Filter out messages already covered by PasswordRequirements
+                                // The message is a translation key (e.g. "auth.signup.validation.passwordMin")
                                 !form.formState.errors.newPassword.message?.includes(
-                                  "must be at least 8 characters",
+                                  "passwordMin",
                                 ) &&
                                 !form.formState.errors.newPassword.message?.includes(
-                                  "uppercase and one lowercase",
+                                  "passwordUpperLower",
                                 ) &&
                                 !form.formState.errors.newPassword.message?.includes(
-                                  "special character",
+                                  "passwordSpecialChar",
                                 ) &&
                                 !form.formState.errors.newPassword.message?.includes(
-                                  "numeric digit",
+                                  "passwordNumber",
                                 ) && <TranslatedFormMessage t={t} />}
                               <PasswordRequirements
                                 password={form.watch("newPassword")}

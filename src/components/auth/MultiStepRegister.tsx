@@ -802,18 +802,19 @@ export default function MultiStepRegister() {
                           {passwordForm.formState.errors.password &&
                             passwordForm.formState.errors.password.message !==
                               "Invalid input" &&
-                            // Filter out messages that are already covered by PasswordRequirements
+                            // Filter out messages already covered by PasswordRequirements
+                            // The message is a translation key (e.g. "auth.signup.validation.passwordMin")
                             !passwordForm.formState.errors.password.message?.includes(
-                              "must be at least 8 characters",
+                              "passwordMin",
                             ) &&
                             !passwordForm.formState.errors.password.message?.includes(
-                              "uppercase and one lowercase",
+                              "passwordUpperLower",
                             ) &&
                             !passwordForm.formState.errors.password.message?.includes(
-                              "special character",
+                              "passwordSpecialChar",
                             ) &&
                             !passwordForm.formState.errors.password.message?.includes(
-                              "numeric digit",
+                              "passwordNumber",
                             ) && <TranslatedFormMessage t={t} />}
                           <PasswordRequirements
                             password={passwordForm.watch("password")}
