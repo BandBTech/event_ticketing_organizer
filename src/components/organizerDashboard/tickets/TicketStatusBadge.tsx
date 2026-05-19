@@ -37,6 +37,7 @@ export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
             "bg-blue-50 text-blue-700 border-blue-600 hover:bg-blue-100",
         };
       case "cancelled":
+      case "canceled":
         return {
           variant: "destructive",
           label: t("tickets.status.cancelled", "Cancelled"),

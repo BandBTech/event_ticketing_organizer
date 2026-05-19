@@ -144,6 +144,7 @@
   "payouts": {
     "title": "Richieste di pagamento",
     "requestPayout": "Richiedi pagamento",
+    "payoutSummaryByEvent": "Riepilogo pagamenti per evento",
     "summary": {
       "earnings": "Guadagni totali",
       "withdrawn": "Amount Withdrawn",
@@ -418,7 +419,21 @@
       "discountAmount": "Importo dello sconto",
       "discountPercentage": "Percentuale di sconto (%)",
       "salesStartsOn": "Le vendite iniziano il",
-      "salesEndsOn": "Le vendite terminano il"
+      "salesEndsOn": "Le vendite terminano il",
+      "eventType": "Tipo di evento",
+      "country": "Paese",
+      "currency": "Valuta"
+    },
+    "eventType": {
+      "conference": "Conferenza",
+      "concert": "Concerto",
+      "festival": "Festival",
+      "workshop": "Workshop",
+      "sports": "Sport",
+      "exhibition": "Esposizione",
+      "networking": "Networking",
+      "webinar": "Webinar",
+      "other": "Altro"
     },
     "helperText": {
       "bannerImage": "Carica l'immagine del banner o trascinala",
@@ -449,7 +464,9 @@
       "discountType": "Seleziona il tipo di sconto",
       "discountAmount": "Inserisci l'importo dello sconto",
       "discountPercentage": "Inserisci la percentuale di sconto",
-      "currency": "Seleziona valuta"
+      "currency": "Seleziona valuta",
+      "eventType": "Seleziona il tipo di evento",
+      "country": "Seleziona il paese"
     },
     "section": {
       "venueSchedule": "Luogo",
@@ -482,7 +499,10 @@
       "cancellationReason": "Motivo della cancellazione (minimo 10 caratteri)",
       "stopSalesReason": "Motivo (facoltativo)",
       "totalSold": "Totale venduto",
-      "organizerEarnings": "Guadagni organizzatore"
+      "organizerEarnings": "Guadagni organizzatore",
+      "grossRevenue": "Entrate lorde",
+      "commissionRate": "Tasso di commissione",
+      "commissionAmount": "Commissione"
     },
     "text": {
       "noPromoCodes": "Nessun codice promozionale configurato per questo evento.",
@@ -562,7 +582,10 @@
       "latitudeRequired": "La latitudine è richiesta.",
       "capacityExceeded": "Il numero totale dei biglietti ({total}) non può superare la capienza della sede ({capacity}).",
       "startDateBeforeEnd": "La data di inizio dell'evento deve essere antecedente alla data di fine dell'evento.",
-      "salesStartBeforeEnd": "La data di inizio delle vendite deve essere antecedente alla data di fine delle vendite."
+      "salesStartBeforeEnd": "La data di inizio delle vendite deve essere antecedente alla data di fine delle vendite.",
+      "eventTypeRequired": "Il tipo di evento è obbligatorio.",
+      "countryRequired": "Il paese è obbligatorio.",
+      "currencyRequired": "La valuta è obbligatoria."
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
@@ -945,6 +968,12 @@
     "select": {
       "placeholder": "Seleziona evento",
       "allEvents": "Tutti gli eventi"
+    },
+    "eventDetails": {
+      "eventDuration": "Durata dell'evento"
+    },
+    "sections": {
+      "ticketSalesDuration": "Durata della vendita dei biglietti"
     }
   },
   "Your account is inactive.": "Il tuo account è inattivo.",

@@ -144,6 +144,7 @@
   "payouts": {
     "title": "支払いリクエスト",
     "requestPayout": "支払いのリクエスト",
+    "payoutSummaryByEvent": "イベント別支払いサマリー",
     "summary": {
       "earnings": "総収益",
       "withdrawn": "Amount Withdrawn",
@@ -418,7 +419,21 @@
       "discountAmount": "割引額",
       "discountPercentage": "割引率 (%)",
       "salesStartsOn": "販売開始日",
-      "salesEndsOn": "販売終了日"
+      "salesEndsOn": "販売終了日",
+      "eventType": "イベントタイプ",
+      "country": "国",
+      "currency": "通貨"
+    },
+    "eventType": {
+      "conference": "カンファレンス",
+      "concert": "コンサート",
+      "festival": "フェスティバル",
+      "workshop": "ワークショップ",
+      "sports": "スポーツ",
+      "exhibition": "展示会",
+      "networking": "ネットワーキング",
+      "webinar": "ウェビナー",
+      "other": "その他"
     },
     "helperText": {
       "bannerImage": "バナー画像をアップロードまたはドラッグ",
@@ -449,7 +464,9 @@
       "discountType": "割引タイプを選択してください",
       "discountAmount": "割引額を入力してください",
       "discountPercentage": "割引率を入力してください",
-      "currency": "通貨を選択してください"
+      "currency": "通貨を選択してください",
+      "eventType": "イベントタイプを選択してください",
+      "country": "国を選択してください"
     },
     "section": {
       "venueSchedule": "会場",
@@ -482,7 +499,10 @@
       "cancellationReason": "キャンセル理由（最低10文字）",
       "stopSalesReason": "理由（任意）",
       "totalSold": "総販売数",
-      "organizerEarnings": "主催者の収益"
+      "organizerEarnings": "主催者の収益",
+      "grossRevenue": "総収益",
+      "commissionRate": "手数料率",
+      "commissionAmount": "手数料"
     },
     "text": {
       "noPromoCodes": "このイベントにはプロモーション コードが設定されていません。",
@@ -561,7 +581,10 @@
       "latitudeRequired": "緯度は必須です。",
       "capacityExceeded": "チケットの合計数（{total}）は会場の定員（{capacity}）を超えることはできません。",
       "startDateBeforeEnd": "イベント開始日はイベント終了日より前である必要があります。",
-      "salesStartBeforeEnd": "販売開始日は販売終了日より前である必要があります。"
+      "salesStartBeforeEnd": "販売開始日は販売終了日より前である必要があります。",
+      "eventTypeRequired": "イベントタイプは必須です。",
+      "countryRequired": "国は必須です。",
+      "currencyRequired": "通貨は必須です。"
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
@@ -838,6 +861,12 @@
     "select": {
       "placeholder": "イベントを選択",
       "allEvents": "すべてのイベント"
+    },
+    "eventDetails": {
+      "eventDuration": "イベント期間"
+    },
+    "sections": {
+      "ticketSalesDuration": "チケット販売期間"
     }
   },
   "staffDashboard": {

@@ -136,6 +136,7 @@
   "payouts": {
     "title": "Payout Requests",
     "requestPayout": "Request Payout",
+    "payoutSummaryByEvent": "Payout summary by event",
     "summary": {
       "earnings": "Total Earnings",
       "withdrawn": "Amount Withdrawn",
@@ -557,7 +558,21 @@
       "bannerImageHelperText": "Upload banner image or drag & drop",
       "discountPercentage": "Discount Percentage (%)",
       "salesStartsOn": "Sales starts on",
-      "salesEndsOn": "Sales ends on"
+      "salesEndsOn": "Sales ends on",
+      "eventType": "Event Type",
+      "country": "Country",
+      "currency": "Currency"
+    },
+    "eventType": {
+      "conference": "Conference",
+      "concert": "Concert",
+      "festival": "Festival",
+      "workshop": "Workshop",
+      "sports": "Sports",
+      "exhibition": "Exhibition",
+      "networking": "Networking",
+      "webinar": "Webinar",
+      "other": "Other"
     },
     "helperText": {
       "bannerImage": "Upload banner image or drag & drop",
@@ -592,7 +607,9 @@
       "discountType": "Select discount type",
       "discountAmount": "Enter discount amount",
       "discountPercentage": "Enter discount percentage",
-      "currency": "Select currency"
+      "currency": "Select currency",
+      "eventType": "Select event type",
+      "country": "Select country"
     },
     "section": {
       "venueSchedule": "Venue & Schedule",
@@ -623,7 +640,10 @@
       "totalRevenue": "Total Revenue",
       "cancellationReason": "Reason for cancellation (minimum 10 characters)",
       "stopSalesReason": "Reason",
-      "totalSold": "Total Sold"
+      "totalSold": "Total Sold",
+      "grossRevenue": "Gross Revenue",
+      "commissionRate": "Commission Rate",
+      "commissionAmount": "Commission"
     },
     "text": {
       "noPromoCodes": "No promo codes configured for this event.",
@@ -703,7 +723,10 @@
       "capacityExceeded": "Total number of tickets ({total}) cannot exceed venue capacity ({capacity}).",
       "capacityRequiredFirst": "Please set the venue capacity before setting tickets quantity.",
       "startDateBeforeEnd": "Event Start Date must be before Event End Date.",
-      "salesStartBeforeEnd": "Sales Start Date must be before Sales End Date."
+      "salesStartBeforeEnd": "Sales Start Date must be before Sales End Date.",
+      "eventTypeRequired": "Event Type is required.",
+      "countryRequired": "Country is required.",
+      "currencyRequired": "Currency is required."
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
@@ -1020,6 +1043,12 @@
     "select": {
       "placeholder": "Select event",
       "allEvents": "All events"
+    },
+    "eventDetails": {
+      "eventDuration": "Event Duration"
+    },
+    "sections": {
+      "ticketSalesDuration": "Ticket Sales Duration"
     }
   },
   "Your account is inactive.": "Your account is inactive.",

@@ -29,12 +29,7 @@ import { Editor } from "@/components/editor/editor";
 import CategoryTagsSelector from "@/components/organizerDashboard/CategoryTagsSelector";
 import { cn } from "@/lib/utils";
 
-const COUNTRY_OPTIONS = [
-  { value: "np", label: "Nepal" },
-  { value: "jp", label: "Japan" },
-  { value: "dk", label: "Denmark" },
-  { value: "in", label: "India" },
-] as const;
+const COUNTRY_CODES = ["NP", "JP", "DK", "IN"] as const;
 
 const COUNTRY_CURRENCY_MAP: Record<string, string> = {
   np: "NPR",
@@ -53,16 +48,16 @@ const CURRENCY_OPTIONS = [
   { value: "GBP", label: "GBP – British Pound" },
 ] as const;
 
-const EVENT_TYPE_OPTIONS = [
-  { value: "conference", label: "Conference" },
-  { value: "concert", label: "Concert" },
-  { value: "festival", label: "Festival" },
-  { value: "workshop", label: "Workshop" },
-  { value: "sports", label: "Sports" },
-  { value: "exhibition", label: "Exhibition" },
-  { value: "networking", label: "Networking" },
-  { value: "webinar", label: "Webinar" },
-  { value: "other", label: "Other" },
+const EVENT_TYPE_VALUES = [
+  "conference",
+  "concert",
+  "festival",
+  "workshop",
+  "sports",
+  "exhibition",
+  "networking",
+  "webinar",
+  "other",
 ] as const;
 
 interface EventDetailsSectionProps {
@@ -104,7 +99,16 @@ export function EventDetailsSection({
   registerFieldRef,
   isPending = false,
 }: EventDetailsSectionProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const EVENT_TYPE_OPTIONS = EVENT_TYPE_VALUES.map((value) => ({
+    value,
+    label: t(`event.eventType.${value}`, value.charAt(0).toUpperCase() + value.slice(1)),
+  }));
+  const countryDisplayNames = new Intl.DisplayNames([locale], { type: "region" });
+  const COUNTRY_OPTIONS = COUNTRY_CODES.map((code) => ({
+    value: code.toLowerCase(),
+    label: countryDisplayNames.of(code) ?? code,
+  }));
   const { setError, clearErrors, setValue } = useFormContext<EventFormData>();
   const currentCurrency = useWatch({ control, name: "currency" });
 

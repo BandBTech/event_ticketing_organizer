@@ -130,7 +130,7 @@ export default function PayoutsPage() {
 
             {/* Event selector */}
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-600">Payout summary by event</span>
+              <span className="text-sm font-medium text-gray-600">{t("payouts.payoutSummaryByEvent", "Payout summary by event")}</span>
               <EventSelect
                 value={selectedEventId ?? ""}
                 onValueChange={(id) => {
