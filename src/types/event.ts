@@ -15,6 +15,16 @@ export interface EventTier {
   is_active?: boolean;
 }
 
+export interface EventDay {
+  id: string;
+  event_id: string;
+  name: string;
+  start_time: string;
+  end_time: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -36,6 +46,7 @@ export interface Event {
   sales_status?: string;
   admin_remark?: string;
   tiers: EventTier[];
+  event_days?: EventDay[];
   organizer_id: string;
   created_at: string;
   updated_at: string;
@@ -271,6 +282,7 @@ export interface TicketResponse {
   is_guest_purchase: boolean;
   attendee?: Attendee;
   check_in_time?: string;
+  checked_in_count?: number;
   checked_in_by_name?: string;
   created_at: string;
   updated_at: string;

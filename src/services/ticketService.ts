@@ -65,10 +65,13 @@ export class TicketService {
    * Scan a ticket QR code (Check-in)
    * POST /organizer/tickets/scan -> POST /organizer/tickets/checkin
    */
-  static async scanTicket(ticketCode: string, eventId?: string): Promise<TicketScanResult> {
-    const payload: { qr_code: string; event_id?: string } = { qr_code: ticketCode };
+  static async scanTicket(ticketCode: string, eventId?: string, eventDayId?: string): Promise<TicketScanResult> {
+    const payload: { qr_code: string; event_id?: string; event_day_id?: string } = { qr_code: ticketCode };
     if (eventId) {
       payload.event_id = eventId;
+    }
+    if (eventDayId) {
+      payload.event_day_id = eventDayId;
     }
 
     return await api.post<TicketScanResult>(
@@ -175,11 +178,15 @@ export class TicketService {
    */
   static async validateCheckIn(
     qrCode: string,
-    eventId?: string
+    eventId?: string,
+    eventDayId?: string
   ): Promise<{ valid: boolean; can_checkin: boolean; message: string; qr_code?: string; ticket_info?: Record<string, unknown> & { ticket_number?: string }; event_id?: string; event_title?: string }> {
-    const payload: { qr_code: string; event_id?: string } = { qr_code: qrCode };
+    const payload: { qr_code: string; event_id?: string; event_day_id?: string } = { qr_code: qrCode };
     if (eventId) {
       payload.event_id = eventId;
+    }
+    if (eventDayId) {
+      payload.event_day_id = eventDayId;
     }
     return await api.post(
       '/organizer/tickets/validate-checkin',
@@ -209,10 +216,17 @@ export class TicketService {
    * Manual check-in by ticket number
    * POST /organizer/tickets/checkin
    */
-  static async manualCheckIn(ticketNumber: string, eventId: string): Promise<TicketScanResult> {
+  static async manualCheckIn(ticketNumber: string, eventId: string, eventDayId?: string): Promise<TicketScanResult> {
+    const payload: { ticket_number: string; event_id: string; event_day_id?: string } = { 
+      ticket_number: ticketNumber, 
+      event_id: eventId 
+    };
+    if (eventDayId) {
+      payload.event_day_id = eventDayId;
+    }
     return await api.post<TicketScanResult>(
       '/organizer/tickets/checkin',
-      { ticket_number: ticketNumber, event_id: eventId },
+      payload,
       { requiresAuth: true, showErrorToast: false }
     );
   }

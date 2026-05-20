@@ -18,6 +18,11 @@ import { useSearchTickets, useManualCheckIn } from "@/hooks/useTickets";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "@/lib/toast";
 import type { Ticket } from "@/types/ticket";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { eventService } from "@/services/eventService";
+import { queryKeys } from "@/lib/queryKeys";
+import { getDefaultEventDay } from "@/hooks/useScannerState";
 
 export default function ManualCheckinPage() {
   const router = useRouter();
@@ -31,6 +36,34 @@ export default function ManualCheckinPage() {
 
   const searchMutation = useSearchTickets();
   const checkInMutation = useManualCheckIn();
+
+  const { data: eventData } = useQuery({
+    queryKey: queryKeys.events.detail(eventId ?? ""),
+    queryFn: () => eventService.getEvent(eventId!),
+    enabled: !!eventId,
+  });
+
+  const [selectedEventDayId, setSelectedEventDayId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (eventData?.event_days && eventData.event_days.length > 0 && !selectedEventDayId) {
+      const defaultDayId = getDefaultEventDay(eventData.event_days);
+      setSelectedEventDayId(defaultDayId);
+    }
+  }, [eventData, selectedEventDayId]);
+
+  // Reset checked-in cache when active day changes
+  useEffect(() => {
+    setCheckedInIds(new Set());
+    if (query.trim() && eventId) {
+      searchMutation.mutate(
+        { eventId, q: query.trim() },
+        {
+          onSuccess: (data) => setResults(data),
+        }
+      );
+    }
+  }, [selectedEventDayId]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +79,7 @@ export default function ManualCheckinPage() {
 
   const handleCheckIn = (ticket: Ticket) => {
     checkInMutation.mutate(
-      { ticketNumber: ticket.ticket_number, eventId },
+      { ticketNumber: ticket.ticket_number, eventId, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
           if (data.success) {
@@ -103,6 +136,31 @@ export default function ManualCheckinPage() {
                 </h1>
               </div>
             </div>
+
+            {/* Event Day Selector */}
+            {eventData?.event_days && eventData.event_days.length > 1 && (
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 space-y-3">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block">
+                  {t("manualCheckin.selectActiveDay", "Active Check-in Day")}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {eventData.event_days.map((day, idx) => (
+                    <button
+                      key={day.id}
+                      type="button"
+                      onClick={() => setSelectedEventDayId(day.id)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
+                        selectedEventDayId === day.id
+                          ? "bg-emerald-600 text-white border-emerald-500 shadow-sm"
+                          : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                      }`}
+                    >
+                      {day.name || `Day ${idx + 1}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Search form */}
             <form onSubmit={handleSearch} className="flex gap-2">

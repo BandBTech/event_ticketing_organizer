@@ -11,6 +11,7 @@ import { eventService } from "@/services/eventService";
 import { TicketService } from "@/services/ticketService";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
+import { EventDay } from "@/types/event";
 
 export type ScanMode = "single" | "bulk";
 
@@ -46,6 +47,42 @@ export interface BulkResult {
   items?: BulkResultItem[];
 }
 
+export function getDefaultEventDay(eventDays: EventDay[]): string | null {
+  if (!eventDays || eventDays.length === 0) return null;
+  const now = new Date();
+  
+  // Find if current time is within any event day
+  for (const day of eventDays) {
+    const start = new Date(day.start_time);
+    const end = new Date(day.end_time);
+    if (now >= start && now <= end) {
+      return day.id;
+    }
+  }
+
+  // Otherwise, find the event day that starts today
+  const todayStr = now.toDateString();
+  for (const day of eventDays) {
+    const start = new Date(day.start_time);
+    if (start.toDateString() === todayStr) {
+      return day.id;
+    }
+  }
+
+  // Otherwise, find the event day closest to now
+  let closestDayId = eventDays[0].id;
+  let minDiff = Math.abs(now.getTime() - new Date(eventDays[0].start_time).getTime());
+  for (const day of eventDays) {
+    const diff = Math.abs(now.getTime() - new Date(day.start_time).getTime());
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestDayId = day.id;
+    }
+  }
+  
+  return closestDayId;
+}
+
 export function useScannerState() {
   const router = useRouter();
   const { locale } = useLanguageStore();
@@ -55,6 +92,7 @@ export function useScannerState() {
   const [mode, setMode] = useState<ScanMode>("single");
   const [bulkQueue, setBulkQueue] = useState<BulkScanItem[]>([]);
   const [eventId, setEventId] = useState<string | null>(null);
+  const [selectedEventDayId, setSelectedEventDayId] = useState<string | null>(null);
   const [showBulkList, setShowBulkList] = useState(false);
   const [bulkResult, setBulkResult] = useState<BulkResult | null>(null);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -95,8 +133,8 @@ export function useScannerState() {
   // The apiClient's showErrorToast defaults to true, which causes a generic error toast
   // even when our onError handler already shows a contextual one.
   const scanMutation = useMutation({
-    mutationFn: ({ ticketCode, eventId: eid }: { ticketCode: string; eventId?: string }) =>
-      TicketService.scanTicket(ticketCode, eid),
+    mutationFn: ({ ticketCode, eventId: eid, eventDayId }: { ticketCode: string; eventId?: string; eventDayId?: string }) =>
+      TicketService.scanTicket(ticketCode, eid, eventDayId),
     onSuccess: (data) => {
       if (data.success && data.ticket) {
         toast.success(
@@ -114,8 +152,8 @@ export function useScannerState() {
 
   // Validate-for-queue mutation — also inline to avoid duplicate toasts.
   const validateCheckInMutation = useMutation({
-    mutationFn: ({ qrCode, eventId: eid }: { qrCode: string; eventId?: string }) =>
-      TicketService.validateCheckIn(qrCode, eid),
+    mutationFn: ({ qrCode, eventId: eid, eventDayId }: { qrCode: string; eventId?: string; eventDayId?: string }) =>
+      TicketService.validateCheckIn(qrCode, eid, eventDayId),
   });
 
   // isProcessing is used only for the UI overlay (spinner) and bulk-submit button.
@@ -136,6 +174,14 @@ export function useScannerState() {
     queryFn: () => eventService.getEvent(eventId!),
     enabled: !!eventId && !scannedEventTitle,
   });
+
+  // Automatically determine the active day
+  useEffect(() => {
+    if (eventData?.event_days && eventData.event_days.length > 0 && !selectedEventDayId) {
+      const defaultDayId = getDefaultEventDay(eventData.event_days);
+      setSelectedEventDayId(defaultDayId);
+    }
+  }, [eventData, selectedEventDayId]);
 
   const currentEventTitle = scannedEventTitle || eventData?.title || null;
 
@@ -254,7 +300,7 @@ export function useScannerState() {
 
     if (scanResultTimeoutRef.current) clearTimeout(scanResultTimeoutRef.current);
     scanMutation.mutate(
-      { ticketCode: code, eventId: scanEventId },
+      { ticketCode: code, eventId: scanEventId, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
           if (navigator.vibrate) navigator.vibrate(50);
@@ -335,7 +381,7 @@ export function useScannerState() {
     processingCodesRef.current.add(code);
 
     validateCheckInMutation.mutate(
-      { qrCode: code, eventId: eventIdRef.current ?? undefined },
+      { qrCode: code, eventId: eventIdRef.current ?? undefined, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
           // Immediately release in-flight lock so re-scan is possible
@@ -511,7 +557,7 @@ export function useScannerState() {
     const codes = bulkQueue.map((i) => i.code);
 
     bulkCheckInMutation.mutate(
-      { event_id: eventId, qr_codes: codes },
+      { event_id: eventId, qr_codes: codes, event_day_id: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
           const results: BulkResultItem[] = (data.data ?? []).map(
@@ -574,6 +620,9 @@ export function useScannerState() {
     bulkResult,
     setBulkResult,
     scanResult,
+    selectedEventDayId,
+    setSelectedEventDayId,
+    eventData,
     clearScanResult,
     lastScanError,
     cameraError,

@@ -28,6 +28,7 @@ function EventTicketsTable({
   t,
   sortBy,
   sortOrder,
+  eventDaysCount,
   onSortChange,
   onPageChange,
   onLimitChange,
@@ -42,6 +43,7 @@ function EventTicketsTable({
   t: (key: string, fallback?: string) => string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  eventDaysCount?: number;
   onSortChange: (
     sortBy: string | undefined,
     sortOrder: "asc" | "desc" | undefined,
@@ -87,8 +89,9 @@ function EventTicketsTable({
         locale,
         currency,
         symbol,
+        eventDaysCount,
       }),
-    [t, currentPage, limit, locale, currency, symbol],
+    [t, currentPage, limit, locale, currency, symbol, eventDaysCount],
   );
 
   return (
@@ -240,6 +243,7 @@ export default function EventTicketsPage() {
                   t={t}
                   sortBy={sortBy}
                   sortOrder={sortOrder}
+                  eventDaysCount={event?.event_days?.length}
                   onSortChange={handleSortChange}
                   onPageChange={handlePageChange}
                   onLimitChange={handleLimitChange}

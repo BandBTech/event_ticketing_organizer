@@ -95,6 +95,7 @@ export interface TicketValidationResult {
 export interface TicketBulkCheckInRequest {
   event_id: string;
   qr_codes: string[];
+  event_day_id?: string;
 }
 
 export interface TicketBulkCheckOutRequest {

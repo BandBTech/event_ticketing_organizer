@@ -38,6 +38,9 @@ export default function ScannerPage() {
     submitBulkCheckIn,
     removeFromQueue,
     clearQueue,
+    selectedEventDayId,
+    setSelectedEventDayId,
+    eventData,
     t,
   } = useScannerState();
 
@@ -60,6 +63,9 @@ export default function ScannerPage() {
               singleLabel={t("staffScanner.single", "Single")}
               bulkLabel={t("staffScanner.bulk", "Bulk")}
               eventTitle={currentEventTitle}
+              eventDays={eventData?.event_days}
+              selectedDayId={selectedEventDayId}
+              onDayChange={setSelectedEventDayId}
             />
 
             {/* ── Camera area ──────────────────────────────────────────── */}

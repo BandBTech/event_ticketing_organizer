@@ -68,8 +68,8 @@ export function useScanTicket() {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
 
-  return useMutation<TicketScanResult, Error, { ticketCode: string; eventId?: string }>({
-    mutationFn: ({ ticketCode, eventId }) => TicketService.scanTicket(ticketCode, eventId),
+  return useMutation<TicketScanResult, Error, { ticketCode: string; eventId?: string; eventDayId?: string }>({
+    mutationFn: ({ ticketCode, eventId, eventDayId }) => TicketService.scanTicket(ticketCode, eventId, eventDayId),
     onSuccess: (data) => {
       if (data.success && data.ticket) {
         // Show success message
@@ -212,9 +212,9 @@ export function useValidateCheckIn() {
   return useMutation<
     { valid: boolean; can_checkin: boolean; message: string; qr_code?: string; ticket_info?: Record<string, unknown> & { ticket_number?: string }; event_id?: string; event_title?: string },
     Error,
-    { qrCode: string; eventId?: string }
+    { qrCode: string; eventId?: string; eventDayId?: string }
   >({
-    mutationFn: ({ qrCode, eventId }) => TicketService.validateCheckIn(qrCode, eventId),
+    mutationFn: ({ qrCode, eventId, eventDayId }) => TicketService.validateCheckIn(qrCode, eventId, eventDayId),
   });
 }
 
@@ -265,7 +265,7 @@ export function useSearchTickets() {
  * Hook for manual check-in by ticket number
  */
 export function useManualCheckIn() {
-  return useMutation<TicketScanResult, Error, { ticketNumber: string; eventId: string }>({
-    mutationFn: ({ ticketNumber, eventId }) => TicketService.manualCheckIn(ticketNumber, eventId),
+  return useMutation<TicketScanResult, Error, { ticketNumber: string; eventId: string; eventDayId?: string }>({
+    mutationFn: ({ ticketNumber, eventId, eventDayId }) => TicketService.manualCheckIn(ticketNumber, eventId, eventDayId),
   });
 }

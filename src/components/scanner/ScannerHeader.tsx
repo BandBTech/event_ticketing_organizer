@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import type { ScanMode } from "@/hooks/useScannerState";
+import { EventDay } from "@/types/event";
 
 interface ScannerHeaderProps {
   mode: ScanMode;
@@ -10,6 +11,9 @@ interface ScannerHeaderProps {
   singleLabel: string;
   bulkLabel: string;
   eventTitle?: string | null;
+  eventDays?: EventDay[];
+  selectedDayId?: string | null;
+  onDayChange?: (dayId: string) => void;
 }
 
 export function ScannerHeader({
@@ -19,6 +23,9 @@ export function ScannerHeader({
   singleLabel,
   bulkLabel,
   eventTitle,
+  eventDays,
+  selectedDayId,
+  onDayChange,
 }: ScannerHeaderProps) {
   return (
     <div className="absolute top-0 left-0 right-0 z-20 p-4 max-md:bg-linear-to-b from-black/80 to-transparent">
@@ -73,6 +80,25 @@ export function ScannerHeader({
               {eventTitle}
             </span>
           </div>
+        </div>
+      )}
+
+      {/* Event days pill selector */}
+      {eventDays && eventDays.length > 1 && (
+        <div className="flex justify-center mt-3 gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar">
+          {eventDays.map((day, idx) => (
+            <button
+              key={day.id}
+              onClick={() => onDayChange?.(day.id)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
+                selectedDayId === day.id
+                  ? "bg-emerald-500 text-white border-emerald-400 shadow-sm"
+                  : "bg-black/50 text-white/80 border-white/10 hover:text-white"
+              }`}
+            >
+              {day.name || `Day ${idx + 1}`}
+            </button>
+          ))}
         </div>
       )}
     </div>

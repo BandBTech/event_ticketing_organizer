@@ -12,6 +12,7 @@ interface ColumnProps {
   locale: string;
   currency?: string;
   symbol?: string;
+  eventDaysCount?: number;
 }
 
 export function getColumns({
@@ -21,6 +22,7 @@ export function getColumns({
   locale,
   currency,
   symbol,
+  eventDaysCount,
 }: ColumnProps): ColumnDef<TicketResponse>[] {
   return [
     {
@@ -99,7 +101,17 @@ export function getColumns({
       cell: (info) => {
         const checkInTime = info.row.original.check_in_time;
         const status = checkInTime ? "checked_in" : info.row.original.status;
-        return <TicketStatusBadge status={status} />;
+        const checkedInCount = info.row.original.checked_in_count || 0;
+        return (
+          <div className="flex flex-col gap-1 items-start">
+            <TicketStatusBadge status={status} />
+            {eventDaysCount && eventDaysCount > 1 && status !== "cancelled" && (
+              <span className="text-[10px] font-semibold text-gray-600 bg-gray-100 rounded-sm px-1.5 py-0.5">
+                {checkedInCount} / {eventDaysCount} {t("tickets.days", "days")}
+              </span>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -108,10 +120,18 @@ export function getColumns({
       meta: { sortKey: "check_in_time" },
       cell: (info) => {
         const checkInTime = info.row.original.check_in_time;
+        const checkedInCount = info.row.original.checked_in_count || 0;
         return (
-          <span className="text-gray-500 whitespace-nowrap">
-            {checkInTime ? formatDateTime(checkInTime) : "-"}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-gray-500 whitespace-nowrap">
+              {checkInTime ? formatDateTime(checkInTime) : "-"}
+            </span>
+            {eventDaysCount && eventDaysCount > 1 && checkedInCount > 1 && (
+              <span className="text-[10px] text-emerald-600 font-medium">
+                {t("tickets.multipleScans", "Multiple scans")}
+              </span>
+            )}
+          </div>
         );
       },
     },
