@@ -10,27 +10,39 @@ import { useState } from "react";
 import { eventService } from "@/services/eventService";
 import EventCard from "@/components/organizerDashboard/EventCard";
 import EventCardSkeleton from "@/components/organizerDashboard/EventCardSkeleton";
-import { useLanguageStore } from "@/store/languageStore";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function StaffDashboardHome() {
   const { t } = useTranslation();
   const router = useRouter();
   const [search, setSearch] = useState("");
 
+  const debouncedSearch = useDebounce(search, 300);
+
   const { data: eventsData, isLoading } = useQuery({
-    queryKey: ["staff", "events"],
-    queryFn: () => eventService.getEvents({ limit: 50 }),
+    queryKey: ["staff", "events", debouncedSearch],
+    queryFn: () =>
+      eventService.getEvents({
+        limit: 100,
+        search: debouncedSearch.trim() || undefined,
+        sort_by: "title",
+        sort_dir: "asc",
+      }),
   });
 
   const liveEvents =
     eventsData?.events
       .filter((e) => {
-        if (!["approved", "on_sale", "live", "sales_end"].includes(e.status))
+        if (
+          !["approved", "on_sale", "live", "sales_end", "scheduled"].includes(
+            e.status,
+          )
+        )
           return false;
         if (e.end_date && Date.now() > new Date(e.end_date).getTime())
           return false;
         const scanStartTime =
-          new Date(e.start_date).getTime() - 24 * 60 * 60 * 1000;
+          new Date(e.start_date).getTime() - 25 * 60 * 60 * 1000;
         return Date.now() >= scanStartTime;
       })
       .sort((a, b) => a.title.localeCompare(b.title)) || [];

@@ -77,6 +77,8 @@ export const eventService = {
         searchParams.append("limit", params.limit.toString());
       if (params.search) searchParams.append("search", params.search);
       if (params.status) searchParams.append("status", params.status);
+      if (params.sort_by) searchParams.append("sort_by", params.sort_by);
+      if (params.sort_dir) searchParams.append("sort_dir", params.sort_dir);
 
       const queryString = searchParams.toString();
       if (queryString) {

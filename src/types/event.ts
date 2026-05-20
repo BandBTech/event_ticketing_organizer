@@ -236,6 +236,8 @@ export interface EventSearchParams {
   limit?: number;
   search?: string;
   status?: string;
+  sort_by?: string;
+  sort_dir?: string;
 }
 
 // Ticket Types
