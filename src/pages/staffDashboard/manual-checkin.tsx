@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { getDefaultEventDay } from "@/hooks/useScannerState";
+import { formatDateTime } from "@/lib/utils";
 
 export default function ManualCheckinPage() {
   const router = useRouter();
@@ -134,6 +135,16 @@ export default function ManualCheckinPage() {
                 <h1 className="text-2xl font-bold tracking-tight">
                   {t("manualCheckin.title", "Manual Check-in")}
                 </h1>
+                {eventData?.title && (
+                  <p className="text-sm font-semibold text-gray-700 mt-1">
+                    {eventData.title}
+                  </p>
+                )}
+                {eventData?.start_date && eventData?.end_date && (
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {formatDateTime(eventData.start_date)} - {formatDateTime(eventData.end_date)}
+                  </p>
+                )}
               </div>
             </div>
 

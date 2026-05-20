@@ -19,6 +19,7 @@ import { EventStatusBadge } from "./EventStatusBadge";
 import { Badge } from "../ui/badge";
 import { CrownIcon } from "@phosphor-icons/react";
 import FeaturedBadge from "./FeaturedBadge";
+import { useAuthStore } from "@/store/authStore";
 
 function parseCategories(category: string | string[]): string[] {
   const rawCategories = Array.isArray(category)
@@ -47,6 +48,8 @@ export default function EventCard({
   const { t } = useTranslation(locale);
   const router = useRouter();
   const categories = parseCategories(event.category);
+  const { user } = useAuthStore();
+  const isStaff = user?.roles?.includes("staff");
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Prevent navigation if text selection is happening
@@ -127,7 +130,13 @@ export default function EventCard({
             width={16}
             height={16}
           />
-          {formatDateTime(event.start_date)}
+          {isStaff && event.end_date ? (
+            <span className="break-all sm:break-normal">
+              {formatDateTime(event.start_date)} - {formatDateTime(event.end_date)}
+            </span>
+          ) : (
+            formatDateTime(event.start_date)
+          )}
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <MapPinAreaIcon className="w-4 h-4 shrink-0" width={16} height={16} />

@@ -3,6 +3,7 @@ import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import type { ScanMode } from "@/hooks/useScannerState";
 import { EventDay } from "@/types/event";
+import { formatDateTime } from "@/lib/utils";
 
 interface ScannerHeaderProps {
   mode: ScanMode;
@@ -14,6 +15,8 @@ interface ScannerHeaderProps {
   eventDays?: EventDay[];
   selectedDayId?: string | null;
   onDayChange?: (dayId: string) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 export function ScannerHeader({
@@ -26,6 +29,8 @@ export function ScannerHeader({
   eventDays,
   selectedDayId,
   onDayChange,
+  startDate,
+  endDate,
 }: ScannerHeaderProps) {
   return (
     <div className="absolute top-0 left-0 right-0 z-20 p-4 max-md:bg-linear-to-b from-black/80 to-transparent">
@@ -68,9 +73,9 @@ export function ScannerHeader({
         <div className="w-10" />
       </div>
 
-      {/* Event title badge */}
+      {/* Event title & date/time badge */}
       {eventTitle && (
-        <div className="flex justify-center mt-3 md:mt-6">
+        <div className="flex flex-col items-center mt-3 md:mt-6 gap-2">
           <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-1.5 flex items-center gap-2 border border-white/10">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -80,6 +85,11 @@ export function ScannerHeader({
               {eventTitle}
             </span>
           </div>
+          {startDate && endDate && (
+            <span className="text-xs text-white/60 font-medium">
+              {formatDateTime(startDate)} - {formatDateTime(endDate)}
+            </span>
+          )}
         </div>
       )}
 

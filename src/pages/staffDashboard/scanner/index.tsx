@@ -66,6 +66,8 @@ export default function ScannerPage() {
               eventDays={eventData?.event_days}
               selectedDayId={selectedEventDayId}
               onDayChange={setSelectedEventDayId}
+              startDate={eventData?.start_date}
+              endDate={eventData?.end_date}
             />
 
             {/* ── Camera area ──────────────────────────────────────────── */}
