@@ -97,29 +97,31 @@ export function QRCameraView({
     <>
       {/* Camera feed */}
       <div className="w-full h-full relative">
-        <Scanner
-          key={cameraKey}
-          paused={isPaused}
-          scanDelay={1200}
-          onScan={disabled ? () => { } : handleScanWrapped}
-          onError={onError}
-          classNames={{ container: "scanner-wrapper" }}
-          components={{ finder: false }}
-          constraints={{ facingMode: "environment", width: { ideal: 720 } }}
-          styles={{
-            container: {
-              width: "100vw",
-              height: "calc(100dvh - 64px)",
-            },
-            video: {
-              width: "100vw",
-              height: "calc(100dvh - 64px)",
-              objectFit: "cover",
-              filter: disabled || idlePaused ? "brightness(0.4)" : undefined,
-              transition: "filter 0.4s ease",
-            },
-          }}
-        />
+        {!isPaused && (
+          <Scanner
+            key={cameraKey}
+            paused={isPaused}
+            scanDelay={400}
+            onScan={disabled ? () => { } : handleScanWrapped}
+            onError={onError}
+            classNames={{ container: "scanner-wrapper" }}
+            components={{ finder: false }}
+            constraints={{ facingMode: "environment", width: { ideal: 720 } }}
+            styles={{
+              container: {
+                width: "100vw",
+                height: "calc(100dvh - 64px)",
+              },
+              video: {
+                width: "100vw",
+                height: "calc(100dvh - 64px)",
+                objectFit: "cover",
+                filter: disabled || idlePaused ? "brightness(0.4)" : undefined,
+                transition: "filter 0.4s ease",
+              },
+            }}
+          />
+        )}
       </div>
 
       {/* Tap-to-resume overlay — only shown when idle-paused and nothing else is blocking */}

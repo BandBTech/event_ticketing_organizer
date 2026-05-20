@@ -113,9 +113,6 @@ export function useScannerState() {
   // batched state updates — the scanner fires onScan faster than setState.
   const processingCodesRef = useRef<Set<string>>(new Set());
 
-  // Cooldown flag for single-scan mode — prevents the same QR from triggering
-  // multiple rapid API calls before scanResult state is set.
-  const singleScanCooldownRef = useRef(false);
   const scanResultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Ref mirror of bulkQueue so async callbacks always see latest queue state
@@ -243,9 +240,11 @@ export function useScannerState() {
 
   // Drop suppression refs on unmount.
   useEffect(() => {
+    const suppressed = suppressedCodesRef.current;
+    const toasted = toastedCodesRef.current;
     return () => {
-      suppressedCodesRef.current.clear();
-      toastedCodesRef.current.clear();
+      suppressed.clear();
+      toasted.clear();
       if (scanResultTimeoutRef.current) {
         clearTimeout(scanResultTimeoutRef.current);
         scanResultTimeoutRef.current = null;
@@ -293,16 +292,21 @@ export function useScannerState() {
   // ─── Scan Handlers ────────────────────────────────────────────────────────────
 
   const handleSingleScan = (code: string, scanEventId?: string) => {
+    // Suppressed — recent validation failure or successful scan within cooldown window.
+    if (suppressedCodesRef.current.has(code)) return;
+
     // Prevent duplicate in-flight requests for the same code
     if (processingCodesRef.current.has(code)) return;
     processingCodesRef.current.add(code);
-    singleScanCooldownRef.current = true;
 
     if (scanResultTimeoutRef.current) clearTimeout(scanResultTimeoutRef.current);
     scanMutation.mutate(
       { ticketCode: code, eventId: scanEventId, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
+          // Suppress re-scans of the same code for a cooldown period (e.g. 2.5 seconds)
+          suppressCode(code, 2500);
+
           if (navigator.vibrate) navigator.vibrate(50);
           setScanResult({
             success: data.success,
@@ -313,11 +317,13 @@ export function useScannerState() {
           });
           scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
-            singleScanCooldownRef.current = false;
             scanResultTimeoutRef.current = null;
           }, 3000);
         },
         onError: (error) => {
+          // Suppress re-scans of the same code for a cooldown period
+          suppressCode(code, 2500);
+
           setScanResult({
             success: false,
             message:
@@ -326,7 +332,6 @@ export function useScannerState() {
           });
           scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
-            singleScanCooldownRef.current = false;
             scanResultTimeoutRef.current = null;
           }, 3000);
         },
@@ -386,6 +391,9 @@ export function useScannerState() {
         onSuccess: (data) => {
           // Immediately release in-flight lock so re-scan is possible
           processingCodesRef.current.delete(code);
+
+          // Suppress re-scans of the same code for a cooldown period (e.g. 2.5 seconds)
+          suppressCode(code, 2500);
 
           if (!data.can_checkin) {
             // Suppress rapid re-validations of the same code while still in frame
@@ -481,11 +489,6 @@ export function useScannerState() {
   };
 
   const handleQRScan = (result: unknown[]) => {
-    // In single mode: block while result is displayed or cooldown is active
-    if (mode === "single" && (scanResult || singleScanCooldownRef.current)) {
-      return;
-    }
-
     // Block if all bulk tickets are already checked in
     if (isScanDisabled) return;
 
@@ -597,7 +600,6 @@ export function useScannerState() {
 
   const clearScanResult = useCallback(() => {
     setScanResult(null);
-    singleScanCooldownRef.current = false;
   }, []);
 
   const handleModeChange = useCallback((newMode: ScanMode) => {
