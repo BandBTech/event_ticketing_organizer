@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import type { ScanMode } from "@/hooks/useScannerState";
@@ -32,18 +32,28 @@ export function ScannerHeader({
   startDate,
   endDate,
 }: ScannerHeaderProps) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.replace("/staffDashboard");
+    }
+  };
+
   return (
     <div className="absolute top-0 left-0 right-0 z-20 p-4 max-md:bg-linear-to-b from-black/80 to-transparent">
       <div className="flex items-center justify-between">
-        <Link href="/staffDashboard">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-white md:text-black hover:bg-white/20"
-          >
-            <ArrowLeftIcon weight="bold" className="size-6" />
-          </Button>
-        </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white md:text-black hover:bg-white/20"
+          onClick={handleBack}
+          aria-label="Back to Dashboard"
+        >
+          <ArrowLeftIcon weight="bold" className="size-6" />
+        </Button>
 
         {/* Mode toggle pill */}
         <div className="bg-black/50 backdrop-blur-sm rounded-full p-1 flex border border-white/10">
