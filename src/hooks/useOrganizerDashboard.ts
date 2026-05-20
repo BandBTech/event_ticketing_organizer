@@ -36,6 +36,8 @@ export function useOrganizerDashboard(eventId?: string) {
       refunds: response?.refunds ?? { completed: 0, failed: 0, pending: 0, processing: 0 },
       transactions: response?.transactions ?? { completed: 0, failed: 0, pending: 0, processing: 0, refunded: 0, total: 0 },
     },
-    upcomingEvents: response?.upcoming_events ?? [],
+    upcomingEvents: (response?.upcoming_events ?? []).slice().sort(
+      (a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime(),
+    ),
   };
 }
