@@ -12,6 +12,7 @@ import { TicketService } from "@/services/ticketService";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 import { EventDay } from "@/types/event";
+import { parseTicketScanMessage } from "@/lib/utils";
 
 export type ScanMode = "single" | "bulk";
 
@@ -134,14 +135,19 @@ export function useScannerState() {
       TicketService.scanTicket(ticketCode, eid, eventDayId),
     onSuccess: (data) => {
       if (data.success && data.ticket) {
+        const defaultFallback = data.already_checked_in
+          ? "Ticket already checked in."
+          : "Ticket scanned successfully.";
+        const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+          data.message,
+          defaultFallback
+        );
         toast.success(
           data.already_checked_in
             ? "scanner.ticket_already_checked_in"
             : "scanner.ticket_scanned_successfully",
-          data.already_checked_in
-            ? "Ticket already checked in."
-            : "Ticket scanned successfully.",
-          data.message || "",
+          parsedTitle,
+          parsedDesc
         );
       }
     },
@@ -308,12 +314,20 @@ export function useScannerState() {
           suppressCode(code, 2500);
 
           if (navigator.vibrate) navigator.vibrate(50);
+          
+          const defaultFallback = data.already_checked_in
+            ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
+            : t("scanner.ticket_scanned_successfully", "Ticket checked in successfully.");
+          
+          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+            data.message,
+            defaultFallback
+          );
+
           setScanResult({
             success: data.success,
             alreadyCheckedIn: data.already_checked_in,
-            message: data.already_checked_in
-              ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
-              : t("scanner.ticket_scanned_successfully", "Ticket checked in successfully."),
+            message: parsedDesc ? `${parsedTitle}: ${parsedDesc}` : parsedTitle,
           });
           scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
@@ -324,11 +338,14 @@ export function useScannerState() {
           // Suppress re-scans of the same code for a cooldown period
           suppressCode(code, 2500);
 
+          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+            error.message,
+            t("staffScanner.scanFailed", "Failed to scan ticket")
+          );
+
           setScanResult({
             success: false,
-            message:
-              error.message ||
-              t("staffScanner.scanFailed", "Failed to scan ticket"),
+            message: parsedDesc ? `${parsedTitle}: ${parsedDesc}` : parsedTitle,
           });
           scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
@@ -348,6 +365,7 @@ export function useScannerState() {
 
     if (currentQueue.length >= 10) {
       toast.error(
+        "staffScanner.queueLimitReached",
         t("staffScanner.queueLimitReached", "Queue limit reached (Max 10)"),
         t(
           "staffScanner.submitQueue",
@@ -364,6 +382,7 @@ export function useScannerState() {
       const age = Date.now() - new Date(existingItem.timestamp).getTime();
       if (age >= 2000) {
         toast.error(
+          "staffScanner.alreadyInQueue",
           t("staffScanner.alreadyInQueue", "Already in queue"),
           t("staffScanner.ticketAlreadyQueued", "This ticket is already queued for check-in"),
         );
@@ -398,17 +417,21 @@ export function useScannerState() {
           if (!data.can_checkin) {
             // Suppress rapid re-validations of the same code while still in frame
             suppressCode(code);
+            
+            const { title: toastTitle, description: toastDesc } = parseTicketScanMessage(
+              data.message,
+              t("staffScanner.ticketInvalid", "Invalid ticket"),
+              t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
+            );
+
             setLastScanError({
               code,
-              message: data.message || "Ticket cannot be checked in",
+              message: toastTitle,
             });
             // Show toast only once per code to avoid spam
             if (!toastedCodesRef.current.has(code)) {
               toastedCodesRef.current.add(code);
-              const msgParts = (data.message || "").split(": ");
-              const toastTitle = msgParts[0] || t("staffScanner.ticketInvalid", "Invalid ticket");
-              const toastDesc = msgParts[1] || t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in");
-              toast.error(toastTitle, toastDesc);
+              toast.error(toastTitle, toastTitle, toastDesc);
             }
             return;
           }
@@ -468,6 +491,7 @@ export function useScannerState() {
           if (!toastedCodesRef.current.has(code)) {
             toastedCodesRef.current.add(code);
             toast.error(
+              "staffScanner.connectionError",
               t("staffScanner.connectionError", "Connection error"),
               t("staffScanner.scanRetry", "Tap to scan again when connected"),
             );
@@ -550,6 +574,7 @@ export function useScannerState() {
     if (!eventId) {
       toast.error(
         "No event context",
+        "No event context",
         "Please scan at least one valid ticket first",
       );
       return;
@@ -575,23 +600,29 @@ export function useScannerState() {
           setBulkQueue((prev) =>
             prev.map((item) => {
               const result = results?.find((r) => r.qr_code === item.code);
+              const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+                result?.message,
+                result?.success ? "Checked in" : "Failed"
+              );
               return {
                 ...item,
                 checkinResult: result?.success
                   ? ("success" as const)
                   : ("failed" as const),
-                checkinMessage:
-                  result?.message ||
-                  (result?.success ? "Checked in" : "Failed"),
+                checkinMessage: parsedDesc ? `${parsedTitle}: ${parsedDesc}` : parsedTitle,
               };
             }),
           );
           setShowBulkList(true);
         },
         onError: (error) => {
+          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+            error.message,
+            "Bulk check-in failed"
+          );
           setBulkResult({
             success: false,
-            message: error.message || "Bulk check-in failed",
+            message: parsedDesc ? `${parsedTitle}: ${parsedDesc}` : parsedTitle,
           });
         },
       },

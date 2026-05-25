@@ -231,3 +231,43 @@ export const formatCurrency = (
 
   return symbol ? `${symbol}${formatted}` : `${formatted}`;
 };
+
+/**
+ * Parses a ticket scan message in the format of "msg1:msg2:msg3" and returns
+ * a toast title and an optional toast description, filtering out business violation notices.
+ */
+export function parseTicketScanMessage(
+  rawMessage: string | null | undefined,
+  defaultTitle: string = "Error",
+  defaultDesc?: string
+): { title: string; description?: string } {
+  if (!rawMessage) {
+    return { title: defaultTitle, description: defaultDesc };
+  }
+
+  // Split by ':' (not necessarily ': ' since space might be missing or vary)
+  const parts = rawMessage
+    .split(":")
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const isBusinessViolation = (msg: string) => {
+    const lower = msg.toLowerCase();
+    return (
+      lower.includes("violates business rules") ||
+      lower.includes("violates buisness rules")
+    );
+  };
+
+  // Filter out any business rule violation messages
+  const cleanParts = parts.filter((p) => !isBusinessViolation(p));
+
+  if (cleanParts.length >= 2) {
+    return { title: cleanParts[0], description: cleanParts[1] };
+  } else if (cleanParts.length === 1) {
+    return { title: cleanParts[0], description: defaultDesc };
+  }
+
+  return { title: defaultTitle, description: defaultDesc };
+}
+

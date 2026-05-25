@@ -2,10 +2,7 @@ import Head from "next/head";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import {
-  ArrowLeft,
   ArrowLeftIcon,
-  CheckCircle,
-  MagnifyingGlass,
   MagnifyingGlassIcon,
   X,
 } from "@phosphor-icons/react";
@@ -23,7 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { getDefaultEventDay } from "@/hooks/useScannerState";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, parseTicketScanMessage } from "@/lib/utils";
 
 export default function ManualCheckinPage() {
   const router = useRouter();
@@ -73,7 +70,13 @@ export default function ManualCheckinPage() {
       { eventId, q: query.trim() },
       {
         onSuccess: (data) => setResults(data),
-        onError: (err) => toast.error(t("common.error", "Error"), err.message),
+        onError: (err) => {
+          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+            err.message,
+            t("common.error", "Error")
+          );
+          toast.error(parsedTitle, parsedTitle, parsedDesc);
+        },
       },
     );
   };
@@ -85,23 +88,35 @@ export default function ManualCheckinPage() {
         onSuccess: (data) => {
           if (data.success) {
             setCheckedInIds((prev) => new Set(prev).add(ticket.id));
+            const defaultFallback = data.already_checked_in
+              ? "Already checked in"
+              : "Ticket checked in successfully.";
+            const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+              data.message,
+              defaultFallback
+            );
             toast.success(
               data.already_checked_in
-                ? t("scanner.ticket_already_checked_in", "Already checked in")
-                : t(
-                    "manualCheckin.checkInSuccess",
-                    "Ticket checked in successfully.",
-                  ),
-              data.message || "",
+                ? "scanner.ticket_already_checked_in"
+                : "manualCheckin.checkInSuccess",
+              parsedTitle,
+              parsedDesc
             );
           } else {
-            toast.error(
-              t("common.error", "Error"),
-              data.message || data.error || "",
+            const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+              data.message || data.error,
+              t("common.error", "Error")
             );
+            toast.error(parsedTitle, parsedTitle, parsedDesc);
           }
         },
-        onError: (err) => toast.error(t("common.error", "Error"), err.message),
+        onError: (err) => {
+          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
+            err.message,
+            t("common.error", "Error")
+          );
+          toast.error(parsedTitle, parsedTitle, parsedDesc);
+        },
       },
     );
   };
