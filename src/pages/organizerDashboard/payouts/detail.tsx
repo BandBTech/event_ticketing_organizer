@@ -154,8 +154,8 @@ export default function PayoutDetailPage() {
 
   const billSummary = payoutData?.bill_summary;
   const paymentHistory = payoutData?.payment_history ?? [];
-  const currency = payoutData?.currency ?? "JPY";
-  const symbol = payoutData?.symbol;
+  const currency = payoutData?.currency ?? payoutData?.event?.currency ?? "JPY";
+  const symbol = payoutData?.symbol ?? payoutData?.event?.symbol;
 
   const statCards = [
     {
@@ -331,36 +331,40 @@ export default function PayoutDetailPage() {
                   <InfoRow
                     label={t("payouts.table.requestNumber", "Request #")}
                     value={
-                      <span className="font-mono">
-                        {payoutData?.request_number}
-                      </span>
+                      isLoading ? <Skeleton className="h-4 w-36" /> : (
+                        <span className="font-mono">
+                          {payoutData?.request_number}
+                        </span>
+                      )
                     }
                   />
                   <InfoRow
                     label={t("payouts.table.status", "Status")}
                     value={
-                      payoutData?.status ? (
-                        <Badge
-                          className={
-                            statusStyles[payoutData.status] ??
-                            "bg-slate-100 text-slate-600"
-                          }
-                        >
-                          {t(
-                            `payouts.status.${payoutData.status}`,
-                            payoutData.status,
-                          )}
-                        </Badge>
-                      ) : null
+                      isLoading ? <Skeleton className="h-5 w-20" /> : (
+                        payoutData?.status ? (
+                          <Badge
+                            className={
+                              statusStyles[payoutData.status] ??
+                              "bg-slate-100 text-slate-600"
+                            }
+                          >
+                            {t(
+                              `payouts.status.${payoutData.status}`,
+                              payoutData.status,
+                            )}
+                          </Badge>
+                        ) : null
+                      )
                     }
                   />
                   <InfoRow
                     label={t("payouts.created", "Created")}
-                    value={formatDateTimeLong(payoutData?.created_at, locale)}
+                    value={isLoading ? <Skeleton className="h-4 w-32" /> : formatDateTimeLong(payoutData?.created_at, locale)}
                   />
                   <InfoRow
                     label={t("payouts.updated", "Last Updated")}
-                    value={formatDateTimeLong(payoutData?.updated_at, locale)}
+                    value={isLoading ? <Skeleton className="h-4 w-32" /> : formatDateTimeLong(payoutData?.updated_at, locale)}
                   />
                 </div>
                 <div>
@@ -369,27 +373,31 @@ export default function PayoutDetailPage() {
                   </SectionTitle>
                   <InfoRow
                     label={t("payouts.totalBilled", "Total Billed")}
-                    value={formatCurrency(billSummary?.total_billed ?? 0, currency, symbol)}
+                    value={isLoading ? <Skeleton className="h-4 w-24" /> : formatCurrency(billSummary?.total_billed ?? 0, currency, symbol)}
                   />
                   <InfoRow
                     label={t("payouts.totalPaid", "Total Paid")}
                     value={
-                      <span className="text-emerald-600">
-                        {formatCurrency(billSummary?.total_paid ?? 0, currency, symbol)}
-                      </span>
+                      isLoading ? <Skeleton className="h-4 w-24" /> : (
+                        <span className="text-emerald-600">
+                          {formatCurrency(billSummary?.total_paid ?? 0, currency, symbol)}
+                        </span>
+                      )
                     }
                   />
                   <InfoRow
                     label={t("payouts.remaining", "Remaining")}
                     value={
-                      <span className="text-rose-500">
-                        {formatCurrency(billSummary?.remaining_amount ?? 0, currency, symbol)}
-                      </span>
+                      isLoading ? <Skeleton className="h-4 w-24" /> : (
+                        <span className="text-rose-500">
+                          {formatCurrency(billSummary?.remaining_amount ?? 0, currency, symbol)}
+                        </span>
+                      )
                     }
                   />
                   <InfoRow
                     label={t("payouts.paymentCount", "Payments")}
-                    value={billSummary?.payment_count ?? 0}
+                    value={isLoading ? <Skeleton className="h-4 w-16" /> : (billSummary?.payment_count ?? 0)}
                   />
                   {billSummary?.last_payment_date && (
                     <InfoRow

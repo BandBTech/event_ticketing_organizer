@@ -5,7 +5,6 @@ import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
-  CurrencyDollarIcon,
   PencilSimpleIcon,
   LockIcon,
   CashRegisterIcon,
@@ -257,29 +256,25 @@ export function PayoutRequestDialog({
                       </FormLabel>
                     </div>
                     <FormControl>
-                      <div className="relative">
-                        <CurrencyDollarIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                        <Input
-                          id="payout-amount"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder="0.00"
-                          className="pl-9 pr-3"
-                          disabled={isAmountLocked}
-                          {...field}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            if (val === "") {
-                              field.onChange("");
-                              return;
-                            }
-                            const num = Number(val);
-                            if (isNaN(num)) return;
-                            field.onChange(num);
-                          }}
-                        />
-                      </div>
+                      <Input
+                        id="payout-amount"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        disabled={isAmountLocked}
+                        {...field}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            field.onChange("");
+                            return;
+                          }
+                          const num = Number(val);
+                          if (isNaN(num)) return;
+                          field.onChange(num);
+                        }}
+                      />
                     </FormControl>
                     {selectedEventInfo && (
                       <p className="text-xs text-muted-foreground">

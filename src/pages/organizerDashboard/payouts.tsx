@@ -52,6 +52,7 @@ export default function PayoutsPage() {
     status: activeTab === "all" ? undefined : activeTab,
     sort_by: sortBy,
     sort_order: sortOrder,
+    event_id: selectedEventId,
   });
 
   const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary(selectedEventId);

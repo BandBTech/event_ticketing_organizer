@@ -65,6 +65,8 @@ export interface PayoutRequest {
     title: string;
     banner_image?: string;
     status?: string;
+    currency?: string;
+    symbol?: string;
   };
   bill_summary?: PayoutBillSummary;
   payment_history?: PayoutPaymentHistory[];
