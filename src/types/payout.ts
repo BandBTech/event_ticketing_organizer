@@ -76,6 +76,8 @@ export interface PayoutSummaryEvent {
   event_id: string;
   event_title: string;
   commission_rate: number;
+  currency?: string;
+  symbol?: string;
   total_earnings: number;
   paid_amount: number;
   due_amount: number;

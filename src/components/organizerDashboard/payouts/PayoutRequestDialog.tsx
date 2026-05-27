@@ -256,25 +256,31 @@ export function PayoutRequestDialog({
                       </FormLabel>
                     </div>
                     <FormControl>
-                      <Input
-                        id="payout-amount"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="0.00"
-                        disabled={isAmountLocked}
-                        {...field}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === "") {
-                            field.onChange("");
-                            return;
-                          }
-                          const num = Number(val);
-                          if (isNaN(num)) return;
-                          field.onChange(num);
-                        }}
-                      />
+                      <div className="relative">
+                        <span className="absolute left-3 top-2.5 text-sm text-gray-500 select-none pointer-events-none leading-none">
+                          {selectedEventInfo?.symbol ?? ""}
+                        </span>
+                        <Input
+                          id="payout-amount"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="0.00"
+                          className="pl-9 pr-3"
+                          disabled={isAmountLocked}
+                          {...field}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "") {
+                              field.onChange("");
+                              return;
+                            }
+                            const num = Number(val);
+                            if (isNaN(num)) return;
+                            field.onChange(num);
+                          }}
+                        />
+                      </div>
                     </FormControl>
                     {selectedEventInfo && (
                       <p className="text-xs text-muted-foreground">
