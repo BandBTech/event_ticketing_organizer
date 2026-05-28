@@ -1,11 +1,8 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
-import {
-  ArrowLeftIcon,
-  MagnifyingGlassIcon,
-  X,
-} from "@phosphor-icons/react";
+import { ArrowLeftIcon, MagnifyingGlassIcon, X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
@@ -41,10 +38,16 @@ export default function ManualCheckinPage() {
     enabled: !!eventId,
   });
 
-  const [selectedEventDayId, setSelectedEventDayId] = useState<string | null>(null);
+  const [selectedEventDayId, setSelectedEventDayId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (eventData?.event_days && eventData.event_days.length > 0 && !selectedEventDayId) {
+    if (
+      eventData?.event_days &&
+      eventData.event_days.length > 0 &&
+      !selectedEventDayId
+    ) {
       const defaultDayId = getDefaultEventDay(eventData.event_days);
       setSelectedEventDayId(defaultDayId);
     }
@@ -58,7 +61,7 @@ export default function ManualCheckinPage() {
         { eventId, q: query.trim() },
         {
           onSuccess: (data) => setResults(data),
-        }
+        },
       );
     }
   }, [selectedEventDayId]);
@@ -71,10 +74,8 @@ export default function ManualCheckinPage() {
       {
         onSuccess: (data) => setResults(data),
         onError: (err) => {
-          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
-            err.message,
-            t("common.error", "Error")
-          );
+          const { title: parsedTitle, description: parsedDesc } =
+            parseTicketScanMessage(err.message, t("common.error", "Error"));
           toast.error(parsedTitle, parsedTitle, parsedDesc);
         },
       },
@@ -83,7 +84,11 @@ export default function ManualCheckinPage() {
 
   const handleCheckIn = (ticket: Ticket) => {
     checkInMutation.mutate(
-      { ticketNumber: ticket.ticket_number, eventId, eventDayId: selectedEventDayId || undefined },
+      {
+        ticketNumber: ticket.ticket_number,
+        eventId,
+        eventDayId: selectedEventDayId || undefined,
+      },
       {
         onSuccess: (data) => {
           if (data.success) {
@@ -91,30 +96,27 @@ export default function ManualCheckinPage() {
             const defaultFallback = data.already_checked_in
               ? "Already checked in"
               : "Ticket checked in successfully.";
-            const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
-              data.message,
-              defaultFallback
-            );
+            const { title: parsedTitle, description: parsedDesc } =
+              parseTicketScanMessage(data.message, defaultFallback);
             toast.success(
               data.already_checked_in
                 ? "scanner.ticket_already_checked_in"
                 : "manualCheckin.checkInSuccess",
               parsedTitle,
-              parsedDesc
+              parsedDesc,
             );
           } else {
-            const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
-              data.message || data.error,
-              t("common.error", "Error")
-            );
+            const { title: parsedTitle, description: parsedDesc } =
+              parseTicketScanMessage(
+                data.message || data.error,
+                t("common.error", "Error"),
+              );
             toast.error(parsedTitle, parsedTitle, parsedDesc);
           }
         },
         onError: (err) => {
-          const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
-            err.message,
-            t("common.error", "Error")
-          );
+          const { title: parsedTitle, description: parsedDesc } =
+            parseTicketScanMessage(err.message, t("common.error", "Error"));
           toast.error(parsedTitle, parsedTitle, parsedDesc);
         },
       },
@@ -131,7 +133,29 @@ export default function ManualCheckinPage() {
       </Head>
 
       <StaffDashboardLayout>
-        <PermissionGuard permission={PERMISSIONS.TICKET_SCAN}>
+        <PermissionGuard
+          permission={PERMISSIONS.TICKET_SCAN}
+          role="staff"
+          fallback={
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] p-8 text-center gap-4">
+              <p className="text-lg font-semibold text-gray-800">
+                {t("common.accessDenied", "Access Denied")}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t(
+                  "staffScanner.noPermission",
+                  "You don't have permission to scan tickets.",
+                )}
+              </p>
+              <Link
+                href="/staffDashboard"
+                className="text-sm text-blue-600 underline underline-offset-2"
+              >
+                {t("staffScanner.backToDashboard", "Back to Dashboard")}
+              </Link>
+            </div>
+          }
+        >
           <div className="p-6 space-y-6 max-w-2xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-3">
@@ -157,7 +181,8 @@ export default function ManualCheckinPage() {
                 )}
                 {eventData?.start_date && eventData?.end_date && (
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {formatDateTime(eventData.start_date)} - {formatDateTime(eventData.end_date)}
+                    {formatDateTime(eventData.start_date)} -{" "}
+                    {formatDateTime(eventData.end_date)}
                   </p>
                 )}
               </div>
@@ -234,8 +259,8 @@ export default function ManualCheckinPage() {
             {/* Results */}
             {results.length > 0 ? (
               <ul className="space-y-3">
-                  {results.map((ticket) => {
-                    const checkedIn = isCheckedIn(ticket);
+                {results.map((ticket) => {
+                  const checkedIn = isCheckedIn(ticket);
                   const isCheckingIn =
                     checkInMutation.isPending &&
                     checkInMutation.variables?.ticketNumber ===

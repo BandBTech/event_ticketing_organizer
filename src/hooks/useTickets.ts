@@ -72,7 +72,6 @@ export function useScanTicket() {
     mutationFn: ({ ticketCode, eventId, eventDayId }) => TicketService.scanTicket(ticketCode, eventId, eventDayId),
     onSuccess: (data) => {
       if (data.success && data.ticket) {
-        // Show success message
         toast.success(
           data.already_checked_in
             ? "scanner.ticket_already_checked_in"
@@ -82,20 +81,6 @@ export function useScanTicket() {
             : "Ticket scanned successfully.",
           data.message || ""
         );
-
-        // Update the ticket in cache if we have it
-        // queryClient.setQueryData<Ticket>(
-        //   queryKeys.tickets.detail(data.ticket.id),
-        //   data.ticket
-        // );
-
-        // // Invalidate stats and list for the event
-        // queryClient.invalidateQueries({
-        //   queryKey: queryKeys.tickets.stats(data.ticket.event_id),
-        // });
-        // queryClient.invalidateQueries({
-        //   queryKey: queryKeys.tickets.list(data.ticket.event_id),
-        // });
       }
     }
   });
@@ -188,19 +173,14 @@ export function useBulkCheckIn() {
   >({
     mutationFn: (data) => TicketService.bulkCheckIn(data),
     onSuccess: (result, variables) => {
-      if (result.success) {
-        toast.success('Bulk check-in successful', result.message);
-
-        // Invalidate stats and list for the event
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tickets.stats(variables.event_id),
-        });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.tickets.list(variables.event_id),
-        });
-      } else {
-        toast.error('Bulk check-in failed', result.message);
-      }
+      // Inline results are shown in BulkBottomSheet — skip generic toast here.
+      // Still invalidate so other views (ticket list, stats) stay fresh.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tickets.stats(variables.event_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tickets.list(variables.event_id),
+      });
     },
   });
 }

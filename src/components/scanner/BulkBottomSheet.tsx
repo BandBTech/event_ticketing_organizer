@@ -22,6 +22,7 @@ interface BulkBottomSheetProps {
   onRemoveItem: (index: number) => void;
   onSubmit: () => void;
   onClear: () => void;
+  onRetryFailed: () => void;
   // Labels
   inQueueLabel: string;
   pendingCheckInLabel: string;
@@ -38,6 +39,7 @@ export function BulkBottomSheet({
   onRemoveItem,
   onSubmit,
   onClear,
+  onRetryFailed,
   inQueueLabel,
   pendingCheckInLabel,
   viewListLabel,
@@ -49,6 +51,7 @@ export function BulkBottomSheet({
   if (queue.length === 0) return null;
 
   const isSubmitted = queue.some((item) => item.checkinResult !== undefined);
+  const hasFailed = queue.some((item) => item.checkinResult === "failed");
 
   return (
     <Drawer open={true} modal={false} dismissible={false}>
@@ -154,12 +157,31 @@ export function BulkBottomSheet({
           {/* Action row */}
           <div className="flex gap-2">
             {isSubmitted ? (
-              <Button
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-12"
-                onClick={onClear}
-              >
-                {t("common.done", "Done")}
-              </Button>
+              hasFailed ? (
+                <>
+                  <Button
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold h-12"
+                    onClick={onRetryFailed}
+                  >
+                    {t("staffScanner.retryFailed", "Retry Failed")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="text-red-500 border-red-200 hover:bg-red-50 h-12 w-12 shrink-0"
+                    onClick={onClear}
+                  >
+                    <TrashIcon size={18} />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-12"
+                  onClick={onClear}
+                >
+                  {t("common.done", "Done")}
+                </Button>
+              )
             ) : (
               <>
                 <Button

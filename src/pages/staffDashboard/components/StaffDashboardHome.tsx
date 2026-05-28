@@ -41,6 +41,7 @@ export default function StaffDashboardHome() {
           return false;
         if (e.end_date && Date.now() > new Date(e.end_date).getTime())
           return false;
+        // 25 h buffer lets staff scan and test before event doors open (not 24 h — intentional)
         const scanStartTime =
           new Date(e.start_date).getTime() - 25 * 60 * 60 * 1000;
         return Date.now() >= scanStartTime;

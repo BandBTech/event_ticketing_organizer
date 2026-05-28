@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { PermissionGuard } from "@/components/auth/PermissionGuard";
 import { PERMISSIONS } from "@/lib/permissions";
 import StaffDashboardLayout from "@/components/layout/StaffDashboardLayout";
@@ -16,6 +17,7 @@ import SingleScanResult from "@/components/scanner/SingleScanResult";
 export default function ScannerPage() {
   const {
     isScanDisabled,
+    isQueueSubmitted,
     mode,
     setMode,
     bulkQueue,
@@ -38,6 +40,7 @@ export default function ScannerPage() {
     submitBulkCheckIn,
     removeFromQueue,
     clearQueue,
+    retryFailed,
     selectedEventDayId,
     setSelectedEventDayId,
     eventData,
@@ -53,7 +56,29 @@ export default function ScannerPage() {
       </Head>
 
       <StaffDashboardLayout>
-        <PermissionGuard permission={PERMISSIONS.TICKET_SCAN}>
+        <PermissionGuard
+          permission={PERMISSIONS.TICKET_SCAN}
+          role="staff"
+          fallback={
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)] p-8 text-center gap-4">
+              <p className="text-lg font-semibold text-gray-800">
+                {t("common.accessDenied", "Access Denied")}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t(
+                  "staffScanner.noPermission",
+                  "You don't have permission to scan tickets.",
+                )}
+              </p>
+              <Link
+                href="/staffDashboard"
+                className="text-sm text-blue-600 underline underline-offset-2"
+              >
+                {t("staffScanner.backToDashboard", "Back to Dashboard")}
+              </Link>
+            </div>
+          }
+        >
           <div className="flex flex-col h-[calc(100vh-64px)] relative max-md:bg-black isolate">
             {/* ── Header ───────────────────────────────────────────────── */}
             <ScannerHeader
@@ -97,10 +122,16 @@ export default function ScannerPage() {
                   )}
                   scanHintText={
                     isScanDisabled
-                      ? t(
-                          "staffScanner.allCheckedIn",
-                          "All tickets checked in — tap Done to finish",
-                        )
+                      ? isQueueSubmitted &&
+                        bulkQueue.some((i) => i.checkinResult === "failed")
+                        ? t(
+                            "staffScanner.reviewResults",
+                            "Review results — retry failed or clear queue",
+                          )
+                        : t(
+                            "staffScanner.allCheckedIn",
+                            "All tickets checked in — tap Done to finish",
+                          )
                       : mode === "single"
                         ? t(
                             "staffScanner.scanTicketInfo",
@@ -133,6 +164,7 @@ export default function ScannerPage() {
                 onRemoveItem={removeFromQueue}
                 onSubmit={submitBulkCheckIn}
                 onClear={clearQueue}
+                onRetryFailed={retryFailed}
                 inQueueLabel={t("staffScanner.inQueue", "In Queue")}
                 pendingCheckInLabel={t(
                   "staffScanner.pendingCheckIn",

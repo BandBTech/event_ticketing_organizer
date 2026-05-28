@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useBulkCheckIn } from "@/hooks/useTickets";
 import { useNavigationGuard } from "@/hooks/useNavigationGuard";
 import { useLanguageStore } from "@/store/languageStore";
@@ -13,6 +13,11 @@ import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 import { EventDay } from "@/types/event";
 import { parseTicketScanMessage } from "@/lib/utils";
+
+// Minimal type for QR scanner library result — avoids the `any` cast on rawValue
+interface DetectedBarcode {
+  rawValue: string;
+}
 
 export type ScanMode = "single" | "bulk";
 
@@ -51,7 +56,7 @@ export interface BulkResult {
 export function getDefaultEventDay(eventDays: EventDay[]): string | null {
   if (!eventDays || eventDays.length === 0) return null;
   const now = new Date();
-  
+
   // Find if current time is within any event day
   for (const day of eventDays) {
     const start = new Date(day.start_time);
@@ -70,17 +75,22 @@ export function getDefaultEventDay(eventDays: EventDay[]): string | null {
     }
   }
 
-  // Otherwise, find the event day closest to now
+  // Otherwise, find the event day closest to now.
+  // For future days we measure time until start; for past days, time since end.
+  // This prefers the nearest upcoming day over a recently-ended one.
   let closestDayId = eventDays[0].id;
-  let minDiff = Math.abs(now.getTime() - new Date(eventDays[0].start_time).getTime());
+  let minDiff = Infinity;
   for (const day of eventDays) {
-    const diff = Math.abs(now.getTime() - new Date(day.start_time).getTime());
+    const startMs = new Date(day.start_time).getTime();
+    const endMs = new Date(day.end_time).getTime();
+    const nowMs = now.getTime();
+    const diff = nowMs < startMs ? startMs - nowMs : nowMs - endMs;
     if (diff < minDiff) {
       minDiff = diff;
       closestDayId = day.id;
     }
   }
-  
+
   return closestDayId;
 }
 
@@ -88,6 +98,7 @@ export function useScannerState() {
   const router = useRouter();
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+  const queryClient = useQueryClient();
 
   // ─── UI State ────────────────────────────────────────────────────────────────
   const [mode, setMode] = useState<ScanMode>("single");
@@ -99,9 +110,7 @@ export function useScannerState() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(
-    null,
-  );
+  const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
   const [lastScanError, setLastScanError] = useState<{
     code: string;
     message: string;
@@ -123,6 +132,9 @@ export function useScannerState() {
   // Ref mirror of eventId for async callbacks
   const eventIdRef = useRef<string | null>(eventId);
   eventIdRef.current = eventId;
+
+  // Tracks suppress timers by code so they can be cancelled on demand
+  const suppressTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // ─── Mutations ───────────────────────────────────────────────────────────────
   const bulkCheckInMutation = useBulkCheckIn();
@@ -164,12 +176,15 @@ export function useScannerState() {
   const isProcessing =
     scanMutation.isPending || bulkCheckInMutation.isPending;
 
-  // Disable scanning when all bulk items are successfully checked-in and the results drawer is open
+  // True once any bulk item has a checkinResult (i.e. queue has been submitted)
+  const isQueueSubmitted = bulkQueue.some(item => item.checkinResult !== undefined);
+
+  // Disable scanning once the queue has been submitted — prevents adding items
+  // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
     mode === "bulk" &&
-    showBulkList &&
     bulkQueue.length > 0 &&
-    bulkQueue.every((item) => item.checkinResult === "success");
+    isQueueSubmitted;
 
   // ─── Fetch event details when eventId is available ──────────────────────────
   const { data: eventData } = useQuery({
@@ -202,7 +217,9 @@ export function useScannerState() {
     setMounted(true);
   }, []);
 
-  // Sync mode + eventId from URL params
+  // Sync mode + eventId from URL params.
+  // Uses raw setMode (not handleModeChange) intentionally — handleModeChange writes
+  // back to the URL, which would re-trigger this effect and risk an update loop.
   useEffect(() => {
     if (router.isReady) {
       if (router.query.mode === "bulk") {
@@ -233,24 +250,34 @@ export function useScannerState() {
   const suppressedCodesRef = useRef<Set<string>>(new Set());
 
   // Mark a code as suppressed for a short window to prevent rapid re-validations.
-  // After the window expires, the code is freed for a fresh scan.
+  // When the window expires the code is also removed from toastedCodesRef so that
+  // a subsequent failure for the same code shows a fresh toast (fixes repeat-failure
+  // toast suppression bug).
   const suppressCode = useCallback((code: string, ttlMs = 1500) => {
+    const existing = suppressTimersRef.current.get(code);
+    if (existing) clearTimeout(existing);
     suppressedCodesRef.current.add(code);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       suppressedCodesRef.current.delete(code);
+      toastedCodesRef.current.delete(code);
+      suppressTimersRef.current.delete(code);
     }, ttlMs);
+    suppressTimersRef.current.set(code, timer);
   }, []);
 
   // Track which codes have already shown a toast to avoid duplicate toasts.
   const toastedCodesRef = useRef<Set<string>>(new Set());
 
-  // Drop suppression refs on unmount.
+  // Drop suppression refs and pending timers on unmount.
   useEffect(() => {
     const suppressed = suppressedCodesRef.current;
     const toasted = toastedCodesRef.current;
+    const timers = suppressTimersRef.current;
     return () => {
       suppressed.clear();
       toasted.clear();
+      timers.forEach(clearTimeout);
+      timers.clear();
       if (scanResultTimeoutRef.current) {
         clearTimeout(scanResultTimeoutRef.current);
         scanResultTimeoutRef.current = null;
@@ -267,6 +294,8 @@ export function useScannerState() {
     processingCodesRef.current.clear();
     suppressedCodesRef.current.clear();
     toastedCodesRef.current.clear();
+    suppressTimersRef.current.forEach(clearTimeout);
+    suppressTimersRef.current.clear();
   };
 
   const removeFromQueue = (index: number) => {
@@ -278,6 +307,11 @@ export function useScannerState() {
         processingCodesRef.current.delete(removed[0].code);
         suppressedCodesRef.current.delete(removed[0].code);
         toastedCodesRef.current.delete(removed[0].code);
+        const timer = suppressTimersRef.current.get(removed[0].code);
+        if (timer) {
+          clearTimeout(timer);
+          suppressTimersRef.current.delete(removed[0].code);
+        }
       }
       // Clear error state when the last item is removed
       if (next.length === 0) {
@@ -295,6 +329,18 @@ export function useScannerState() {
     });
   };
 
+  // Strips successfully-checked-in items and resets failed ones so they can
+  // be re-submitted after a partial bulk check-in.
+  const retryFailed = useCallback(() => {
+    setBulkQueue(prev => {
+      const failed = prev.filter(item => item.checkinResult === "failed");
+      if (failed.length === 0) return prev;
+      return failed.map(({ checkinResult: _r, checkinMessage: _m, ...rest }) => rest);
+    });
+    setLastScanError(null);
+    setShowBulkList(false);
+  }, []);
+
   // ─── Scan Handlers ────────────────────────────────────────────────────────────
 
   const handleSingleScan = (code: string, scanEventId?: string) => {
@@ -310,15 +356,14 @@ export function useScannerState() {
       { ticketCode: code, eventId: scanEventId, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
-          // Suppress re-scans of the same code for a cooldown period (e.g. 2.5 seconds)
           suppressCode(code, 2500);
 
           if (navigator.vibrate) navigator.vibrate(50);
-          
+
           const defaultFallback = data.already_checked_in
             ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
             : t("scanner.ticket_scanned_successfully", "Ticket checked in successfully.");
-          
+
           const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
             data.message,
             defaultFallback
@@ -328,14 +373,20 @@ export function useScannerState() {
             success: data.success,
             alreadyCheckedIn: data.already_checked_in,
             message: parsedDesc ? `${parsedTitle}: ${parsedDesc}` : parsedTitle,
+            ticketNumber: data.ticket?.ticket_number,
           });
           scanResultTimeoutRef.current = setTimeout(() => {
             setScanResult(null);
             scanResultTimeoutRef.current = null;
           }, 3000);
+
+          // Invalidate ticket stats so any open organizer views refresh
+          if (data.ticket?.event_id) {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tickets.stats(data.ticket.event_id) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.tickets.list(data.ticket.event_id) });
+          }
         },
         onError: (error) => {
-          // Suppress re-scans of the same code for a cooldown period
           suppressCode(code, 2500);
 
           const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
@@ -360,6 +411,10 @@ export function useScannerState() {
   };
 
   const handleBulkScan = (code: string) => {
+    // After bulk submit, block new scans until queue is cleared or failed items retried.
+    // This prevents adding items that can't be submitted (no Submit button after results).
+    if (bulkQueueRef.current.some(i => i.checkinResult !== undefined)) return;
+
     // ── Synchronous guard: check ref-based queue + processing set ──
     const currentQueue = bulkQueueRef.current;
 
@@ -411,13 +466,11 @@ export function useScannerState() {
           // Immediately release in-flight lock so re-scan is possible
           processingCodesRef.current.delete(code);
 
-          // Suppress re-scans of the same code for a cooldown period (e.g. 2.5 seconds)
           suppressCode(code, 2500);
 
           if (!data.can_checkin) {
-            // Suppress rapid re-validations of the same code while still in frame
             suppressCode(code);
-            
+
             const { title: toastTitle, description: toastDesc } = parseTicketScanMessage(
               data.message,
               t("staffScanner.ticketInvalid", "Invalid ticket"),
@@ -428,7 +481,7 @@ export function useScannerState() {
               code,
               message: toastTitle,
             });
-            // Show toast only once per code to avoid spam
+            // Show toast only once per code within the current suppression window
             if (!toastedCodesRef.current.has(code)) {
               toastedCodesRef.current.add(code);
               toast.error(toastTitle, toastTitle, toastDesc);
@@ -465,8 +518,9 @@ export function useScannerState() {
                 setScannedEventTitle(responseEventTitle);
               }
               toast.success(
-                "Event detected",
-                `Ready to scan for: ${responseEventTitle ?? responseEventId}`,
+                "staffScanner.eventDetected",
+                t("staffScanner.eventDetected", "Event detected"),
+                `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
               );
               return [newItem];
             }
@@ -475,7 +529,7 @@ export function useScannerState() {
             toastedCodesRef.current.delete(code);
             toast.success(
               "staffScanner.addedToQueue",
-              "Added to queue",
+              t("staffScanner.addedToQueue", "Added to queue"),
               `#${prev.length + 1}: ${newItem.ticketNumber}`,
             );
             return [...prev, newItem];
@@ -513,15 +567,14 @@ export function useScannerState() {
   };
 
   const handleQRScan = (result: unknown[]) => {
-    // Block if all bulk tickets are already checked in
+    // Block if scanning is disabled (queue submitted or all checked in)
     if (isScanDisabled) return;
 
     // In bulk mode we do NOT block on isProcessing — the per-code
     // processingCodesRef handles dedup, allowing parallel validations.
 
     if (result && result.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const scannedCode = (result[0] as any).rawValue;
+      const scannedCode = (result[0] as DetectedBarcode).rawValue;
       handleScan(scannedCode);
     }
   };
@@ -573,9 +626,9 @@ export function useScannerState() {
   const submitBulkCheckIn = () => {
     if (!eventId) {
       toast.error(
-        "No event context",
-        "No event context",
-        "Please scan at least one valid ticket first",
+        "staffScanner.noEventContext",
+        t("staffScanner.noEventContext", "No event context"),
+        t("staffScanner.scanOneTicketFirst", "Please scan at least one valid ticket first"),
       );
       return;
     }
@@ -602,7 +655,9 @@ export function useScannerState() {
               const result = results?.find((r) => r.qr_code === item.code);
               const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
                 result?.message,
-                result?.success ? "Checked in" : "Failed"
+                result?.success
+                  ? t("staffScanner.checkedIn", "Checked in")
+                  : t("staffScanner.failed", "Failed")
               );
               return {
                 ...item,
@@ -618,7 +673,7 @@ export function useScannerState() {
         onError: (error) => {
           const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
             error.message,
-            "Bulk check-in failed"
+            t("staffScanner.bulkCheckInFailed", "Bulk check-in failed")
           );
           setBulkResult({
             success: false,
@@ -630,6 +685,10 @@ export function useScannerState() {
   };
 
   const clearScanResult = useCallback(() => {
+    if (scanResultTimeoutRef.current) {
+      clearTimeout(scanResultTimeoutRef.current);
+      scanResultTimeoutRef.current = null;
+    }
     setScanResult(null);
   }, []);
 
@@ -638,11 +697,21 @@ export function useScannerState() {
     setLastScanError(null);
     suppressedCodesRef.current.clear();
     toastedCodesRef.current.clear();
-  }, []);
+    processingCodesRef.current.clear();
+    suppressTimersRef.current.forEach(clearTimeout);
+    suppressTimersRef.current.clear();
+    // Keep URL in sync so mode survives a page share/bookmark (shallow = no reload)
+    router.replace(
+      { pathname: router.pathname, query: { ...router.query, mode: newMode } },
+      undefined,
+      { shallow: true }
+    );
+  }, [router]);
 
   return {
     // State
     isScanDisabled,
+    isQueueSubmitted,
     mode,
     setMode: handleModeChange,
     bulkQueue,
@@ -672,6 +741,7 @@ export function useScannerState() {
     submitBulkCheckIn,
     removeFromQueue,
     clearQueue,
+    retryFailed,
     t,
   };
 }

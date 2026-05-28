@@ -59,6 +59,7 @@ export function ScannerHeader({
         <div className="bg-black/50 backdrop-blur-sm rounded-full p-1 flex border border-white/10">
           <button
             onClick={() => onModeChange("single")}
+            aria-pressed={mode === "single"}
             className={`px-4 py-1.5 rounded-full font-medium transition-all ${
               mode === "single"
                 ? "bg-white text-black shadow-sm"
@@ -69,6 +70,7 @@ export function ScannerHeader({
           </button>
           <button
             onClick={() => onModeChange("bulk")}
+            aria-pressed={mode === "bulk"}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
               mode === "bulk"
                 ? "bg-white text-black shadow-sm"
