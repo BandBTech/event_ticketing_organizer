@@ -192,12 +192,19 @@ export default function CreateEventsForm({
     onSuccess: async () => {
       const invalidations = [
         queryClient.invalidateQueries({ queryKey: queryKeys.events.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
       ];
 
       if (isEditing && initialData?.id) {
         invalidations.push(
           queryClient.invalidateQueries({
             queryKey: queryKeys.events.detail(initialData.id),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.events.analytics(initialData.id),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.events.statusHistory(initialData.id),
           }),
         );
       }
