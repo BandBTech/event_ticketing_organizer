@@ -1021,7 +1021,9 @@
       "amount": "Amount",
       "purchaseDate": "Purchase Date",
       "checkedInBy": "Checked In By",
-      "checkInTime": "Check-In Time"
+      "checkInTime": "Check-In Time",
+      "lastCheckedInBy": "Last Checked In By",
+      "lastCheckInTime": "Last Check-in Time"
     },
     "status": {
       "paymentPending": "Payment Pending",

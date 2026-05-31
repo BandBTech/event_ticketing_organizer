@@ -946,7 +946,9 @@
       "amount": "Quantità",
       "purchaseDate": "Data di acquisto",
       "checkedInBy": "Check-in effettuato da",
-      "checkInTime": "Orario di check-in"
+      "checkInTime": "Orario di check-in",
+      "lastCheckedInBy": "Ultimo check-in effettuato da",
+      "lastCheckInTime": "Ultimo orario di check-in"
     },
     "status": {
       "paymentPending": "Pagamento in sospeso",

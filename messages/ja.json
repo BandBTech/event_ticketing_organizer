@@ -958,7 +958,9 @@
       "amount": "金額",
       "purchaseDate": "購入日",
       "checkedInBy": "チェックイン担当者",
-      "checkInTime": "チェックイン時間"
+      "checkInTime": "チェックイン時間",
+      "lastCheckedInBy": "最終チェックイン担当者",
+      "lastCheckInTime": "最終チェックイン時間"
     },
     "status": {
       "paymentPending": "支払い保留中",

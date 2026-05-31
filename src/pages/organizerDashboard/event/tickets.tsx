@@ -8,6 +8,7 @@ import { useLanguageStore } from "@/store/languageStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePaginationSync } from "@/hooks/usePaginationSync";
 import { getColumns } from "@/components/organizerDashboard/tickets/columns";
+import { EventDay } from "@/types/event";
 import { TicketStatusSelect } from "@/components/organizerDashboard/tickets/TicketStatusSelect";
 import { Input } from "@/components/ui/input";
 import { TicketIcon, Search, ArrowLeft, Loader2 } from "lucide-react";
@@ -29,6 +30,7 @@ function EventTicketsTable({
   sortBy,
   sortOrder,
   eventDaysCount,
+  eventDays,
   onSortChange,
   onPageChange,
   onLimitChange,
@@ -44,6 +46,7 @@ function EventTicketsTable({
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   eventDaysCount?: number;
+  eventDays?: EventDay[];
   onSortChange: (
     sortBy: string | undefined,
     sortOrder: "asc" | "desc" | undefined,
@@ -90,8 +93,9 @@ function EventTicketsTable({
         currency,
         symbol,
         eventDaysCount,
+        eventDays,
       }),
-    [t, currentPage, limit, locale, currency, symbol, eventDaysCount],
+    [t, currentPage, limit, locale, currency, symbol, eventDaysCount, eventDays],
   );
 
   return (
@@ -244,6 +248,7 @@ export default function EventTicketsPage() {
                   sortBy={sortBy}
                   sortOrder={sortOrder}
                   eventDaysCount={event?.event_days?.length}
+                  eventDays={event?.event_days}
                   onSortChange={handleSortChange}
                   onPageChange={handlePageChange}
                   onLimitChange={handleLimitChange}

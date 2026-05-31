@@ -273,6 +273,23 @@ export interface TicketTier {
   name: string;
 }
 
+// One scan record for a multi-day event: the same ticket can be checked in
+// once per event day. `event_day` identifies which day this scan was for.
+export interface TicketCheckIn {
+  id: string;
+  event_day: {
+    id: string;
+    name: string;
+    start_time: string;
+    end_time: string;
+  };
+  checked_in_by?: {
+    id: string;
+    name: string;
+  };
+  checked_in_at: string;
+}
+
 export interface TicketResponse {
   id: string;
   event_id: string;
@@ -286,6 +303,8 @@ export interface TicketResponse {
   check_in_time?: string;
   checked_in_count?: number;
   checked_in_by_name?: string;
+  // Per-day check-ins for multi-day events. Absent / empty for single-day events.
+  check_ins?: TicketCheckIn[];
   created_at: string;
   updated_at: string;
 }
