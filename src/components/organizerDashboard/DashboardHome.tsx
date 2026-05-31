@@ -240,8 +240,14 @@ export default function DashboardHome() {
   useEffect(() => {
     if (!selectedEventId && stats.earnings.length > 0) {
       setAllCurrencies(stats.earnings.map((e) => ({ currency: e.currency, symbol: e.symbol })));
+      
+      // Auto-select first available currency if the current selection is not in the loaded earnings
+      const hasCurrentCurrency = stats.earnings.some((e) => e.currency === selectedCurrency);
+      if (!hasCurrentCurrency && stats.earnings[0]) {
+        setSelectedCurrency(stats.earnings[0].currency);
+      }
     }
-  }, [selectedEventId, stats.earnings]);
+  }, [selectedEventId, stats.earnings, selectedCurrency]);
 
   // Auto-sync currency when an event is selected
   useEffect(() => {
