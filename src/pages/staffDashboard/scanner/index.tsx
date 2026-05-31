@@ -27,7 +27,7 @@ export default function ScannerPage() {
     setShowBulkList,
     scanResult,
     clearScanResult,
-    lastScanError,
+    // lastScanError,
     cameraError,
     mounted,
     isProcessing,
@@ -114,7 +114,7 @@ export default function ScannerPage() {
                   onScan={handleQRScan}
                   onError={handleCameraError}
                   disabled={isScanDisabled}
-                  lastScanError={lastScanError}
+                  // lastScanError={lastScanError}
                   externalPaused={mode === "bulk" && showBulkList}
                   resumeHintText={t(
                     "staffScanner.tapToResume",
@@ -125,22 +125,22 @@ export default function ScannerPage() {
                       ? isQueueSubmitted &&
                         bulkQueue.some((i) => i.checkinResult === "failed")
                         ? t(
-                            "staffScanner.reviewResults",
-                            "Review results — retry failed or clear queue",
-                          )
+                          "staffScanner.reviewResults",
+                          "Review results — retry failed or clear queue",
+                        )
                         : t(
-                            "staffScanner.allCheckedIn",
-                            "All tickets checked in — tap Done to finish",
-                          )
+                          "staffScanner.allCheckedIn",
+                          "All tickets checked in — tap Done to finish",
+                        )
                       : mode === "single"
                         ? t(
-                            "staffScanner.scanTicketInfo",
-                            "Scan a ticket to check in",
-                          )
+                          "staffScanner.scanTicketInfo",
+                          "Scan a ticket to check in",
+                        )
                         : t(
-                            "staffScanner.scanMultipleTicketsInfo",
-                            "Scan multiple tickets to queue",
-                          )
+                          "staffScanner.scanMultipleTicketsInfo",
+                          "Scan multiple tickets to queue",
+                        )
                   }
                 />
               ) : (

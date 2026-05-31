@@ -5,10 +5,10 @@ import type { ScanMode } from "@/hooks/useScannerState";
 
 const IDLE_PAUSE_MS = 30_000;
 
-export interface LastScanError {
-  message: string;
-  ticketNumber?: string;
-}
+// export interface LastScanError {
+//   message: string;
+//   ticketNumber?: string;
+// }
 
 interface QRCameraViewProps {
   mode: ScanMode;
@@ -18,7 +18,7 @@ interface QRCameraViewProps {
   disabled?: boolean;
   externalPaused?: boolean;
   resumeHintText?: string;
-  lastScanError?: LastScanError | null;
+  // lastScanError?: LastScanError | null;
 }
 
 export function QRCameraView({
@@ -29,7 +29,7 @@ export function QRCameraView({
   disabled = false,
   externalPaused = false,
   resumeHintText = "Tap to resume scanning",
-  lastScanError = null,
+  // lastScanError = null,
 }: QRCameraViewProps) {
   // Mobile browsers pause/end the MediaStream while the page is hidden.
   // On return we bump cameraKey to force the Scanner to remount with a fresh
@@ -142,8 +142,7 @@ export function QRCameraView({
       <div className="absolute inset-0 pointer-events-none">
         {/* Scanning target rectangle */}
         <div
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
-            mode === "bulk" ? "w-72 h-48 border-dashed" : "w-64 h-64"
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${mode === "bulk" ? "w-72 h-48 border-dashed" : "w-64 h-64"
             } border-4 ${disabled ? "border-green-400/60" : "border-white/80"} rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`}
         >
           <div className="absolute inset-0 flex items-center justify-center">
@@ -156,7 +155,7 @@ export function QRCameraView({
         </div>
 
         {/* Persistent scan error banner — shown after a failed bulk validation */}
-        {lastScanError && mode === "bulk" && !disabled && (
+        {/* {lastScanError && mode === "bulk" && !disabled && (
           <div className="absolute bottom-44 left-4 right-4 z-10 pointer-events-auto">
             <div className="bg-red-500/90 backdrop-blur-sm text-white rounded-xl px-4 py-3 shadow-lg flex items-start gap-2">
               <span className="text-sm leading-tight flex-1">
@@ -169,7 +168,7 @@ export function QRCameraView({
               </span>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Hint text */}
         <div className="absolute bottom-32 left-0 right-0 text-center px-4">

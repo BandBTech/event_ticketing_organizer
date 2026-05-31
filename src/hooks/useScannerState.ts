@@ -111,11 +111,11 @@ export function useScannerState() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
-  const [lastScanError, setLastScanError] = useState<{
-    code: string;
-    message: string;
-    ticketNumber?: string;
-  } | null>(null);
+  // const [lastScanError, setLastScanError] = useState<{
+  //   code: string;
+  //   message: string;
+  //   ticketNumber?: string;
+  // } | null>(null);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
   // Tracks codes currently being processed (in-flight API calls).
@@ -290,7 +290,7 @@ export function useScannerState() {
     setBulkQueue([]);
     setBulkResult(null);
     setShowBulkList(false);
-    setLastScanError(null);
+    // setLastScanError(null);
     processingCodesRef.current.clear();
     suppressedCodesRef.current.clear();
     toastedCodesRef.current.clear();
@@ -314,9 +314,9 @@ export function useScannerState() {
         }
       }
       // Clear error state when the last item is removed
-      if (next.length === 0) {
-        setLastScanError(null);
-      }
+      // if (next.length === 0) {
+      //   setLastScanError(null);
+      // }
       // Only reset event context when it was self-detected from a scan
       // (no eventId in the URL). If the user opened the scanner from the
       // dashboard with ?eventId=..., keep that event context so emptying
@@ -337,7 +337,7 @@ export function useScannerState() {
       if (failed.length === 0) return prev;
       return failed.map(({ checkinResult: _r, checkinMessage: _m, ...rest }) => rest);
     });
-    setLastScanError(null);
+    // setLastScanError(null);
     setShowBulkList(false);
   }, []);
 
@@ -477,10 +477,10 @@ export function useScannerState() {
               t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
             );
 
-            setLastScanError({
-              code,
-              message: toastTitle,
-            });
+            // setLastScanError({
+            //   code,
+            //   message: toastTitle,
+            // });
             // Show toast only once per code within the current suppression window
             if (!toastedCodesRef.current.has(code)) {
               toastedCodesRef.current.add(code);
@@ -490,7 +490,7 @@ export function useScannerState() {
           }
 
           // Validation passed — clear any previous error and add to queue
-          setLastScanError(null);
+          // setLastScanError(null);
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
             ticket_number?: string;
             attendee?: { name?: string; email?: string };
@@ -538,10 +538,10 @@ export function useScannerState() {
         onError: () => {
           processingCodesRef.current.delete(code);
           suppressCode(code);
-          setLastScanError({
-            code,
-            message: t("staffScanner.cannotConnect", "Cannot connect to server. Try again."),
-          });
+          // setLastScanError({
+          //   code,
+          //   message: t("staffScanner.cannotConnect", "Cannot connect to server. Try again."),
+          // });
           if (!toastedCodesRef.current.has(code)) {
             toastedCodesRef.current.add(code);
             toast.error(
@@ -694,7 +694,7 @@ export function useScannerState() {
 
   const handleModeChange = useCallback((newMode: ScanMode) => {
     setMode(newMode);
-    setLastScanError(null);
+    // setLastScanError(null);
     suppressedCodesRef.current.clear();
     toastedCodesRef.current.clear();
     processingCodesRef.current.clear();
@@ -726,7 +726,7 @@ export function useScannerState() {
     setSelectedEventDayId,
     eventData,
     clearScanResult,
-    lastScanError,
+    // lastScanError,
     cameraError,
     mounted,
     isProcessing,
