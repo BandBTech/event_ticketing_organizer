@@ -79,7 +79,7 @@ export default function ScannerPage() {
             </div>
           }
         >
-          <div className="flex flex-col h-[calc(100vh-64px)] relative max-md:bg-black isolate">
+          <div className="flex flex-col h-[calc(100dvh-64px)] overflow-hidden relative max-md:bg-black isolate">
             {/* ── Header ───────────────────────────────────────────────── */}
             <ScannerHeader
               mode={mode}

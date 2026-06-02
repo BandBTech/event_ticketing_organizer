@@ -129,8 +129,8 @@ export function QRCameraView({
             components={{ finder: false }}
             constraints={{
               facingMode: "environment",
-              width: { ideal: 1280 },
-              height: { ideal: 720 },
+              width: { ideal: 720, max: 1080 },
+              height: { ideal: 1280, max: 1920 },
               frameRate: { ideal: 15, max: 20 },
             }}
             styles={{
