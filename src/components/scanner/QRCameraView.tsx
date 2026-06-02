@@ -101,12 +101,19 @@ export function QRCameraView({
           <Scanner
             key={cameraKey}
             paused={isPaused}
-            scanDelay={400}
+            scanDelay={200}
             onScan={disabled ? () => { } : handleScanWrapped}
             onError={onError}
             classNames={{ container: "scanner-wrapper" }}
             components={{ finder: false }}
-            constraints={{ facingMode: "environment", width: { ideal: 720 } }}
+            constraints={{
+              facingMode: "environment",
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              frameRate: { ideal: 15, max: 20 },
+              // continuous autofocus is the biggest win on Android — keeps QR sharp as you move
+              advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
+            }}
             styles={{
               container: {
                 width: "100vw",
