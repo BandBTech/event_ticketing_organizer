@@ -93,6 +93,27 @@ export function QRCameraView({
     armIdleTimer();
   }, [armIdleTimer]);
 
+  // Android Chrome ignores focusMode in getUserMedia constraints — apply it
+  // after the track is live instead. Retriggers on every camera remount (cameraKey).
+  useEffect(() => {
+    if (isPaused) return;
+
+    const id = setTimeout(() => {
+      const video = document.querySelector<HTMLVideoElement>("video");
+      const track = (video?.srcObject as MediaStream | null)?.getVideoTracks()[0];
+      if (!track) return;
+
+      const caps = track.getCapabilities?.() as MediaTrackCapabilities & { focusMode?: string[] };
+      if (caps?.focusMode?.includes("continuous")) {
+        track.applyConstraints({
+          advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
+        }).catch(() => {});
+      }
+    }, 800);
+
+    return () => clearTimeout(id);
+  }, [cameraKey, isPaused]);
+
   return (
     <>
       {/* Camera feed */}
@@ -111,8 +132,6 @@ export function QRCameraView({
               width: { ideal: 1280 },
               height: { ideal: 720 },
               frameRate: { ideal: 15, max: 20 },
-              // continuous autofocus is the biggest win on Android — keeps QR sharp as you move
-              advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
             }}
             styles={{
               container: {
