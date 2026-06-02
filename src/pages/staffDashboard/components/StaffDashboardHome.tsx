@@ -30,24 +30,30 @@ export default function StaffDashboardHome() {
       }),
   });
 
+  const ALLOWED_STATUSES = ["approved", "on_sale", "live", "sales_end", "scheduled"];
+
   const liveEvents =
     eventsData?.events
       .filter((e) => {
-        if (
-          !["approved", "on_sale", "live", "sales_end", "scheduled"].includes(
-            e.status,
-          )
-        )
-          return false;
-        if (e.end_date && Date.now() > new Date(e.end_date).getTime())
-          return false;
-        // 25 h buffer lets staff scan and test before event doors open (not 24 h — intentional)
-        const scanStartTime =
-          new Date(e.start_date).getTime() - 25 * 60 * 60 * 1000;
-        return Date.now() >= scanStartTime;
+        if (!ALLOWED_STATUSES.includes(e.status)) return false;
+
+        const now = Date.now();
+        const endMs = e.end_date ? new Date(e.end_date).getTime() : Infinity;
+        const startMs = new Date(e.start_date).getTime();
+
+        // For sales_end events the stored end_date may be the sales-close date
+        // (already past) rather than the event end date — skip the end_date
+        // cutoff for them and rely on the start_date window instead.
+        const isSalesEnd = e.status === "sales_end";
+        if (!isSalesEnd && endMs < now) return false;
+
+        // Show 24 h before event start
+        const scanStartTime = startMs - 24 * 60 * 60 * 1000;
+        return now >= scanStartTime;
       })
       .sort((a, b) => a.title.localeCompare(b.title)) || [];
 
+  // Search filters within the already time/status-gated list
   const filteredEvents = search.trim()
     ? liveEvents.filter((e) =>
         e.title.toLowerCase().includes(search.trim().toLowerCase()),
