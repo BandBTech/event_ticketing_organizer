@@ -869,7 +869,8 @@
     "bulkScan": "Scansione in blocco",
     "noEvents": "Nessun evento in corso trovato.",
     "searchEvents": "Cerca eventi...",
-    "noSearchResults": "Nessun evento corrisponde alla tua ricerca."
+    "noSearchResults": "Nessun evento corrisponde alla tua ricerca.",
+    "manualCheckin": "Check-in manuale"
   },
   "staffScanner": {
     "cameraErrorDescription": "Consenti l'accesso alla fotocamera nelle impostazioni del browser e aggiorna la pagina.",
@@ -897,7 +898,9 @@
     "ticketInvalid": "Biglietto non valido",
     "addedToQueue": "Aggiunto alla coda",
     "validationFailed": "Convalida non riuscita",
-    "scanFailed": "Impossibile scansionare il biglietto"
+    "scanFailed": "Impossibile scansionare il biglietto",
+    "tapToResume": "Tocca per riprendere la scansione",
+    "allCheckedIn": "Tutti i biglietti registrati — tocca Fine per terminare"
   },
   "rte": {
     "image": {
@@ -1212,7 +1215,16 @@
     "cancel_pending": "Cancellazione in sospeso"
   },
   "manualCheckin": {
-    "title": "Check-in manuale"
+    "title": "Check-in manuale",
+    "searchPlaceholder": "Cerca per numero biglietto...",
+    "search": "Cerca",
+    "noResults": "Nessun biglietto trovato.",
+    "checkIn": "Check-in",
+    "alreadyCheckedIn": "Già registrato",
+    "checkInSuccess": "Biglietto registrato con successo.",
+    "selectActiveDay": "Giorno di check-in attivo",
+    "checkedIn": "Registrato",
+    "buyer": "Acquirente"
   },
   "organizer": {
     "title": "Organizzatore"

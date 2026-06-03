@@ -944,7 +944,10 @@
     "noResults": "No tickets found.",
     "checkIn": "Check In",
     "alreadyCheckedIn": "Already Checked In",
-    "checkInSuccess": "Ticket checked in successfully."
+    "checkInSuccess": "Ticket checked in successfully.",
+    "selectActiveDay": "Active Check-in Day",
+    "checkedIn": "Checked In",
+    "buyer": "Buyer"
   },
   "staffScanner": {
     "cameraErrorDescription": "Please allow camera access in your browser settings and refresh the page.",
@@ -972,7 +975,9 @@
     "ticketInvalid": "Invalid ticket",
     "addedToQueue": "Added to queue",
     "validationFailed": "Validation failed",
-    "scanFailed": "Failed to scan ticket"
+    "scanFailed": "Failed to scan ticket",
+    "tapToResume": "Tap to resume scanning",
+    "allCheckedIn": "All tickets checked in — tap Done to finish"
   },
   "rte": {
     "image": {

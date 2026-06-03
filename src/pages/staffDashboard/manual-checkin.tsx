@@ -280,7 +280,7 @@ export default function ManualCheckinPage() {
                         </div>
                         <div className="bg-gray-50 border p-2 rounded-md relative">
                           <div className="text-sm text-primary -mb-0.5">
-                            Buyer
+                            {t("manualCheckin.buyer", "Buyer")}
                           </div>
                           <p className="text-md text-gray-700">
                             {ticket.attendee?.name || ticket.buyer_name}

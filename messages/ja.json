@@ -881,7 +881,8 @@
     "bulkScan": "一括スキャン",
     "noEvents": "進行中のイベントは見つかりませんでした。",
     "searchEvents": "イベントを検索...",
-    "noSearchResults": "検索に一致するイベントはありません。"
+    "noSearchResults": "検索に一致するイベントはありません。",
+    "manualCheckin": "手動チェックイン"
   },
   "staffScanner": {
     "cameraErrorDescription": "ブラウザの設定でカメラへのアクセスを許可し、ページを更新してください。",
@@ -889,27 +890,29 @@
     "ticketNumber": "チケット",
     "cameraErrorGeneric": "カメラにアクセスできませんでした。",
     "cameraPermissionDenied": "カメラへのアクセスが拒否されました。\nブラウザの設定でカメラの許可を有効にしてください。",
-    "noCameraFound": "No camera found on this device.",
-    "cameraInUse": "Camera is currently in use by another application or permission is denied.",
-    "cameraConstraints": "Camera constraints not satisfied.",
-    "insecureContext": "Camera access requires a secure context (HTTPS).",
-    "retryCameraAccess": "Retry Camera Access",
-    "single": "Single",
-    "bulk": "Bulk",
-    "alreadyInQueue": "Ticket already in queue",
-    "selectEventFirst": "Please select an event from the dashboard to start scanning.",
-    "backToDashboard": "Back to Dashboard",
-    "submitBulkCheckIn": "Submit Bulk Check-in",
-    "pendingCheckIn": "Pending Check-in",
-    "inQueue": "In Queue",
-    "scanTicketInfo": "Scan a ticket to check in",
-    "scanMultipleTicketsInfo": "Scan multiple tickets to queue",
-    "queueLimitReached": "Queue limit reached (Max 10)",
-    "submitQueue": "Please submit current queue for checkin first",
-    "ticketInvalid": "Invalid ticket",
-    "addedToQueue": "Added to queue",
-    "validationFailed": "Validation failed",
-    "scanFailed": "Failed to scan ticket"
+    "noCameraFound": "このデバイスにカメラが見つかりません。",
+    "cameraInUse": "カメラは別のアプリケーションで使用中か、許可が拒否されています。",
+    "cameraConstraints": "カメラの制約が満たされていません。",
+    "insecureContext": "カメラアクセスには安全なコンテキスト（HTTPS）が必要です。",
+    "retryCameraAccess": "カメラへのアクセスを再試行",
+    "single": "シングル",
+    "bulk": "一括",
+    "alreadyInQueue": "チケットは既にキューにあります",
+    "selectEventFirst": "スキャンを開始するには、ダッシュボードからイベントを選択してください。",
+    "backToDashboard": "ダッシュボードに戻る",
+    "submitBulkCheckIn": "一括チェックインを送信",
+    "pendingCheckIn": "チェックイン待ち",
+    "inQueue": "キュー中",
+    "scanTicketInfo": "チケットをスキャンしてチェックイン",
+    "scanMultipleTicketsInfo": "複数のチケットをスキャンしてキューに追加",
+    "queueLimitReached": "キューの上限に達しました（最大10件）",
+    "submitQueue": "先に現在のキューをチェックインのために送信してください",
+    "ticketInvalid": "無効なチケット",
+    "addedToQueue": "キューに追加されました",
+    "validationFailed": "検証に失敗しました",
+    "scanFailed": "チケットのスキャンに失敗しました",
+    "tapToResume": "タップしてスキャンを再開",
+    "allCheckedIn": "全チケットのチェックイン完了 — 完了をタップして終了"
   },
   "rte": {
     "image": {
@@ -1208,7 +1211,16 @@
     "cancel_pending": "キャンセル申請中"
   },
   "manualCheckin": {
-    "title": "手動チェックイン"
+    "title": "手動チェックイン",
+    "searchPlaceholder": "チケット番号で検索...",
+    "search": "検索",
+    "noResults": "チケットが見つかりません。",
+    "checkIn": "チェックイン",
+    "alreadyCheckedIn": "チェックイン済み",
+    "checkInSuccess": "チケットのチェックインが完了しました。",
+    "selectActiveDay": "チェックイン日を選択",
+    "checkedIn": "チェックイン済み",
+    "buyer": "購入者"
   },
   "organizer": {
     "title": "主催者"
