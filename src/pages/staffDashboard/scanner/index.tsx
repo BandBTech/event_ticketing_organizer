@@ -27,7 +27,6 @@ export default function ScannerPage() {
     setShowBulkList,
     scanResult,
     clearScanResult,
-    // lastScanError,
     cameraError,
     mounted,
     isProcessing,

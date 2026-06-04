@@ -111,11 +111,6 @@ export function useScannerState() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
-  // const [lastScanError, setLastScanError] = useState<{
-  //   code: string;
-  //   message: string;
-  //   ticketNumber?: string;
-  // } | null>(null);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
   // Tracks codes currently being processed (in-flight API calls).
@@ -259,23 +254,33 @@ export function useScannerState() {
     suppressedCodesRef.current.add(code);
     const timer = setTimeout(() => {
       suppressedCodesRef.current.delete(code);
-      toastedCodesRef.current.delete(code);
       suppressTimersRef.current.delete(code);
     }, ttlMs);
     suppressTimersRef.current.set(code, timer);
   }, []);
 
-  // Track which codes have already shown a toast to avoid duplicate toasts.
-  const toastedCodesRef = useRef<Set<string>>(new Set());
+  // Tracks the last time an error toast was shown per code.
+  // Allows toasts on re-scan but rate-limits them so they don't fire every 200ms.
+  const lastErrorToastRef = useRef<Map<string, number>>(new Map());
+  const ERROR_TOAST_COOLDOWN_MS = 3000;
+
+  const canShowErrorToast = useCallback((code: string) => {
+    const last = lastErrorToastRef.current.get(code) ?? 0;
+    return Date.now() - last >= ERROR_TOAST_COOLDOWN_MS;
+  }, []);
+
+  const recordErrorToast = useCallback((code: string) => {
+    lastErrorToastRef.current.set(code, Date.now());
+  }, []);
 
   // Drop suppression refs and pending timers on unmount.
   useEffect(() => {
     const suppressed = suppressedCodesRef.current;
-    const toasted = toastedCodesRef.current;
+    const lastToasts = lastErrorToastRef.current;
     const timers = suppressTimersRef.current;
     return () => {
       suppressed.clear();
-      toasted.clear();
+      lastToasts.clear();
       timers.forEach(clearTimeout);
       timers.clear();
       if (scanResultTimeoutRef.current) {
@@ -290,10 +295,9 @@ export function useScannerState() {
     setBulkQueue([]);
     setBulkResult(null);
     setShowBulkList(false);
-    // setLastScanError(null);
     processingCodesRef.current.clear();
     suppressedCodesRef.current.clear();
-    toastedCodesRef.current.clear();
+    lastErrorToastRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
   };
@@ -306,7 +310,7 @@ export function useScannerState() {
       if (removed[0]) {
         processingCodesRef.current.delete(removed[0].code);
         suppressedCodesRef.current.delete(removed[0].code);
-        toastedCodesRef.current.delete(removed[0].code);
+        lastErrorToastRef.current.delete(removed[0].code);
         const timer = suppressTimersRef.current.get(removed[0].code);
         if (timer) {
           clearTimeout(timer);
@@ -337,7 +341,7 @@ export function useScannerState() {
       if (failed.length === 0) return prev;
       return failed.map(({ checkinResult: _r, checkinMessage: _m, ...rest }) => rest);
     });
-    // setLastScanError(null);
+    lastErrorToastRef.current.clear();
     setShowBulkList(false);
   }, []);
 
@@ -445,9 +449,17 @@ export function useScannerState() {
       return;
     }
 
-    // Suppressed — recent validation failure still within cooldown window.
-    // Silently drop so we don't hammer the API every 1.2s scanDelay tick.
+    // Suppressed — API call blocked to avoid hammering the server.
+    // Still show a toast if enough time has passed since the last one for this code.
     if (suppressedCodesRef.current.has(code)) {
+      if (canShowErrorToast(code)) {
+        recordErrorToast(code);
+        toast.error(
+          "staffScanner.ticketInvalid",
+          t("staffScanner.ticketInvalid", "Invalid ticket"),
+          t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in"),
+        );
+      }
       return;
     }
 
@@ -477,20 +489,15 @@ export function useScannerState() {
               t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
             );
 
-            // setLastScanError({
-            //   code,
-            //   message: toastTitle,
-            // });
-            // Show toast only once per code within the current suppression window
-            if (!toastedCodesRef.current.has(code)) {
-              toastedCodesRef.current.add(code);
+            if (canShowErrorToast(code)) {
+              recordErrorToast(code);
               toast.error(toastTitle, toastTitle, toastDesc);
             }
             return;
           }
 
-          // Validation passed — clear any previous error and add to queue
-          // setLastScanError(null);
+          // Validation passed — reset toast cooldown so any future failure shows immediately
+          lastErrorToastRef.current.delete(code);
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
             ticket_number?: string;
             attendee?: { name?: string; email?: string };
@@ -526,7 +533,7 @@ export function useScannerState() {
             }
 
             if (navigator.vibrate) navigator.vibrate(50);
-            toastedCodesRef.current.delete(code);
+            lastErrorToastRef.current.delete(code);
             toast.success(
               "staffScanner.addedToQueue",
               t("staffScanner.addedToQueue", "Added to queue"),
@@ -538,12 +545,8 @@ export function useScannerState() {
         onError: () => {
           processingCodesRef.current.delete(code);
           suppressCode(code);
-          // setLastScanError({
-          //   code,
-          //   message: t("staffScanner.cannotConnect", "Cannot connect to server. Try again."),
-          // });
-          if (!toastedCodesRef.current.has(code)) {
-            toastedCodesRef.current.add(code);
+          if (canShowErrorToast(code)) {
+            recordErrorToast(code);
             toast.error(
               "staffScanner.connectionError",
               t("staffScanner.connectionError", "Connection error"),
@@ -694,9 +697,8 @@ export function useScannerState() {
 
   const handleModeChange = useCallback((newMode: ScanMode) => {
     setMode(newMode);
-    // setLastScanError(null);
     suppressedCodesRef.current.clear();
-    toastedCodesRef.current.clear();
+    lastErrorToastRef.current.clear();
     processingCodesRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
@@ -726,7 +728,6 @@ export function useScannerState() {
     setSelectedEventDayId,
     eventData,
     clearScanResult,
-    // lastScanError,
     cameraError,
     mounted,
     isProcessing,
