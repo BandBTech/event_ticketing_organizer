@@ -54,7 +54,7 @@ export function AppSidebar() {
     // Staff Links
     {
       href: "/staffDashboard",
-      label: "Home",
+      label: t("staffDashboard.home", "Home"),
       icon: HouseIcon,
       permission: PERMISSIONS.PROFILE_VIEW,
       role: ["staff"],

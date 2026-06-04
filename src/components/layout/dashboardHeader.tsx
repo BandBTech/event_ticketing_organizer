@@ -77,8 +77,8 @@ export default function DashboardHeader() {
           prefix: "/organizerDashboard",
           title: t("navigation.dashboard", "Dashboard"),
         },
-        { prefix: "/staffDashboard/events", title: "Events" },
-        { prefix: "/staffDashboard", title: "Dashboard" },
+        { prefix: "/staffDashboard/events", title: t("staffDashboard.events", "Events") },
+        { prefix: "/staffDashboard", title: t("staffDashboard.dashboard", "Dashboard") },
       ],
       [t],
     );

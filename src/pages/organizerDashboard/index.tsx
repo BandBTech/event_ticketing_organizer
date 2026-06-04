@@ -9,11 +9,15 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ProtectedRoute } from "@/components/providers/ProtectedRoute";
 import Head from "next/head";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useExitConfirmation } from "@/hooks/useExitConfirmation";
+import { ExitConfirmationDialog } from "@/components/ui/ExitConfirmationDialog";
 
 export default function DashboardPage() {
   const { isOrganizerRejected, isOrganizerPending, isOrganizerInactive } =
     useAuthStore();
   const { t } = useTranslation();
+  const { showExitDialog, setShowExitDialog, confirmExit } =
+    useExitConfirmation();
 
   const renderContent = () => {
     if (isOrganizerRejected()) {
@@ -53,6 +57,12 @@ export default function DashboardPage() {
           <div className="mx-auto">{renderContent()}</div>
         </ProtectedRoute>
       </DashboardLayout>
+
+      <ExitConfirmationDialog
+        open={showExitDialog}
+        onOpenChange={setShowExitDialog}
+        onConfirm={confirmExit}
+      />
     </>
   );
 }

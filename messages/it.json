@@ -41,6 +41,12 @@
       "loading": "Eliminazione...",
       "confirm": "Eliminare"
     },
+    "exitModal": {
+      "title": "Lasciare la dashboard?",
+      "description": "Sei sicuro di voler uscire dalla dashboard? Verrai reindirizzato alla pagina precedente.",
+      "cancel": "Rimani",
+      "confirm": "Esci"
+    },
     "cancel": "Cancellare",
     "saving": "Risparmio...",
     "saveChanges": "Salva modifiche",
@@ -859,6 +865,9 @@
   },
   "staffDashboard": {
     "title": "Dashboard Staff",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "events": "Eventi",
     "scannerTitle": "Scanner Biglietti",
     "readyToScan": "Pronto per la scansione?",
     "readyToScanDescription": "Inizia a scansionare i biglietti per effettuare il check-in dei partecipanti all'evento.",

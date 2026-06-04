@@ -34,6 +34,12 @@
       "loading": "Deleting...",
       "confirm": "Delete"
     },
+    "exitModal": {
+      "title": "Leave Dashboard?",
+      "description": "Are you sure you want to leave the dashboard? You will be taken back to the previous page.",
+      "cancel": "Stay",
+      "confirm": "Leave"
+    },
     "cancel": "Cancel",
     "saving": "Saving...",
     "saveChanges": "Save Changes",
@@ -924,6 +930,9 @@
   },
   "staffDashboard": {
     "title": "Staff Dashboard",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "events": "Events",
     "scannerTitle": "Ticket Scanner",
     "readyToScan": "Ready to Scan?",
     "readyToScanDescription": "Start scanning tickets to check in attendees for the event.",

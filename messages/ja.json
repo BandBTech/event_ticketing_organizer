@@ -41,6 +41,12 @@
       "loading": "削除中...",
       "confirm": "消去"
     },
+    "exitModal": {
+      "title": "ダッシュボードを離れますか？",
+      "description": "ダッシュボードを離れてよろしいですか？前のページに戻ります。",
+      "cancel": "留まる",
+      "confirm": "離れる"
+    },
     "cancel": "キャンセル",
     "saving": "保存中...",
     "saveChanges": "変更を保存",
@@ -871,6 +877,9 @@
   },
   "staffDashboard": {
     "title": "スタッフダッシュボード",
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "events": "イベント",
     "scannerTitle": "チケットスキャナー",
     "readyToScan": "スキャンする準備はできましたか?",
     "readyToScanDescription": "チケットのスキャンを開始して、イベントの参加者をチェックインします。",
