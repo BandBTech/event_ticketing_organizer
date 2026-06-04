@@ -864,9 +864,9 @@
     "saveButton": "Salva e continua"
   },
   "staffDashboard": {
-    "title": "Dashboard Staff",
-    "home": "Home",
-    "dashboard": "Dashboard",
+    "title": "Staff del cruscotto",
+    "home": "Casa",
+    "dashboard": "Cruscotto",
     "events": "Eventi",
     "scannerTitle": "Scanner Biglietti",
     "readyToScan": "Pronto per la scansione?",
