@@ -238,17 +238,13 @@ export function useScannerState() {
   }, [t]);
 
   // ─── Failed-code suppression ─────────────────────────────────────────────────
-  // Prevents re-validation spam while a failed QR is still in the camera frame.
-  // Short TTL (1500ms) so the user can re-scan the same code after a brief wait.
-  // Toast spam is prevented separately via toastedCodesRef.
+  // Cooldown is set to 3000ms so the user can re-scan the same code after a brief wait
+  // without hammering the server.
   // Uses refs + Sets (not state) so guards are synchronous with camera ticks.
   const suppressedCodesRef = useRef<Set<string>>(new Set());
 
   // Mark a code as suppressed for a short window to prevent rapid re-validations.
-  // When the window expires the code is also removed from toastedCodesRef so that
-  // a subsequent failure for the same code shows a fresh toast (fixes repeat-failure
-  // toast suppression bug).
-  const suppressCode = useCallback((code: string, ttlMs = 1500) => {
+  const suppressCode = useCallback((code: string, ttlMs = 3000) => {
     const existing = suppressTimersRef.current.get(code);
     if (existing) clearTimeout(existing);
     suppressedCodesRef.current.add(code);
@@ -260,9 +256,10 @@ export function useScannerState() {
   }, []);
 
   // Tracks the last time an error toast was shown per code.
-  // Allows toasts on re-scan but rate-limits them so they don't fire every 200ms.
+  // Rate-limits toasts to prevent UI spam. Set slightly lower than suppression TTL (e.g. 2500ms)
+  // to guarantee that once the 3000ms suppression expires, the next scan is allowed to show its toast.
   const lastErrorToastRef = useRef<Map<string, number>>(new Map());
-  const ERROR_TOAST_COOLDOWN_MS = 3000;
+  const ERROR_TOAST_COOLDOWN_MS = 2500;
 
   const canShowErrorToast = useCallback((code: string) => {
     const last = lastErrorToastRef.current.get(code) ?? 0;
@@ -360,7 +357,7 @@ export function useScannerState() {
       { ticketCode: code, eventId: scanEventId, eventDayId: selectedEventDayId || undefined },
       {
         onSuccess: (data) => {
-          suppressCode(code, 2500);
+          suppressCode(code, 3000);
 
           if (navigator.vibrate) navigator.vibrate(50);
 
@@ -391,7 +388,7 @@ export function useScannerState() {
           }
         },
         onError: (error) => {
-          suppressCode(code, 2500);
+          suppressCode(code, 3000);
 
           const { title: parsedTitle, description: parsedDesc } = parseTicketScanMessage(
             error.message,
@@ -450,16 +447,7 @@ export function useScannerState() {
     }
 
     // Suppressed — API call blocked to avoid hammering the server.
-    // Still show a toast if enough time has passed since the last one for this code.
     if (suppressedCodesRef.current.has(code)) {
-      if (canShowErrorToast(code)) {
-        recordErrorToast(code);
-        toast.error(
-          "staffScanner.ticketInvalid",
-          t("staffScanner.ticketInvalid", "Invalid ticket"),
-          t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in"),
-        );
-      }
       return;
     }
 
@@ -478,10 +466,8 @@ export function useScannerState() {
           // Immediately release in-flight lock so re-scan is possible
           processingCodesRef.current.delete(code);
 
-          suppressCode(code, 2500);
-
           if (!data.can_checkin) {
-            suppressCode(code);
+            suppressCode(code, 3000);
 
             const { title: toastTitle, description: toastDesc } = parseTicketScanMessage(
               data.message,
@@ -496,6 +482,7 @@ export function useScannerState() {
             return;
           }
 
+          suppressCode(code, 3000);
           // Validation passed — reset toast cooldown so any future failure shows immediately
           lastErrorToastRef.current.delete(code);
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
@@ -544,7 +531,7 @@ export function useScannerState() {
         },
         onError: () => {
           processingCodesRef.current.delete(code);
-          suppressCode(code);
+          suppressCode(code, 3000);
           if (canShowErrorToast(code)) {
             recordErrorToast(code);
             toast.error(
