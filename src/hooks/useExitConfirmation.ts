@@ -14,16 +14,6 @@ export interface UseExitConfirmationReturn {
 /**
  * Hook that intercepts the browser back button while the user is on the
  * dashboard Home Screen and shows an exit-confirmation dialog.
- *
- * Strategy:
- * 1. On mount, push a sentinel history entry so that pressing "back"
- *    triggers a popstate event instead of navigating away immediately.
- * 2. When popstate fires on the sentinel entry we show the dialog.
- * 3. If the user confirms, we call history.back() to leave for real.
- * 4. If the user cancels, we re-push the sentinel so the guard remains active.
- *
- * This approach is intentionally scoped to the Home Screen only and does NOT
- * interfere with the existing `useNavigationGuard` hook used by inner pages.
  */
 export function useExitConfirmation(): UseExitConfirmationReturn {
   const [showExitDialog, setShowExitDialog] = useState(false);
@@ -34,13 +24,32 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
   const { isAuthenticated, _authChecked } = useAuthStore();
 
   const pushSentinel = useCallback(() => {
-    // Push the same URL as a sentinel so "back" hits us first
+    if (typeof window === "undefined") return;
+
+    // Check if the current state is already the sentinel to prevent duplicate pushes
+    if (window.history.state?.exitGuard) {
+      guardActiveRef.current = true;
+      return;
+    }
+
     window.history.pushState(
       { exitGuard: true },
       "",
       window.location.href
     );
     guardActiveRef.current = true;
+  }, []);
+
+  // Clear the bypass flag if it was set when returning from scanner/inner pages
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation) {
+      const timer = setTimeout(() => {
+        if (typeof window !== "undefined") {
+          (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = false;
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   // Listen for Next.js route transitions to distinguish from browser back button
@@ -72,7 +81,12 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
     // Push sentinel on mount (after first render / authentication verification)
     pushSentinel();
 
-    const handlePopstate = (event: PopStateEvent) => {
+    const handlePopstate = () => {
+      // If we are bypassing the exit confirmation (e.g., returning from scanner), ignore this popstate
+      if (typeof window !== "undefined" && (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation) {
+        return;
+      }
+
       // If the user confirmed exit and we called history.back(), ignore this event
       if (confirmedRef.current) {
         confirmedRef.current = false;
@@ -83,14 +97,13 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
       if (guardActiveRef.current) {
         guardActiveRef.current = false;
 
-        // Also stop Next.js from processing this route change
+        // Stop Next.js from processing this route change
         Router.events.emit("routeChangeError");
 
         // Show the confirmation dialog
         setShowExitDialog(true);
 
         // Re-push sentinel so the guard remains if user cancels
-        // We do it after a tick to avoid race conditions with Next.js Router
         setTimeout(() => {
           if (!confirmedRef.current) {
             pushSentinel();
@@ -122,7 +135,6 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
 
   const cancelExit = useCallback(() => {
     setShowExitDialog(false);
-    // Sentinel was already re-pushed in the popstate handler
   }, []);
 
   return {

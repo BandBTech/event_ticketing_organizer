@@ -116,6 +116,7 @@ export function QRCameraView({
             key={cameraKey}
             paused={isPaused}
             scanDelay={200}
+            allowMultiple={true}
             onScan={disabled ? () => { } : handleScanWrapped}
             onError={onError}
             classNames={{ container: "scanner-wrapper" }}

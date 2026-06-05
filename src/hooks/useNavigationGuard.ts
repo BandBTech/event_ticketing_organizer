@@ -107,6 +107,9 @@ export function useNavigationGuard({
         // history entry — preventing the scanner from accumulating in history across
         // multiple event sessions.
         pendingWasPopstateRef.current = false;
+        if (typeof window !== "undefined") {
+          (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = true;
+        }
         window.history.go(-2);
       } else {
         pendingNavigation();

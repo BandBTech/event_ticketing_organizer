@@ -255,34 +255,22 @@ export function useScannerState() {
     suppressTimersRef.current.set(code, timer);
   }, []);
 
-  // Tracks the last time an error toast was shown per code.
-  // Rate-limits toasts to prevent UI spam. Set slightly lower than suppression TTL (e.g. 2500ms)
-  // to guarantee that once the 3000ms suppression expires, the next scan is allowed to show its toast.
-  const lastErrorToastRef = useRef<Map<string, number>>(new Map());
-  const ERROR_TOAST_COOLDOWN_MS = 2500;
 
-  const canShowErrorToast = useCallback((code: string) => {
-    const last = lastErrorToastRef.current.get(code) ?? 0;
-    return Date.now() - last >= ERROR_TOAST_COOLDOWN_MS;
-  }, []);
-
-  const recordErrorToast = useCallback((code: string) => {
-    lastErrorToastRef.current.set(code, Date.now());
-  }, []);
 
   // Drop suppression refs and pending timers on unmount.
   useEffect(() => {
     const suppressed = suppressedCodesRef.current;
-    const lastToasts = lastErrorToastRef.current;
     const timers = suppressTimersRef.current;
     return () => {
       suppressed.clear();
-      lastToasts.clear();
       timers.forEach(clearTimeout);
       timers.clear();
       if (scanResultTimeoutRef.current) {
         clearTimeout(scanResultTimeoutRef.current);
         scanResultTimeoutRef.current = null;
+      }
+      if (typeof window !== "undefined") {
+        (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = true;
       }
     };
   }, []);
@@ -294,7 +282,6 @@ export function useScannerState() {
     setShowBulkList(false);
     processingCodesRef.current.clear();
     suppressedCodesRef.current.clear();
-    lastErrorToastRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
   };
@@ -307,7 +294,6 @@ export function useScannerState() {
       if (removed[0]) {
         processingCodesRef.current.delete(removed[0].code);
         suppressedCodesRef.current.delete(removed[0].code);
-        lastErrorToastRef.current.delete(removed[0].code);
         const timer = suppressTimersRef.current.get(removed[0].code);
         if (timer) {
           clearTimeout(timer);
@@ -338,7 +324,6 @@ export function useScannerState() {
       if (failed.length === 0) return prev;
       return failed.map(({ checkinResult: _r, checkinMessage: _m, ...rest }) => rest);
     });
-    lastErrorToastRef.current.clear();
     setShowBulkList(false);
   }, []);
 
@@ -475,16 +460,11 @@ export function useScannerState() {
               t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
             );
 
-            if (canShowErrorToast(code)) {
-              recordErrorToast(code);
-              toast.error(toastTitle, toastTitle, toastDesc);
-            }
+            toast.error(toastTitle, toastTitle, toastDesc);
             return;
           }
 
           suppressCode(code, 3000);
-          // Validation passed — reset toast cooldown so any future failure shows immediately
-          lastErrorToastRef.current.delete(code);
           const ticketInfo = data.ticket_info as Record<string, unknown> & {
             ticket_number?: string;
             attendee?: { name?: string; email?: string };
@@ -520,7 +500,6 @@ export function useScannerState() {
             }
 
             if (navigator.vibrate) navigator.vibrate(50);
-            lastErrorToastRef.current.delete(code);
             toast.success(
               "staffScanner.addedToQueue",
               t("staffScanner.addedToQueue", "Added to queue"),
@@ -532,14 +511,11 @@ export function useScannerState() {
         onError: () => {
           processingCodesRef.current.delete(code);
           suppressCode(code, 3000);
-          if (canShowErrorToast(code)) {
-            recordErrorToast(code);
-            toast.error(
-              "staffScanner.connectionError",
-              t("staffScanner.connectionError", "Connection error"),
-              t("staffScanner.scanRetry", "Tap to scan again when connected"),
-            );
-          }
+          toast.error(
+            "staffScanner.connectionError",
+            t("staffScanner.connectionError", "Connection error"),
+            t("staffScanner.scanRetry", "Tap to scan again when connected"),
+          );
         },
       },
     );
@@ -685,7 +661,6 @@ export function useScannerState() {
   const handleModeChange = useCallback((newMode: ScanMode) => {
     setMode(newMode);
     suppressedCodesRef.current.clear();
-    lastErrorToastRef.current.clear();
     processingCodesRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
