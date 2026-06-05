@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Router from "next/router";
+import { useAuthStore } from "@/store/authStore";
 
 export interface UseExitConfirmationReturn {
   showExitDialog: boolean;
@@ -28,6 +29,9 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const guardActiveRef = useRef(false);
   const confirmedRef = useRef(false);
+  const isNavigatingAwayRef = useRef(false);
+
+  const { isAuthenticated, _authChecked } = useAuthStore();
 
   const pushSentinel = useCallback(() => {
     // Push the same URL as a sentinel so "back" hits us first
@@ -39,8 +43,33 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
     guardActiveRef.current = true;
   }, []);
 
+  // Listen for Next.js route transitions to distinguish from browser back button
   useEffect(() => {
-    // Push sentinel on mount (after first render)
+    const handleRouteChangeStart = () => {
+      isNavigatingAwayRef.current = true;
+    };
+    const handleRouteChangeComplete = () => {
+      isNavigatingAwayRef.current = false;
+    };
+    const handleRouteChangeError = () => {
+      isNavigatingAwayRef.current = false;
+    };
+
+    Router.events.on("routeChangeStart", handleRouteChangeStart);
+    Router.events.on("routeChangeComplete", handleRouteChangeComplete);
+    Router.events.on("routeChangeError", handleRouteChangeError);
+
+    return () => {
+      Router.events.off("routeChangeStart", handleRouteChangeStart);
+      Router.events.off("routeChangeComplete", handleRouteChangeComplete);
+      Router.events.off("routeChangeError", handleRouteChangeError);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!_authChecked || !isAuthenticated) return;
+
+    // Push sentinel on mount (after first render / authentication verification)
     pushSentinel();
 
     const handlePopstate = (event: PopStateEvent) => {
@@ -75,14 +104,13 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
     return () => {
       window.removeEventListener("popstate", handlePopstate);
       // Clean up the sentinel entry when the component unmounts
-      if (guardActiveRef.current) {
+      if (guardActiveRef.current && !isNavigatingAwayRef.current) {
         guardActiveRef.current = false;
         // Go back to remove the sentinel we pushed
         window.history.back();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [_authChecked, isAuthenticated, pushSentinel]);
 
   const confirmExit = useCallback(() => {
     setShowExitDialog(false);
