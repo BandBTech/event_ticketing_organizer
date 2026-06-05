@@ -422,6 +422,7 @@ export function useScannerState() {
     if (existingItem) {
       const age = Date.now() - new Date(existingItem.timestamp).getTime();
       if (age >= 2000) {
+        suppressCode(code, 3000);
         toast.error(
           "staffScanner.alreadyInQueue",
           t("staffScanner.alreadyInQueue", "Already in queue"),
