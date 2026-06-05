@@ -416,24 +416,20 @@ export function useScannerState() {
       return;
     }
 
-    // If already in the queue: silent within 2 s of being added (camera re-read),
-    // toast after that (intentional duplicate scan).
-    const existingItem = currentQueue.find((item) => item.code === code);
-    if (existingItem) {
-      const age = Date.now() - new Date(existingItem.timestamp).getTime();
-      if (age >= 2000) {
-        suppressCode(code, 3000);
-        toast.error(
-          "staffScanner.alreadyInQueue",
-          t("staffScanner.alreadyInQueue", "Already in queue"),
-          t("staffScanner.ticketAlreadyQueued", "This ticket is already queued for check-in"),
-        );
-      }
+    // Suppressed — API call blocked to avoid hammering the server.
+    if (suppressedCodesRef.current.has(code)) {
       return;
     }
 
-    // Suppressed — API call blocked to avoid hammering the server.
-    if (suppressedCodesRef.current.has(code)) {
+    // If already in the queue, show error toast (suppressed every 3s so it doesn't spam)
+    const existingItem = currentQueue.find((item) => item.code === code);
+    if (existingItem) {
+      suppressCode(code, 3000);
+      toast.error(
+        "staffScanner.alreadyInQueue",
+        t("staffScanner.alreadyInQueue", "Already in queue"),
+        t("staffScanner.ticketAlreadyQueued", "This ticket is already queued for check-in"),
+      );
       return;
     }
 
