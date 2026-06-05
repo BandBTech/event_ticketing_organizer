@@ -93,14 +93,20 @@ export function QRCameraView({
 
     const id = setTimeout(() => {
       const video = document.querySelector<HTMLVideoElement>("video");
-      const track = (video?.srcObject as MediaStream | null)?.getVideoTracks()[0];
+      const track = (
+        video?.srcObject as MediaStream | null
+      )?.getVideoTracks()[0];
       if (!track) return;
 
-      const caps = track.getCapabilities?.() as MediaTrackCapabilities & { focusMode?: string[] };
+      const caps = track.getCapabilities?.() as MediaTrackCapabilities & {
+        focusMode?: string[];
+      };
       if (caps?.focusMode?.includes("continuous")) {
-        track.applyConstraints({
-          advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
-        }).catch(() => {});
+        track
+          .applyConstraints({
+            advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet],
+          })
+          .catch(() => {});
       }
     }, 800);
 
@@ -117,14 +123,15 @@ export function QRCameraView({
             paused={isPaused}
             scanDelay={200}
             allowMultiple={true}
-            onScan={disabled ? () => { } : handleScanWrapped}
+            onScan={disabled ? () => {} : handleScanWrapped}
             onError={onError}
             classNames={{ container: "scanner-wrapper" }}
             components={{ finder: false }}
             constraints={{
               facingMode: "environment",
-              width: { ideal: 720 },
-              height: { ideal: 1280 },
+              width: { ideal: 1080 },
+              height: { ideal: 1920 },
+              aspectRatio: { ideal: 9 / 16 },
               frameRate: { ideal: 24 },
             }}
             styles={{
@@ -162,8 +169,9 @@ export function QRCameraView({
       <div className="absolute inset-0 pointer-events-none">
         {/* Scanning target rectangle */}
         <div
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${mode === "bulk" ? "w-72 h-48 border-dashed" : "w-64 h-64"
-            } border-4 ${disabled ? "border-green-400/60" : "border-white/80"} rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`}
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+            mode === "bulk" ? "w-72 h-48 border-dashed" : "w-64 h-64"
+          } border-4 ${disabled ? "border-green-400/60" : "border-white/80"} rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`}
         >
           <div className="absolute inset-0 flex items-center justify-center">
             {disabled ? (
@@ -174,10 +182,11 @@ export function QRCameraView({
           </div>
         </div>
 
-
         {/* Hint text */}
         <div className="absolute bottom-32 left-0 right-0 text-center px-4">
-          <p className={`text-sm font-medium drop-shadow-md ${disabled ? "text-green-300 font-semibold" : "text-white/80"}`}>
+          <p
+            className={`text-sm font-medium drop-shadow-md ${disabled ? "text-green-300 font-semibold" : "text-white/80"}`}
+          >
             {scanHintText}
           </p>
         </div>
