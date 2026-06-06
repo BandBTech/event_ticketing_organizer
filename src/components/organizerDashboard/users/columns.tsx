@@ -42,7 +42,7 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       meta: { sortKey: 'role' },
       cell: (info) => {
         const role = info.getValue<string>();
-        return <span className="text-gray-900">{role === "-" ? role : t(`common.${role}`, role)}</span>;
+        return <span className="text-gray-900">{role === "-" ? role : t(`common.${role.toLowerCase()}`, role)}</span>;
       },
     },
     {
@@ -61,9 +61,10 @@ export function getColumns({ onEdit, onDelete, t, pageIndex, pageSize }: ColumnA
       meta: { sortKey: 'account_status' },
       cell: (info) => {
         const status = info.getValue<string>();
-        const isActive = status === "active";
+        const normalizedStatus = (status || "").toLowerCase();
+        const isActive = normalizedStatus === "active";
         const label = status
-          ? t(`common.${status}`, status)
+          ? t(`common.${normalizedStatus}`, status)
           : t('common.unknown', "Unknown");
         return (
           <span

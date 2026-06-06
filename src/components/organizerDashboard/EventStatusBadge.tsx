@@ -85,7 +85,8 @@ export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {
 
   if (!status) return null;
 
-  const config = eventStatusConfig[status] || eventStatusConfig["default"];
+  const normalizedStatus = status.toLowerCase();
+  const config = eventStatusConfig[normalizedStatus] || eventStatusConfig["default"];
 
   return (
     <Badge
@@ -96,13 +97,13 @@ export function EventStatusBadge({ status, className }: EventStatusBadgeProps) {
         className,
       )}
     >
-      {status === "live" && (
+      {normalizedStatus === "live" && (
         <span className="flex h-1.5 w-1.5 relative">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
         </span>
       )}
-      {t(`event.badge.${status}`, status)}
+      {t(`event.badge.${normalizedStatus}`, status)}
     </Badge>
   );
 }

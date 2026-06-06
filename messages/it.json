@@ -25,7 +25,8 @@
       "discountPercentageRequired": "La percentuale di sconto è obbligatoria."
     },
     "text": {
-      "system": "Sistema"
+      "system": "Sistema",
+      "systemAutomatic": "Sistema (Automatico)"
     },
     "button": {
       "refresh": "Aggiorna",
@@ -118,6 +119,8 @@
     "sending": "Invio...",
     "notSpecified": "Non specificato",
     "done": "Fatto",
+    "organizer": "Organizzatore",
+    "suspended": "Sospeso",
     "bulkOperation": "Operazione in blocco",
     "hideList": "Nascondi elenco",
     "viewList": "Visualizza elenco",
@@ -1121,6 +1124,15 @@
         "percentage": "% del Totale",
         "customer": "Cliente",
         "orders": "Ordini"
+      },
+      "segments": {
+        "vip": "VIP",
+        "regular": "Regolare",
+        "new": "Nuovo",
+        "repeat": "Ricorrente",
+        "inactive": "Inattivo",
+        "one-time": "Una tantum",
+        "one_time": "Una tantum"
       }
     },
     "financial": {
@@ -1154,6 +1166,7 @@
       "eventBreakdown": "Dettaglio Eventi",
       "recentCommissions": "Commissioni Recenti",
       "payoutHistory": "Storico Pagamenti",
+      "billHistory": "Cronologia di fatturazione",
       "unknownEvent": "Evento Sconosciuto",
       "of": "di",
       "noDataTitle": "Nessun Dato Finanziario Disponibile",

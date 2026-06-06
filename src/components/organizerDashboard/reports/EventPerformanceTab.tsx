@@ -209,7 +209,8 @@ export function EventPerformanceTab({
 
   // Status color mapping matching EventStatusBadge
   const getStatusColor = (status?: string) => {
-    switch (status) {
+    const lowerStatus = (status || "").toLowerCase();
+    switch (lowerStatus) {
       case "pending":
         return "bg-yellow-700 text-yellow-100";
       case "approved":
@@ -242,7 +243,8 @@ export function EventPerformanceTab({
   };
 
   const getStatusLabel = (status?: string) => {
-    return t(`event.badge.${status}`, status);
+    const lowerStatus = (status || "").toLowerCase();
+    return t(`event.badge.${lowerStatus}`, status);
   };
 
   const hasAnyData = !isLoading && report && (report?.tickets_sold ?? 0) > 0;

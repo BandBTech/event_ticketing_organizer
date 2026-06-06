@@ -72,18 +72,19 @@ export default function StatusHistorySidebar({
   }, [historyList, isExpanded]);
 
   const getStatusIcon = (status: string, type: string) => {
+    const lowerStatus = status.toLowerCase();
     if (type === "sales") {
-      if (status === "paused")
+      if (lowerStatus === "paused")
         return <PauseCircle size={16} className="text-amber-500" />;
-      if (status === "active" || status === "resumed")
+      if (lowerStatus === "active" || lowerStatus === "resumed")
         return <PlayCircle size={16} className="text-green-500" />;
-      if (status === "stopped")
+      if (lowerStatus === "stopped")
         return <StopCircle size={16} className="text-red-500" />;
-      if (status === "sales_upcoming")
+      if (lowerStatus === "sales_upcoming")
         return <PlayCircle size={16} className="text-blue-500" />;
     }
 
-    switch (status) {
+    switch (lowerStatus) {
       case "approved":
         return <CheckCircle size={16} className="text-green-600" />;
       case "rejected":
@@ -116,7 +117,8 @@ export default function StatusHistorySidebar({
   };
 
   const getStatusBadgeStyles = (status: string) => {
-    switch (status) {
+    const lowerStatus = status.toLowerCase();
+    switch (lowerStatus) {
       case "pending":
         return "border-yellow-600 bg-yellow-700 text-yellow-100";
       case "approved":
@@ -151,11 +153,21 @@ export default function StatusHistorySidebar({
   };
 
   const getStatusLabel = (status: string, status_type: string) => {
-    if (status_type === "sales" && status === "active") {
+    const lowerStatus = status.toLowerCase();
+    if (status_type === "sales" && lowerStatus === "active") {
       return t(`event.badge.resumed`, status);
     }
 
-    return t(`event.badge.${status}`, status);
+    return t(`event.badge.${lowerStatus}`, status);
+  };
+
+  const getChangedByName = (name?: string) => {
+    if (!name) return t("common.text.systemAutomatic", "System (Automatic)");
+    const lowerName = name.trim().toLowerCase();
+    if (lowerName === "system" || lowerName === "system (automatic)") {
+      return t("common.text.systemAutomatic", "System (Automatic)");
+    }
+    return name;
   };
 
   if (isLoading) {
@@ -293,8 +305,7 @@ export default function StatusHistorySidebar({
                 <div className="flex items-center gap-1 mt-1 text-[12px] text-black">
                   <User size={10} />
                   <span>
-                    {historyItem.changed_by_name ||
-                      t("common.text.system", "System")}
+                    {getChangedByName(historyItem.changed_by_name)}
                   </span>
                 </div>
               </div>

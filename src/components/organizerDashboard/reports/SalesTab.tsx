@@ -546,7 +546,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
                                 : "bg-gray-100 text-gray-600"
                             }`}
                           >
-                            {gw.status}
+                            {t(`common.${gw.status.toLowerCase()}`, gw.status)}
                           </span>
                         </div>
                       </td>

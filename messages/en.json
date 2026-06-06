@@ -110,6 +110,12 @@
     "sending": "Sending...",
     "notSpecified": "Not specified",
     "done": "Done",
+    "text": {
+      "system": "System",
+      "systemAutomatic": "System (Automatic)"
+    },
+    "organizer": "Organizer",
+    "suspended": "Suspended",
     "bulkOperation": "Bulk Operation",
     "hideList": "Hide List",
     "viewList": "View List",
@@ -123,6 +129,9 @@
     "submit": "Submit",
     "results": "Results",
     "searching": "Searching..."
+  },
+  "organizer": {
+    "title": "Organizer"
   },
   "navigation": {
     "events": "Events",
@@ -627,7 +636,8 @@
       "templates": "Templates",
       "statusHistory": "Status History",
       "ticketSalesDuration": "Ticket Sales Duration",
-      "cancellationPending": "Cancellation Pending Approval"
+      "cancellationPending": "Cancellation Pending Approval",
+      "organizerEarnings": "Organizer Earnings"
     },
     "button": {
       "pauseSales": "Pause Sales",
@@ -649,7 +659,8 @@
       "totalSold": "Total Sold",
       "grossRevenue": "Gross Revenue",
       "commissionRate": "Commission Rate",
-      "commissionAmount": "Commission"
+      "commissionAmount": "Commission",
+      "organizerEarnings": "Your Earnings"
     },
     "text": {
       "noPromoCodes": "No promo codes configured for this event.",
@@ -1198,6 +1209,15 @@
         "percentage": "% of Total",
         "customer": "Customer",
         "orders": "Orders"
+      },
+      "segments": {
+        "vip": "VIP",
+        "regular": "Regular",
+        "new": "New",
+        "repeat": "Repeat",
+        "inactive": "Inactive",
+        "one-time": "One-Time",
+        "one_time": "One-Time"
       }
     },
     "financial": {
@@ -1231,6 +1251,7 @@
       "eventBreakdown": "Event Breakdown",
       "recentCommissions": "Recent Commissions",
       "payoutHistory": "Payout History",
+      "billHistory": "Billing History",
       "unknownEvent": "Unknown Event",
       "of": "of",
       "noDataTitle": "No Financial Data Available",

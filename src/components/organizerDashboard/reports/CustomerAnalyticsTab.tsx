@@ -201,9 +201,14 @@ export function CustomerAnalyticsTab({
     },
   ];
 
+  const getTranslatedSegmentName = (name: string) => {
+    const key = name.toLowerCase().replace(" ", "_");
+    return t(`reports.customerAnalytics.segments.${key}`, name);
+  };
+
   // Segment data for pie chart
   const segmentChartData = segments.map((seg, i) => ({
-    name: seg.segment_name,
+    name: getTranslatedSegmentName(seg.segment_name),
     value: seg.customer_count,
     percentage: seg.percentage_of_total,
     color: SEGMENT_COLORS[i % SEGMENT_COLORS.length],
@@ -211,7 +216,7 @@ export function CustomerAnalyticsTab({
 
   // Segment data for bar chart
   const segmentBarData = segments.map((seg) => ({
-    name: seg.segment_name,
+    name: getTranslatedSegmentName(seg.segment_name),
     customers: seg.customer_count,
     totalSpent: seg.total_spent,
     averageSpent: seg.average_spent,
@@ -544,7 +549,7 @@ export function CustomerAnalyticsTab({
                             }}
                           />
                           <span className="text-gray-900 font-medium">
-                            {seg.segment_name}
+                            {getTranslatedSegmentName(seg.segment_name)}
                           </span>
                         </div>
                       </td>

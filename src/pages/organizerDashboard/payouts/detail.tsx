@@ -275,7 +275,7 @@ export default function PayoutDetailPage() {
                   {payoutData?.event?.status && (
                     <Badge className="bg-slate-100 text-slate-600 capitalize flex-shrink-0">
                       {t(
-                        `event.badge.${payoutData.event.status}`,
+                        `event.badge.${payoutData.event.status.toLowerCase()}`,
                         payoutData.event.status,
                       )}
                     </Badge>

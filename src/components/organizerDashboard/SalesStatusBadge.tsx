@@ -31,7 +31,7 @@ export function SalesStatusBadge({
 
   if (!status && !showAlways) return null;
 
-  const displayStatus = status || "";
+  const displayStatus = (status || "").toLowerCase();
 
   return (
     <Badge
@@ -49,7 +49,7 @@ export function SalesStatusBadge({
           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
         </span>
       )}
-      {t(`event.badge.${displayStatus}`).toUpperCase()}
+      {t(`event.badge.${displayStatus}`, status || "").toUpperCase()}
     </Badge>
   );
 }

@@ -25,8 +25,11 @@
       "integer": "{field}は整数（小数なし）である必要があります。"
     },
     "text": {
-      "system": "システム"
+      "system": "システム",
+      "systemAutomatic": "システム (自動)"
     },
+    "organizer": "主催者",
+    "suspended": "一時停止",
     "button": {
       "refresh": "更新",
       "viewMore": "さらに{count}件表示",
@@ -131,6 +134,9 @@
     "submit": "提出する",
     "results": "結果",
     "searching": "検索中..."
+  },
+  "organizer": {
+    "title": "主催者"
   },
   "navigation": {
     "events": "イベント",
@@ -1117,6 +1123,15 @@
         "percentage": "合計の%",
         "customer": "顧客",
         "orders": "注文"
+      },
+      "segments": {
+        "vip": "VIP",
+        "regular": "一般",
+        "new": "新規",
+        "repeat": "リピーター",
+        "inactive": "非アクティブ",
+        "one-time": "単発",
+        "one_time": "単発"
       }
     },
     "financial": {
@@ -1150,6 +1165,7 @@
       "eventBreakdown": "イベント内訳",
       "recentCommissions": "最近の手数料",
       "payoutHistory": "支払い履歴",
+      "billHistory": "請求履歴",
       "unknownEvent": "不明なイベント",
       "of": "の",
       "noDataTitle": "財務データがありません",
