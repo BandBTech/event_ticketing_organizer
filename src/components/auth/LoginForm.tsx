@@ -292,7 +292,7 @@ export default function LoginForm() {
                     />
 
                     {/* Remember Me & Forgot Password */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                    <div className="flex flex-wrap sm:items-center justify-between gap-3 sm:gap-0">
                       <FormField
                         control={form.control}
                         name="rememberMe"
