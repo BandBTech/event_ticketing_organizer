@@ -344,7 +344,9 @@ export function useScannerState() {
         onSuccess: (data) => {
           suppressCode(code, 3000);
 
-          if (navigator.vibrate) navigator.vibrate(50);
+          if (data.success && !data.already_checked_in && navigator.vibrate) {
+            navigator.vibrate(50);
+          }
 
           const defaultFallback = data.already_checked_in
             ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")

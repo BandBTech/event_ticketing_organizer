@@ -120,6 +120,7 @@ export function QRCameraView({
         {!isPaused && (
           <Scanner
             key={cameraKey}
+            formats={["qr_code"]}
             paused={isPaused}
             scanDelay={200}
             allowMultiple={true}
