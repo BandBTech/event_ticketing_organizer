@@ -11,6 +11,8 @@ interface QRCameraViewProps {
   onError: (error: unknown) => void;
   scanHintText: string;
   disabled?: boolean;
+  paused?: boolean;
+  scanCompleted?: boolean;
   externalPaused?: boolean;
   resumeHintText?: string;
 }
@@ -21,6 +23,8 @@ export function QRCameraView({
   onError,
   scanHintText,
   disabled = false,
+  paused = false,
+  scanCompleted = false,
   externalPaused = false,
   resumeHintText = "Tap to resume scanning",
 }: QRCameraViewProps) {
@@ -63,7 +67,7 @@ export function QRCameraView({
   }, [armIdleTimer, clearIdleTimer, externalPaused, idlePaused]);
 
   // Arm/disarm idle timer based on the active paused state.
-  const isPaused = hiddenPaused || externalPaused || idlePaused || disabled;
+  const isPaused = hiddenPaused || externalPaused || idlePaused || paused;
   useEffect(() => {
     if (isPaused) {
       clearIdleTimer();
@@ -171,10 +175,10 @@ export function QRCameraView({
         <div
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
             mode === "bulk" ? "w-72 h-48 border-dashed" : "w-64 h-64"
-          } border-4 ${disabled ? "border-green-400/60" : "border-white/80"} rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`}
+          } border-4 ${scanCompleted ? "border-green-400/60" : "border-white/80"} rounded-xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]`}
         >
           <div className="absolute inset-0 flex items-center justify-center">
-            {disabled ? (
+            {scanCompleted ? (
               <CheckCircle className="text-green-400" size={56} weight="fill" />
             ) : (
               mode === "bulk" && <QrCode className="text-white/20" size={48} />
@@ -185,7 +189,7 @@ export function QRCameraView({
         {/* Hint text */}
         <div className="absolute bottom-32 left-0 right-0 text-center px-4">
           <p
-            className={`text-sm font-medium drop-shadow-md ${disabled ? "text-green-300 font-semibold" : "text-white/80"}`}
+            className={`text-sm font-medium drop-shadow-md ${scanCompleted ? "text-green-300 font-semibold" : "text-white/80"}`}
           >
             {scanHintText}
           </p>

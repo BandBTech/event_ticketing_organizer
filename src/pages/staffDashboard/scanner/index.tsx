@@ -114,6 +114,14 @@ export default function ScannerPage() {
                   onScan={handleQRScan}
                   onError={handleCameraError}
                   disabled={isScanDisabled}
+                  paused={
+                    (mode === "bulk" && bulkQueue.length > 0 && isQueueSubmitted) ||
+                    (mode === "single" && !!scanResult)
+                  }
+                  scanCompleted={
+                    (mode === "bulk" && bulkQueue.length > 0 && isQueueSubmitted && !bulkQueue.some((i) => i.checkinResult === "failed")) ||
+                    (mode === "single" && !!scanResult?.success && !scanResult?.alreadyCheckedIn)
+                  }
                   // lastScanError={lastScanError}
                   externalPaused={mode === "bulk" && showBulkList}
                   resumeHintText={t(
