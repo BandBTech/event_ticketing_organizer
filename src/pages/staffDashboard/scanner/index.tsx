@@ -115,8 +115,7 @@ export default function ScannerPage() {
                   onError={handleCameraError}
                   disabled={isScanDisabled}
                   paused={
-                    (mode === "bulk" && bulkQueue.length > 0 && isQueueSubmitted) ||
-                    (mode === "single" && !!scanResult)
+                    (mode === "bulk" && bulkQueue.length > 0 && isQueueSubmitted)
                   }
                   scanCompleted={
                     (mode === "bulk" && bulkQueue.length > 0 && isQueueSubmitted && !bulkQueue.some((i) => i.checkinResult === "failed")) ||
