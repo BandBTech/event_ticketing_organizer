@@ -76,13 +76,20 @@ export const toast = {
     return toastId;
   },
 
-  error: (translationKey: string, fallback?: string, description?: string) => {
+  error: (
+    translationKey: string,
+    fallback?: string,
+    description?: string,
+    options?: { onDismiss?: (toast: { id: string | number }) => void; onAutoClose?: (toast: { id: string | number }) => void }
+  ) => {
 
     const locale = useLanguageStore.getState().locale;
     const message = getTranslation(translationKey, locale, fallback);
     const descriptionMessage = description ? getTranslation(description, locale, description) : undefined;
     const toastId = sonnerToast.error(message, {
       description: descriptionMessage,
+      onDismiss: options?.onDismiss,
+      onAutoClose: options?.onAutoClose,
     });
     
     activeToasts.set(toastId, { key: translationKey, type: 'error', fallback });

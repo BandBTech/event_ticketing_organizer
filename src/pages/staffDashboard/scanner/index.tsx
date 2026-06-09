@@ -18,6 +18,7 @@ export default function ScannerPage() {
   const {
     isScanDisabled,
     isQueueSubmitted,
+    isBulkToastShowing,
     mode,
     setMode,
     bulkQueue,
@@ -120,18 +121,20 @@ export default function ScannerPage() {
                     "Tap to resume scanning",
                   )}
                   scanHintText={
-                    isScanDisabled
-                      ? isQueueSubmitted &&
-                        bulkQueue.some((i) => i.checkinResult === "failed")
-                        ? t(
-                          "staffScanner.reviewResults",
-                          "Review results — retry failed or clear queue",
-                        )
-                        : t(
-                          "staffScanner.allCheckedIn",
-                          "All tickets checked in — tap Done to finish",
-                        )
-                      : mode === "single"
+                    isBulkToastShowing && mode === "bulk"
+                      ? t("staffScanner.pleaseWait", "Please wait...")
+                      : isScanDisabled && mode === "bulk"
+                        ? isQueueSubmitted &&
+                          bulkQueue.some((i) => i.checkinResult === "failed")
+                          ? t(
+                            "staffScanner.reviewResults",
+                            "Review results — retry failed or clear queue",
+                          )
+                          : t(
+                            "staffScanner.allCheckedIn",
+                            "All tickets checked in — tap Done to finish",
+                          )
+                        : mode === "single"
                         ? t(
                           "staffScanner.scanTicketInfo",
                           "Scan a ticket to check in",

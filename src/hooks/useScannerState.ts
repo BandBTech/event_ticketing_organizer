@@ -111,6 +111,16 @@ export function useScannerState() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
+  const [isBulkToastShowing, setIsBulkToastShowing] = useState(false);
+  const bulkToastClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearBulkToastState = useCallback(() => {
+    if (bulkToastClearTimerRef.current) {
+      clearTimeout(bulkToastClearTimerRef.current);
+      bulkToastClearTimerRef.current = null;
+    }
+    setIsBulkToastShowing(false);
+  }, []);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
   // Tracks codes currently being processed (in-flight API calls).
@@ -177,9 +187,9 @@ export function useScannerState() {
   // Disable scanning once the queue has been submitted — prevents adding items
   // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
-    mode === "bulk" &&
-    bulkQueue.length > 0 &&
-    isQueueSubmitted;
+    (mode === "bulk" &&
+      ((bulkQueue.length > 0 && isQueueSubmitted) || isBulkToastShowing)) ||
+    (mode === "single" && !!scanResult);
 
   // ─── Fetch event details when eventId is available ──────────────────────────
   const { data: eventData } = useQuery({
@@ -269,6 +279,10 @@ export function useScannerState() {
         clearTimeout(scanResultTimeoutRef.current);
         scanResultTimeoutRef.current = null;
       }
+      if (bulkToastClearTimerRef.current) {
+        clearTimeout(bulkToastClearTimerRef.current);
+        bulkToastClearTimerRef.current = null;
+      }
       if (typeof window !== "undefined") {
         (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = true;
       }
@@ -284,6 +298,7 @@ export function useScannerState() {
     suppressedCodesRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
+    clearBulkToastState();
   };
 
   const removeFromQueue = (index: number) => {
@@ -407,6 +422,10 @@ export function useScannerState() {
     const currentQueue = bulkQueueRef.current;
 
     if (currentQueue.length >= 10) {
+      clearBulkToastState();
+      setIsBulkToastShowing(true);
+      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+
       toast.error(
         "staffScanner.queueLimitReached",
         t("staffScanner.queueLimitReached", "Queue limit reached (Max 10)"),
@@ -414,6 +433,10 @@ export function useScannerState() {
           "staffScanner.submitQueue",
           "Please submit current queue for check-in first",
         ),
+        {
+          onDismiss: clearBulkToastState,
+          onAutoClose: clearBulkToastState,
+        }
       );
       return;
     }
@@ -427,10 +450,18 @@ export function useScannerState() {
     const existingItem = currentQueue.find((item) => item.code === code);
     if (existingItem) {
       suppressCode(code, 3000);
+      clearBulkToastState();
+      setIsBulkToastShowing(true);
+      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+
       toast.error(
         "staffScanner.alreadyInQueue",
         t("staffScanner.alreadyInQueue", "Already in queue"),
         t("staffScanner.ticketAlreadyQueued", "This ticket is already queued for check-in"),
+        {
+          onDismiss: clearBulkToastState,
+          onAutoClose: clearBulkToastState,
+        }
       );
       return;
     }
@@ -459,7 +490,14 @@ export function useScannerState() {
               t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
             );
 
-            toast.error(toastTitle, toastTitle, toastDesc);
+            clearBulkToastState();
+            setIsBulkToastShowing(true);
+            bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+
+            toast.error(toastTitle, toastTitle, toastDesc, {
+              onDismiss: clearBulkToastState,
+              onAutoClose: clearBulkToastState,
+            });
             return;
           }
 
@@ -510,10 +548,18 @@ export function useScannerState() {
         onError: () => {
           processingCodesRef.current.delete(code);
           suppressCode(code, 3000);
+          clearBulkToastState();
+          setIsBulkToastShowing(true);
+          bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+
           toast.error(
             "staffScanner.connectionError",
             t("staffScanner.connectionError", "Connection error"),
             t("staffScanner.scanRetry", "Tap to scan again when connected"),
+            {
+              onDismiss: clearBulkToastState,
+              onAutoClose: clearBulkToastState,
+            }
           );
         },
       },
@@ -663,18 +709,20 @@ export function useScannerState() {
     processingCodesRef.current.clear();
     suppressTimersRef.current.forEach(clearTimeout);
     suppressTimersRef.current.clear();
+    clearBulkToastState();
     // Keep URL in sync so mode survives a page share/bookmark (shallow = no reload)
     router.replace(
       { pathname: router.pathname, query: { ...router.query, mode: newMode } },
       undefined,
       { shallow: true }
     );
-  }, [router]);
+  }, [router, clearBulkToastState]);
 
   return {
     // State
     isScanDisabled,
     isQueueSubmitted,
+    isBulkToastShowing,
     mode,
     setMode: handleModeChange,
     bulkQueue,
