@@ -126,7 +126,7 @@ export function QRCameraView({
             key={cameraKey}
             formats={["qr_code"]}
             paused={isPaused}
-            scanDelay={200}
+            scanDelay={500}
             allowMultiple={true}
             sound={!disabled}
             onScan={disabled ? () => {} : handleScanWrapped}
