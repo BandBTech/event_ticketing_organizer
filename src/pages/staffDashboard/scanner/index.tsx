@@ -129,7 +129,7 @@ export default function ScannerPage() {
                   )}
                   scanHintText={
                     isBulkToastShowing && mode === "bulk"
-                      ? t("staffScanner.pleaseWait", "Please wait...")
+                      ? ""
                       : isScanDisabled && mode === "bulk"
                         ? isQueueSubmitted &&
                           bulkQueue.some((i) => i.checkinResult === "failed")

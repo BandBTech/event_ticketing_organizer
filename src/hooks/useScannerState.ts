@@ -188,7 +188,7 @@ export function useScannerState() {
   // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
     (mode === "bulk" &&
-      ((bulkQueue.length > 0 && isQueueSubmitted) || isBulkToastShowing)) ||
+      (isBulkToastShowing || (bulkQueue.length > 0 && isQueueSubmitted))) ||
     (mode === "single" && !!scanResult);
 
   // ─── Fetch event details when eventId is available ──────────────────────────
@@ -422,9 +422,9 @@ export function useScannerState() {
     const currentQueue = bulkQueueRef.current;
 
     if (currentQueue.length >= 10) {
-      clearBulkToastState();
       setIsBulkToastShowing(true);
-      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+      if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
 
       toast.error(
         "staffScanner.queueLimitReached",
@@ -450,9 +450,9 @@ export function useScannerState() {
     const existingItem = currentQueue.find((item) => item.code === code);
     if (existingItem) {
       suppressCode(code, 3000);
-      clearBulkToastState();
       setIsBulkToastShowing(true);
-      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+      if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+      bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
 
       toast.error(
         "staffScanner.alreadyInQueue",
@@ -490,9 +490,9 @@ export function useScannerState() {
               t("staffScanner.ticketCannotCheckIn", "Ticket cannot be checked in")
             );
 
-            clearBulkToastState();
             setIsBulkToastShowing(true);
-            bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+            if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+            bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
 
             toast.error(toastTitle, toastTitle, toastDesc, {
               onDismiss: clearBulkToastState,
@@ -528,19 +528,33 @@ export function useScannerState() {
               if (responseEventTitle) {
                 setScannedEventTitle(responseEventTitle);
               }
+              setIsBulkToastShowing(true);
+              if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+              bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
               toast.success(
                 "staffScanner.eventDetected",
                 t("staffScanner.eventDetected", "Event detected"),
                 `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
+                {
+                  onDismiss: clearBulkToastState,
+                  onAutoClose: clearBulkToastState,
+                }
               );
               return [newItem];
             }
 
             if (navigator.vibrate) navigator.vibrate(50);
+            setIsBulkToastShowing(true);
+            if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+            bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
             toast.success(
               "staffScanner.addedToQueue",
               t("staffScanner.addedToQueue", "Added to queue"),
               `#${prev.length + 1}: ${newItem.ticketNumber}`,
+              {
+                onDismiss: clearBulkToastState,
+                onAutoClose: clearBulkToastState,
+              }
             );
             return [...prev, newItem];
           });
@@ -548,9 +562,9 @@ export function useScannerState() {
         onError: () => {
           processingCodesRef.current.delete(code);
           suppressCode(code, 3000);
-          clearBulkToastState();
           setIsBulkToastShowing(true);
-          bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 4000);
+          if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+          bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
 
           toast.error(
             "staffScanner.connectionError",

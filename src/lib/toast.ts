@@ -58,12 +58,25 @@ if (typeof window !== 'undefined') {
   });
 }
 
+export interface ToastOptions {
+  onDismiss?: (toast: { id: string | number }) => void;
+  onAutoClose?: (toast: { id: string | number }) => void;
+}
+
 export const toast = {
-  success: (translationKey: string, fallback?: string, description?: string) => {
+  success: (
+    translationKey: string,
+    fallback?: string,
+    description?: string,
+    options?: ToastOptions
+  ) => {
     const locale = useLanguageStore.getState().locale;
     const message = getTranslation(translationKey, locale, fallback);
+    const descriptionMessage = description ? getTranslation(description, locale, description) : undefined;
     const toastId = sonnerToast.success(message, {
-      description: description,
+      description: descriptionMessage,
+      onDismiss: options?.onDismiss,
+      onAutoClose: options?.onAutoClose,
     });
     
     activeToasts.set(toastId, { key: translationKey, type: 'success', fallback });
@@ -80,7 +93,7 @@ export const toast = {
     translationKey: string,
     fallback?: string,
     description?: string,
-    options?: { onDismiss?: (toast: { id: string | number }) => void; onAutoClose?: (toast: { id: string | number }) => void }
+    options?: ToastOptions
   ) => {
 
     const locale = useLanguageStore.getState().locale;
