@@ -188,8 +188,11 @@ export function useScannerState() {
   // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
     (mode === "bulk" &&
-      (isBulkToastShowing || (bulkQueue.length > 0 && isQueueSubmitted))) ||
-    (mode === "single" && !!scanResult);
+      (isBulkToastShowing ||
+        (bulkQueue.length > 0 && isQueueSubmitted) ||
+        validateCheckInMutation.isPending ||
+        bulkCheckInMutation.isPending)) ||
+    (mode === "single" && (!!scanResult || scanMutation.isPending));
 
   // ─── Fetch event details when eventId is available ──────────────────────────
   const { data: eventData } = useQuery({
