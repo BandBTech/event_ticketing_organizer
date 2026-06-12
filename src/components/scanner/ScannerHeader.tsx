@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { ScanMode } from "@/hooks/useScannerState";
 import { EventDay } from "@/types/event";
 import { formatDateTime } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ScannerHeaderProps {
   mode: ScanMode;
@@ -33,6 +34,7 @@ export function ScannerHeader({
   endDate,
 }: ScannerHeaderProps) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -118,7 +120,7 @@ export function ScannerHeader({
                   : "bg-black/50 text-white/80 border-white/10 hover:text-white"
               }`}
             >
-              {day.name || `Day ${idx + 1}`}
+              {day.name || `${t("tickets.day", "Day")} ${idx + 1}`}
             </button>
           ))}
         </div>

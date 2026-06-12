@@ -975,7 +975,13 @@
       "pendingRefund": "Rimborso in sospeso",
       "expired": "Scaduto",
       "allStatuses": "Tutti gli stati"
-    }
+    },
+    "day": "Giorno",
+    "by": "da",
+    "missed": "Perso (non registrato)",
+    "notCheckedIn": "Non ancora registrato",
+    "days": "giorni",
+    "multipleScans": "Scansioni multiple"
   },
   "events": {
     "analytics": {

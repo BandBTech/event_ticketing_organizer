@@ -1060,7 +1060,13 @@
       "pendingRefund": "Pending Refund",
       "expired": "Expired",
       "allStatuses": "All Statuses"
-    }
+    },
+    "day": "Day",
+    "by": "by",
+    "missed": "Missed (not checked in)",
+    "notCheckedIn": "Not checked in yet",
+    "days": "days",
+    "multipleScans": "Multiple scans"
   },
   "events": {
     "analytics": {

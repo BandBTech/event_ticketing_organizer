@@ -206,7 +206,7 @@ export default function ManualCheckinPage() {
                           : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                       }`}
                     >
-                      {day.name || `Day ${idx + 1}`}
+                      {day.name || `${t("tickets.day", "Day")} ${idx + 1}`}
                     </button>
                   ))}
                 </div>

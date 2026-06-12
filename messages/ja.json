@@ -990,7 +990,13 @@
       "pendingRefund": "返金保留中",
       "expired": "期限切れ",
       "allStatuses": "すべてのステータス"
-    }
+    },
+    "day": "日",
+    "by": "by",
+    "missed": "未チェックイン (見逃し)",
+    "notCheckedIn": "まだチェックインしていません",
+    "days": "日",
+    "multipleScans": "複数回スキャン"
   },
   "Your account is inactive.": "アカウントが無効化されています。",
   "Please contact support to reactivate your account.": "アカウントを再開するにはサポートにお問い合わせください。",
