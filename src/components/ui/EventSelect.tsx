@@ -89,7 +89,7 @@ export function EventSelect({
 
   // Sort events by title in ascending order
   const sortedEvents = useMemo(() => {
-    if (!events || events.length === 0) return [];
+    if (!Array.isArray(events) || events.length === 0) return [];
     return [...events].sort((a, b) => {
       const titleA = a.title?.toLowerCase() || '';
       const titleB = b.title?.toLowerCase() || '';

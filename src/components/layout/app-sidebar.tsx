@@ -39,7 +39,7 @@ import { PermissionGuard } from "../auth/PermissionGuard";
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, organizerProfile, logout } = useAuthStore();
   const { can, canAny, isAny } = usePermission();
   const { t } = useTranslation();
 
@@ -138,12 +138,16 @@ export function AppSidebar() {
     });
   };
 
-  // Get user display name
-  const displayName = user
+  const userFullName = user
     ? `${user.firstName} ${user.lastName}`.trim()
     : "User";
+  const organizerDisplayName =
+    user?.organization?.name ||
+    user?.organizationInfo?.business_name ||
+    userFullName ||
+    "Organizer";
   const displayEmail = user?.email || "";
-  const displayLogo = user?.organization?.logo_url || "/john.jpg";
+  const displayLogo = user?.organization?.logo_url || organizerProfile?.business_logo_url || "/john.jpg";
 
   return (
     <>
@@ -269,7 +273,7 @@ export function AppSidebar() {
                   <div className="flex flex-1 items-center justify-between overflow-hidden">
                     <div className="flex flex-col min-w-0">
                       <span className="text-sm text-gray-800 font-medium truncate">
-                        {displayName}
+                        {organizerDisplayName}
                       </span>
                     </div>
                     <CaretRightIcon className="h-4 w-4 text-gray-400 shrink-0 ml-1" />
@@ -293,7 +297,7 @@ export function AppSidebar() {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-sm text-gray-800 font-medium truncate">
-                    {displayName}
+                    {organizerDisplayName}
                   </span>
                   <span className="text-xs text-gray-500 truncate">
                     {displayEmail}
