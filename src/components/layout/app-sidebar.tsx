@@ -289,10 +289,12 @@ export function AppSidebar() {
             >
               {/* User Info Header */}
               <div className="flex items-center gap-3 px-3 py-3">
-                <div className="relative w-9 h-9 shrink-0 bg-gray-300 rounded-full flex items-center justify-center">
-                  <UserIcon
-                    weight="duotone"
-                    className="h-5 w-5 text-gray-600"
+                <div className="relative w-9 h-9 shrink-0">
+                  <Image
+                    src={displayLogo}
+                    alt="User avatar"
+                    fill
+                    className="rounded-full object-cover"
                   />
                 </div>
                 <div className="flex flex-col min-w-0">
