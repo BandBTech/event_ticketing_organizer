@@ -13,7 +13,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 import { EventDay } from "@/types/event";
 import { parseTicketScanMessage } from "@/lib/utils";
-import { playBeep } from "@/lib/scannerBeep";
+import { playScanFeedback } from "@/lib/scannerBeep";
 
 // Minimal type for QR scanner library result — avoids the `any` cast on rawValue
 interface DetectedBarcode {
@@ -364,8 +364,7 @@ export function useScannerState() {
           suppressCode(code, 3000);
 
           if (data.success && !data.already_checked_in) {
-            playBeep();
-            if (navigator.vibrate) navigator.vibrate(50);
+            playScanFeedback();
           }
 
           const defaultFallback = data.already_checked_in
@@ -523,7 +522,7 @@ export function useScannerState() {
           const responseEventTitle = data.event_title;
 
           if (!eventIdRef.current && responseEventId) {
-            playBeep();
+            playScanFeedback();
             setEventId(responseEventId);
             if (responseEventTitle) {
               setScannedEventTitle(responseEventTitle);
@@ -544,8 +543,7 @@ export function useScannerState() {
             return;
           }
 
-          playBeep();
-          if (navigator.vibrate) navigator.vibrate(50);
+          playScanFeedback();
           setIsBulkToastShowing(true);
           if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
           bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);

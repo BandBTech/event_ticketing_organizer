@@ -1,5 +1,5 @@
 /**
- * Lightweight scanner beep using the Web Audio API.
+ * Lightweight scanner beep + haptic feedback using the Web Audio API.
  *
  * The @yudiel/react-qr-scanner library plays its built-in sound *inside*
  * the requestAnimationFrame detection loop, **before** our onScan callback
@@ -7,7 +7,7 @@
  * it via React state can't prevent the beep in the same frame.
  *
  * To solve this we disable the library's sound entirely (`sound={false}`)
- * and call `playBeep()` ourselves from within the mutation callbacks,
+ * and call `playScanFeedback()` ourselves from within the mutation callbacks,
  * where we have synchronous ref-based knowledge of whether the scan
  * should be acknowledged.
  */
@@ -22,34 +22,65 @@ function getAudioContext(): AudioContext {
 }
 
 /**
- * Plays a short 880 Hz beep (~120 ms) using the Web Audio API.
+ * Plays a sharp, crisp two-tone "scanner chirp" (~100 ms total) and
+ * triggers a haptic vibration pattern on supported mobile devices.
+ *
+ * Audio design:
+ *  - Two layered sine oscillators (1480 Hz + 1860 Hz) create a bright,
+ *    retail-scanner-style chirp that cuts through ambient noise.
+ *  - Fast attack → sharp exponential decay for a punchy feel.
+ *
+ * Haptic design:
+ *  - A short 35 ms pulse for a tactile "click" that pairs with the chirp.
+ *
  * Falls back silently if the browser blocks autoplay or if the
- * AudioContext API is unavailable.
+ * AudioContext / Vibration API is unavailable.
  */
-export function playBeep(): void {
+export function playScanFeedback(): void {
+  // ── Haptic ──────────────────────────────────────────────────────────
+  try {
+    navigator.vibrate?.([35]);
+  } catch {
+    // Vibration API not available — ignore
+  }
+
+  // ── Audio ───────────────────────────────────────────────────────────
   try {
     const ctx = getAudioContext();
 
-    // Resume suspended context (browsers require user gesture first)
+    // Resume suspended context (browsers require a prior user gesture)
     if (ctx.state === "suspended") {
       ctx.resume().catch(() => {});
     }
 
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const now = ctx.currentTime;
 
-    oscillator.type = "square";
-    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+    // Master gain — controls overall volume
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.28, now);
+    master.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    master.connect(ctx.destination);
 
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    // Quick fade-out to avoid click/pop
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    // Primary tone — bright high-pitched chirp
+    const osc1 = ctx.createOscillator();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(1480, now);
+    osc1.connect(master);
+    osc1.start(now);
+    osc1.stop(now + 0.1);
 
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
+    // Harmonic layer — adds edge / sharpness
+    const harmGain = ctx.createGain();
+    harmGain.gain.setValueAtTime(0.15, now);
+    harmGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    harmGain.connect(ctx.destination);
 
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.12);
+    const osc2 = ctx.createOscillator();
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1860, now);
+    osc2.connect(harmGain);
+    osc2.start(now);
+    osc2.stop(now + 0.08);
   } catch {
     // Silently ignore — audio is non-critical UX feedback
   }
