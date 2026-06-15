@@ -520,45 +520,48 @@ export function useScannerState() {
           const responseEventId = data.event_id;
           const responseEventTitle = data.event_title;
 
-          setBulkQueue((prev) => {
-            if (prev.some((item) => item.code === code)) {
-              processingCodesRef.current.delete(code);
-              return prev;
+          if (!eventIdRef.current && responseEventId) {
+            setEventId(responseEventId);
+            if (responseEventTitle) {
+              setScannedEventTitle(responseEventTitle);
             }
-
-            if (!eventIdRef.current && responseEventId) {
-              setEventId(responseEventId);
-              if (responseEventTitle) {
-                setScannedEventTitle(responseEventTitle);
-              }
-              setIsBulkToastShowing(true);
-              if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
-              bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
-              toast.success(
-                "staffScanner.eventDetected",
-                t("staffScanner.eventDetected", "Event detected"),
-                `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
-                {
-                  onDismiss: clearBulkToastState,
-                  onAutoClose: clearBulkToastState,
-                }
-              );
-              return [newItem];
-            }
-
-            if (navigator.vibrate) navigator.vibrate(50);
             setIsBulkToastShowing(true);
             if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
             bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
             toast.success(
-              "staffScanner.addedToQueue",
-              t("staffScanner.addedToQueue", "Added to queue"),
-              `#${prev.length + 1}: ${newItem.ticketNumber}`,
+              "staffScanner.eventDetected",
+              t("staffScanner.eventDetected", "Event detected"),
+              `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
               {
                 onDismiss: clearBulkToastState,
                 onAutoClose: clearBulkToastState,
               }
             );
+            setBulkQueue([newItem]);
+            return;
+          }
+
+          if (navigator.vibrate) navigator.vibrate(50);
+          setIsBulkToastShowing(true);
+          if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+          bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
+
+          const nextIndex = bulkQueueRef.current.length + 1;
+
+          toast.success(
+            "staffScanner.addedToQueue",
+            t("staffScanner.addedToQueue", "Added to queue"),
+            `#${nextIndex}: ${newItem.ticketNumber}`,
+            {
+              onDismiss: clearBulkToastState,
+              onAutoClose: clearBulkToastState,
+            }
+          );
+
+          setBulkQueue((prev) => {
+            if (prev.some((item) => item.code === code)) {
+              return prev;
+            }
             return [...prev, newItem];
           });
         },
