@@ -36,6 +36,14 @@ export function QRCameraView({
   const [cameraKey, setCameraKey] = useState(0);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const onScanRef = useRef(onScan);
+  const disabledRef = useRef(disabled);
+
+  useEffect(() => {
+    onScanRef.current = onScan;
+    disabledRef.current = disabled;
+  }, [onScan, disabled]);
+
   const clearIdleTimer = useCallback(() => {
     if (idleTimerRef.current) {
       clearTimeout(idleTimerRef.current);
@@ -79,9 +87,11 @@ export function QRCameraView({
   const handleScanWrapped = useCallback(
     (result: unknown[]) => {
       armIdleTimer();
-      onScan(result);
+      if (!disabledRef.current) {
+        onScanRef.current(result);
+      }
     },
-    [armIdleTimer, onScan],
+    [armIdleTimer],
   );
 
   const handleResumeTap = useCallback(() => {
@@ -125,7 +135,7 @@ export function QRCameraView({
           <Scanner
             key={cameraKey}
             formats={["qr_code"]}
-            paused={isPaused}
+            paused={disabled}
             scanDelay={500}
             allowMultiple={true}
             sound={!disabled}
