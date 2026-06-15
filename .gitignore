@@ -34,3 +34,4 @@ shared_ui/
 # ---- TypeScript ----
 *.tsbuildinfo
 tsconfig.tsbuildinfo
+/tsconfig.tsbuildinfo
