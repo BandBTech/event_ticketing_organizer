@@ -134,7 +134,7 @@ export function QRCameraView({
         {!isPaused && (
           <Scanner
             key={cameraKey}
-            formats={disabled ? [] : ["qr_code"]}
+            formats={disabled ? ["pdf417"] : ["qr_code"]}
             paused={false}
             scanDelay={500}
             allowMultiple={true}
