@@ -355,6 +355,7 @@ export function useScannerState() {
     // Prevent duplicate in-flight requests for the same code
     if (processingCodesRef.current.has(code)) return;
     processingCodesRef.current.add(code);
+    playScanFeedback();
 
     if (scanResultTimeoutRef.current) clearTimeout(scanResultTimeoutRef.current);
     scanMutation.mutate(
@@ -362,10 +363,6 @@ export function useScannerState() {
       {
         onSuccess: (data) => {
           suppressCode(code, 3000);
-
-          if (data.success && !data.already_checked_in) {
-            playScanFeedback();
-          }
 
           const defaultFallback = data.already_checked_in
             ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
@@ -477,6 +474,7 @@ export function useScannerState() {
 
     // Mark as in-flight immediately (synchronous, before any async gap)
     processingCodesRef.current.add(code);
+    playScanFeedback();
 
     validateCheckInMutation.mutate(
       { qrCode: code, eventId: eventIdRef.current ?? undefined, eventDayId: selectedEventDayId || undefined },
@@ -522,7 +520,6 @@ export function useScannerState() {
           const responseEventTitle = data.event_title;
 
           if (!eventIdRef.current && responseEventId) {
-            playScanFeedback();
             setEventId(responseEventId);
             if (responseEventTitle) {
               setScannedEventTitle(responseEventTitle);
@@ -543,7 +540,6 @@ export function useScannerState() {
             return;
           }
 
-          playScanFeedback();
           setIsBulkToastShowing(true);
           if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
           bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);

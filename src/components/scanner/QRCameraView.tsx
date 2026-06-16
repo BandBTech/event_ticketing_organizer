@@ -134,12 +134,12 @@ export function QRCameraView({
         {!isPaused && (
           <Scanner
             key={cameraKey}
-            formats={disabled ? ["pdf417"] : ["qr_code"]}
+            formats={["qr_code"]}
             paused={false}
             scanDelay={500}
             allowMultiple={true}
             sound={false}
-            onScan={disabled ? () => {} : handleScanWrapped}
+            onScan={handleScanWrapped}
             onError={onError}
             classNames={{ container: "scanner-wrapper" }}
             components={{ finder: false }}
@@ -158,12 +158,18 @@ export function QRCameraView({
                 width: "100vw",
                 height: "calc(100dvh - 64px)",
                 objectFit: "cover",
-                filter: disabled || idlePaused ? "brightness(0.4)" : undefined,
-                transition: "filter 0.4s ease",
               },
             }}
           />
         )}
+
+        {/* Dimming overlay — sits on top of the video, fades in when scanning is
+            temporarily disabled (toast visible, idle, etc.) without touching
+            any Scanner props so the detector keeps running undisturbed. */}
+        <div
+          className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-300"
+          style={{ opacity: disabled || idlePaused ? 0.55 : 0 }}
+        />
       </div>
 
       {/* Tap-to-resume overlay — only shown when idle-paused and nothing else is blocking */}
