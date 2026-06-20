@@ -112,15 +112,15 @@ export function useScannerState() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
-  const [isBulkToastShowing, setIsBulkToastShowing] = useState(false);
-  const bulkToastClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isScanPausedForError, setIsScanPausedForError] = useState(false);
+  const errorPauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearBulkToastState = useCallback(() => {
-    if (bulkToastClearTimerRef.current) {
-      clearTimeout(bulkToastClearTimerRef.current);
-      bulkToastClearTimerRef.current = null;
+  const clearErrorPauseState = useCallback(() => {
+    if (errorPauseTimerRef.current) {
+      clearTimeout(errorPauseTimerRef.current);
+      errorPauseTimerRef.current = null;
     }
-    setIsBulkToastShowing(false);
+    setIsScanPausedForError(false);
   }, []);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
@@ -189,9 +189,8 @@ export function useScannerState() {
   // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
     (mode === "bulk" &&
-      (isBulkToastShowing ||
+      (isScanPausedForError ||
         (bulkQueue.length > 0 && isQueueSubmitted) ||
-        validateCheckInMutation.isPending ||
         bulkCheckInMutation.isPending)) ||
     (mode === "single" && (!!scanResult || scanMutation.isPending));
 
