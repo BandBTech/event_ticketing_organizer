@@ -10,8 +10,7 @@ import { toast } from "./toast";
 
 // API Configuration
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://sandbox.timroticket.com/api/v1";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.timroticket.com/api/v1";
 
 // Request queue for handling concurrent requests during token refresh
 let isRefreshing = false;
@@ -172,9 +171,7 @@ export async function apiRequest<T>(
     if (error instanceof AuthError) {
       // Show error toast if not already shown and enabled
       // Handle inactive account - clear tokens and force logout
-      if (showErrorToast &&
-        error.code === "ACCOUNT_INACTIVE"
-      ) {
+      if (showErrorToast && error.code === "ACCOUNT_INACTIVE") {
         tokenManager.clearTokens();
         toast.error(
           "auth.toast.accountInactive",

@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   organizer_panel:
-
     build: .
 
     container_name: organizer_panel-app
@@ -12,13 +11,9 @@ services:
 
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-https://sandbox.timroticket.com/api/v1}
-      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
 
     networks:
       - app-network
-
-
 
 networks:
   app-network:
