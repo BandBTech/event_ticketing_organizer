@@ -27,7 +27,7 @@ logs
 
 
 
-.env*
+.env*.local
 
 shared_ui/
 
