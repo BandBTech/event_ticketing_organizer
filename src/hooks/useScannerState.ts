@@ -116,10 +116,6 @@ export function useScannerState() {
   const [isBulkToastShowing, setIsBulkToastShowing] = useState(false);
   const errorPauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearBulkToastState = useCallback(() => {
-    setIsBulkToastShowing(false);
-  }, []);
-
   const clearErrorPauseState = useCallback(() => {
     if (errorPauseTimerRef.current) {
       clearTimeout(errorPauseTimerRef.current);
