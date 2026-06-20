@@ -113,6 +113,7 @@ export function useScannerState() {
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
   const [isScanPausedForError, setIsScanPausedForError] = useState(false);
+  const [isBulkToastShowing, setIsBulkToastShowing] = useState(false);
   const errorPauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearErrorPauseState = useCallback(() => {
@@ -130,6 +131,7 @@ export function useScannerState() {
   const processingCodesRef = useRef<Set<string>>(new Set());
 
   const scanResultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bulkToastClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Ref mirror of bulkQueue so async callbacks always see latest queue state
   const bulkQueueRef = useRef<BulkScanItem[]>(bulkQueue);
@@ -293,6 +295,14 @@ export function useScannerState() {
   }, []);
 
   // ─── Queue Helpers ────────────────────────────────────────────────────────────
+  const clearBulkToastState = useCallback(() => {
+    setIsBulkToastShowing(false);
+    if (bulkToastClearTimerRef.current) {
+      clearTimeout(bulkToastClearTimerRef.current);
+      bulkToastClearTimerRef.current = null;
+    }
+  }, []);
+
   const clearQueue = () => {
     setBulkQueue([]);
     setBulkResult(null);
