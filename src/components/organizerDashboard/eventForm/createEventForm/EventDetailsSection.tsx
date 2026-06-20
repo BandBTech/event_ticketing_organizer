@@ -57,6 +57,7 @@ const EVENT_TYPE_VALUES = [
   "exhibition",
   "networking",
   "webinar",
+  "movies",
   "other",
 ] as const;
 
