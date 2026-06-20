@@ -299,6 +299,14 @@ export function useScannerState() {
   }, []);
 
   // ─── Queue Helpers ────────────────────────────────────────────────────────────
+  const clearBulkToastState = useCallback(() => {
+    setIsBulkToastShowing(false);
+    if (bulkToastClearTimerRef.current) {
+      clearTimeout(bulkToastClearTimerRef.current);
+      bulkToastClearTimerRef.current = null;
+    }
+  }, []);
+
   const clearQueue = () => {
     setBulkQueue([]);
     setBulkResult(null);
