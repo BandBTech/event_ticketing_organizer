@@ -13,7 +13,7 @@ import {
 } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
 import { cn } from "@/lib/utils";
-import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { AddressAutocomplete, GeoapifyFeature } from "@/components/ui/address-autocomplete";
 import {
   FormControl,
   FormField,
@@ -46,6 +46,7 @@ export function VenueScheduleSection({
 
   const venueAddress = watch("venueAddress");
   const startDate = watch("startDate");
+  const country = watch("country");
 
   const getCoordErrors = (error?: FieldError) => {
     const messages: string[] = [];
@@ -108,19 +109,24 @@ export function VenueScheduleSection({
       if (match) {
         setLat(match[1]);
         setLng(match[3]);
+      } else if (lat && lng) {
+        // Keep coordinates resolved from address selection if they exist
+        setValue("venueAddress", `${lat},${lng}`, { shouldDirty: true, shouldValidate: true });
       } else {
         setLat("");
         setLng("");
         setValue("venueAddress", ",", { shouldDirty: true });
       }
     } else {
-      // Switching back to address mode — reset address
+      // Switching back to address mode — reset address and coordinates
+      setLat("");
+      setLng("");
       setValue("venueAddress", "", { shouldDirty: true });
     }
   };
 
   return (
-    <div className="mb-6 @container">
+    <div className="mb-6 @container relative z-10">
       <div className="p-6 space-y-4 shadow-blur-subtle-md bg-white/60 rounded-xl">
         <h2 className="text-md font-semibold text-primary mb-2!">
           {t("event.section.venueSchedule", "Venue & Schedule")}
@@ -278,6 +284,13 @@ export function VenueScheduleSection({
                       <AddressAutocomplete
                         value={field.value}
                         onChange={field.onChange}
+                        onPlaceSelect={(place: GeoapifyFeature) => {
+                          if (place && place.geometry && place.geometry.coordinates) {
+                            const [lon, latVal] = place.geometry.coordinates;
+                            setLat(latVal.toString());
+                            setLng(lon.toString());
+                          }
+                        }}
                         placeholder={t(
                           "event.placeholder.venueAddress",
                           "Search for venue address",
@@ -285,6 +298,7 @@ export function VenueScheduleSection({
                         className="h-13 md:text-md"
                         maxLength={VENUE_ADDRESS_MAX}
                         error={!!fieldState.error}
+                        country={country}
                       />
                     )}
                     <div className="flex justify-between items-center mt-1 min-h-[20px]">

@@ -36,6 +36,14 @@ export function QRCameraView({
   const [cameraKey, setCameraKey] = useState(0);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const onScanRef = useRef(onScan);
+  const disabledRef = useRef(disabled);
+
+  useEffect(() => {
+    onScanRef.current = onScan;
+    disabledRef.current = disabled;
+  }, [onScan, disabled]);
+
   const clearIdleTimer = useCallback(() => {
     if (idleTimerRef.current) {
       clearTimeout(idleTimerRef.current);
@@ -79,9 +87,11 @@ export function QRCameraView({
   const handleScanWrapped = useCallback(
     (result: unknown[]) => {
       armIdleTimer();
-      onScan(result);
+      if (!disabledRef.current) {
+        onScanRef.current(result);
+      }
     },
-    [armIdleTimer, onScan],
+    [armIdleTimer],
   );
 
   const handleResumeTap = useCallback(() => {
@@ -125,11 +135,11 @@ export function QRCameraView({
           <Scanner
             key={cameraKey}
             formats={["qr_code"]}
-            paused={isPaused}
+            paused={false}
             scanDelay={500}
             allowMultiple={true}
-            sound={!disabled}
-            onScan={disabled ? () => {} : handleScanWrapped}
+            sound={false}
+            onScan={handleScanWrapped}
             onError={onError}
             classNames={{ container: "scanner-wrapper" }}
             components={{ finder: false }}
@@ -148,12 +158,18 @@ export function QRCameraView({
                 width: "100vw",
                 height: "calc(100dvh - 64px)",
                 objectFit: "cover",
-                filter: disabled || idlePaused ? "brightness(0.4)" : undefined,
-                transition: "filter 0.4s ease",
               },
             }}
           />
         )}
+
+        {/* Dimming overlay — sits on top of the video, fades in when scanning is
+            temporarily disabled (toast visible, idle, etc.) without touching
+            any Scanner props so the detector keeps running undisturbed. */}
+        <div
+          className="absolute inset-0 bg-black pointer-events-none transition-opacity duration-300"
+          style={{ opacity: disabled || idlePaused ? 0.55 : 0 }}
+        />
       </div>
 
       {/* Tap-to-resume overlay — only shown when idle-paused and nothing else is blocking */}

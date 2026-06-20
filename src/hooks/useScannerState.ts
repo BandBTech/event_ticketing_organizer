@@ -13,6 +13,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "@/lib/toast";
 import { EventDay } from "@/types/event";
 import { parseTicketScanMessage } from "@/lib/utils";
+import { playScanFeedback } from "@/lib/scannerBeep";
 
 // Minimal type for QR scanner library result — avoids the `any` cast on rawValue
 interface DetectedBarcode {
@@ -111,15 +112,15 @@ export function useScannerState() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [scannedEventTitle, setScannedEventTitle] = useState<string | null>(null);
-  const [isBulkToastShowing, setIsBulkToastShowing] = useState(false);
-  const bulkToastClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isScanPausedForError, setIsScanPausedForError] = useState(false);
+  const errorPauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearBulkToastState = useCallback(() => {
-    if (bulkToastClearTimerRef.current) {
-      clearTimeout(bulkToastClearTimerRef.current);
-      bulkToastClearTimerRef.current = null;
+  const clearErrorPauseState = useCallback(() => {
+    if (errorPauseTimerRef.current) {
+      clearTimeout(errorPauseTimerRef.current);
+      errorPauseTimerRef.current = null;
     }
-    setIsBulkToastShowing(false);
+    setIsScanPausedForError(false);
   }, []);
 
   // ─── Refs for race-condition-safe guards ─────────────────────────────────────
@@ -188,9 +189,8 @@ export function useScannerState() {
   // that can't be submitted (no Submit button shown after results appear).
   const isScanDisabled =
     (mode === "bulk" &&
-      (isBulkToastShowing ||
+      (isScanPausedForError ||
         (bulkQueue.length > 0 && isQueueSubmitted) ||
-        validateCheckInMutation.isPending ||
         bulkCheckInMutation.isPending)) ||
     (mode === "single" && (!!scanResult || scanMutation.isPending));
 
@@ -354,6 +354,7 @@ export function useScannerState() {
     // Prevent duplicate in-flight requests for the same code
     if (processingCodesRef.current.has(code)) return;
     processingCodesRef.current.add(code);
+    playScanFeedback();
 
     if (scanResultTimeoutRef.current) clearTimeout(scanResultTimeoutRef.current);
     scanMutation.mutate(
@@ -361,10 +362,6 @@ export function useScannerState() {
       {
         onSuccess: (data) => {
           suppressCode(code, 3000);
-
-          if (data.success && !data.already_checked_in && navigator.vibrate) {
-            navigator.vibrate(50);
-          }
 
           const defaultFallback = data.already_checked_in
             ? t("scanner.ticket_already_checked_in", "Ticket already checked in.")
@@ -476,6 +473,7 @@ export function useScannerState() {
 
     // Mark as in-flight immediately (synchronous, before any async gap)
     processingCodesRef.current.add(code);
+    playScanFeedback();
 
     validateCheckInMutation.mutate(
       { qrCode: code, eventId: eventIdRef.current ?? undefined, eventDayId: selectedEventDayId || undefined },
@@ -520,45 +518,47 @@ export function useScannerState() {
           const responseEventId = data.event_id;
           const responseEventTitle = data.event_title;
 
-          setBulkQueue((prev) => {
-            if (prev.some((item) => item.code === code)) {
-              processingCodesRef.current.delete(code);
-              return prev;
+          if (!eventIdRef.current && responseEventId) {
+            setEventId(responseEventId);
+            if (responseEventTitle) {
+              setScannedEventTitle(responseEventTitle);
             }
-
-            if (!eventIdRef.current && responseEventId) {
-              setEventId(responseEventId);
-              if (responseEventTitle) {
-                setScannedEventTitle(responseEventTitle);
-              }
-              setIsBulkToastShowing(true);
-              if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
-              bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
-              toast.success(
-                "staffScanner.eventDetected",
-                t("staffScanner.eventDetected", "Event detected"),
-                `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
-                {
-                  onDismiss: clearBulkToastState,
-                  onAutoClose: clearBulkToastState,
-                }
-              );
-              return [newItem];
-            }
-
-            if (navigator.vibrate) navigator.vibrate(50);
             setIsBulkToastShowing(true);
             if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
             bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
             toast.success(
-              "staffScanner.addedToQueue",
-              t("staffScanner.addedToQueue", "Added to queue"),
-              `#${prev.length + 1}: ${newItem.ticketNumber}`,
+              "staffScanner.eventDetected",
+              t("staffScanner.eventDetected", "Event detected"),
+              `${t("staffScanner.readyToScanFor", "Ready to scan for")}: ${responseEventTitle ?? responseEventId}`,
               {
                 onDismiss: clearBulkToastState,
                 onAutoClose: clearBulkToastState,
               }
             );
+            setBulkQueue([newItem]);
+            return;
+          }
+
+          setIsBulkToastShowing(true);
+          if (bulkToastClearTimerRef.current) clearTimeout(bulkToastClearTimerRef.current);
+          bulkToastClearTimerRef.current = setTimeout(clearBulkToastState, 3000);
+
+          const nextIndex = bulkQueueRef.current.length + 1;
+
+          toast.success(
+            "staffScanner.addedToQueue",
+            t("staffScanner.addedToQueue", "Added to queue"),
+            `#${nextIndex}: ${newItem.ticketNumber}`,
+            {
+              onDismiss: clearBulkToastState,
+              onAutoClose: clearBulkToastState,
+            }
+          );
+
+          setBulkQueue((prev) => {
+            if (prev.some((item) => item.code === code)) {
+              return prev;
+            }
             return [...prev, newItem];
           });
         },

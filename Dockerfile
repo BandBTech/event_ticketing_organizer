@@ -1,6 +1,10 @@
 # Base image
 FROM node:20 AS build
 
+# Build args for environment variables (required for static export)
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+
 # Create app directory
 WORKDIR /app
 

@@ -1,4 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Setup
+
+1. Copy the environment template and fill in your values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Required variables:
+
+   | Variable | Description |
+   |---|---|
+   | `NEXT_PUBLIC_API_BASE_URL` | Backend API base URL |
+   | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Google Maps API key (for venue address autocomplete) |
 
 ## Getting Started
 
