@@ -23,6 +23,7 @@ import {
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
+import { CustomerAnalyticsData } from "@/types/report";
 import { ChartCard } from "./ChartCard";
 import {
   ChartContainer,
@@ -106,36 +107,7 @@ export function CustomerAnalyticsTab({
     end_date: endDate,
   });
 
-  // Type the API response
-  const report = data as
-    | {
-        total_customers?: number;
-        registered_users?: number;
-        guest_purchases?: number;
-        repeat_customers?: number;
-        average_order_value?: number;
-        customer_segments?: Array<{
-          segment_name: string;
-          customer_count: number;
-          total_spent: number;
-          average_spent: number;
-          percentage_of_total: number;
-        }>;
-        top_customers?: Array<{
-          customer_id: string;
-          customer_name: string;
-          email: string;
-          total_orders: number;
-          total_spent: number;
-        }> | null;
-        customer_retention?: {
-          new_customers: number;
-          returning_customers: number;
-          retention_rate: number;
-          churn_rate: number;
-        };
-      }
-    | undefined;
+  const report = data as CustomerAnalyticsData | undefined;
 
   const segments = report?.customer_segments ?? [];
   const retention = report?.customer_retention;

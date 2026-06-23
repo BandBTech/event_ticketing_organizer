@@ -25,6 +25,7 @@ import {
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
+import { SalesReportData } from "@/types/report";
 import { ChartCard } from "./ChartCard";
 import {
   ChartContainer,
@@ -105,45 +106,7 @@ export function SalesTab({ startDate, endDate }: SalesTabProps) {
     end_date: endDate,
   });
 
-  // Type the API response
-  const report = data as
-    | {
-        summary_metrics?: {
-          total_revenue?: number;
-          total_commission?: number;
-          organizer_share?: number;
-          total_tickets_sold?: number;
-          active_events?: number;
-          total_events?: number;
-          total_transactions?: number;
-          completed_transactions?: number;
-          pending_transactions?: number;
-          failed_transactions?: number;
-          average_order_value?: number;
-          conversion_rate?: number;
-        };
-        daily_sales?: Array<{
-          date: string;
-          revenue: number;
-          tickets_sold: number;
-          transactions: number;
-          average_order_value: number;
-        }> | null;
-        top_product_events?: Array<{
-          event_id: string;
-          event_name: string;
-          revenue: number;
-          tickets_sold: number;
-        }> | null;
-        sales_by_payment_gateway?: Array<{
-          gateway_name: string;
-          total_transactions: number;
-          total_revenue: number;
-          percentage_of_total: number;
-          status: string;
-        }>;
-      }
-    | undefined;
+  const report = data as SalesReportData | undefined;
 
   const summary = report?.summary_metrics;
   const dailySales = report?.daily_sales ?? [];

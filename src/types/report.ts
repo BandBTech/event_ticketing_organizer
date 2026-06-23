@@ -54,28 +54,68 @@ export interface OverviewReportData {
 }
 
 export interface SalesReportData {
-  sales_by_event?: Array<{
-    event_name: string;
-    total_sales: number;
+  summary_metrics?: {
+    total_revenue?: number;
+    total_commission?: number;
+    organizer_share?: number;
+    total_tickets_sold?: number;
+    active_events?: number;
+    total_events?: number;
+    total_transactions?: number;
+    completed_transactions?: number;
+    pending_transactions?: number;
+    failed_transactions?: number;
+    average_order_value?: number;
+    conversion_rate?: number;
+  };
+  daily_sales?: Array<{
+    date: string;
+    revenue: number;
     tickets_sold: number;
-  }>;
-  sales_over_time?: Array<{ date: string; sales: number }>;
-  top_selling_events?: Array<{
+    transactions: number;
+    average_order_value: number;
+  }> | null;
+  top_product_events?: Array<{
     event_id: string;
     event_name: string;
-    tickets_sold: number;
     revenue: number;
+    tickets_sold: number;
+  }> | null;
+  sales_by_payment_gateway?: Array<{
+    gateway_name: string;
+    total_transactions: number;
+    total_revenue: number;
+    percentage_of_total: number;
+    status: string;
   }>;
-  total_sales?: number;
-  total_tickets?: number;
 }
 
 export interface CustomerAnalyticsData {
-  demographics?: Array<{ label: string; count: number }>;
-  repeat_customers?: number;
-  new_customers?: number;
   total_customers?: number;
-  customer_growth?: Array<{ date: string; customers: number }>;
+  registered_users?: number;
+  guest_purchases?: number;
+  repeat_customers?: number;
+  average_order_value?: number;
+  customer_segments?: Array<{
+    segment_name: string;
+    customer_count: number;
+    total_spent: number;
+    average_spent: number;
+    percentage_of_total: number;
+  }>;
+  top_customers?: Array<{
+    customer_id: string;
+    customer_name: string;
+    email: string;
+    total_orders: number;
+    total_spent: number;
+  }> | null;
+  customer_retention?: {
+    new_customers: number;
+    returning_customers: number;
+    retention_rate: number;
+    churn_rate: number;
+  };
 }
 
 export interface FinancialReportData {
@@ -91,12 +131,14 @@ export interface FinancialReportData {
     total_transactions?: number;
   };
   revenue_breakdown?: Array<{
+    event_id?: string;
     event_title: string;
     gross_revenue: number;
     commission: number;
     organizer_share: number;
     refunds: number;
     net_revenue: number;
+    transaction_count?: number;
   }> | null;
   commission_history?: Array<{
     id: string;
@@ -129,17 +171,6 @@ export interface FinancialReportData {
     transaction_count: number;
     percentage_of_total: number;
   }> | null;
-  // Legacy fields for backward compatibility
-  total_revenue?: number;
-  total_expenses?: number;
-  net_income?: number;
-  commission_total?: number;
-  revenue_vs_expenses?: Array<{
-    date: string;
-    revenue: number;
-    expenses: number;
-  }>;
-  commission_breakdown?: Array<{ label: string; amount: number }>;
 }
 
 export interface EventPerformanceData {
@@ -175,14 +206,9 @@ export interface EventPerformanceData {
     sold_percentage: number;
     revenue: number;
   }> | null;
-  // Legacy fields for backward compatibility
-  total_tickets?: number;
-  tickets_remaining?: number;
-  attendance_rate?: number;
-  ticket_sales_over_time?: Array<{ date: string; sold: number }>;
-  tier_breakdown?: Array<{
+  revenue_by_tier?: Array<{
+    tier_id: string;
     tier_name: string;
-    sold: number;
-    total: number;
-  }>;
+    revenue: number;
+  }> | null;
 }

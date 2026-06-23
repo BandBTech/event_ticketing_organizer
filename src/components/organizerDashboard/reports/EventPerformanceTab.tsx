@@ -24,6 +24,7 @@ import {
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReport } from "@/hooks/useReports";
+import { EventPerformanceData } from "@/types/report";
 import { ChartCard } from "./ChartCard";
 import {
   ChartContainer,
@@ -148,48 +149,7 @@ export function EventPerformanceTab({
     enabled: !!eventId,
   });
 
-  // Type the API response based on the actual structure
-  const report = data as
-    | {
-        event_id?: string;
-        event_title?: string;
-        banner_image?: string;
-        status?: string;
-        start_date?: string;
-        end_date?: string;
-        capacity?: number;
-        tickets_sold?: number;
-        sold_percentage?: number;
-        revenue?: number;
-        commission?: number;
-        organizer_earnings?: number;
-        average_ticket_price?: number;
-        total_transactions?: number;
-        top_tier?: {
-          tier_id: string;
-          tier_name: string;
-          ticket_price: number;
-          ticket_capacity: number;
-          tickets_sold: number;
-          sold_percentage: number;
-          revenue: number;
-        };
-        tier_performance?: Array<{
-          tier_id: string;
-          tier_name: string;
-          ticket_price: number;
-          ticket_capacity: number;
-          tickets_sold: number;
-          sold_percentage: number;
-          revenue: number;
-        }> | null;
-        revenue_by_tier?: Array<{
-          tier_id: string;
-          tier_name: string;
-          revenue: number;
-        }> | null;
-      }
-    | undefined;
+  const report = data as EventPerformanceData | undefined;
 
   const tierPerformance = report?.tier_performance ?? [];
   const topTier = report?.top_tier;
