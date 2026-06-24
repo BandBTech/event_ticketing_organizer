@@ -147,7 +147,10 @@ export function AppSidebar() {
     userFullName ||
     "Organizer";
   const displayEmail = user?.email || "";
-  const displayLogo = user?.organization?.logo_url || organizerProfile?.business_logo_url || "/john.jpg";
+  const displayLogo =
+    user?.organization?.logo_url ||
+    organizerProfile?.business_logo_url ||
+    "/john.jpg";
 
   return (
     <>
@@ -187,25 +190,21 @@ export function AppSidebar() {
                 <img
                   src="/timro-ticket-logo.png"
                   alt="Timro-Ticket"
-                  className="h-11 mr-0.5"
+                  className="h-11 mr-1 pe-1"
                 />
               </Link>
-              <button
-                onClick={onToggle}
-                className="hidden md:block p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <CaretDoubleLeftIcon className="size-4 text-gray-500" />
-              </button>
             </>
           )}
-          {collapsed && (
-            <button
-              onClick={onToggle}
-              className="absolute -right-3 top-6 z-50 bg-white border border-gray-300 rounded-lg shadow-sm p-1.5 text-gray-700 hover:text-gray-900 hover:shadow-md transition-all hidden md:block"
-            >
+          <button
+            onClick={onToggle}
+            className="absolute cursor-pointer -right-4 top-6 z-50 bg-white border border-gray-300 rounded-lg shadow-sm p-1.5 text-gray-700 hover:text-gray-900 hover:shadow-md transition-all hidden md:block"
+          >
+            {collapsed ? (
               <CaretDoubleRightIcon className="size-4" />
-            </button>
-          )}
+            ) : (
+              <CaretDoubleLeftIcon className="size-4" />
+            )}
+          </button>
         </div>
 
         {/* Navigation */}
