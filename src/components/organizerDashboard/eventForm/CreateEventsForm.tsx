@@ -246,6 +246,7 @@ export default function CreateEventsForm({
         "venue",
         "venueAddress",
         "capacity",
+        "timezone",
         "startDate",
         "endDate",
         "currency",

@@ -51,6 +51,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
   is_featured?: boolean;
+  is_refundable?: boolean;
   commission_rate?: number;
 }
 
@@ -80,6 +81,7 @@ export interface CreateEventData {
   timezone?: string;
   capacity: number;
   price: number;
+  is_refundable?: boolean;
   tiers: string; // JSON string of CreateEventTierRequest[]
 }
 
@@ -98,6 +100,7 @@ export interface UpdateEventRequest {
   timezone?: string;
   capacity?: number;
   price?: number;
+  is_refundable?: boolean;
   tiers?: CreateEventTierRequest[];
   status?: string;
 }

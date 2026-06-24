@@ -405,6 +405,8 @@
       "venueAddress": "Indirizzo della sede",
       "capacity": "Capacità",
       "timezone": "Fuso orario",
+      "isRefundable": "Rimborsabile",
+      "isRefundableDescription": "Consenti ai partecipanti di richiedere un rimborso per i biglietti acquistati.",
       "tags": "Tag",
       "location": "Posizione",
       "eventStartsOn": "L'evento inizia il",

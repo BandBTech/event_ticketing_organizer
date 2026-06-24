@@ -553,6 +553,8 @@
       "venueAddress": "Venue Address",
       "capacity": "Capacity",
       "timezone": "Timezone",
+      "isRefundable": "Refundable",
+      "isRefundableDescription": "Allow attendees to request a refund for their tickets after purchase.",
       "tierName": "Tier Name",
       "ticketPrice": "Price",
       "ticketQuantity": "Quantity",

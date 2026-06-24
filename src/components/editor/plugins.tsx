@@ -10,6 +10,8 @@ import {
   $getRoot,
   $getSelection,
   $isRangeSelection,
+  COMMAND_PRIORITY_HIGH,
+  PASTE_COMMAND,
   RootNode,
 } from "lexical"
 
@@ -22,6 +24,16 @@ import ImagesPlugin from "./images-plugin"
 // Count characters the same way validation does: text content without newlines.
 const $getTextLength = (): number =>
   $getRoot().getTextContent().replace(/\n/g, "").length
+
+/**
+ * Gets the number of characters that the current selection spans (to account
+ * for the fact that selected text will be replaced by the paste).
+ */
+const $getSelectedTextLength = (): number => {
+  const selection = $getSelection()
+  if (!$isRangeSelection(selection) || selection.isCollapsed()) return 0
+  return selection.getTextContent().replace(/\n/g, "").length
+}
 
 function MaxLengthPlugin({
   maxLength,
@@ -38,9 +50,77 @@ function MaxLengthPlugin({
   })
 
   useEffect(() => {
+    // ── Paste interceptor ──────────────────────────────────────────────
+    // Intercept paste at HIGH priority (before Lexical's default handler).
+    // If the pasted content would exceed maxLength, we extract the plain
+    // text from the clipboard, slice it to the remaining character budget,
+    // and insert only that truncated portion. This gives a smooth UX
+    // where partial paste is allowed up to exactly the limit.
+    const unregisterPaste = editor.registerCommand(
+      PASTE_COMMAND,
+      (event: ClipboardEvent) => {
+        const clipboardData = event instanceof ClipboardEvent
+          ? event.clipboardData
+          : null
+
+        if (!clipboardData) return false
+
+        const pastedText = clipboardData.getData("text/plain")
+        if (!pastedText) return false // let Lexical handle non-text pastes (images, etc.)
+
+        // Calculate how many characters we can still accept
+        const currentLength = editor.getEditorState().read($getTextLength)
+        const selectedLength = editor.getEditorState().read($getSelectedTextLength)
+        // Selected text will be replaced, so it frees up that many characters
+        const effectiveLength = currentLength - selectedLength
+        const remaining = maxLength - effectiveLength
+
+        if (remaining <= 0) {
+          // Already at or over the limit — block the paste entirely
+          event.preventDefault()
+          return true
+        }
+
+        // Strip newlines from pasted text to match our counting method
+        const pastedClean = pastedText.replace(/\n/g, "")
+
+        if (pastedClean.length <= remaining) {
+          // The paste fits within budget — let Lexical handle it normally.
+          // The RootNode transform below acts as a safety net.
+          return false
+        }
+
+        // Paste would overflow — truncate to fit and insert manually
+        event.preventDefault()
+
+        // Take only `remaining` chars from the original pasted text
+        // (preserving newlines in the slice for natural line breaks)
+        let charsCollected = 0
+        let cutIndex = 0
+        for (let i = 0; i < pastedText.length && charsCollected < remaining; i++) {
+          if (pastedText[i] !== "\n") {
+            charsCollected++
+          }
+          cutIndex = i + 1
+        }
+        const truncated = pastedText.slice(0, cutIndex)
+
+        editor.update(() => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection)) {
+            selection.insertRawText(truncated)
+          }
+        })
+
+        return true
+      },
+      COMMAND_PRIORITY_HIGH,
+    )
+
+    // ── Safety-net transform ───────────────────────────────────────────
     // Atomic post-update enforcement via a RootNode transform. This runs
     // synchronously during the same update cycle as the change, so the
-    // over-limit state is never committed or painted — handles typing, paste,
+    // over-limit state is never committed or painted — handles typing,
     // drag-drop, IME, and any other text-inserting command uniformly.
     const unregisterTransform = editor.registerNodeTransform(
       RootNode,
@@ -71,6 +151,7 @@ function MaxLengthPlugin({
     )
 
     return () => {
+      unregisterPaste()
       unregisterTransform()
       unregisterListener()
     }

@@ -408,6 +408,8 @@
       "venueAddress": "会場住所",
       "capacity": "容量",
       "timezone": "タイムゾーン",
+      "isRefundable": "返金可能",
+      "isRefundableDescription": "購入後にチケットの返金をリクエストできるようにします。",
       "tags": "タグ",
       "location": "位置",
       "eventStartsOn": "イベント開始日",

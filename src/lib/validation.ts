@@ -780,57 +780,7 @@ export const createEventSchema = (
             "Venue Address must be under {max} characters.",
             { max: VENUE_ADDRESS_MAX.toString() },
           ),
-        )
-        .superRefine((val, ctx) => {
-          // Only validate as coordinates when the value strictly matches numeric "lat,lng" format.
-          // This avoids false negatives on normal addresses like "Kathmandu, Nepal".
-          const coordMatch = val.match(/^(-?\d*\.?\d*),(-?\d*\.?\d*)$/);
-          if (!coordMatch) return;
-
-          const [, latStr, lngStr] = coordMatch;
-
-          if (!latStr) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: t(
-                "event.validation.latitudeRequired",
-                "Latitude is required.",
-              ),
-            });
-          } else {
-            const lat = parseFloat(latStr);
-            if (isNaN(lat) || lat < -90 || lat > 90) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: t(
-                  "event.validation.latitudeRange",
-                  "Latitude must be between -90 and 90",
-                ),
-              });
-            }
-          }
-
-          if (!lngStr) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: t(
-                "event.validation.longitudeRequired",
-                "Longitude is required.",
-              ),
-            });
-          } else {
-            const lng = parseFloat(lngStr);
-            if (isNaN(lng) || lng < -180 || lng > 180) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: t(
-                  "event.validation.longitudeRange",
-                  "Longitude must be between -180 and 180",
-                ),
-              });
-            }
-          }
-        }),
+        ),
       capacity: createRequiredNumberSchema(
         t,
         "event.field.capacity:Capacity",
@@ -838,7 +788,8 @@ export const createEventSchema = (
         MAX_CAPACITY,
         true,
       ),
-      timezone: z.string().optional(),
+      timezone: z.string().min(1, t("event.validation.timezoneRequired", "Timezone is required.")),
+      is_refundable: z.boolean().default(false),
       startDate: createRequiredDateSchema(
         t,
         "event.field.startDateTime:Event Start Date",
