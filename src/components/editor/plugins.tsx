@@ -12,7 +12,7 @@ import {
   $isRangeSelection,
   RootNode,
 } from "lexical"
-import { $restoreEditorState } from "@lexical/utils"
+
 import { $trimTextContentFromAnchor } from "@lexical/selection"
 
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable"
@@ -46,28 +46,18 @@ function MaxLengthPlugin({
       RootNode,
       () => {
         const selection = $getSelection()
-        if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
+        if (!$isRangeSelection(selection)) {
           return
         }
 
-        const prevEditorState = editor.getEditorState()
-        const prevLength = prevEditorState.read($getTextLength)
         const currentLength = $getTextLength()
-
-        if (prevLength === currentLength) return
 
         const delCount = currentLength - maxLength
         if (delCount <= 0) return
 
-        if (prevLength === maxLength) {
-          // Previous state was already exactly at the limit — roll back the
-          // entire transaction (including cursor/selection state).
-          $restoreEditorState(editor, prevEditorState)
-        } else {
-          // Trim the overflow characters backwards from the anchor (end of
-          // the just-inserted content), keeping the portion that fits.
-          $trimTextContentFromAnchor(editor, selection.anchor, delCount)
-        }
+        // Trim the overflow characters backwards from the anchor (end of
+        // the just-inserted content), keeping the portion that fits.
+        $trimTextContentFromAnchor(editor, selection.anchor, delCount)
       },
     )
 
