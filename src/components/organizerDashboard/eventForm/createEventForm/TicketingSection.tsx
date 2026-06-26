@@ -6,6 +6,13 @@ import { EventFormData } from "@/lib/validation";
 import { TierTemplate } from "@/types/event";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import TicketTierCard from "./TicketTierCard";
 
 interface TicketingSectionProps {
@@ -41,6 +48,42 @@ export function TicketingSection({
         <h2 className="text-md font-semibold text-primary mb-2!">
           {t("event.section.ticketing", "Ticketing")}
         </h2>
+
+        <FormField
+          control={control}
+          name="is_refundable"
+          render={({ field }) => (
+            <FormItem className="space-y-0">
+              <label
+                htmlFor="is_refundable_switch"
+                className={`flex items-center justify-between gap-4 rounded-lg border-2 py-2 px-3 cursor-pointer transition-all duration-200 ${
+                  field.value
+                    ? "border-primary/40 bg-primary/5"
+                    : "border-dashed border-muted-foreground/25 bg-muted/30"
+                }`}
+              >
+                <div className="space-y-0.5">
+                  <FormLabel className="text-sm font-semibold cursor-pointer m-0!">
+                    {t("event.field.isRefundable", "Refundable")}
+                  </FormLabel>
+                  <p className="text-xs text-muted-foreground leading-snug">
+                    {t(
+                      "event.field.isRefundableDescription",
+                      "Allow attendees to request a refund for their tickets after purchase.",
+                    )}
+                  </p>
+                </div>
+                <FormControl>
+                  <Switch
+                    id="is_refundable_switch"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </label>
+            </FormItem>
+          )}
+        />
 
         {ticketFields.map((field, index) => (
           <TicketTierCard

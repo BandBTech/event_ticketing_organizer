@@ -63,6 +63,7 @@ export function getEventFormDefaults(
       venueAddress: "",
       capacity: 0,
       timezone: "",
+      is_refundable: false,
       startDate: "",
       endDate: "",
       tickets: [
@@ -91,6 +92,7 @@ export function getEventFormDefaults(
     venueAddress: initialData.address || "",
     capacity: initialData.capacity || 0,
     timezone: initialData.timezone || "",
+    is_refundable: initialData.is_refundable ?? false,
     startDate: initialData.start_date || "",
     endDate: initialData.end_date || "",
     tickets: initialData.tiers?.map((t) => ({
@@ -170,6 +172,9 @@ export function getChangedFields(
   if (currentData.timezone !== initialData.timezone) {
     changedFields.timezone = currentData.timezone;
   }
+  if (currentData.is_refundable !== (initialData.is_refundable ?? false)) {
+    changedFields.is_refundable = currentData.is_refundable;
+  }
   if (currentData.startDate !== initialData.start_date) {
     changedFields.start_date = currentData.startDate || undefined;
   }
@@ -231,6 +236,7 @@ export function prepareCreateEventData(
     start_date: data.startDate || "",
     end_date: data.endDate || "",
     timezone: data.timezone,
+    is_refundable: data.is_refundable,
     capacity: data.capacity,
     price: data.tickets[0]?.price ?? 0,
     tiers: JSON.stringify(tiersData),

@@ -45,6 +45,8 @@ function createEventFormData(
   if (data.start_date) formData.append("start_date", data.start_date);
   if (data.end_date) formData.append("end_date", data.end_date);
   if (data.timezone) formData.append("timezone", data.timezone);
+  if ("is_refundable" in data && data.is_refundable !== undefined)
+    formData.append("is_refundable", data.is_refundable.toString());
   if (data.capacity !== undefined)
     formData.append("capacity", data.capacity.toString());
   if (data.price !== undefined) formData.append("price", data.price.toString());

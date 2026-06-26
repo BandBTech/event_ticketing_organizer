@@ -402,12 +402,15 @@
   "event": {
     "field": {
       "bannerImage": "バナー画像",
+      "eventSchedule": "イベントスケジュール",
       "eventTitle": "イベントタイトル",
       "eventDescription": "イベントの説明",
       "venueName": "会場名",
       "venueAddress": "会場住所",
       "capacity": "容量",
       "timezone": "タイムゾーン",
+      "isRefundable": "返金可能",
+      "isRefundableDescription": "購入後にチケットの返金をリクエストできるようにします。",
       "tags": "タグ",
       "location": "位置",
       "eventStartsOn": "イベント開始日",
@@ -456,7 +459,8 @@
     "error": {
       "invalidImageType": "無効なファイルタイプです。\n画像（PNG/JPG）をアップロードしてください。",
       "failedToLoadImage": "画像の読み込みに失敗しました。別のファイルをお試しください。",
-      "loadFailed": "イベントの読み込みに失敗しました。"
+      "loadFailed": "イベントの読み込みに失敗しました。",
+      "editNotAllowed": "このイベントは現在のステータスでは編集できません。"
     },
     "placeholder": {
       "eventDescription": "イベントについて書いてください...",
@@ -601,6 +605,22 @@
     },
     "createNewEvent": "新しいイベントの作成",
     "editEvent": "イベントの編集",
+    "confirm": {
+      "updateTitle": "変更の確認",
+      "updateDescription": "保存する前に、イベントの詳細に加えた変更を確認してください。",
+      "headerField": "項目",
+      "headerOld": "変更前",
+      "headerNew": "変更後",
+      "descriptionChangedOld": "以前の説明文",
+      "descriptionChangedNew": "更新された説明文",
+      "imageExisting": "既存の画像",
+      "noImage": "画像なし",
+      "imageUpdated": "新しい画像がアップロードされました",
+      "tiersCount": "チケットタイプ",
+      "original": "変更前のイベント",
+      "proposed": "変更後のイベント",
+      "badgeChanged": "変更あり"
+    },
     "filterEvents": "イベントをフィルタリングする",
     "filter": {
       "status": "ステータスによるフィルター"

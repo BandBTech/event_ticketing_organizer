@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Head from "next/head";
 import { PlusIcon } from "@phosphor-icons/react";
 
@@ -13,7 +13,7 @@ import { RejectionNotice } from "@/components/organizer/RejectionNotice";
 import { PendingNotice } from "@/components/organizer/PendingNotice";
 import { InactiveNotice } from "@/components/organizer/InactiveNotice";
 import { Button } from "@/components/ui/button";
-import { EventSelect } from "@/components/ui/EventSelect";
+import { EventSelect, EventOption } from "@/components/ui/EventSelect";
 import { PayoutRequestDialog } from "@/components/organizerDashboard/payouts/PayoutRequestDialog";
 import { PayoutSummaryCards } from "@/components/organizerDashboard/payouts/PayoutSummaryCards";
 import { PayoutFilterTabs } from "@/components/organizerDashboard/payouts/PayoutFilterTabs";
@@ -56,7 +56,16 @@ export default function PayoutsPage() {
   });
 
   const { data: summary, isLoading: isSummaryLoading } = usePayoutSummary(selectedEventId);
-  const { data: allEventsSummary } = usePayoutSummary();
+  const { data: allEventsSummary, isLoading: isAllSummaryLoading } = usePayoutSummary();
+
+  // Only events with actual earnings (ticket sell >= 1) — derived from payout summary
+  const payoutEventOptions = useMemo<EventOption[]>(() => {
+    const events = allEventsSummary?.events ?? [];
+    return events
+      .filter((e) => e.total_earnings > 0)
+      .map((e) => ({ id: e.event_id, title: e.event_title }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [allEventsSummary]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -140,6 +149,8 @@ export default function PayoutsPage() {
                 }}
                 triggerWidth="w-52"
                 showAllOption={true}
+                events={payoutEventOptions}
+                isLoading={isAllSummaryLoading}
               />
             </div>
 

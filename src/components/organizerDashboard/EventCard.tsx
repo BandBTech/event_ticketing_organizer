@@ -105,21 +105,30 @@ export default function EventCard({
 
       <div className="p-4 space-y-1 flex flex-col flex-1">
         {categories.length > 0 && (
-          <div className="flex text-gray-700 flex-wrap gap-2">
-            {categories.map((tag) => (
-              <span
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {categories.slice(0, 3).map((tag) => (
+              <Badge
                 key={tag}
-                className="text-xs bg-gray-200 px-2 py-1 rounded-lg break-all"
+                variant="outline"
+                className="text-xs font-normal text-muted-foreground bg-muted/50 border-border whitespace-pre-wrap break-all max-w-full rounded-xl"
               >
                 {tag}
-              </span>
+              </Badge>
             ))}
+            {categories.length > 3 && (
+              <Badge
+                variant="outline"
+                className="text-xs font-normal text-muted-foreground bg-muted/50 border-border whitespace-pre-wrap break-all max-w-full  rounded-xl"
+              >
+                +{categories.length - 3}
+              </Badge>
+            )}
           </div>
         )}
 
         <h3
           title={event.title}
-          className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2"
+          className="text-lg font-bold text-gray-900 mb-2 leading-tight group-hover:text-primary transition-colors line-clamp-2"
         >
           {event.title}
         </h3>
@@ -132,7 +141,8 @@ export default function EventCard({
           />
           {isStaff && event.end_date ? (
             <span className="break-all sm:break-normal">
-              {formatDateTime(event.start_date)} - {formatDateTime(event.end_date)}
+              {formatDateTime(event.start_date)} -{" "}
+              {formatDateTime(event.end_date)}
             </span>
           ) : (
             formatDateTime(event.start_date)
@@ -140,9 +150,14 @@ export default function EventCard({
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <MapPinAreaIcon className="w-4 h-4 shrink-0" width={16} height={16} />
-          {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim())
+          {/* {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim())
             ? event.venue_name
-            : [event.venue_name, event.address].filter(Boolean).join(", ")}
+            : [event.venue_name, event.address].filter(Boolean).join(", ")} */}
+                        <span className="truncate">
+              {/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(event.address?.trim() ?? "")
+                ? event.venue_name
+                : [event.venue_name, event.address].filter(Boolean).join(", ")}
+            </span>
         </div>
 
         <div className="mt-auto">
@@ -162,7 +177,16 @@ export default function EventCard({
               <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
                 {(event.status === "pending" ||
                   event.status === "draft" ||
-                  event.status === "rejected") && (
+                  event.status === "rejected" ||
+                  (process.env.NEXT_PUBLIC_ALLOW_EDIT_APPROVED_EVENTS === "true" &&
+                    [
+                      "approved",
+                      "scheduled",
+                      "on_sale",
+                      "hold",
+                      "sales_upcoming",
+                      "sales_end",
+                    ].includes(event.status))) && (
                   <Link
                     href={`/organizerDashboard/event/edit?id=${event.id}`}
                     onClick={(e) => e.stopPropagation()}

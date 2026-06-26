@@ -34,7 +34,9 @@ import {
   // DiscountsPromoSection,
   FormActionButtons,
   UnsavedChangesDialog,
+  EventChangesModal,
 } from "./createEventForm";
+import { formatDateTime } from "@/lib/utils";
 
 interface CreateEventFormProps {
   initialData?: Event;
@@ -54,6 +56,11 @@ export default function CreateEventsForm({
   const [activeTicketIndex, setActiveTicketIndex] = useState<number | null>(
     null,
   );
+
+  const [changesToConfirm, setChangesToConfirm] = useState<{
+    changedFields: UpdateEventRequest;
+    displayChanges: { field: string; oldValue: string; newValue: string }[];
+  } | null>(null);
 
   const lastInitializedEventId = React.useRef<string | null>(null);
   const lastInitializedWithTemplates = React.useRef<boolean>(false);
@@ -246,6 +253,7 @@ export default function CreateEventsForm({
         "venue",
         "venueAddress",
         "capacity",
+        "timezone",
         "startDate",
         "endDate",
         "currency",
@@ -431,10 +439,120 @@ export default function CreateEventsForm({
         }
 
         if (changedFields) {
-          saveEventMutation.mutate({
-            eventData: changedFields,
-            isUpdate: true,
-            id: initialData.id,
+          const diffs: { field: string; oldValue: string; newValue: string }[] = [];
+
+          if (changedFields.title !== undefined) {
+            diffs.push({
+              field: t("event.field.eventName", "Event Name"),
+              oldValue: initialData.title || "-",
+              newValue: data.name || "-",
+            });
+          }
+          if (changedFields.description !== undefined) {
+            diffs.push({
+              field: t("event.field.eventDescription", "Event Description"),
+              oldValue: t("event.confirm.descriptionChangedOld", "Previous description"),
+              newValue: t("event.confirm.descriptionChangedNew", "Updated description"),
+            });
+          }
+          if (changedFields.currency !== undefined) {
+            diffs.push({
+              field: t("event.field.currency", "Currency"),
+              oldValue: initialData.currency?.toUpperCase() || "-",
+              newValue: data.currency || "-",
+            });
+          }
+          if (changedFields.event_type !== undefined) {
+            diffs.push({
+              field: t("event.field.eventType", "Event Type"),
+              oldValue: initialData.event_type || "-",
+              newValue: data.event_type || "-",
+            });
+          }
+          if (changedFields.country !== undefined) {
+            diffs.push({
+              field: t("event.field.country", "Country"),
+              oldValue: initialData.country || "-",
+              newValue: data.country || "-",
+            });
+          }
+          if (changedFields.category !== undefined) {
+            const oldCats = Array.isArray(initialData.category)
+              ? initialData.category
+              : (initialData.category ? [initialData.category] : []);
+            diffs.push({
+              field: t("event.field.categoryTags", "Category Tags"),
+              oldValue: oldCats.join(", ") || "-",
+              newValue: data.tags.join(", ") || "-",
+            });
+          }
+          if (changedFields.venue_name !== undefined) {
+            diffs.push({
+              field: t("event.field.venue", "Venue Name"),
+              oldValue: initialData.venue_name || "-",
+              newValue: data.venue || "-",
+            });
+          }
+          if (changedFields.address !== undefined) {
+            diffs.push({
+              field: t("event.field.venueAddress", "Venue Address"),
+              oldValue: initialData.address || "-",
+              newValue: data.venueAddress || "-",
+            });
+          }
+          if (changedFields.capacity !== undefined) {
+            diffs.push({
+              field: t("event.field.capacity", "Capacity"),
+              oldValue: String(initialData.capacity ?? "-"),
+              newValue: String(data.capacity ?? "-"),
+            });
+          }
+          if (changedFields.timezone !== undefined) {
+            diffs.push({
+              field: t("event.field.timezone", "Timezone"),
+              oldValue: initialData.timezone || "-",
+              newValue: data.timezone || "-",
+            });
+          }
+          if (changedFields.is_refundable !== undefined) {
+            diffs.push({
+              field: t("event.field.refundable", "Refundable"),
+              oldValue: initialData.is_refundable ? t("common.yes", "Yes") : t("common.no", "No"),
+              newValue: data.is_refundable ? t("common.yes", "Yes") : t("common.no", "No"),
+            });
+          }
+          if (changedFields.start_date !== undefined) {
+            diffs.push({
+              field: t("event.field.startDate", "Start Date"),
+              oldValue: initialData.start_date ? formatDateTime(initialData.start_date) : "-",
+              newValue: data.startDate ? formatDateTime(data.startDate) : "-",
+            });
+          }
+          if (changedFields.end_date !== undefined) {
+            diffs.push({
+              field: t("event.field.endDate", "End Date"),
+              oldValue: initialData.end_date ? formatDateTime(initialData.end_date) : "-",
+              newValue: data.endDate ? formatDateTime(data.endDate) : "-",
+            });
+          }
+          if (changedFields.banner_image !== undefined) {
+            diffs.push({
+              field: t("event.field.bannerImage", "Banner Image"),
+              oldValue: initialData.banner_image ? t("event.confirm.imageExisting", "Existing Image") : t("event.confirm.noImage", "No Image"),
+              newValue: t("event.confirm.imageUpdated", "New Image Uploaded"),
+            });
+          }
+          if (changedFields.tiers !== undefined) {
+            diffs.push({
+              field: t("event.field.ticketTiers", "Ticket Tiers"),
+              oldValue: `${initialData.tiers?.length || 0} ${t("event.confirm.tiersCount", "tier(s)")}`,
+              newValue: `${data.tickets.length} ${t("event.confirm.tiersCount", "tier(s)")}`,
+            });
+          }
+
+          setChangesToConfirm({
+            changedFields,
+            displayChanges: diffs,
           });
         }
       } else {
@@ -443,6 +561,17 @@ export default function CreateEventsForm({
       }
     } catch (error) {
       console.error("Error preparing event data:", error);
+    }
+  };
+
+  const confirmSaveUpdate = () => {
+    if (changesToConfirm && initialData) {
+      saveEventMutation.mutate({
+        eventData: changesToConfirm.changedFields,
+        isUpdate: true,
+        id: initialData.id,
+      });
+      setChangesToConfirm(null);
     }
   };
 
@@ -589,6 +718,18 @@ export default function CreateEventsForm({
           }
         }}
         initialData={null}
+      />
+
+      <EventChangesModal
+        open={changesToConfirm !== null}
+        onOpenChange={(open) => !open && setChangesToConfirm(null)}
+        onCancel={() => setChangesToConfirm(null)}
+        onConfirm={confirmSaveUpdate}
+        initialData={initialData}
+        currentValues={form.getValues()}
+        changedFields={changesToConfirm?.changedFields || {}}
+        tierTemplates={tierTemplates}
+        imagePreview={imagePreview}
       />
     </div>
   );
