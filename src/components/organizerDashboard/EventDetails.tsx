@@ -1027,6 +1027,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                             "Please provide a reason for cancelling this event...",
                           )}
                           className="min-h-[100px]"
+                          maxLength={500}
                           {...field}
                         />
                       </FormControl>
@@ -1134,6 +1135,7 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
                             "Provide a reason for stopping sales...",
                           )}
                           className="min-h-[100px]"
+                          maxLength={500}
                           {...field}
                         />
                       </FormControl>
