@@ -399,6 +399,7 @@
   "event": {
     "field": {
       "bannerImage": "Immagine dello striscione",
+      "eventSchedule": "Programma dell'evento",
       "eventTitle": "Titolo dell'evento",
       "eventDescription": "Descrizione dell'evento",
       "venueName": "Nome della sede",
@@ -455,7 +456,8 @@
     "error": {
       "invalidImageType": "Tipo di file non valido. \nSi prega di caricare un'immagine (PNG/JPG).",
       "failedToLoadImage": "Impossibile caricare l'immagine. Prova un altro file.",
-      "loadFailed": "Impossibile caricare gli eventi."
+      "loadFailed": "Impossibile caricare gli eventi.",
+      "editNotAllowed": "Questo evento non può essere modificato nello stato attuale."
     },
     "placeholder": {
       "eventDescription": "Scrivi del tuo evento...",
@@ -601,6 +603,22 @@
     },
     "createNewEvent": "Crea nuovo evento",
     "editEvent": "Modifica evento",
+    "confirm": {
+      "updateTitle": "Conferma modifiche",
+      "updateDescription": "Si prega di verificare le modifiche apportate ai dettagli dell'evento prima di salvare.",
+      "headerField": "Campo",
+      "headerOld": "Valore precedente",
+      "headerNew": "Nuovo valore",
+      "descriptionChangedOld": "Descrizione precedente",
+      "descriptionChangedNew": "Descrizione aggiornata",
+      "imageExisting": "Immagine esistente",
+      "noImage": "Nessuna immagine",
+      "imageUpdated": "Nuova immagine caricata",
+      "tiersCount": "tipo/i di biglietto",
+      "original": "Evento originale",
+      "proposed": "Evento proposto",
+      "badgeChanged": "Modificato"
+    },
     "filterEvents": "Filtra eventi",
     "filter": {
       "status": "Filtra per stato"

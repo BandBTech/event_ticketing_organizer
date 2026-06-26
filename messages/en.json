@@ -543,6 +543,7 @@
     "eventDetails": "Event Details",
     "field": {
       "bannerImage": "Banner Image",
+      "eventSchedule": "Event Schedule",
       "eventTitle": "Event Title",
       "eventDescription": "Event Description",
       "startDateTime": "Event Start Date",
@@ -604,7 +605,8 @@
       "invalidDatetime": "Enter valid datetime.",
       "pastDate": "Date cannot be in the past.",
       "fieldPastDate": "{field} cannot be in the past.",
-      "loadFailed": "Failed to load events."
+      "loadFailed": "Failed to load events.",
+      "editNotAllowed": "This event cannot be edited in its current status."
     },
     "placeholder": {
       "eventDescription": "Write about your event...",
@@ -750,6 +752,22 @@
     },
     "createNewEvent": "Create New Event",
     "editEvent": "Edit Event",
+    "confirm": {
+      "updateTitle": "Confirm Changes",
+      "updateDescription": "Please review the changes you made to the event details before saving.",
+      "headerField": "Field",
+      "headerOld": "Old Value",
+      "headerNew": "New Value",
+      "descriptionChangedOld": "Previous description",
+      "descriptionChangedNew": "Updated description",
+      "imageExisting": "Existing Image",
+      "noImage": "No Image",
+      "imageUpdated": "New Image Uploaded",
+      "tiersCount": "tier(s)",
+      "original": "Original Event",
+      "proposed": "Proposed Event",
+      "badgeChanged": "Changed"
+    },
     "filterEvents": "Filter events",
     "filter": {
       "status": "Filter by Status"

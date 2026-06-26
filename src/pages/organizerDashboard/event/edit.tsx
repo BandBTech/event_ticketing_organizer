@@ -37,6 +37,23 @@ export default function EditEventPage() {
             <div className="p-8 text-center text-red-500">
               {isError ? "Error loading event" : "Event not found"}
             </div>
+          ) : !(
+              event.status === "pending" ||
+              event.status === "draft" ||
+              event.status === "rejected" ||
+              (process.env.NEXT_PUBLIC_ALLOW_EDIT_APPROVED_EVENTS === "true" &&
+                [
+                  "approved",
+                  "scheduled",
+                  "on_sale",
+                  "hold",
+                  "sales_upcoming",
+                  "sales_end",
+                ].includes(event.status))
+            ) ? (
+            <div className="p-8 text-center text-red-500 font-semibold">
+              {t("event.error.editNotAllowed", "This event cannot be edited in its current status.")}
+            </div>
           ) : (
             <CreateEventsForm initialData={event} isEditing={true} />
           )}

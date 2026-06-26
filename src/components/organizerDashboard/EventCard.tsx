@@ -177,7 +177,16 @@ export default function EventCard({
               <PermissionGuard permission={PERMISSIONS.EVENT_UPDATE}>
                 {(event.status === "pending" ||
                   event.status === "draft" ||
-                  event.status === "rejected") && (
+                  event.status === "rejected" ||
+                  (process.env.NEXT_PUBLIC_ALLOW_EDIT_APPROVED_EVENTS === "true" &&
+                    [
+                      "approved",
+                      "scheduled",
+                      "on_sale",
+                      "hold",
+                      "sales_upcoming",
+                      "sales_end",
+                    ].includes(event.status))) && (
                   <Link
                     href={`/organizerDashboard/event/edit?id=${event.id}`}
                     onClick={(e) => e.stopPropagation()}

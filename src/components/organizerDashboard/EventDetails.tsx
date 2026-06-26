@@ -248,10 +248,21 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   const canControlSales =
     (event.status === "on_sale" || event.status === "hold") &&
     !isEventCancelled;
+  const allowEditApproved =
+    process.env.NEXT_PUBLIC_ALLOW_EDIT_APPROVED_EVENTS === "true";
   const canEdit =
     event.status === "pending" ||
     event.status === "draft" ||
-    event.status === "rejected";
+    event.status === "rejected" ||
+    (allowEditApproved &&
+      [
+        "approved",
+        "scheduled",
+        "on_sale",
+        "hold",
+        "sales_upcoming",
+        "sales_end",
+      ].includes(event.status));
 
   const progress =
     totalCapacity > 0 ? (totalTicketsSold / totalCapacity) * 100 : 0;
