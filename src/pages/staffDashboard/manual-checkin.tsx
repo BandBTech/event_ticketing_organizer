@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventService } from "@/services/eventService";
 import { queryKeys } from "@/lib/queryKeys";
 import { getDefaultEventDay } from "@/hooks/useScannerState";
-import { formatDateTime, parseTicketScanMessage } from "@/lib/utils";
+import { formatDateTime, parseTicketScanMessage, formatEventDayName } from "@/lib/utils";
 
 export default function ManualCheckinPage() {
   const router = useRouter();
@@ -206,7 +206,7 @@ export default function ManualCheckinPage() {
                           : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                       }`}
                     >
-                      {day.name || `${t("tickets.day", "Day")} ${idx + 1}`}
+                      {formatEventDayName(day.name, idx, t)}
                     </button>
                   ))}
                 </div>

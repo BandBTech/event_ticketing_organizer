@@ -3,7 +3,7 @@ import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import type { ScanMode } from "@/hooks/useScannerState";
 import { EventDay } from "@/types/event";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, formatEventDayName } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface ScannerHeaderProps {
@@ -120,7 +120,7 @@ export function ScannerHeader({
                   : "bg-black/50 text-white/80 border-white/10 hover:text-white"
               }`}
             >
-              {day.name || `${t("tickets.day", "Day")} ${idx + 1}`}
+              {formatEventDayName(day.name, idx, t)}
             </button>
           ))}
         </div>
