@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EventDay, TicketCheckIn, TicketResponse } from "@/types/event";
-import { formatDateTime, formatCurrency } from "@/lib/utils";
+import { formatDateTime, formatCurrency, formatEventDayName } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -71,7 +71,7 @@ function DayCheckInPills({
           // upcoming -> day hasn't ended yet and not scanned.
           const state = checkIn ? "in" : dayEnded ? "missed" : "upcoming";
 
-          const dayLabel = day.name || `${t("tickets.day", "Day")} ${idx + 1}`;
+          const dayLabel = formatEventDayName(day.name, idx, t);
           const scannedBy = checkIn?.checked_in_by?.name;
 
           const cls =

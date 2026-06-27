@@ -271,3 +271,20 @@ export function parseTicketScanMessage(
   return { title: defaultTitle, description: defaultDesc };
 }
 
+/**
+ * Formats event day name, translating default "Day X" strings or index fallbacks.
+ */
+export function formatEventDayName(
+  name: string | null | undefined,
+  index: number,
+  t: (key: string, fallback: string) => string
+): string {
+  const rawName = name || "";
+  const match = rawName.match(/^Day\s*(\d+)$/i);
+  if (match) {
+    const dayNum = match[1];
+    return `${t("tickets.day", "Day")} ${dayNum}`;
+  }
+  return rawName || `${t("tickets.day", "Day")} ${index + 1}`;
+}
+
