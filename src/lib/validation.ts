@@ -12,6 +12,7 @@ const createRequiredDateSchema = (
     params?: Record<string, string | number>,
   ) => string,
   fieldNameKey?: string,
+  skipPastValidation: boolean = false,
 ) =>
   z
     .string()
@@ -45,16 +46,18 @@ const createRequiredDateSchema = (
       }
 
       // Check for past date (previous date validation)
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (date < today) {
-        const message = fieldNameKey
-          ? `event.validation.fieldPastDate|field:${fieldNameKey}`
-          : t("event.validation.pastDate", "Date cannot be in the past.");
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message,
-        });
+      if (!skipPastValidation) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (date < today) {
+          const message = fieldNameKey
+            ? `event.validation.fieldPastDate|field:${fieldNameKey}`
+            : t("event.validation.pastDate", "Date cannot be in the past.");
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message,
+          });
+        }
       }
     });
 
@@ -434,6 +437,7 @@ export const createTicketSchema = (
     fallback?: string,
     params?: Record<string, string | number>,
   ) => string,
+  isEditing: boolean = false,
 ) =>
   z
     .object({
@@ -484,10 +488,12 @@ export const createTicketSchema = (
       salesStart: createRequiredDateSchema(
         t,
         "event.field.salesStart:Sales Start Date",
+        isEditing,
       ),
       salesEnd: createRequiredDateSchema(
         t,
         "event.field.salesEnd:Sales End Date",
+        isEditing,
       ),
     })
     .refine(
@@ -700,6 +706,7 @@ export const createEventSchema = (
     fallback?: string,
     params?: Record<string, string | number>,
   ) => string,
+  isEditing: boolean = false,
 ) =>
   z
     .object({
@@ -793,13 +800,15 @@ export const createEventSchema = (
       startDate: createRequiredDateSchema(
         t,
         "event.field.startDateTime:Event Start Date",
+        isEditing,
       ),
       endDate: createRequiredDateSchema(
         t,
         "event.field.endDateTime:Event End Date",
+        isEditing,
       ),
       tickets: z
-        .array(createTicketSchema(t))
+        .array(createTicketSchema(t, isEditing))
         .min(
           1,
           t(
