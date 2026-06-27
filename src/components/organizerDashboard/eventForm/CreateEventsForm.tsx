@@ -98,14 +98,17 @@ export default function CreateEventsForm({
 
   const eventSchema = useMemo(
     () =>
-      createEventSchema((key, fallback, params) => {
-        if (!params || Object.keys(params).length === 0) return key;
-        const strParams = Object.entries(params)
-          .map(([k, v]) => `${k}:${v}`)
-          .join(",");
-        return `${key}|${strParams}`;
-      }),
-    [],
+      createEventSchema(
+        (key, fallback, params) => {
+          if (!params || Object.keys(params).length === 0) return key;
+          const strParams = Object.entries(params)
+            .map(([k, v]) => `${k}:${v}`)
+            .join(",");
+          return `${key}|${strParams}`;
+        },
+        isEditing,
+      ),
+    [isEditing],
   );
 
   const form = useForm<EventFormData>({
