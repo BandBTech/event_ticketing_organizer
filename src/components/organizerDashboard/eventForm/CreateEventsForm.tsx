@@ -527,15 +527,15 @@ export default function CreateEventsForm({
           if (changedFields.start_date !== undefined) {
             diffs.push({
               field: t("event.field.startDate", "Start Date"),
-              oldValue: initialData.start_date ? formatDateTime(initialData.start_date) : "-",
-              newValue: data.startDate ? formatDateTime(data.startDate) : "-",
+              oldValue: initialData.start_date ? formatDateTime(initialData.start_date, { timezone: initialData.timezone }) : "-",
+              newValue: data.startDate ? formatDateTime(data.startDate, { timezone: data.timezone }) : "-",
             });
           }
           if (changedFields.end_date !== undefined) {
             diffs.push({
               field: t("event.field.endDate", "End Date"),
-              oldValue: initialData.end_date ? formatDateTime(initialData.end_date) : "-",
-              newValue: data.endDate ? formatDateTime(data.endDate) : "-",
+              oldValue: initialData.end_date ? formatDateTime(initialData.end_date, { timezone: initialData.timezone }) : "-",
+              newValue: data.endDate ? formatDateTime(data.endDate, { timezone: data.timezone }) : "-",
             });
           }
           if (changedFields.banner_image !== undefined) {

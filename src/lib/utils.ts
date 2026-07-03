@@ -288,3 +288,117 @@ export function formatEventDayName(
   return rawName || `${t("tickets.day", "Day")} ${index + 1}`;
 }
 
+/**
+ * Converts a UTC ISO date string to a "local mirror" Date object.
+ * The resulting Date object's local time components (year, month, date, hours, minutes)
+ * will match the date and time in the target timezone.
+ * This is used to present the date in the selected timezone inside a standard date picker.
+ */
+export function utcToLocalMirror(
+  utcString: string | null | undefined,
+  timezone?: string,
+): Date | null {
+  if (!utcString) return null;
+  const date = new Date(utcString);
+  if (isNaN(date.getTime())) return null;
+  if (!timezone) return date;
+
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hourCycle: "h23",
+    });
+
+    const parts = formatter.formatToParts(date);
+    const getPart = (type: string) =>
+      parts.find((p) => p.type === type)?.value || "";
+
+    const year = parseInt(getPart("year"), 10);
+    const month = parseInt(getPart("month"), 10) - 1; // 0-indexed
+    const day = parseInt(getPart("day"), 10);
+    const hour = parseInt(getPart("hour"), 10);
+    const minute = parseInt(getPart("minute"), 10);
+    const second = parseInt(getPart("second"), 10);
+
+    return new Date(year, month, day, hour, minute, second);
+  } catch (error) {
+    console.error("Error in utcToLocalMirror:", error);
+    return date;
+  }
+}
+
+/**
+ * Converts a "local mirror" Date object back to a UTC ISO string
+ * by calculating the target timezone's offset at that specific date.
+ */
+export function localMirrorToUtc(
+  localDate: Date | null | undefined,
+  timezone?: string,
+): string {
+  if (!localDate) return "";
+  if (isNaN(localDate.getTime())) return "";
+  if (!timezone) return localDate.toISOString();
+
+  try {
+    const year = localDate.getFullYear();
+    const month = localDate.getMonth();
+    const day = localDate.getDate();
+    const hour = localDate.getHours();
+    const minute = localDate.getMinutes();
+    const second = localDate.getSeconds();
+
+    // 1. Create a UTC date representing the local components
+    const utcDate = new Date(Date.UTC(year, month, day, hour, minute, second));
+
+    // 2. Format this UTC date in the target timezone
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hourCycle: "h23",
+    });
+
+    const parts = formatter.formatToParts(utcDate);
+    const getPart = (type: string) =>
+      parts.find((p) => p.type === type)?.value || "";
+
+    const formattedYear = parseInt(getPart("year"), 10);
+    const formattedMonth = parseInt(getPart("month"), 10) - 1;
+    const formattedDay = parseInt(getPart("day"), 10);
+    const formattedHour = parseInt(getPart("hour"), 10);
+    const formattedMinute = parseInt(getPart("minute"), 10);
+    const formattedSecond = parseInt(getPart("second"), 10);
+
+    const formattedUtcDate = new Date(
+      Date.UTC(
+        formattedYear,
+        formattedMonth,
+        formattedDay,
+        formattedHour,
+        formattedMinute,
+        formattedSecond,
+      ),
+    );
+
+    // 3. Offset in ms = formatted - original
+    const offsetMs = formattedUtcDate.getTime() - utcDate.getTime();
+
+    // 4. Subtract offset from original UTC timestamp
+    const finalUtcDate = new Date(utcDate.getTime() - offsetMs);
+    return finalUtcDate.toISOString();
+  } catch (error) {
+    console.error("Error in localMirrorToUtc:", error);
+    return localDate.toISOString();
+  }
+}
+

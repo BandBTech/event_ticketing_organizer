@@ -21,6 +21,7 @@ import {
   PRICE_MAX_CHARS,
 } from "@/lib/validation";
 import { useTranslation } from "@/hooks/useTranslation";
+import { utcToLocalMirror, localMirrorToUtc } from "@/lib/utils";
 
 interface TicketTierCardProps {
   index: number;
@@ -43,13 +44,20 @@ const TicketTierCard = ({
   onCreateNew,
   isLoading = false,
   usedTierNames = [],
-  eventStartDate,
+  eventStartDate: _eventStartDateProp,
   registerFieldRef,
 }: TicketTierCardProps & { usedTierNames?: string[] }) => {
   const { t } = useTranslation();
   const { setValue } = useFormContext<EventFormData>();
 
-  const minDate = new Date();
+  const timezone = useWatch({ control, name: "timezone" });
+  const startDateValue = useWatch({ control, name: "startDate" });
+
+  const eventStartDate = startDateValue
+    ? utcToLocalMirror(startDateValue, timezone) || undefined
+    : undefined;
+
+  const minDate = utcToLocalMirror(new Date().toISOString(), timezone) || new Date();
   const salesStartValue = useWatch({
     control,
     name: `tickets.${index}.salesStart`,
@@ -59,7 +67,7 @@ const TicketTierCard = ({
     name: `tickets.${index}.salesEnd`,
   });
   const salesStartDate = salesStartValue
-    ? new Date(salesStartValue)
+    ? utcToLocalMirror(salesStartValue, timezone) || undefined
     : undefined;
 
   return (
@@ -258,14 +266,15 @@ const TicketTierCard = ({
               </FormLabel>
               <FormControl>
                 <ShadcnDateTimePicker
-                  value={field.value ? new Date(field.value) : null}
+                  value={utcToLocalMirror(field.value, timezone)}
                   onChange={(date) => {
                     if (!date) {
                       field.onChange("");
                     } else {
-                      field.onChange(date.toISOString());
+                      const utcStr = localMirrorToUtc(date, timezone);
+                      field.onChange(utcStr);
                       // Clear salesEnd if it's now before the new salesStart
-                      if (salesEndValue && new Date(salesEndValue) <= date) {
+                      if (salesEndValue && new Date(salesEndValue) <= new Date(utcStr)) {
                         setValue(`tickets.${index}.salesEnd`, "");
                       }
                     }
@@ -295,10 +304,10 @@ const TicketTierCard = ({
               </FormLabel>
               <FormControl>
                 <ShadcnDateTimePicker
-                  value={field.value ? new Date(field.value) : null}
+                  value={utcToLocalMirror(field.value, timezone)}
                   onChange={(date) => {
                     if (!date) field.onChange("");
-                    else field.onChange(date.toISOString());
+                    else field.onChange(localMirrorToUtc(date, timezone));
                   }}
                   format="yyyy-MM-dd hh:mm aa"
                   clearable

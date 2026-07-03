@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ShadcnDateTimePicker } from "@/components/ui/shadcn-datetime-picker";
 import TimezoneSelector from "../../TimezoneSelector";
+import { utcToLocalMirror, localMirrorToUtc } from "@/lib/utils";
 
 interface VenueScheduleSectionProps {
   control: Control<EventFormData>;
@@ -35,6 +36,7 @@ export function VenueScheduleSection({
 
   const startDate = watch("startDate");
   const country = watch("country");
+  const timezone = watch("timezone");
 
   return (
     <div className="mb-6 @container relative z-10">
@@ -199,14 +201,15 @@ export function VenueScheduleSection({
                 </FormLabel>
                 <FormControl>
                   <ShadcnDateTimePicker
-                    value={field.value ? new Date(field.value) : null}
+                    value={utcToLocalMirror(field.value, timezone)}
                     onChange={(date) => {
                       if (!date) field.onChange("");
-                      else field.onChange(date.toISOString());
+                      else field.onChange(localMirrorToUtc(date, timezone));
                     }}
                     format="yyyy-MM-dd hh:mm aa"
                     clearable
                     error={!!fieldState.error}
+                    minDate={utcToLocalMirror(new Date().toISOString(), timezone) || undefined}
                   />
                 </FormControl>
                 <TranslatedFormMessage t={t} />
@@ -225,15 +228,15 @@ export function VenueScheduleSection({
                 </FormLabel>
                 <FormControl>
                   <ShadcnDateTimePicker
-                    value={field.value ? new Date(field.value) : null}
+                    value={utcToLocalMirror(field.value, timezone)}
                     onChange={(date) => {
                       if (!date) field.onChange("");
-                      else field.onChange(date.toISOString());
+                      else field.onChange(localMirrorToUtc(date, timezone));
                     }}
                     format="yyyy-MM-dd hh:mm aa"
                     clearable
                     error={!!fieldState.error}
-                    minDate={startDate ? new Date(startDate) : undefined}
+                    minDate={startDate ? utcToLocalMirror(startDate, timezone) || undefined : undefined}
                   />
                 </FormControl>
                 <TranslatedFormMessage t={t} />

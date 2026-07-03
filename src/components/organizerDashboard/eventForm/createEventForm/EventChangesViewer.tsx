@@ -316,11 +316,11 @@ export function EventChangesViewer({
               <div className="space-y-1">
                 <div className="font-medium text-gray-500">
                   {initialData.start_date
-                    ? formatDateTime(initialData.start_date)
+                    ? formatDateTime(initialData.start_date, { timezone: initialData.timezone })
                     : "-"}{" "}
                   -{" "}
                   {initialData.end_date
-                    ? formatDateTime(initialData.end_date)
+                    ? formatDateTime(initialData.end_date, { timezone: initialData.timezone })
                     : "-"}
                 </div>
                 <div className="text-xs text-gray-400">
@@ -332,11 +332,11 @@ export function EventChangesViewer({
               <div className="space-y-1">
                 <div className="font-bold">
                   {currentValues.startDate
-                    ? formatDateTime(currentValues.startDate)
+                    ? formatDateTime(currentValues.startDate, { timezone: currentValues.timezone })
                     : "-"}{" "}
                   -{" "}
                   {currentValues.endDate
-                    ? formatDateTime(currentValues.endDate)
+                    ? formatDateTime(currentValues.endDate, { timezone: currentValues.timezone })
                     : "-"}
                 </div>
                 <div className="text-xs text-primary/80">
