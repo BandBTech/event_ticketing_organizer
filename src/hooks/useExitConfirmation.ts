@@ -26,12 +26,9 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
   const pushSentinel = useCallback(() => {
     if (typeof window === "undefined") return;
 
-    // Check if the current state is already the sentinel to prevent duplicate pushes
-    if (window.history.state?.exitGuard) {
-      guardActiveRef.current = true;
-      return;
-    }
-
+    // Always push a fresh sentinel — this also clears any stale forward history
+    // entries (e.g. leftover scanner pages from a previous navigation cycle),
+    // preventing back-button loops.
     window.history.pushState(
       { exitGuard: true },
       "",
@@ -40,17 +37,15 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
     guardActiveRef.current = true;
   }, []);
 
-  // Clear the bypass flag if it was set when returning from scanner/inner pages
+  // Clear the bypass flag if it was set when returning from scanner/inner pages.
+  // Also push a fresh sentinel to purge any stale forward history entries that
+  // may have been left behind by scanner's navigation guard (history.go(-2) path).
   useEffect(() => {
     if (typeof window !== "undefined" && (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation) {
-      const timer = setTimeout(() => {
-        if (typeof window !== "undefined") {
-          (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = false;
-        }
-      }, 100);
-      return () => clearTimeout(timer);
+      (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = false;
+      pushSentinel();
     }
-  }, []);
+  }, [pushSentinel]);
 
   // Listen for Next.js route transitions to distinguish from browser back button
   useEffect(() => {
@@ -129,8 +124,11 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
     setShowExitDialog(false);
     confirmedRef.current = true;
     guardActiveRef.current = false;
-    // Navigate back for real
-    window.history.back();
+    // Navigate to /login?exit=1 — a clean exit that won't redirect back to the
+    // dashboard (AuthLayout checks for the exit param and skips its redirect).
+    // Using Router.push instead of history.back() avoids the loop where the
+    // login page redirects the still-authenticated user back to the dashboard.
+    Router.push("/login?exit=1");
   }, []);
 
   const cancelExit = useCallback(() => {

@@ -49,7 +49,9 @@ export default function LoginForm() {
   // Redirect if already authenticated - role-based
   // Also check !isLoading to avoid premature redirect during login flow
   // (fetchProfile sets isAuthenticated=true before the full login chain completes)
+  // Skip redirect when exit=1 (user intentionally exited dashboard)
   useEffect(() => {
+    if (router.query.exit === "1") return;
     if (isAuthenticated && user && !isLoading) {
       const userRoles = user.roles || [];
       // Staff and manager go to staff dashboard, others to organizer dashboard

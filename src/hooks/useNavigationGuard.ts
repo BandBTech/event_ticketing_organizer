@@ -101,16 +101,16 @@ export function useNavigationGuard({
     if (pendingNavigation) {
       isConfirmedNavigation.current = true;
       if (pendingWasPopstateRef.current) {
-        // When the back button triggered the guard, Next.js pushed the current URL
-        // onto the stack to recover the aborted navigation. go(-2) skips that
-        // recovery entry and reaches the intended destination without adding a new
-        // history entry — preventing the scanner from accumulating in history across
-        // multiple event sessions.
         pendingWasPopstateRef.current = false;
         if (typeof window !== "undefined") {
           (window as typeof window & { __bypassExitConfirmation?: boolean }).__bypassExitConfirmation = true;
         }
-        window.history.go(-2);
+        // Use history.back() to go one step back (to the sentinel) instead of
+        // go(-2) which skipped the sentinel and left stale entries in the
+        // forward history. The __bypassExitConfirmation flag tells
+        // useExitConfirmation to ignore the resulting popstate so the exit
+        // dialog does not appear when returning to the dashboard home screen.
+        window.history.back();
       } else {
         pendingNavigation();
       }

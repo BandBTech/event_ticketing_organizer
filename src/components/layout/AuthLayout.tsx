@@ -15,6 +15,13 @@ export default function AuthLayout({
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
+    // When the user confirmed exit from the dashboard, we land here. Skip the
+    // redirect so the user stays on the login page instead of looping back.
+    if (router.query.exit === "1") {
+      setIsCheckingAuth(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
         if (authService.isAuthenticated()) {
