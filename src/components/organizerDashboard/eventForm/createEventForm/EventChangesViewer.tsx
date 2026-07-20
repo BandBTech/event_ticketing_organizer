@@ -71,9 +71,21 @@ export function EventChangesViewer({
     );
   };
 
+  const getCountryName = (code: string | undefined) => {
+    if (!code) return "-";
+    try {
+      const countryDisplayNames = new Intl.DisplayNames([locale], { type: "region" });
+      return countryDisplayNames.of(code.toUpperCase()) || code;
+    } catch (error) {
+      return code;
+    }
+  };
+
   // Identify changed fields
   const hasTitleChanged = changedFields.title !== undefined;
   const hasDescriptionChanged = changedFields.description !== undefined;
+  const hasEventTypeChanged = changedFields.event_type !== undefined;
+  const hasCountryChanged = changedFields.country !== undefined;
   const hasDatesChanged =
     changedFields.start_date !== undefined ||
     changedFields.end_date !== undefined;
@@ -301,6 +313,18 @@ export function EventChangesViewer({
               </span>
             ),
           }),
+          renderTableRow({
+            label: t("event.field.eventType", "Event Type"),
+            isChanged: hasEventTypeChanged,
+            originalNode: <span>{initialData.event_type || "-"}</span>,
+            proposedNode: <span>{currentValues.event_type || "-"}</span>,
+          }),
+          renderTableRow({
+            label: t("event.field.country", "Country"),
+            isChanged: hasCountryChanged,
+            originalNode: <span>{getCountryName(initialData.country)}</span>,
+            proposedNode: <span>{getCountryName(currentValues.country)}</span>,
+          }),
         ],
       })}
 
@@ -381,10 +405,24 @@ export function EventChangesViewer({
                     key={idx}
                     className="flex justify-between items-center text-xs text-gray-500 bg-gray-50/50 p-2.5 rounded-lg border border-gray-200"
                   >
-                    <span className="font-semibold truncate max-w-[150px]">
-                      {getTierNameLocal(tier)}
-                    </span>
-                    <span className="font-medium text-gray-400">
+                    <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-4">
+                      <span className="font-semibold truncate">
+                        {getTierNameLocal(tier)}
+                      </span>
+                      {tier.sales_start && (
+                        <div className="text-[10px] text-gray-400 flex flex-col gap-0.5 mt-0.5 whitespace-normal">
+                          <span>
+                            {t("event.field.salesStart", "Sales Start")}: {formatDateTime(tier.sales_start, { timezone: initialData.timezone })}
+                          </span>
+                          {tier.sales_end && (
+                            <span>
+                              {t("event.field.salesEnd", "Sales End")}: {formatDateTime(tier.sales_end, { timezone: initialData.timezone })}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <span className="font-medium text-gray-450 shrink-0">
                       {tier.quantity} x {initialData.currency} {tier.price}
                     </span>
                   </div>
@@ -398,17 +436,31 @@ export function EventChangesViewer({
               <div className="grid grid-cols-1 gap-2 w-full max-w-md">
                 {currentValues.tickets.map(
                   (
-                    ticket: { name: string; quantity: number; price: number },
+                    ticket: { name: string; quantity: number; price: number; salesStart?: string; salesEnd?: string },
                     idx: number,
                   ) => (
                     <div
                       key={idx}
                       className="flex justify-between items-center text-xs bg-primary/[0.02] border-primary/25 text-gray-900 p-2.5 rounded-lg border shadow-sm font-medium"
                     >
-                      <span className="font-bold truncate max-w-[150px] text-primary">
-                        {ticket.name}
-                      </span>
-                      <span className="font-semibold">
+                      <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-4">
+                        <span className="font-bold truncate text-primary">
+                          {ticket.name}
+                        </span>
+                        {ticket.salesStart && (
+                          <div className="text-[10px] text-primary/70 flex flex-col gap-0.5 mt-0.5 whitespace-normal">
+                            <span>
+                              {t("event.field.salesStart", "Sales Start")}: {formatDateTime(ticket.salesStart, { timezone: currentValues.timezone })}
+                            </span>
+                            {ticket.salesEnd && (
+                              <span>
+                                {t("event.field.salesEnd", "Sales End")}: {formatDateTime(ticket.salesEnd, { timezone: currentValues.timezone })}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-semibold shrink-0">
                         {ticket.quantity} x {currentValues.currency}{" "}
                         {ticket.price}
                       </span>

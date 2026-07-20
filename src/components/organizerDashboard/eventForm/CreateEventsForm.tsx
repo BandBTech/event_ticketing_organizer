@@ -170,6 +170,8 @@ export default function CreateEventsForm({
             form.setValue(`tickets.${index}.name`, resolvedName);
           }
         });
+        // Reset defaultValues reference to include the resolved ticket names so isDirty is computed correctly
+        form.reset(getEventFormDefaults(initialData, tierTemplates), { keepValues: true });
       } else {
         // First initialisation — full reset is safe since user hasn't edited yet.
         form.reset(getEventFormDefaults(initialData, tierTemplates));

@@ -128,6 +128,27 @@ interface TierData {
 }
 
 /**
+ * Helper to compare two date strings for temporal equivalence
+ */
+export function isDateEqual(
+  d1?: string | null,
+  d2?: string | null,
+): boolean {
+  const norm1 = d1 || "";
+  const norm2 = d2 || "";
+  if (!norm1 && !norm2) return true;
+  if (!norm1 || !norm2) return false;
+  try {
+    const time1 = new Date(norm1).getTime();
+    const time2 = new Date(norm2).getTime();
+    if (isNaN(time1) || isNaN(time2)) return norm1 === norm2;
+    return time1 === time2;
+  } catch {
+    return norm1 === norm2;
+  }
+}
+
+/**
  * Get only changed fields for update (optimization)
  */
 export function getChangedFields(
@@ -175,10 +196,10 @@ export function getChangedFields(
   if (currentData.is_refundable !== (initialData.is_refundable ?? false)) {
     changedFields.is_refundable = currentData.is_refundable;
   }
-  if (currentData.startDate !== initialData.start_date) {
+  if (!isDateEqual(currentData.startDate, initialData.start_date)) {
     changedFields.start_date = currentData.startDate || undefined;
   }
-  if (currentData.endDate !== initialData.end_date) {
+  if (!isDateEqual(currentData.endDate, initialData.end_date)) {
     changedFields.end_date = currentData.endDate || undefined;
   }
 
@@ -194,8 +215,8 @@ export function getChangedFields(
         tier.price !== initialTier.price ||
         tier.quantity !== initialTier.quantity ||
         tier.gst !== (initialTier.gst || 0) ||
-        tier.sales_start !== (initialTier.sales_start || "") ||
-        tier.sales_end !== (initialTier.sales_end || "")
+        !isDateEqual(tier.sales_start, initialTier.sales_start) ||
+        !isDateEqual(tier.sales_end, initialTier.sales_end)
       );
     });
 
