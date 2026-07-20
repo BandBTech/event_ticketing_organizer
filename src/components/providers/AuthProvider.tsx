@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isOrganizerComplete: true,
           _authChecked: true,
         });
-        router.push('/auth/login');
+        router.push('/login');
       }
     };
 

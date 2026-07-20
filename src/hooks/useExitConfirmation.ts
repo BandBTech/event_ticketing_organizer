@@ -111,11 +111,19 @@ export function useExitConfirmation(): UseExitConfirmationReturn {
 
     return () => {
       window.removeEventListener("popstate", handlePopstate);
-      // Clean up the sentinel entry when the component unmounts
-      if (guardActiveRef.current && !isNavigatingAwayRef.current) {
+      // Clean up the sentinel entry when the component unmounts.
+      // Do NOT call history.back() if the user is logging out,
+      // as executing history.back() during logout causes an unwanted browser popstate/refresh on the login screen.
+      if (
+        guardActiveRef.current &&
+        !isNavigatingAwayRef.current &&
+        useAuthStore.getState().isAuthenticated
+      ) {
         guardActiveRef.current = false;
         // Go back to remove the sentinel we pushed
         window.history.back();
+      } else {
+        guardActiveRef.current = false;
       }
     };
   }, [_authChecked, isAuthenticated, pushSentinel]);
