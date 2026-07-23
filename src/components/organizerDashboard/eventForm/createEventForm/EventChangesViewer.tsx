@@ -82,10 +82,19 @@ export function EventChangesViewer({
     }
   };
 
+  const toTitleCase = (str: string) => {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .split(/\s+/)
+      .map((word) => (word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
+      .join(" ");
+  };
+
   const formatEventType = (type: string | undefined) => {
     if (!type) return "-";
     const translated = t(`event.eventType.${type.toLowerCase()}`, type);
-    return translated.charAt(0).toUpperCase() + translated.slice(1);
+    return toTitleCase(translated);
   };
 
   // Identify changed fields
@@ -116,15 +125,15 @@ export function EventChangesViewer({
     rows: React.ReactNode[];
   }) => {
     return (
-      <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
+      <div className="border border-gray-200/90 rounded-xl overflow-hidden shadow-xs bg-white">
         {/* Section Header */}
-        <div className="bg-gray-50/80 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+        <div className="bg-gray-50/90 px-4 py-3 border-b border-gray-200/80 flex items-center gap-2">
           <Icon
             weight="duotone"
             className="w-4.5 h-4.5 text-gray-500 shrink-0"
           />
-          <h4 className="font-medium text-gray-700 text-xs md:text-sm capitalize tracking-wider">
-            {title}
+          <h4 className="font-semibold text-gray-800 text-xs md:text-sm tracking-normal">
+            {toTitleCase(title)}
           </h4>
         </div>
         {/* Rows */}
@@ -145,22 +154,23 @@ export function EventChangesViewer({
     originalNode: React.ReactNode;
     proposedNode: React.ReactNode;
   }) => {
+    const formattedLabel = toTitleCase(label);
     return (
-      <div className="grid grid-cols-2 divide-x divide-gray-150 last:border-b-0">
+      <div className="grid grid-cols-2 divide-x divide-gray-200/80 last:border-b-0">
         {/* Left side: Original */}
         <div
           className={cn(
-            "p-4 text-xs md:text-sm transition-colors min-h-[60px] flex flex-col justify-start",
-            isChanged ? "bg-gray-50/50" : "bg-white",
+            "p-3.5 md:p-4 text-xs md:text-sm transition-colors min-h-[60px] flex flex-col justify-start",
+            isChanged ? "bg-gray-50/70" : "bg-white",
           )}
         >
-          <div className="text-[10px] font-medium text-gray-400 capitalize tracking-wider mb-1">
-            {label}
+          <div className="text-xs font-semibold text-gray-500 mb-1.5">
+            {formattedLabel}
           </div>
           <div
             className={cn(
-              "text-gray-600 leading-relaxed",
-              isChanged && " text-gray-400/80",
+              "text-gray-700 leading-relaxed",
+              isChanged && "text-gray-500",
             )}
           >
             {originalNode}
@@ -170,21 +180,21 @@ export function EventChangesViewer({
         {/* Right side: Proposed */}
         <div
           className={cn(
-            "p-4 text-xs md:text-sm transition-colors min-h-[60px] flex flex-col justify-start",
-            isChanged ? "bg-primary/5" : "bg-white",
+            "p-3.5 md:p-4 text-xs md:text-sm transition-colors min-h-[60px] flex flex-col justify-start",
+            isChanged ? "bg-blue-50/40" : "bg-white",
           )}
         >
-          <div className="flex items-center justify-between mb-1 gap-2">
+          <div className="flex items-center justify-between mb-1.5 gap-2">
             <div
               className={cn(
-                "text-[10px] font-medium capitalize tracking-wider",
-                isChanged ? "text-primary font-bold" : "text-gray-450",
+                "text-xs font-semibold",
+                isChanged ? "text-blue-700 font-bold" : "text-gray-600",
               )}
             >
-              {label}
+              {formattedLabel}
             </div>
             {isChanged && (
-              <Badge className="bg-primary hover:bg-primary/95 text-white font-semibold text-[9px] px-1.5 py-0.5 rounded-full h-4 shrink-0">
+              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border border-blue-200 font-semibold text-[10px] px-2 py-0.5 rounded-full shadow-2xs shrink-0">
                 {t("event.confirm.badgeChanged", "Changed")}
               </Badge>
             )}
@@ -192,7 +202,7 @@ export function EventChangesViewer({
           <div
             className={cn(
               "text-gray-900 leading-relaxed",
-              isChanged ? "text-primary font-bold" : "font-normal",
+              isChanged ? "text-blue-950 font-semibold" : "font-normal",
             )}
           >
             {proposedNode}
@@ -203,7 +213,20 @@ export function EventChangesViewer({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Column Header Bar */}
+      <div className="grid grid-cols-2 bg-gray-100/90 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 overflow-hidden divide-x divide-gray-200">
+        <div className="px-4 py-2.5 flex items-center gap-1.5 text-gray-600">
+          <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+          {t("event.confirm.originalDetails", "Original Details")}
+        </div>
+        <div className="px-4 py-2.5 flex items-center justify-between gap-1.5 text-blue-700 bg-blue-50/60">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+            {t("event.confirm.proposedChanges", "Proposed Changes")}
+          </div>
+        </div>
+      </div>
       {/* Group 1: Event Details */}
       {renderSectionPanel({
         title: t("event.section.eventDetails", "Event Details"),
