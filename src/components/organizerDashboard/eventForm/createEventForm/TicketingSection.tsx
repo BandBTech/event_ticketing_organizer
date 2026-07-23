@@ -54,16 +54,15 @@ export function TicketingSection({
           name="is_refundable"
           render={({ field }) => (
             <FormItem className="space-y-0">
-              <label
-                htmlFor="is_refundable_switch"
-                className={`flex items-center justify-between gap-4 rounded-lg border-2 py-2 px-3 cursor-pointer transition-all duration-200 ${
-                  field.value
+              <div
+                className={`flex items-center justify-between gap-4 rounded-lg border-2 py-2 px-3 transition-all duration-200 ${
+                  Boolean(field.value)
                     ? "border-primary/40 bg-primary/5"
                     : "border-dashed border-muted-foreground/25 bg-muted/30"
                 }`}
               >
                 <div className="space-y-0.5">
-                  <FormLabel className="text-sm font-semibold cursor-pointer m-0!">
+                  <FormLabel htmlFor="is_refundable_switch" className="text-sm font-semibold cursor-pointer m-0!">
                     {t("event.field.isRefundable", "Refundable")}
                   </FormLabel>
                   <p className="text-xs text-muted-foreground leading-snug">
@@ -76,11 +75,11 @@ export function TicketingSection({
                 <FormControl>
                   <Switch
                     id="is_refundable_switch"
-                    checked={field.value}
+                    checked={Boolean(field.value)}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-              </label>
+              </div>
             </FormItem>
           )}
         />

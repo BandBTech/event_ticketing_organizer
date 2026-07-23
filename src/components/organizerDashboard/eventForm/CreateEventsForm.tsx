@@ -26,6 +26,7 @@ import {
   getChangedFields,
   prepareCreateEventData,
   getTierName,
+  parseBoolean,
 } from "@/lib/eventFormUtils";
 import {
   EventDetailsSection,
@@ -468,10 +469,15 @@ export default function CreateEventsForm({
             });
           }
           if (changedFields.event_type !== undefined) {
+            const formatEventType = (type: string | undefined) => {
+              if (!type) return "-";
+              const translated = t(`event.eventType.${type.toLowerCase()}`, type);
+              return translated.charAt(0).toUpperCase() + translated.slice(1);
+            };
             diffs.push({
               field: t("event.field.eventType", "Event Type"),
-              oldValue: initialData.event_type || "-",
-              newValue: data.event_type || "-",
+              oldValue: formatEventType(initialData.event_type),
+              newValue: formatEventType(data.event_type),
             });
           }
           if (changedFields.country !== undefined) {
@@ -522,8 +528,8 @@ export default function CreateEventsForm({
           if (changedFields.is_refundable !== undefined) {
             diffs.push({
               field: t("event.field.refundable", "Refundable"),
-              oldValue: initialData.is_refundable ? t("common.yes", "Yes") : t("common.no", "No"),
-              newValue: data.is_refundable ? t("common.yes", "Yes") : t("common.no", "No"),
+              oldValue: parseBoolean(initialData.is_refundable) ? t("common.yes", "Yes") : t("common.no", "No"),
+              newValue: parseBoolean(data.is_refundable) ? t("common.yes", "Yes") : t("common.no", "No"),
             });
           }
           if (changedFields.start_date !== undefined) {

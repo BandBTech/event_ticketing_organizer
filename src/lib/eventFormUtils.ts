@@ -43,6 +43,20 @@ export function getTierName(
 }
 
 /**
+ * Safely parse boolean values from boolean, string ("true"/"false"/"1"/"0"), or number
+ */
+export function parseBoolean(value: unknown): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    return normalized === "true" || normalized === "1" || normalized === "yes";
+  }
+  if (typeof value === "number") return value === 1;
+  return false;
+}
+
+
+/**
  * Generate default form values from initial data
  */
 export function getEventFormDefaults(
@@ -92,7 +106,7 @@ export function getEventFormDefaults(
     venueAddress: initialData.address || "",
     capacity: initialData.capacity || 0,
     timezone: initialData.timezone || "",
-    is_refundable: initialData.is_refundable ?? false,
+    is_refundable: parseBoolean(initialData.is_refundable),
     startDate: initialData.start_date || "",
     endDate: initialData.end_date || "",
     tickets: initialData.tiers?.map((t) => ({
@@ -193,8 +207,8 @@ export function getChangedFields(
   if (currentData.timezone !== initialData.timezone) {
     changedFields.timezone = currentData.timezone;
   }
-  if (currentData.is_refundable !== (initialData.is_refundable ?? false)) {
-    changedFields.is_refundable = currentData.is_refundable;
+  if (parseBoolean(currentData.is_refundable) !== parseBoolean(initialData.is_refundable)) {
+    changedFields.is_refundable = parseBoolean(currentData.is_refundable);
   }
   if (!isDateEqual(currentData.startDate, initialData.start_date)) {
     changedFields.start_date = currentData.startDate || undefined;
@@ -257,7 +271,7 @@ export function prepareCreateEventData(
     start_date: data.startDate || "",
     end_date: data.endDate || "",
     timezone: data.timezone,
-    is_refundable: data.is_refundable,
+    is_refundable: parseBoolean(data.is_refundable),
     capacity: data.capacity,
     price: data.tickets[0]?.price ?? 0,
     tiers: JSON.stringify(tiersData),

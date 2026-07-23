@@ -15,6 +15,7 @@ import {
 } from "@/types/event";
 import { EventFormData } from "@/lib/validation";
 import { HtmlRenderer } from "@/components/ui/html-renderer";
+import { parseBoolean } from "@/lib/eventFormUtils";
 
 interface EventChangesViewerProps {
   initialData: Event;
@@ -81,6 +82,12 @@ export function EventChangesViewer({
     }
   };
 
+  const formatEventType = (type: string | undefined) => {
+    if (!type) return "-";
+    const translated = t(`event.eventType.${type.toLowerCase()}`, type);
+    return translated.charAt(0).toUpperCase() + translated.slice(1);
+  };
+
   // Identify changed fields
   const hasTitleChanged = changedFields.title !== undefined;
   const hasDescriptionChanged = changedFields.description !== undefined;
@@ -116,7 +123,7 @@ export function EventChangesViewer({
             weight="duotone"
             className="w-4.5 h-4.5 text-gray-500 shrink-0"
           />
-          <h4 className="font-bold text-gray-700 text-xs md:text-sm uppercase tracking-wider">
+          <h4 className="font-medium text-gray-700 text-xs md:text-sm capitalize tracking-wider">
             {title}
           </h4>
         </div>
@@ -147,7 +154,7 @@ export function EventChangesViewer({
             isChanged ? "bg-gray-50/50" : "bg-white",
           )}
         >
-          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+          <div className="text-[10px] font-medium text-gray-400 capitalize tracking-wider mb-1">
             {label}
           </div>
           <div
@@ -170,7 +177,7 @@ export function EventChangesViewer({
           <div className="flex items-center justify-between mb-1 gap-2">
             <div
               className={cn(
-                "text-[10px] font-bold uppercase tracking-wider",
+                "text-[10px] font-medium capitalize tracking-wider",
                 isChanged ? "text-primary font-bold" : "text-gray-450",
               )}
             >
@@ -185,7 +192,7 @@ export function EventChangesViewer({
           <div
             className={cn(
               "text-gray-900 leading-relaxed",
-              isChanged ? "text-primary font-semibold" : "font-normal",
+              isChanged ? "text-primary font-bold" : "font-normal",
             )}
           >
             {proposedNode}
@@ -300,14 +307,14 @@ export function EventChangesViewer({
             isChanged: hasRefundableChanged,
             originalNode: (
               <span>
-                {initialData.is_refundable
+                {parseBoolean(initialData.is_refundable)
                   ? t("common.yes", "Yes")
                   : t("common.no", "No")}
               </span>
             ),
             proposedNode: (
               <span>
-                {currentValues.is_refundable
+                {parseBoolean(currentValues.is_refundable)
                   ? t("common.yes", "Yes")
                   : t("common.no", "No")}
               </span>
@@ -316,8 +323,8 @@ export function EventChangesViewer({
           renderTableRow({
             label: t("event.field.eventType", "Event Type"),
             isChanged: hasEventTypeChanged,
-            originalNode: <span>{initialData.event_type || "-"}</span>,
-            proposedNode: <span>{currentValues.event_type || "-"}</span>,
+            originalNode: <span>{formatEventType(initialData.event_type)}</span>,
+            proposedNode: <span>{formatEventType(currentValues.event_type)}</span>,
           }),
           renderTableRow({
             label: t("event.field.country", "Country"),
