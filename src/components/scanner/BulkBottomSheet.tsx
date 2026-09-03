@@ -5,10 +5,7 @@ import {
   XCircleIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { AnimatePresence, motion } from "framer-motion";
 import type { BulkScanItem } from "@/hooks/useScannerState";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -23,7 +20,6 @@ interface BulkBottomSheetProps {
   onSubmit: () => void;
   onClear: () => void;
   onRetryFailed: () => void;
-  // Labels
   inQueueLabel: string;
   pendingCheckInLabel: string;
   viewListLabel: string;
@@ -48,14 +44,17 @@ export function BulkBottomSheet({
 }: BulkBottomSheetProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
   if (queue.length === 0) return null;
 
   const isSubmitted = queue.some((item) => item.checkinResult !== undefined);
-  const hasFailed = queue.some((item) => item.checkinResult === "failed");
+  const successCount = queue.filter((item) => item.checkinResult === "success").length;
+  const failedCount = queue.filter((item) => item.checkinResult === "failed").length;
+  const hasFailed = failedCount > 0;
 
   return (
     <Drawer open={true} modal={false} dismissible={false}>
-      <DrawerContent className="z-20 focus:outline-none mb-0 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.15)] bg-white rounded-t-[20px] outline-none">
+      <DrawerContent className="z-20 focus:outline-none mb-0 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.25)] bg-gray-900 border-t border-white/10 text-white rounded-t-[24px] outline-none">
         <div className="p-4 pt-2">
           {/* Header row */}
           <div
@@ -63,19 +62,33 @@ export function BulkBottomSheet({
             role="button"
             tabIndex={0}
             onClick={onToggleList}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onToggleList(); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") onToggleList();
+            }}
           >
             <div className="flex items-center gap-3">
-              <div className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm">
-                {queue.length} {inQueueLabel}
+              <div
+                className={`font-bold px-3 py-1 rounded-full text-xs ${
+                  isSubmitted
+                    ? hasFailed
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                      : "bg-green-500/20 text-green-300 border border-green-500/30"
+                    : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                }`}
+              >
+                {isSubmitted
+                  ? `${successCount} Checked In • ${failedCount} Failed`
+                  : `${queue.length} ${inQueueLabel}`}
               </div>
-              <p className="text-sm text-gray-600 truncate max-w-[150px] sm:max-w-none">
-                {isSubmitted ? "Bulk check-in results" : pendingCheckInLabel}
+              <p className="text-xs text-gray-400 truncate max-w-[160px] sm:max-w-none">
+                {isSubmitted ? "Review Results" : pendingCheckInLabel}
               </p>
             </div>
+
             <Button
               variant="ghost"
               size="sm"
+              className="text-gray-300 hover:text-white hover:bg-white/10 text-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleList();
@@ -85,35 +98,36 @@ export function BulkBottomSheet({
             </Button>
           </div>
 
-          {/* Expandable ticket list with animation */}
+          {/* Ticket list keyed by item.code */}
           <AnimatePresence initial={false}>
             {showList && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="max-h-60 overflow-y-auto mb-4 border rounded-lg divide-y bg-gray-50/50">
+                <div className="max-h-60 overflow-y-auto mb-4 border border-white/10 rounded-xl divide-y divide-white/5 bg-gray-950/60">
                   {queue.map((item, idx) => (
                     <div
-                      key={idx}
-                      className="p-3 flex items-center justify-between bg-white text-sm"
+                      key={item.code}
+                      className="p-3 flex items-center justify-between text-sm hover:bg-white/5 transition-colors"
                     >
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-gray-900 line-clamp-1 max-w-[120px] sm:max-w-[200px]">
+                          <span className="font-semibold text-white line-clamp-1 max-w-[120px] sm:max-w-[200px]">
                             {item.attendeeName || "Guest User"}
                           </span>
-                          <span className="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                            {item.ticketNumber}
+                          <span className="text-xs font-mono text-gray-400 bg-white/10 px-1.5 py-0.5 rounded">
+                            {item.ticketNumber || item.code.slice(0, 10)}
                           </span>
                         </div>
                         {item.checkinMessage && (
                           <span
-                            className={`text-xs ${item.checkinResult === "failed" ? "text-red-500" : "text-gray-500"
-                              }`}
+                            className={`text-xs ${
+                              item.checkinResult === "failed" ? "text-red-400" : "text-gray-400"
+                            }`}
                           >
                             {item.checkinMessage}
                           </span>
@@ -122,18 +136,23 @@ export function BulkBottomSheet({
 
                       <div className="flex items-center gap-2 shrink-0">
                         {item.checkinResult === "success" && (
-                          <CheckCircleIcon
-                            size={24}
-                            weight="fill"
-                            className="text-green-500"
-                          />
+                          <CheckCircleIcon size={24} weight="fill" className="text-green-400" />
                         )}
                         {item.checkinResult === "failed" && (
-                          <XCircleIcon
-                            size={24}
-                            weight="fill"
-                            className="text-red-500"
-                          />
+                          <div className="flex items-center gap-1.5">
+                            <XCircleIcon size={24} weight="fill" className="text-red-400" />
+                            {/* Allow deleting failed item to clean queue for retry */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onRemoveItem(idx);
+                              }}
+                              className="text-gray-400 hover:text-red-400 p-1.5 rounded-full transition-colors"
+                              aria-label="Remove failed ticket"
+                            >
+                              <TrashIcon size={16} />
+                            </button>
+                          </div>
                         )}
                         {!item.checkinResult && (
                           <button
@@ -141,9 +160,10 @@ export function BulkBottomSheet({
                               e.stopPropagation();
                               onRemoveItem(idx);
                             }}
-                            className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors"
+                            className="text-gray-400 hover:text-red-400 p-1.5 rounded-full transition-colors"
+                            aria-label="Remove ticket"
                           >
-                            <TrashIcon size={18} />
+                            <TrashIcon size={16} />
                           </button>
                         )}
                       </div>
@@ -154,13 +174,13 @@ export function BulkBottomSheet({
             )}
           </AnimatePresence>
 
-          {/* Action row */}
+          {/* Actions */}
           <div className="flex gap-2">
             {isSubmitted ? (
               hasFailed ? (
                 <>
                   <Button
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold h-12"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-xl text-sm"
                     onClick={onRetryFailed}
                   >
                     {t("staffScanner.retryFailed", "Retry Failed")}
@@ -168,7 +188,7 @@ export function BulkBottomSheet({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="text-red-500 border-red-200 hover:bg-red-50 h-12 w-12 shrink-0"
+                    className="text-red-400 border-red-500/30 hover:bg-red-500/10 h-11 w-11 rounded-xl shrink-0"
                     onClick={onClear}
                   >
                     <TrashIcon size={18} />
@@ -176,7 +196,7 @@ export function BulkBottomSheet({
                 </>
               ) : (
                 <Button
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-12"
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-11 rounded-xl text-sm"
                   onClick={onClear}
                 >
                   {t("common.done", "Done")}
@@ -185,7 +205,7 @@ export function BulkBottomSheet({
             ) : (
               <>
                 <Button
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white gap-2 h-12 font-bold"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white gap-2 h-11 rounded-xl font-bold text-sm"
                   onClick={onSubmit}
                   disabled={isSubmitting}
                 >
@@ -195,7 +215,7 @@ export function BulkBottomSheet({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="text-red-500 border-red-200 hover:bg-red-50 h-12 w-12 shrink-0"
+                  className="text-red-400 border-red-500/30 hover:bg-red-500/10 h-11 w-11 rounded-xl shrink-0"
                   onClick={onClear}
                 >
                   <TrashIcon size={18} />

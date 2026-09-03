@@ -1,7 +1,92 @@
+import { z } from "zod";
+
 /**
- * Ticket Management Type Definitions
- * Defines all TypeScript interfaces for ticket-related data structures
+ * Ticket Management Type Definitions & Zod Schemas
+ * Fully compliant with Zod 4.1.x runtime signature requirements
  */
+
+// ─── Zod Schemas ─────────────────────────────────────────────────────────────
+
+export const BulkActionResultItemSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional().default(""),
+  qr_code: z.string().optional(),
+  code: z.string().optional(),
+  ticket_number: z.string().optional(),
+}).transform((item) => ({
+  success: item.success,
+  message: item.message,
+  qr_code: item.qr_code || item.code || item.ticket_number || "",
+  ticket_number: item.ticket_number,
+}));
+
+export const TicketBulkActionResultSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  // CRITICAL ZOD 4 FIX: Must use (keySchema, valueSchema) signature
+  data: z.array(z.record(z.string(), z.unknown())).optional().default([]),
+}).transform((res) => ({
+  success: res.success,
+  message: res.message,
+  data: (res.data || []).map((raw) => BulkActionResultItemSchema.parse(raw)),
+}));
+
+export const TicketCheckInValidationResponseSchema = z.object({
+  valid: z.boolean(),
+  can_checkin: z.boolean(),
+  message: z.string(),
+  qr_code: z.string().optional(),
+  event_id: z.string().optional(),
+  event_title: z.string().optional(),
+  ticket_info: z.object({
+    ticket_number: z.string().optional(),
+    attendee: z.object({
+      name: z.string().optional(),
+      email: z.string().optional(),
+      phone: z.string().optional(),
+    }).optional(),
+  }).optional(),
+});
+
+export const TicketScanResultSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  already_checked_in: z.boolean().optional().default(false),
+  ticket: z.object({
+    id: z.string().optional(),
+    ticket_number: z.string().optional(),
+    event_id: z.string().optional(),
+    event_title: z.string().optional(),
+    checked_in: z.boolean().optional(),
+    tier_name: z.string().optional(),
+    buyer_name: z.string().optional(),
+    buyer_email: z.string().optional(),
+  }).passthrough().optional(),
+  error: z.string().optional(),
+});
+
+export const TicketStatsSchema = z.object({
+  event_id: z.string(),
+  event_title: z.string().optional().default(""),
+  total_tickets: z.number().default(0),
+  tickets_sold: z.number().default(0),
+  tickets_checked_in: z.number().default(0),
+  tickets_checked_out: z.number().default(0),
+  tickets_remaining: z.number().default(0),
+  tickets_cancelled: z.number().default(0),
+  revenue: z.number().default(0),
+  check_in_rate: z.number().default(0),
+});
+
+// ─── Inferred Types ──────────────────────────────────────────────────────────
+
+export type BulkActionResultItem = z.infer<typeof BulkActionResultItemSchema>;
+export type ValidatedTicketBulkActionResult = z.infer<typeof TicketBulkActionResultSchema>;
+export type ValidatedCheckInValidation = z.infer<typeof TicketCheckInValidationResponseSchema>;
+export type ValidatedTicketScanResult = z.infer<typeof TicketScanResultSchema>;
+export type ValidatedTicketStats = z.infer<typeof TicketStatsSchema>;
+
+// ─── Domain Interfaces (Preserved) ───────────────────────────────────────────
 
 export interface Ticket {
   id: string;
@@ -106,5 +191,5 @@ export interface TicketBulkCheckOutRequest {
 export interface TicketBulkActionResult {
   success: boolean;
   message: string;
-  data?: Record<string, unknown>[];
+  data?: BulkActionResultItem[];
 }
