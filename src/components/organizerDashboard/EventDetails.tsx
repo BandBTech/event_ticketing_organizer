@@ -209,7 +209,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   };
 
   const handleCancelConfirm = () => {
-    setCancelConfirmOpen(false);
     if (cancelReason) {
       cancelEventMutation.mutate(cancelReason);
     }
@@ -224,7 +223,6 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
   };
 
   const handleStopSalesConfirm = () => {
-    setStopSalesConfirmOpen(false);
     if (salesAction) {
       salesControlMutation.mutate({
         action: salesAction,
@@ -1097,8 +1095,16 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
             <AlertDialogAction
               onClick={handleCancelConfirm}
               className="bg-red-600 hover:bg-red-700 font-semibold"
+              disabled={cancelEventMutation.isPending}
             >
-              {t("event.dialog.cancelEvent.title", "Cancel Event")}
+              {cancelEventMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("common.canceling", "Canceling...")}
+                </>
+              ) : (
+                t("event.dialog.cancelEvent.title", "Cancel Event")
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1201,8 +1207,16 @@ export default function EventDetails({ event, analytics }: EventDetailsProps) {
             <AlertDialogAction
               onClick={handleStopSalesConfirm}
               className="bg-red-600 hover:bg-red-700 font-semibold"
+              disabled={salesControlMutation.isPending}
             >
-              {t("event.button.stopSales", "Stop Sales")}
+              {salesControlMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("common.processing", "Processing...")}
+                </>
+              ) : (
+                t("event.button.stopSales", "Stop Sales")
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
