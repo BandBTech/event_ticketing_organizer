@@ -174,19 +174,19 @@ export function getChangedFields(
   const changedFields: Partial<UpdateEventRequest> = {};
 
   // Compare simple fields
-  if (currentData.name !== initialData.title) {
+  if (currentData.name !== (initialData.title || "")) {
     changedFields.title = currentData.name;
   }
-  if (currentData.description !== initialData.description) {
+  if (currentData.description !== (initialData.description || "")) {
     changedFields.description = currentData.description;
   }
-  if (currentData.currency !== initialData.currency?.toUpperCase()) {
+  if (currentData.currency !== (initialData.currency?.toUpperCase() || "")) {
     changedFields.currency = currentData.currency;
   }
-  if (currentData.event_type !== initialData.event_type) {
+  if (currentData.event_type !== (initialData.event_type || "")) {
     changedFields.event_type = currentData.event_type;
   }
-  if (currentData.country !== initialData.country) {
+  if (currentData.country !== (initialData.country || "")) {
     changedFields.country = currentData.country;
   }
   if (
@@ -195,16 +195,16 @@ export function getChangedFields(
   ) {
     changedFields.category = currentData.tags;
   }
-  if (currentData.venue !== initialData.venue_name) {
+  if (currentData.venue !== (initialData.venue_name || "")) {
     changedFields.venue_name = currentData.venue;
   }
-  if (currentData.venueAddress !== initialData.address) {
+  if (currentData.venueAddress !== (initialData.address || "")) {
     changedFields.address = currentData.venueAddress;
   }
-  if (currentData.capacity !== initialData.capacity) {
+  if (currentData.capacity !== (initialData.capacity || 0)) {
     changedFields.capacity = currentData.capacity;
   }
-  if (currentData.timezone !== initialData.timezone) {
+  if (currentData.timezone !== (initialData.timezone || "")) {
     changedFields.timezone = currentData.timezone;
   }
   if (parseBoolean(currentData.is_refundable) !== parseBoolean(initialData.is_refundable)) {
@@ -244,7 +244,7 @@ export function getChangedFields(
   }
 
   // Update price if first tier price changed
-  if (currentData.tickets[0]?.price !== initialTiers[0]?.price) {
+  if ((currentData.tickets[0]?.price ?? 0) !== (initialTiers[0]?.price ?? 0)) {
     changedFields.price = currentData.tickets[0]?.price ?? 0;
   }
 
