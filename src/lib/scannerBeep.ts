@@ -13,6 +13,15 @@
  */
 
 let audioCtx: AudioContext | null = null;
+let lastFeedbackTime = 0;
+const FEEDBACK_THROTTLE_MS = 350;
+
+/**
+ * Resets the feedback throttle timer (primarily for testing).
+ */
+export function resetFeedbackThrottle(): void {
+  lastFeedbackTime = 0;
+}
 
 function getAudioContext(): AudioContext {
   if (!audioCtx) {
@@ -35,8 +44,17 @@ function getAudioContext(): AudioContext {
  *
  * Falls back silently if the browser blocks autoplay or if the
  * AudioContext / Vibration API is unavailable.
+ *
+ * Enforces a minimum interval (350ms) between feedback pulses to guarantee
+ * that rapid scan events never produce doubled or overlapping tones.
  */
-export function playScanFeedback(): void {
+export function playScanFeedback(force = false): void {
+  const nowMs = typeof performance !== "undefined" ? performance.now() : Date.now();
+  if (!force && nowMs - lastFeedbackTime < FEEDBACK_THROTTLE_MS) {
+    return;
+  }
+  lastFeedbackTime = nowMs;
+
   // ── Haptic ──────────────────────────────────────────────────────────
   try {
     navigator.vibrate?.([35]);

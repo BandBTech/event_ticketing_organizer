@@ -933,7 +933,24 @@
     "validationFailed": "Convalida non riuscita",
     "scanFailed": "Impossibile scansionare il biglietto",
     "tapToResume": "Tocca per riprendere la scansione",
-    "allCheckedIn": "Tutti i biglietti registrati — tocca Fine per terminare"
+    "allCheckedIn": "Tutti i biglietti registrati — tocca Fine per terminare",
+    "ticketAlreadyQueued": "Questo biglietto è già in coda per il check-in",
+    "ticketCannotCheckIn": "Impossibile effettuare il check-in del biglietto",
+    "eventDetected": "Evento rilevato",
+    "readyToScanFor": "Pronto per la scansione per",
+    "connectionError": "Errore di connessione",
+    "scanRetry": "Tocca per eseguire nuovamente la scansione quando connesso",
+    "noEventContext": "Nessun contesto evento",
+    "scanOneTicketFirst": "Si prega di scansionare prima almeno un biglietto valido",
+    "checkedIn": "Registrato",
+    "failed": "Fallito",
+    "bulkCheckInFailed": "Check-in collettivo non riuscito",
+    "cameraErrorGeneric": "Impossibile accedere alla fotocamera.",
+    "cameraPermissionDenied": "Accesso alla fotocamera negato. Abilita i permessi nelle impostazioni del browser.",
+    "noCameraFound": "Nessuna fotocamera trovata su questo dispositivo.",
+    "cameraInUse": "La fotocamera è attualmente utilizzata da un'altra applicazione.",
+    "cameraConstraints": "Vincoli della fotocamera non soddisfatti.",
+    "insecureContext": "L'accesso alla fotocamera richiede un contesto sicuro (HTTPS)."
   },
   "rte": {
     "image": {

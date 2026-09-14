@@ -948,7 +948,24 @@
     "validationFailed": "検証に失敗しました",
     "scanFailed": "チケットのスキャンに失敗しました",
     "tapToResume": "タップしてスキャンを再開",
-    "allCheckedIn": "全チケットのチェックイン完了 — 完了をタップして終了"
+    "allCheckedIn": "全チケットのチェックイン完了 — 完了をタップして終了",
+    "ticketAlreadyQueued": "このチケットは既にチェックインのキューに入っています",
+    "ticketCannotCheckIn": "このチケットはチェックインできません",
+    "eventDetected": "イベントが検出されました",
+    "readyToScanFor": "スキャン準備完了",
+    "connectionError": "接続エラー",
+    "scanRetry": "接続時にタップして再スキャンしてください",
+    "noEventContext": "イベント情報がありません",
+    "scanOneTicketFirst": "最初に少なくとも1枚の有効なチケットをスキャンしてください",
+    "checkedIn": "チェックイン済み",
+    "failed": "失敗",
+    "bulkCheckInFailed": "一括チェックインに失敗しました",
+    "cameraErrorGeneric": "カメラへのアクセスに失敗しました。",
+    "cameraPermissionDenied": "カメラへのアクセスが拒否されました。ブラウザの設定でカメラの権限を有効にしてください。",
+    "noCameraFound": "このデバイスにカメラが見つかりません。",
+    "cameraInUse": "カメラは現在別のアプリケーションで使用中か、権限が拒否されています。",
+    "cameraConstraints": "カメラの要件を満たしていません。",
+    "insecureContext": "カメラアクセスには安全なコンテキスト（HTTPS）が必要です。"
   },
   "rte": {
     "image": {

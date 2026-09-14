@@ -59,6 +59,7 @@ if (typeof window !== 'undefined') {
 }
 
 export interface ToastOptions {
+  id?: string | number;
   onDismiss?: (toast: { id: string | number }) => void;
   onAutoClose?: (toast: { id: string | number }) => void;
 }
@@ -74,6 +75,7 @@ export const toast = {
     const message = getTranslation(translationKey, locale, fallback);
     const descriptionMessage = description ? getTranslation(description, locale, description) : undefined;
     const toastId = sonnerToast.success(message, {
+      id: options?.id,
       description: descriptionMessage,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
@@ -100,6 +102,7 @@ export const toast = {
     const message = getTranslation(translationKey, locale, fallback);
     const descriptionMessage = description ? getTranslation(description, locale, description) : undefined;
     const toastId = sonnerToast.error(message, {
+      id: options?.id,
       description: descriptionMessage,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
@@ -114,11 +117,14 @@ export const toast = {
     return toastId;
   },
 
-  info: (translationKey: string, fallback?: string, description?: string) => {
+  info: (translationKey: string, fallback?: string, description?: string, options?: ToastOptions) => {
     const locale = useLanguageStore.getState().locale;
     const message = getTranslation(translationKey, locale, fallback);
     const toastId = sonnerToast.info(message, {
+      id: options?.id,
       description: description,
+      onDismiss: options?.onDismiss,
+      onAutoClose: options?.onAutoClose,
     });
     
     activeToasts.set(toastId, { key: translationKey, type: 'info', fallback });
@@ -138,10 +144,12 @@ export const toast = {
     return sonnerToast(message);
   },
 
-  // Dismiss specific toast
+  // Dismiss specific toast or all toasts
   dismiss: (toastId?: string | number) => {
-    if (toastId) {
+    if (toastId !== undefined) {
       activeToasts.delete(toastId);
+    } else {
+      activeToasts.clear();
     }
     sonnerToast.dismiss(toastId);
   },

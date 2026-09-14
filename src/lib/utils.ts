@@ -241,34 +241,76 @@ export function parseTicketScanMessage(
   defaultTitle: string = "Error",
   defaultDesc?: string
 ): { title: string; description?: string } {
-  if (!rawMessage) {
+  if (!rawMessage || typeof rawMessage !== "string" || !rawMessage.trim()) {
     return { title: defaultTitle, description: defaultDesc };
   }
 
-  // Split by ':' (not necessarily ': ' since space might be missing or vary)
-  const parts = rawMessage
-    .split(":")
-    .map((p) => p.trim())
-    .filter(Boolean);
+  let cleaned = rawMessage.trim();
 
-  const isBusinessViolation = (msg: string) => {
-    const lower = msg.toLowerCase();
-    return (
-      lower.includes("violates business rules") ||
-      lower.includes("violates buisness rules")
-    );
-  };
+  // Pattern matching variations of business rule violation notices:
+  // e.g., "The operation violates business rules", "violates business rules", "violates buisness rules", etc.
+  const businessRulePattern = /(?:the\s+)?operation\s+violates\s+(?:business|buisness)\s+rules|violates\s+(?:business|buisness)\s+rules/i;
 
-  // Filter out any business rule violation messages
-  const cleanParts = parts.filter((p) => !isBusinessViolation(p));
+  // 1. Strip suffix: e.g. ".: The operation violates business rules." or ": The operation violates business rules" or "; The operation violates business rules."
+  cleaned = cleaned
+    .replace(
+      new RegExp(`(?:\\s*[:;]+\\s*|\\s*;\\s*)\\s*(?:${businessRulePattern.source})\\.?$`, "i"),
+      ""
+    )
+    .trim();
 
-  if (cleanParts.length >= 2) {
-    return { title: cleanParts[0], description: cleanParts[1] };
-  } else if (cleanParts.length === 1) {
-    return { title: cleanParts[0], description: defaultDesc };
+  // 2. Strip prefix: e.g. "The operation violates business rules.: " or "Violates business rules: "
+  while (
+    new RegExp(`^(?:${businessRulePattern.source})\\s*(?:[.:;,-]*[:;]+[.:;,-]*|\\.:\\s*|;\\s*|[.:;,-]+)?\\s*`, "i").test(cleaned)
+  ) {
+    cleaned = cleaned
+      .replace(
+        new RegExp(`^(?:${businessRulePattern.source})\\s*(?:[.:;,-]*[:;]+[.:;,-]*|\\.:\\s*|;\\s*|[.:;,-]+)?\\s*`, "i"),
+        ""
+      )
+      .trim();
   }
 
-  return { title: defaultTitle, description: defaultDesc };
+  // 3. Strip standalone occurrence if it's the only message or left with punctuation
+  if (new RegExp(`^(?:${businessRulePattern.source})\\.?$`, "i").test(cleaned)) {
+    cleaned = "";
+  }
+
+  // Clean trailing colon / semicolon / dot-colon artifacts e.g. ".:" or ":" or ";"
+  cleaned = cleaned.replace(/\s*[:;]+\s*$/, "").replace(/\.+:+$/, ".").trim();
+
+  if (!cleaned) {
+    return { title: defaultTitle, description: defaultDesc };
+  }
+
+  const firstColonIndex = cleaned.indexOf(":");
+  if (firstColonIndex !== -1) {
+    const title = cleaned.slice(0, firstColonIndex).trim();
+    let description = cleaned.slice(firstColonIndex + 1).trim();
+
+    // Strip businessRulePattern from description if present
+    description = description
+      .replace(
+        new RegExp(`^(?:${businessRulePattern.source})\\s*(?:[.:;,-]*[:;]+[.:;,-]*|\\.:\\s*|;\\s*|[.:;,-]+)?\\s*`, "i"),
+        ""
+      )
+      .replace(
+        new RegExp(`(?:\\s*[:;]+\\s*|\\s*;\\s*)\\s*(?:${businessRulePattern.source})\\.?$`, "i"),
+        ""
+      )
+      .trim();
+
+    if (new RegExp(`^(?:${businessRulePattern.source})\\.?$`, "i").test(description)) {
+      description = "";
+    }
+
+    return {
+      title: title || defaultTitle,
+      description: description || defaultDesc,
+    };
+  }
+
+  return { title: cleaned, description: defaultDesc };
 }
 
 /**

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { CheckCircleIcon, XCircleIcon, WarningCircleIcon, X } from "@phosphor-icons/react";
 import type { ScanResult } from "@/hooks/useScannerState";
 import { useLanguageStore } from "@/store/languageStore";
@@ -11,6 +12,17 @@ interface SingleScanResultProps {
 export function SingleScanResult({ result, onClose }: SingleScanResultProps) {
   const { locale } = useLanguageStore();
   const { t } = useTranslation(locale);
+
+  useEffect(() => {
+    if (!result || !onClose) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [result, onClose]);
 
   if (!result) return null;
 
@@ -36,15 +48,24 @@ export function SingleScanResult({ result, onClose }: SingleScanResultProps) {
       : t("scanner.scanFailed", "Scan Failed");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200 pointer-events-none">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200 cursor-pointer"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Full-screen color flash */}
       <div className={`absolute inset-0 ${flashColor}`} />
 
       {/* Result card */}
-      <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full mx-6 text-center shadow-2xl space-y-4 pointer-events-auto">
+      <div
+        className="relative bg-white rounded-3xl p-8 max-w-sm w-full mx-6 text-center shadow-2xl space-y-4 pointer-events-auto cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Close button */}
         {onClose && (
           <button
+            type="button"
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
             aria-label="Close"
