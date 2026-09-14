@@ -41,6 +41,7 @@ import { queryKeys } from "@/lib/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguageStore } from "@/store/languageStore";
+import { Loader2 } from "lucide-react";
 
 interface PayoutRequestDialogProps {
   open: boolean;
@@ -339,9 +340,14 @@ export function PayoutRequestDialog({
                 {t("common.cancel", "Cancel")}
               </Button>
               <Button type="submit" disabled={createPayoutMutation.isPending}>
-                {createPayoutMutation.isPending
-                  ? t("common.processing", "Processing…")
-                  : t("common.submit", "Submit")}
+                {createPayoutMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("common.processing", "Processing…")}
+                  </>
+                ) : (
+                  t("common.submit", "Submit")
+                )}
               </Button>
             </DialogFooter>
           </form>
